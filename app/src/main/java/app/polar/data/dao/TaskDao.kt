@@ -6,7 +6,7 @@ import app.polar.data.entity.Task
 
 @Dao
 interface TaskDao {
-  @Query("SELECT * FROM tasks WHERE listId = :listId ORDER BY createdAt DESC")
+  @Query("SELECT * FROM tasks WHERE listId = :listId ORDER BY orderIndex ASC")
   fun getTasksForList(listId: Long): LiveData<List<Task>>
   
   @Query("SELECT * FROM tasks ORDER BY createdAt DESC")
@@ -17,6 +17,9 @@ interface TaskDao {
   
   @Update
   suspend fun update(task: Task)
+
+  @Update
+  suspend fun updateAll(tasks: List<Task>)
   
   @Delete
   suspend fun delete(task: Task)
@@ -47,7 +50,7 @@ interface TaskDao {
         (SELECT COUNT(*) FROM subtasks WHERE taskId = tasks.id AND completed = 1) as completedSubtasks
     FROM tasks 
     LEFT JOIN task_lists ON tasks.listId = task_lists.id 
-    ORDER BY task_lists.title ASC, tasks.createdAt DESC
+    ORDER BY task_lists.orderIndex ASC, tasks.orderIndex ASC
   """)
   fun getTasksWithListTitles(): LiveData<List<app.polar.data.model.TaskWithList>>
 }

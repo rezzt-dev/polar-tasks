@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
+import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
 import kotlinx.coroutines.launch
 import app.polar.ui.adapter.TaskListItem
@@ -18,6 +19,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
   private val repository: TaskRepository
 
   private val _selectedListId = MutableLiveData<Long>()
+  val selectedListId: LiveData<Long> = _selectedListId
   
   // Raw tasks (existing logic kept for specific list view)
   private val _tasksSource: LiveData<List<Task>> = _selectedListId.switchMap { listId ->
@@ -33,26 +35,37 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
   // Else use simple list without headers (or single header?)
   val tasks: LiveData<List<TaskListItem>> = _selectedListId.switchMap { listId ->
       if (listId == -1L) {
-          repository.getTasksWithListTitles().map { joinedList ->
-              // Filter logic: Exclude if fully completed (Task checked AND (No subtasks OR All subtasks checked))
-              val filteredList = joinedList.filterNot { item ->
-                  item.task.completed && (item.totalSubtasks == 0 || item.completedSubtasks == item.totalSubtasks)
-              }
-              
-              val grouped = filteredList.groupBy { it.listTitle ?: "No List" }
-              val result = mutableListOf<TaskListItem>()
-              grouped.forEach { (title, tasks) ->
-                  result.add(TaskListItem.Header(title))
-                  tasks.forEach { taskWithList ->
-                      result.add(TaskListItem.Item(taskWithList.task))
-                  }
-              }
-              result
+          // Fallback or empty if we switch to homeTaskGroups for Home
+          // Actually, let's keep this for now but we might not use it in Home Fragment if we swap adapters
+          repository.getTasksWithListTitles().map { joinedList -> 
+               val result = mutableListOf<TaskListItem>()
+               // Logic preserved just in case
+               result
           }
       } else {
           repository.getTasksForList(listId).map { taskList ->
               taskList.map { TaskListItem.Item(it) }
           }
+      }
+  }
+
+  val homeTaskGroups: LiveData<List<app.polar.data.model.TaskGroup>> by lazy {
+      repository.getTasksWithListTitles().map { joinedList ->
+        // Group by listId (and title)
+        // Joined list is already ordered by List Order
+        
+        val grouped = joinedList.groupBy { it.task.listId }
+        
+        grouped.map { (listId, tasksWithList) ->
+            val title = tasksWithList.firstOrNull()?.listTitle ?: "Unknown List"
+            
+            val tasks = tasksWithList.map { it.task }
+            app.polar.data.model.TaskGroup(
+                listId = listId, 
+                title = title, 
+                tasks = tasks
+            )
+        }
       }
   }
   
@@ -92,6 +105,11 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         val subtask = Subtask(taskId = taskId, title = subtaskTitle)
         repository.insertSubtask(subtask)
     }
+    
+    // Schedule alarm
+    if (dueDate != null) {
+        scheduleAlarm(taskId, dueDate)
+    }
   }
 
   suspend fun getTasksBetweenDates(start: Long, end: Long): List<Task> {
@@ -123,6 +141,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         // I'll stick to fixing the persistence first.
         
         // Ideally we need deleteSubtasksForTask(taskId)
+    }
+    
+    if (task.dueDate != null) {
+        scheduleAlarm(task.id, task.dueDate)
+    } else {
+        cancelAlarm(task.id)
     }
   }
   
@@ -163,8 +187,76 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     repository.deleteSubtask(subtask)
   }
 
+  private fun scheduleAlarm(taskId: Long, timeInMillis: Long) {
+      if (timeInMillis <= System.currentTimeMillis()) return
+      
+      val alarmManager = getApplication<Application>().getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
+      val intent = android.content.Intent(getApplication(), app.polar.receiver.AlarmReceiver::class.java).apply {
+          putExtra("TASK_ID", taskId)
+      }
+      val pendingIntent = android.app.PendingIntent.getBroadcast(
+          getApplication(),
+          taskId.toInt(),
+          intent,
+          android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+      )
+      
+      try {
+          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+              if (alarmManager.canScheduleExactAlarms()) {
+                  alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+              } else {
+                  // Fallback or request permission? checking permission usually done in Activity.
+                  alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+              }
+          } else {
+               alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+          }
+      } catch (e: SecurityException) {
+          e.printStackTrace()
+      }
+  }
+
+  private fun cancelAlarm(taskId: Long) {
+      val alarmManager = getApplication<Application>().getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
+      val intent = android.content.Intent(getApplication(), app.polar.receiver.AlarmReceiver::class.java)
+      val pendingIntent = android.app.PendingIntent.getBroadcast(
+          getApplication(),
+          taskId.toInt(),
+          intent,
+          android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_NO_CREATE
+      )
+      if (pendingIntent != null) {
+          alarmManager.cancel(pendingIntent)
+      }
+  }
+
   fun renameSubtask(subtask: Subtask, newTitle: String) = viewModelScope.launch {
     repository.updateSubtask(subtask.copy(title = newTitle))
+  }
+
+  fun updateTasksOrder(tasks: List<Task>) = viewModelScope.launch {
+    repository.updateTasks(tasks)
+  }
+
+  fun updateTaskListsOrder(taskLists: List<app.polar.data.entity.TaskList>) = viewModelScope.launch {
+    repository.updateTaskLists(taskLists)
+  }
+  
+  fun updateTaskGroupsOrder(groups: List<app.polar.data.model.TaskGroup>) = viewModelScope.launch {
+      val allLists = repository.getTaskListsSnapshot()
+      val groupsMap = groups.mapIndexed { index, g -> g.listId to index }.toMap()
+      
+      val updatedLists = allLists.mapNotNull { list ->
+          if (groupsMap.containsKey(list.id)) {
+              list.copy(orderIndex = groupsMap[list.id]!!)
+          } else {
+              null
+          }
+      }
+      if (updatedLists.isNotEmpty()) {
+        repository.updateTaskLists(updatedLists)
+      }
   }
   
   fun searchTasks(query: String): LiveData<List<Task>> {

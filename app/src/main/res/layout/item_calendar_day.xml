@@ -7,13 +7,15 @@
     android:paddingVertical="8dp">
 
     <FrameLayout
-        android:layout_width="36dp"
-        android:layout_height="36dp">
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center">
         
         <View
             android:id="@+id/bgDay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
             android:background="@drawable/bg_calendar_circle"
             android:visibility="invisible"/>
 
@@ -24,6 +26,7 @@
             android:gravity="center"
             android:text="1"
             android:textSize="15sp"
+            android:includeFontPadding="false"
             android:textColor="?attr/colorOnSurface"/>
     </FrameLayout>
     

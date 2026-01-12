@@ -2,6 +2,7 @@ package app.polar.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 
 @Entity(tableName = "task_lists")
 data class TaskList(
@@ -9,5 +10,6 @@ data class TaskList(
   val id: Long = 0,
   val title: String,
   val icon: String = "ic_list", // Default icon
-  val createdAt: Long = System.currentTimeMillis()
+  val createdAt: Long = System.currentTimeMillis(),
+  @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0
 )

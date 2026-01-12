@@ -25,5 +25,6 @@ data class Task(
   val completed: Boolean = false,
   val tags: String = "", // Comma-separated tags
   val createdAt: Long = System.currentTimeMillis(),
-  @ColumnInfo(name = "dueDate") val dueDate: Long? = null
+  @ColumnInfo(name = "dueDate") val dueDate: Long? = null,
+  @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0
 )

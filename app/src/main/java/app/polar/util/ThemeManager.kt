@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 
-class ThemeManager(context: Context) {
+class ThemeManager(private val context: Context) {
   private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
   
   companion object {
@@ -40,5 +40,16 @@ class ThemeManager(context: Context) {
       else -> THEME_DARK // Default to dark if system
     }
     saveTheme(newTheme)
+  }
+
+  fun isLightTheme(): Boolean {
+    val currentTheme = loadTheme()
+    return currentTheme == THEME_LIGHT ||
+        (currentTheme == THEME_SYSTEM && !isSystemInDarkMode())
+  }
+
+  private fun isSystemInDarkMode(): Boolean {
+    val currentNightMode = context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+    return currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
   }
 }

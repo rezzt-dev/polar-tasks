@@ -111,16 +111,11 @@ class TaskDetailActivity : AppCompatActivity() {
   }
   
   private fun showSubtaskOptionsDialog(subtask: app.polar.data.entity.Subtask) {
-      val options = arrayOf(getString(R.string.edit), getString(R.string.delete))
-      androidx.appcompat.app.AlertDialog.Builder(this)
-          .setTitle(subtask.title)
-          .setItems(options) { _, which ->
-              when (which) {
-                  0 -> showRenameSubtaskDialog(subtask)
-                  1 -> viewModel.deleteSubtask(subtask)
-              }
-          }
-          .show()
+      app.polar.ui.dialog.SubtaskDetailBottomSheet(
+          content = subtask.title,
+          onEdit = { showRenameSubtaskDialog(subtask) },
+          onDelete = { viewModel.deleteSubtask(subtask) }
+      ).show(supportFragmentManager, "SubtaskDetail")
   }
   
   private fun showAddSubtaskDialog(taskId: Long) {

@@ -44,10 +44,21 @@ class MainActivity : AppCompatActivity() {
     
     // Load initial fragment
     if (savedInstanceState == null) {
-      supportFragmentManager.beginTransaction()
-        .replace(R.id.fragmentContainer, TasksFragment())
-        .commit()
+      if (intent.getBooleanExtra("NAVIGATE_TO_REMINDERS", false)) {
+          openReminders()
+      } else {
+          supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, TasksFragment())
+            .commit()
+      }
     }
+  }
+  
+  override fun onNewIntent(intent: android.content.Intent) {
+      super.onNewIntent(intent)
+      if (intent.getBooleanExtra("NAVIGATE_TO_REMINDERS", false)) {
+          openReminders()
+      }
   }
 
   override fun onResume() {
@@ -55,10 +66,14 @@ class MainActivity : AppCompatActivity() {
     // Asegurarse de que el SearchView esté colapsado al volver
     invalidateOptionsMenu()
   }
-  
+
   private fun setupToolbar() {
     setSupportActionBar(binding.toolbar)
     
+    // Configuración para Edge-to-Edge:
+    // La barra de estado se maneja vía fitsSystemWindows en el layout (activity_main.xml)
+    // No necesitamos establecer colores manualmente aquí si el layout está bien configurado.
+
     binding.toolbar.setNavigationOnClickListener {
       binding.drawerLayout.openDrawer(GravityCompat.START)
     }
@@ -90,6 +105,17 @@ class MainActivity : AppCompatActivity() {
       layoutManager = LinearLayoutManager(this@MainActivity)
       adapter = taskListAdapter
     }
+
+    val dragDropHelper = app.polar.util.DragDropHelper(
+        onItemMove = { from, to -> taskListAdapter.onItemMove(from, to) },
+        onMoveFinished = {
+            val taskLists = taskListAdapter.currentList.mapIndexed { index, taskList ->
+                taskList.copy(orderIndex = index)
+            }
+            taskViewModel.updateTaskListsOrder(taskLists)
+        }
+    )
+    androidx.recyclerview.widget.ItemTouchHelper(dragDropHelper).attachToRecyclerView(rvTaskLists)
     
     val btnCreateList = binding.root.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCreateList)
     btnCreateList.setOnClickListener {
@@ -122,12 +148,41 @@ class MainActivity : AppCompatActivity() {
           
         binding.drawerLayout.close()
     }
+
+    val btnReminders = binding.root.findViewById<android.widget.LinearLayout>(R.id.btnReminders)
+    btnReminders.setOnClickListener {
+        openReminders()
+        binding.drawerLayout.close()
+    }
+  }
+  
+  private fun openReminders() {
+      currentListId = -2L // Special ID for Reminders
+      binding.toolbar.title = "Reminders"
+      binding.fabAddTask.show()
+      
+      supportFragmentManager.beginTransaction()
+          .replace(R.id.fragmentContainer, app.polar.ui.fragment.RemindersFragment())
+          .commit()
   }
   
   private fun setupFab() {
     binding.fabAddTask.setOnClickListener {
-      currentListId?.let { listId ->
-        showCreateTaskDialog(listId)
+      if (currentListId == -2L) {
+          app.polar.ui.dialog.ReminderDialog(
+              onSave = { title, desc, time ->
+                   // ViewModel call logic is inside Fragment usually if we use FragmentManager,
+                   // but here the FAB is in Activity.
+                   // We need to communicate with RemindersViewModel.
+                   // Since ViewModel is scoped to Activity (by viewModels()), we can use it here.
+                   val remindersViewModel: app.polar.ui.viewmodel.RemindersViewModel by viewModels()
+                   remindersViewModel.insert(title, desc, time)
+              }
+          ).show(supportFragmentManager, "CreateReminderDialog")
+      } else {
+          currentListId?.let { listId ->
+            showCreateTaskDialog(listId)
+          }
       }
     }
   }
@@ -242,11 +297,12 @@ class MainActivity : AppCompatActivity() {
       startActivity(intent)
     }
   }
-  
+
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     return when (item.itemId) {
       R.id.action_theme -> {
         themeManager.toggleTheme()
+        recreate() // Recreate activity to apply new theme resources
         true
       }
       else -> super.onOptionsItemSelected(item)

@@ -63,8 +63,34 @@ class TaskDialog(
             .build()
             
         datePicker.addOnPositiveButtonClickListener { selection ->
-            selectedDate = selection
-            updateDateText()
+            // Date selected, now show time picker
+            val calendar = java.util.Calendar.getInstance()
+            calendar.timeInMillis = selection
+            // Reset to start of day to avoid timezone confusion or keep as is?
+            // MaterialDatePicker usually returns UTC midnight.
+            
+            // Adjust for local timezone? MaterialDatePicker returns UTC.
+            val utcCalendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+            utcCalendar.timeInMillis = selection
+            
+            val localCalendar = java.util.Calendar.getInstance()
+            localCalendar.set(utcCalendar.get(java.util.Calendar.YEAR), utcCalendar.get(java.util.Calendar.MONTH), utcCalendar.get(java.util.Calendar.DAY_OF_MONTH))
+            
+            val timePicker = com.google.android.material.timepicker.MaterialTimePicker.Builder()
+                .setTimeFormat(com.google.android.material.timepicker.TimeFormat.CLOCK_12H) // Or 24H depending on locale
+                .setTitleText("Select time")
+                .build()
+                
+            timePicker.addOnPositiveButtonClickListener {
+                localCalendar.set(java.util.Calendar.HOUR_OF_DAY, timePicker.hour)
+                localCalendar.set(java.util.Calendar.MINUTE, timePicker.minute)
+                localCalendar.set(java.util.Calendar.SECOND, 0)
+                
+                selectedDate = localCalendar.timeInMillis
+                updateDateText()
+            }
+            
+            timePicker.show(parentFragmentManager, "TIME_PICKER")
         }
         
         datePicker.show(parentFragmentManager, "DATE_PICKER")
@@ -115,7 +141,7 @@ class TaskDialog(
   
   private fun updateDateText() {
       if (selectedDate != null) {
-          val format = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+          val format = java.text.SimpleDateFormat("MMM dd, yyyy HH:mm", java.util.Locale.getDefault())
           binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
           binding.tvDueDate.alpha = 1.0f
       } else {

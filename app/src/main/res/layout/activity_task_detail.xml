@@ -52,7 +52,7 @@
                          android:textStyle="bold"
                          android:fontFamily="sans-serif-black"
                          android:textColor="?attr/colorOnBackground"
-                         android:inputType="textCapSentences"
+                         android:layout_marginEnd="16dp"
                          android:text="Task Title" />
                          
                       <LinearLayout

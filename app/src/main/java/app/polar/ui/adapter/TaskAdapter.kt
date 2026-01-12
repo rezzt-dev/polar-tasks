@@ -156,6 +156,28 @@ class TaskAdapter(
             }
         }
     }
+    fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        // Prevent moving headers or moving items above headers if desirable
+        // For simplicity, allow swap if both are items
+        val list = currentList.toMutableList()
+        val itemFrom = list[fromPosition]
+        val itemTo = list[toPosition]
+        
+        // Block dragging headers or dropping onto headers
+        if (itemFrom is TaskListItem.Header || itemTo is TaskListItem.Header) return false
+        
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                java.util.Collections.swap(list, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                java.util.Collections.swap(list, i, i - 1)
+            }
+        }
+        submitList(list)
+        return true
+    }
 }
 
 class TaskListItemDiffCallback : DiffUtil.ItemCallback<TaskListItem>() {

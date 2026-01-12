@@ -39,6 +39,12 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
                 app:iconTint="?attr/colorOnSurface"/>
 
             <com.google.android.material.button.MaterialButton
@@ -47,6 +53,12 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:icon="@drawable/ic_arrow_forward"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
                 app:iconTint="?attr/colorOnSurface"/>
         </LinearLayout>
 

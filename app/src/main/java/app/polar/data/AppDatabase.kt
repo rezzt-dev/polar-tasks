@@ -7,19 +7,22 @@ import androidx.room.RoomDatabase
 import app.polar.data.dao.SubtaskDao
 import app.polar.data.dao.TaskDao
 import app.polar.data.dao.TaskListDao
+import app.polar.data.dao.ReminderDao
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
+import app.polar.data.entity.Reminder
 
 @Database(
-  entities = [TaskList::class, Task::class, Subtask::class],
-  version = 4,
+  entities = [TaskList::class, Task::class, Subtask::class, Reminder::class],
+  version = 6,
   exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
   abstract fun taskListDao(): TaskListDao
   abstract fun taskDao(): TaskDao
   abstract fun subtaskDao(): SubtaskDao
+  abstract fun reminderDao(): ReminderDao
   
   companion object {
     @Volatile

@@ -62,4 +62,18 @@ class TaskListAdapter(
       return oldItem == newItem
     }
   }
+
+  fun onItemMove(fromPosition: Int, toPosition: Int) {
+      val currentList = currentList.toMutableList()
+      if (fromPosition < toPosition) {
+          for (i in fromPosition until toPosition) {
+              java.util.Collections.swap(currentList, i, i + 1)
+          }
+      } else {
+          for (i in fromPosition downTo toPosition + 1) {
+              java.util.Collections.swap(currentList, i, i - 1)
+          }
+      }
+      submitList(currentList)
+  }
 }

@@ -1,63 +1,81 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <!-- Dark theme overrides -->
-  <style name="Base.Theme.Polar" parent="Theme.Material3.Dark.NoActionBar">
-    <item name="colorPrimary">@color/accent_primary</item>
-    <item name="colorOnPrimary">@color/white</item>
-    <item name="colorPrimaryContainer">@color/accent_secondary</item>
-    <item name="colorOnPrimaryContainer">@color/dark_main_foreground</item>
+  <!-- 
+    Dark Theme Override
+    Functionally identical to Theme.Polar.Dark defined in values/themes.xml,
+    but applied automatically by the system in Night mode.
+  -->
+  <style name="Base.Theme.Polar" parent="Theme.Material3.DayNight.NoActionBar">
+     <!-- 3. Accent -->
+    <item name="colorPrimary">@color/dark_c3_accent</item>
+    <item name="colorOnPrimary">@color/black</item>
+    <item name="colorPrimaryContainer">@color/dark_c4_border</item>
+    <item name="colorOnPrimaryContainer">@color/dark_c3_accent</item>
     
-    <item name="colorSecondary">@color/accent_secondary</item>
-    <item name="colorOnSecondary">@color/white</item>
+    <item name="colorSecondary">@color/dark_c3_accent</item>
+    <item name="colorOnSecondary">@color/black</item>
+    <item name="colorSecondaryContainer">@color/dark_c4_border</item>
+    <item name="colorOnSecondaryContainer">@color/dark_c5_foreground</item>
     <item name="colorError">@color/color_error</item>
     
-    <item name="android:colorBackground">@color/dark_main_background</item>
-    <item name="colorOnBackground">@color/dark_main_foreground</item>
+    <!-- 1. Background -->
+    <item name="android:colorBackground">@color/dark_c1_background</item>
+    <item name="colorOnBackground">@color/dark_c5_foreground</item>
     
-    <item name="colorSurface">@color/dark_panel_background</item>
-    <item name="colorOnSurface">@color/dark_main_foreground</item>
-    <item name="colorSurfaceVariant">@color/dark_main_background</item>
+    <!-- 2. Surface -->
+    <item name="colorSurface">@color/dark_c2_surface</item>
+    <item name="colorOnSurface">@color/dark_c5_foreground</item>
+    <item name="colorSurfaceVariant">@color/dark_c1_background</item>
     
-    <item name="android:statusBarColor">@color/dark_main_background</item>
+    <item name="colorSurfaceContainer">@color/dark_c2_surface</item> 
+    <item name="colorSurfaceContainerHigh">@color/dark_c4_border</item>
+    <item name="colorOutline">@color/dark_c4_border</item>
+    <item name="colorOutlineVariant">@color/dark_c4_border</item>
+    
+    <!-- STATUS BAR FIX: Matches background -->
+    <item name="android:statusBarColor">@color/dark_c1_background</item>
     <item name="android:windowLightStatusBar">false</item>
-    <item name="android:navigationBarColor">@color/dark_main_background</item>
+    <item name="android:navigationBarColor">@color/dark_c1_background</item>
     <item name="android:windowLightNavigationBar">false</item>
     
-    <!-- Poppins font -->
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>
     
     <!-- Custom attributes -->
-    <item name="taskBackground">@color/dark_task_background</item>
-    <item name="taskBorder">@color/dark_task_border</item>
-    <item name="mainBorder">@color/dark_main_border</item>
-    <item name="buttonBackground">@color/dark_button_background</item>
+    <item name="taskBackground">@color/dark_c2_surface</item>
+    <item name="taskBorder">@color/dark_c4_border</item>
+    <item name="mainBorder">@color/dark_c4_border</item>
+    <item name="buttonBackground">@color/dark_c3_accent</item>
   </style>
 
   <style name="Theme.Polar" parent="Base.Theme.Polar" />
   
+  <!-- Reuse component styles from values/themes.xml by not overriding them if not needed, 
+       but keeping them here ensures they pick up updated attributes if they used them (which they don't seem to, just dimens).
+       To stay clean, I'll copy the button styles just to be safe and consistent. -->
+       
   <!-- iOS-style button -->
   <style name="Widget.Polar.Button" parent="Widget.Material3.Button">
-    <item name="cornerRadius">@dimen/button_corner_radius</item>
+    <item name="cornerRadius">12dp</item>
     <item name="android:textAllCaps">false</item>
-    <item name="android:minHeight">@dimen/button_height</item>
-    <item name="android:paddingStart">@dimen/button_padding_horizontal</item>
-    <item name="android:paddingEnd">@dimen/button_padding_horizontal</item>
+    <item name="android:minHeight">48dp</item>
+    <item name="android:paddingStart">24dp</item>
+    <item name="android:paddingEnd">24dp</item>
     <item name="elevation">2dp</item>
   </style>
   
   <style name="Widget.Polar.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
-    <item name="cornerRadius">@dimen/button_corner_radius</item>
+     <item name="cornerRadius">12dp</item>
     <item name="android:textAllCaps">false</item>
-    <item name="android:minHeight">@dimen/button_height</item>
-    <item name="android:paddingStart">@dimen/button_padding_horizontal</item>
-    <item name="android:paddingEnd">@dimen/button_padding_horizontal</item>
+    <item name="android:minHeight">48dp</item>
+    <item name="android:paddingStart">24dp</item>
+    <item name="android:paddingEnd">24dp</item>
     <item name="elevation">1dp</item>
   </style>
   
   <!-- iOS-style card -->
   <style name="Widget.Polar.Card" parent="Widget.Material3.CardView.Elevated">
-    <item name="cardCornerRadius">@dimen/card_corner_radius</item>
-    <item name="cardElevation">@dimen/card_elevation</item>
-    <item name="contentPadding">@dimen/card_padding</item>
+    <item name="cardCornerRadius">16dp</item>
+    <item name="cardElevation">2dp</item>
+    <item name="contentPadding">16dp</item>
   </style>
 </resources>

@@ -13,5 +13,6 @@
     android:layout_width="32dp"
     android:layout_height="32dp"
     android:layout_gravity="center"
+    app:tint="?attr/colorOnSurfaceVariant"
     android:contentDescription="@string/select_icon" />
 </com.google.android.material.card.MaterialCardView>

@@ -38,46 +38,119 @@ class TasksFragment : Fragment() {
     observeTasks()
   }
   
+  private lateinit var homeTaskAdapter: app.polar.ui.adapter.HomeTaskAdapter
+  private var itemTouchHelper: androidx.recyclerview.widget.ItemTouchHelper? = null
+
   private fun setupRecyclerView() {
     taskAdapter = TaskAdapter(
       lifecycleOwner = viewLifecycleOwner,
       viewModel = viewModel,
-      onCheckChanged = { task, _ ->
-        viewModel.toggleTaskCompletion(task)
+      onCheckChanged = { task, _ -> viewModel.toggleTaskCompletion(task) },
+      onItemLongClick = { task -> 
+          showTaskPopupMenu(task) 
+          true 
       },
-      onItemLongClick = { task ->
-        showTaskPopupMenu(task)
-        true
-      },
-      onItemClick = { task ->
+      onItemClick = { task -> openTaskDetail(task) }
+    )
+    
+    homeTaskAdapter = app.polar.ui.adapter.HomeTaskAdapter(
+        onGroupMove = { _, _ -> 
+            // Optional: local logic if needed, but we rely on dragDropHelper sending list to ViewModel
+        },
+        onTaskLongClick = { task, view ->
+            showTaskPopupMenu(task, view)
+            true
+        }
+    )
+    
+    binding.recyclerTasks.layoutManager = LinearLayoutManager(context)
+  }
+  private fun openTaskDetail(task: Task) {
         val intent = android.content.Intent(requireContext(), app.polar.ui.activity.TaskDetailActivity::class.java)
         intent.putExtra(app.polar.ui.activity.TaskDetailActivity.EXTRA_TASK_ID, task.id)
         startActivity(intent)
-      }
-    )
-    
-    binding.recyclerTasks.apply {
-      layoutManager = LinearLayoutManager(context)
-      adapter = taskAdapter
-    }
   }
   
   private fun observeTasks() {
-    viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
-      if (tasks.isEmpty()) {
+      // Clean up previous observers not needed? 
+      // Actually simply observing both is fine, but we only set adapter based on mode.
+      
+      viewModel.selectedListId.observe(viewLifecycleOwner) { listId ->
+          configureMode(listId)
+      }
+      
+      viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
+          if (viewModel.selectedListId.value != -1L) {
+              updateEmptyState(tasks.isEmpty())
+              taskAdapter.submitList(tasks)
+          }
+      }
+      
+      viewModel.homeTaskGroups.observe(viewLifecycleOwner) { groups ->
+          if (viewModel.selectedListId.value == -1L) {
+              updateEmptyState(groups.isEmpty())
+              homeTaskAdapter.submitList(groups)
+          }
+      }
+  }
+  
+  private fun updateEmptyState(isEmpty: Boolean) {
+       if (isEmpty) {
         binding.emptyState.visibility = View.VISIBLE
         binding.recyclerTasks.visibility = View.GONE
       } else {
         binding.emptyState.visibility = View.GONE
         binding.recyclerTasks.visibility = View.VISIBLE
-        taskAdapter.submitList(tasks)
       }
-    }
   }
   
-  private fun showTaskPopupMenu(task: Task) {
-    val position = taskAdapter.currentList.indexOf(app.polar.ui.adapter.TaskListItem.Item(task))
-    val view = binding.recyclerTasks.findViewHolderForAdapterPosition(position)?.itemView ?: return
+  private fun configureMode(listId: Long) {
+      // Detach existing helper
+      itemTouchHelper?.attachToRecyclerView(null)
+      
+      if (listId == -1L) {
+          // Home Mode: Group Adapter
+          binding.recyclerTasks.adapter = homeTaskAdapter
+          
+          val dragDropHelper = app.polar.util.DragDropHelper(
+            onItemMove = { from, to -> homeTaskAdapter.onItemMove(from, to) },
+            onMoveFinished = {
+                val groups = homeTaskAdapter.getCurrentGroups()
+                viewModel.updateTaskGroupsOrder(groups)
+            }
+          )
+          itemTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(dragDropHelper)
+          itemTouchHelper?.attachToRecyclerView(binding.recyclerTasks)
+          
+      } else {
+          // List Mode: Task Adapter
+          binding.recyclerTasks.adapter = taskAdapter
+          
+          val dragDropHelper = app.polar.util.DragDropHelper(
+            onItemMove = { from, to -> taskAdapter.onItemMove(from, to) },
+            onMoveFinished = {
+                 val tasks = taskAdapter.currentList
+                    .filterIsInstance<app.polar.ui.adapter.TaskListItem.Item>()
+                    .mapIndexed { index, item ->
+                        item.task.copy(orderIndex = index)
+                    }
+                viewModel.updateTasksOrder(tasks)
+            }
+          )
+          itemTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(dragDropHelper)
+          itemTouchHelper?.attachToRecyclerView(binding.recyclerTasks)
+      }
+  }
+
+  private fun showTaskPopupMenu(task: Task, anchorView: View? = null) {
+    val view = if (anchorView != null) {
+        anchorView
+    } else {
+        val position = taskAdapter.currentList.indexOf(app.polar.ui.adapter.TaskListItem.Item(task))
+        binding.recyclerTasks.findViewHolderForAdapterPosition(position)?.itemView
+    }
+    
+    if (view == null) return
     
     PopupMenu(requireContext(), view).apply {
       menuInflater.inflate(R.menu.menu_task, menu)

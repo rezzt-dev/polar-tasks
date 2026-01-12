@@ -16,12 +16,20 @@ class TaskRepository(
   // TaskList operations
   val allTaskLists: LiveData<List<TaskList>> = taskListDao.getAllLists()
   
+  suspend fun getTaskListsSnapshot(): List<TaskList> {
+      return taskListDao.getAllListsSnapshot()
+  }
+  
   suspend fun insertTaskList(taskList: TaskList): Long {
     return taskListDao.insert(taskList)
   }
   
   suspend fun updateTaskList(taskList: TaskList) {
     taskListDao.update(taskList)
+  }
+
+  suspend fun updateTaskLists(taskLists: List<TaskList>) {
+    taskListDao.updateAll(taskLists)
   }
   
   suspend fun deleteTaskList(taskList: TaskList) {
@@ -47,6 +55,10 @@ class TaskRepository(
   
   suspend fun updateTask(task: Task) {
     taskDao.update(task)
+  }
+
+  suspend fun updateTasks(tasks: List<Task>) {
+    taskDao.updateAll(tasks)
   }
   
   suspend fun deleteTask(task: Task) {
