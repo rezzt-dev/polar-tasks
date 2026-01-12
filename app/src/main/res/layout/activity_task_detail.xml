@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:background="?android:attr/colorBackground">
+    
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/colorBackground"
+        android:stateListAnimator="@null"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+    </com.google.android.material.appbar.AppBarLayout>
+    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_large">
+            
+             <!-- Header -->
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="horizontal"
+                 android:baselineAligned="false">
+                 
+                 <LinearLayout
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:orientation="vertical">
+                     
+                      <TextView
+                         android:id="@+id/tvDetailTitle"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:textSize="28sp"
+                         android:textStyle="bold"
+                         android:fontFamily="sans-serif-black"
+                         android:textColor="?attr/colorOnBackground"
+                         android:inputType="textCapSentences"
+                         android:text="Task Title" />
+                         
+                      <LinearLayout
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:orientation="horizontal"
+                          android:layout_marginTop="4dp"
+                          android:gravity="center_vertical">
+                          
+                          <TextView
+                             android:id="@+id/tvDetailListName"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:textSize="14sp"
+                             android:textStyle="bold"
+                             android:textColor="?attr/colorPrimary"
+                             android:text="List Name" />
+                             
+                          <TextView
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_marginHorizontal="8dp"
+                             android:alpha="0.3"
+                             android:text="•" />
+
+                          <TextView
+                             android:id="@+id/tvDetailDate"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:textSize="14sp"
+                             android:textColor="?attr/colorOnBackground"
+                             android:alpha="0.6"
+                             android:text="Jan 10" />
+                      </LinearLayout>
+                  </LinearLayout>
+
+                  <CheckBox
+                      android:id="@+id/cbDetailCompleted"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="top"
+                      android:scaleX="1.3"
+                      android:scaleY="1.3" />
+              </LinearLayout>
+              
+              <!-- Due Date prominent -->
+              <LinearLayout
+                  android:id="@+id/containerDueDate"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="16dp"
+                  android:orientation="horizontal"
+                  android:gravity="center_vertical"
+                  android:visibility="gone">
+                  
+                  <ImageView
+                      android:layout_width="20dp"
+                      android:layout_height="20dp"
+                      android:src="@drawable/ic_calendar"
+                      app:tint="?attr/colorPrimary" />
+                      
+                  <TextView
+                      android:id="@+id/tvDetailDueDate"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginStart="8dp"
+                      android:textSize="14sp"
+                      android:textStyle="bold"
+                      android:text="Due Tomorrow" />
+              </LinearLayout>
+             
+             <!-- Tags Row -->
+             <TextView
+                android:id="@+id/tvDetailTags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:background="@drawable/dialog_background"
+                android:backgroundTint="?attr/colorSurfaceVariant"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:text="#tag #work" />
+                
+             <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:layout_marginTop="@dimen/spacing_medium" 
+                android:alpha="0.2"/>
+            
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tvDetailDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:textSize="@dimen/text_size_body"
+                android:textColor="?attr/colorOnBackground"
+                android:lineSpacingMultiplier="1.2"
+                android:text="Description goes here..." />
+
+            <!-- Subtasks -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xlarge"
+                android:text="@string/subtasks"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_subtitle"
+                android:textColor="?attr/colorOnBackground" />
+                
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDetailSubtasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:nestedScrollingEnabled="false" />
+                
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddSubtask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/add_subtask"
+                app:icon="@drawable/ic_add"
+                style="@style/Widget.Material3.Button.TonalButton"
+                app:cornerRadius="12dp"/>
+                
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

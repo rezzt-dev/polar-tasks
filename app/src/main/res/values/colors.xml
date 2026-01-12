@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Base colors -->
+  <color name="black">#FF000000</color>
+  <color name="white">#FFFFFFFF</color>
+  
+  <!-- Dark theme colors -->
+  <!-- Deep black/grey background for OLED save and contrast -->
+  <color name="dark_main_background">#121212</color> 
+  <!-- Lighter grey for cards/surfaces to stand out -->
+  <color name="dark_panel_background">#242424</color>
+  <color name="dark_main_foreground">#EBEBEB</color>
+  <color name="dark_secondary_foreground">#A0A0A0</color>
+  <color name="dark_main_border">#383838</color>
+  
+  <color name="dark_task_background">#242424</color>
+  <color name="dark_task_border">#00000000</color> <!-- No border, use elevation/color diff -->
+  <color name="dark_task_title">#FFFFFF</color>
+  
+  <color name="dark_popup_background">#2C2C2C</color>
+  <color name="dark_input_background">#1A1A1A</color>
+  <color name="dark_input_border">#444444</color>
+  
+  <color name="dark_button_background">#333333</color>
+  <color name="dark_button_click">#555555</color>
+  
+  <!-- Light theme colors -->
+  <!-- iOS-style off-white background -->
+  <color name="light_main_background">#F2F2F7</color> 
+  <!-- Pure white for cards to pop -->
+  <color name="light_panel_background">#FFFFFF</color>
+  <color name="light_main_foreground">#1C1C1E</color>
+  <color name="light_secondary_foreground">#8E8E93</color>
+  <color name="light_main_border">#D1D1D6</color>
+  
+  <color name="light_task_background">#FFFFFF</color>
+  <color name="light_task_border">#00000000</color>
+  <color name="light_task_title">#000000</color>
+  
+  <color name="light_popup_background">#FFFFFF</color>
+  <color name="light_input_background">#F2F2F7</color>
+  <color name="light_input_border">#E5E5EA</color>
+  
+  <color name="light_button_background">#FFFFFF</color>
+  <color name="light_button_click">#E5E5EA</color>
+  
+  <!-- Accent colors -->
+  <color name="accent_primary">#455A64</color> <!-- Blue Grey / Slate for professional look -->
+  <color name="accent_secondary">#607D8B</color>
+  
+  <!-- Status/Semantic -->
+  <color name="color_error">#FF3B30</color>
+</resources>

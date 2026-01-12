@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?android:attr/colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/spacing_medium"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        android:gravity="top">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbTaskComplete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:layout_marginTop="-4dp"/>
+
+        <LinearLayout
+            android:id="@+id/taskContentContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTaskTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_subtitle"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="normal"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/tvTaskDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:textSize="@dimen/text_size_body"
+                android:textColor="?attr/colorOnBackground"
+                android:alpha="0.6"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:visibility="gone" />
+
+            <!-- Metadata container (Date + Tags) -->
+            <LinearLayout
+                android:id="@+id/tagsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="visible">
+                
+                <TextView
+                    android:id="@+id/tvTaskDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:drawablePadding="4dp"
+                    android:textSize="@dimen/text_size_caption"
+                    android:textColor="?attr/colorError"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+                
+                <TextView
+                    android:id="@+id/tvTaskTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_caption"
+                    android:textColor="?attr/colorPrimary"
+                    android:alpha="0.8" />
+            </LinearLayout>
+            
+            <!-- Subtasks preview (simple count or list) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSubtasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </LinearLayout>
+    
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="52dp" 
+        android:background="?android:attr/listDivider"
+        android:alpha="0.1" />
+
+</LinearLayout>

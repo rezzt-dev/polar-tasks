@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Custom theme attributes -->
+  <attr name="taskBackground" format="color" />
+  <attr name="taskBorder" format="color" />
+  <attr name="mainBorder" format="color" />
+  <attr name="buttonBackground" format="color" />
+</resources>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">polar.</string>
+  
+  <!-- Menu -->
+  <string name="menu_toggle">alternar menu</string>
+  <string name="theme_toggle">cambiar tema</string>
+  <string name="search">buscar</string>
+  <string name="search_hint">buscar tareas...</string>
+  
+  <!-- Task Lists -->
+  <string name="create_list">crear lista</string>
+  <string name="edit_list">editar lista</string>
+  <string name="delete_list">eliminar lista</string>
+  <string name="list_title_hint">titulo de lista</string>
+  <string name="no_lists">no hay listas de tareas</string>
+  <string name="create_first_list">crea tu primera lista para empezar</string>
+  <string name="select_icon">seleccionar icono</string>
+  
+  <!-- Calendar Weeks -->
+  <string name="mon_short">Lun</string>
+  <string name="tue_short">Mar</string>
+  <string name="wed_short">Mié</string>
+  <string name="thu_short">Jue</string>
+  <string name="fri_short">Vie</string>
+  <string name="sat_short">Sáb</string>
+  <string name="sun_short">Dom</string>
+  
+  <!-- Calendar UI -->
+  <string name="tasks_for_selected_date">Tareas</string>
+  <string name="no_tasks_for_date">No hay tareas para este día</string>
+  <string name="today">Hoy</string>
+  <string name="tomorrow">Mañana</string>
+  
+  <!-- Tasks -->
+  <string name="create_task">crear tarea</string>
+  <string name="edit_task">editar tarea</string>
+  <string name="delete_task">eliminar tarea</string>
+  <string name="task_title_hint">titulo de tarea</string>
+  <string name="task_description_hint">descripcion (opcional)</string>
+  <string name="no_tasks">no hay tareas</string>
+  <string name="add_first_task">agrega tu primera tarea</string>
+  <string name="no_search_results">no se encontraron tareas</string>
+  <string name="try_different_search">intenta con otros terminos</string>
+  
+  <!-- Subtasks -->
+  <string name="add_subtask">agregar subtarea</string>
+  <string name="subtask_hint">titulo de subtarea</string>
+  <string name="subtasks">subtareas</string>
+  
+  <!-- Tags -->
+  <string name="tags">etiquetas</string>
+  <string name="tags_hint">etiquetas (separadas por comas)</string>
+  <string name="add_tags">agregar etiquetas</string>
+  
+  <!-- Actions -->
+  <string name="save">guardar</string>
+  <string name="cancel">cancelar</string>
+  <string name="edit">editar</string>
+  <string name="delete">eliminar</string>
+  <string name="confirm_delete">estas seguro de eliminar esto?</string>
+  <string name="add">agregar</string>
+  
+  <!-- Watermark -->
+  <string name="developed_by">developed by rezzt.dev</string>
+</resources>

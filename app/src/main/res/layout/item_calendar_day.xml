@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingVertical="8dp">
+
+    <FrameLayout
+        android:layout_width="36dp"
+        android:layout_height="36dp">
+        
+        <View
+            android:id="@+id/bgDay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_calendar_circle"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/tvDay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="15sp"
+            android:textColor="?attr/colorOnSurface"/>
+    </FrameLayout>
+    
+    <View
+        android:id="@+id/dotIndicator"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_calendar_dot"
+        android:visibility="gone"/>
+
+</LinearLayout>

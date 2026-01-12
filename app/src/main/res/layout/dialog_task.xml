@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:background="@drawable/dialog_background"
+  android:padding="24dp">
+
+  <TextView
+    android:id="@+id/tvDialogTitle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/create_task"
+    android:textSize="22sp"
+    android:textStyle="bold"
+    android:fontFamily="sans-serif-medium"
+    android:gravity="center_horizontal"
+    android:layout_marginBottom="16dp"
+    android:textColor="?attr/colorOnSurface" />
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/task_title_hint"
+    app:boxBackgroundColor="@android:color/transparent"
+    style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/etTaskTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      android:inputType="textCapSentences"
+      android:maxLines="1" />
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:hint="@string/task_description_hint"
+    app:boxBackgroundColor="@android:color/transparent"
+    style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/etTaskDescription"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:inputType="textMultiLine|textCapSentences"
+      android:minLines="2"
+      android:maxLines="5"
+      android:gravity="top" />
+  </com.google.android.material.textfield.TextInputLayout>
+  
+  <!-- Date Picker Row -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:id="@+id/containerDate">
+    
+    <ImageView
+       android:layout_width="24dp"
+       android:layout_height="24dp"
+       android:src="@drawable/ic_sort" 
+       app:tint="?attr/colorPrimary"/>
+
+    <TextView
+      android:id="@+id/tvDueDate"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="12dp"
+      android:text="Sin fecha de finalización"
+      android:textSize="16sp"
+      android:textColor="?attr/colorOnSurface"/>
+      
+  </LinearLayout>
+
+  <!-- Tags Input Row -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    
+    <ImageView
+       android:layout_width="24dp"
+       android:layout_height="24dp"
+       android:src="@drawable/ic_location"
+       app:tint="?attr/colorPrimary"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:hint="@string/tags_hint"
+      app:boxBackgroundColor="@android:color/transparent"
+      style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etTag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnAddTag"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:layout_marginStart="8dp"
+      android:insetLeft="0dp"
+      android:insetTop="0dp"
+      android:insetRight="0dp"
+      android:insetBottom="0dp"
+      app:icon="@drawable/ic_add"
+      app:iconGravity="textStart"
+      app:iconPadding="0dp"
+      style="@style/Widget.Material3.Button.TonalButton"
+      app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+  </LinearLayout>
+  
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/recyclerTags"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:visibility="gone"/>
+
+  <!-- Subtask Input Row -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    
+    <ImageView
+       android:layout_width="24dp"
+       android:layout_height="24dp"
+       android:src="@drawable/ic_check_box"
+       app:tint="?attr/colorPrimary"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:hint="@string/subtask_hint"
+      app:boxBackgroundColor="@android:color/transparent"
+      style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etSubtaskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnAddSubtask"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:layout_marginStart="8dp"
+      android:insetLeft="0dp"
+      android:insetTop="0dp"
+      android:insetRight="0dp"
+      android:insetBottom="0dp"
+      app:icon="@drawable/ic_add"
+      app:iconGravity="textStart"
+      app:iconPadding="0dp"
+      style="@style/Widget.Material3.Button.TonalButton"
+      app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+  </LinearLayout>
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/recyclerSubtasks"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:maxHeight="120dp" />
+
+  <!-- Action Buttons -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:orientation="horizontal">
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnCancel"
+      android:layout_width="0dp"
+      android:layout_height="56dp"
+      android:layout_weight="1"
+      android:layout_marginEnd="8dp"
+      android:text="@string/cancel"
+      style="@style/Widget.Material3.Button.TextButton"
+      android:textColor="?attr/colorOnSurfaceVariant"/>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnSave"
+      android:layout_width="0dp"
+      android:layout_height="56dp"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:text="@string/save"
+      style="@style/Widget.Polar.Button"
+      app:cornerRadius="28dp"/>
+  </LinearLayout>
+</LinearLayout>
