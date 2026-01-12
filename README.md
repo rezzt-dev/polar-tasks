@@ -1,12 +1,33 @@
 # Polar.
 <div align="center">
-![polar banner](https://img.shields.io/badge/polar-minimalist%20task%20manager-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-**organize your daily life efficiently with a minimalist and powerful task manager**
-[![license: mit](https://img.shields.io/badge/license-mit-yellow.svg)](https://opensource.org/licenses/mit)
-[![kotlin](https://img.shields.io/badge/kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
-[![android](https://img.shields.io/badge/platform-android-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
-[![material design](https://img.shields.io/badge/design-material%203-757575?logo=materialdesign&logoColor=white)](https://m3.material.io)
-[view demo](#) • [report a bug](issues) • [request a feature](issues)
+
+<img src="https://img.shields.io/badge/polar-minimalist%20task%20manager-3DDC84?style=for-the-badge&logo=android&logoColor=white" />
+
+<br>
+
+<strong>Organize your daily life efficiently with a minimalist and powerful task manager</strong>
+
+<br>
+
+<a href="https://opensource.org/licenses/MIT">
+  <img src="https://img.shields.io/badge/license-mit-yellow.svg" />
+</a>
+<a href="https://kotlinlang.org">
+  <img src="https://img.shields.io/badge/kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white" />
+</a>
+<a href="https://developer.android.com">
+  <img src="https://img.shields.io/badge/platform-android-3DDC84?logo=android&logoColor=white" />
+</a>
+<a href="https://m3.material.io">
+  <img src="https://img.shields.io/badge/design-material%203-757575?logo=materialdesign&logoColor=white" />
+</a>
+
+<br>
+
+<a href="#">View Demo</a> •
+<a href="./issues">Report a Bug</a> •
+<a href="./issues">Request a Feature</a>
+
 </div>
 
 ---
