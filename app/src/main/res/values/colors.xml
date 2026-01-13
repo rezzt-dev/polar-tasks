@@ -66,4 +66,6 @@
   <!-- Semantics -->
   <color name="accent_primary">@color/light_c3_accent</color>
   <color name="accent_secondary">@color/light_c4_border</color>
+  
+  <color name="drawer_bg">#E6FFFFFF</color> <!-- 90% Opacity Surface -->
 </resources>

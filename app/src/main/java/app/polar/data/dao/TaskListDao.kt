@@ -10,10 +10,13 @@ interface TaskListDao {
   fun getAllLists(): LiveData<List<TaskList>>
   
   @Query("SELECT * FROM task_lists ORDER BY orderIndex ASC")
-  suspend fun getAllListsSnapshot(): List<TaskList>
+  suspend fun getAllTaskListsSnapshot(): List<TaskList>
   
-  @Insert
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insert(taskList: TaskList): Long
+
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insertAll(taskLists: List<TaskList>)
   
   @Update
   suspend fun update(taskList: TaskList)
@@ -23,6 +26,9 @@ interface TaskListDao {
   
   @Delete
   suspend fun delete(taskList: TaskList)
+
+  @Query("DELETE FROM task_lists")
+  suspend fun deleteAll()
   
   @Query("SELECT * FROM task_lists WHERE id = :id")
   suspend fun getListById(id: Long): TaskList?

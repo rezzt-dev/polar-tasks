@@ -10,5 +10,6 @@ data class Reminder(
     val description: String = "",
     val dateTime: Long, // Epoch millis
     val isCompleted: Boolean = false,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val isDeleted: Boolean = false
 )

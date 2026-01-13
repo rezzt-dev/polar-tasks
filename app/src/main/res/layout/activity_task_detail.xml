@@ -122,6 +122,20 @@
                       android:textSize="14sp"
                       android:textStyle="bold"
                       android:text="Due Tomorrow" />
+                      
+                  <TextView
+                      android:id="@+id/tvDetailRecurrence"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginStart="12dp"
+                      android:paddingHorizontal="8dp"
+                      android:paddingVertical="2dp"
+                      android:background="@drawable/item_background"
+                      android:backgroundTint="?attr/colorSurfaceVariant"
+                      android:textSize="12sp"
+                      android:textColor="?attr/colorPrimary"
+                      android:visibility="gone"
+                      android:text="Daily" />
               </LinearLayout>
              
              <!-- Tags Row -->

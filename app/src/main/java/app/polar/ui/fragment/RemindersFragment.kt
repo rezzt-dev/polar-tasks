@@ -37,25 +37,47 @@ class RemindersFragment : Fragment() {
         adapter = ReminderAdapter(
             onCheckChanged = { reminder -> viewModel.toggleCompletion(reminder) },
             onItemClick = { reminder -> 
-                app.polar.ui.dialog.ReminderDialog(
-                    reminder = reminder,
-                    onSave = { title, desc, time ->
-                         viewModel.update(reminder.copy(title = title, description = desc, dateTime = time))
-                    }
-                ).show(parentFragmentManager, "EditReminderDialog")
+                showEditReminderDialog(reminder)
+            },
+            onItemLongClick = { reminder, view ->
+                showReminderPopupMenu(reminder, view)
+                true
             }
         )
         binding.recyclerReminders.layoutManager = LinearLayoutManager(context)
         binding.recyclerReminders.adapter = adapter
     }
 
+    private fun showEditReminderDialog(reminder: app.polar.data.entity.Reminder) {
+        app.polar.ui.dialog.ReminderDialog(
+            reminder = reminder,
+            onSave = { title, desc, time ->
+                 viewModel.update(reminder.copy(title = title, description = desc, dateTime = time))
+            }
+        ).show(parentFragmentManager, "EditReminderDialog")
+    }
+
+    private fun showReminderPopupMenu(reminder: app.polar.data.entity.Reminder, view: View) {
+        android.widget.PopupMenu(requireContext(), view).apply {
+            menuInflater.inflate(app.polar.R.menu.menu_task, menu) // Reusing menu_task (Edit/Delete)
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    app.polar.R.id.action_edit -> {
+                        showEditReminderDialog(reminder)
+                        true
+                    }
+                    app.polar.R.id.action_delete -> {
+                        viewModel.moveToTrash(reminder)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            show()
+        }
+    }
+
     private fun observeReminders() {
-        // Show active reminders primarily? or all? 
-        // User asked for "create lists of tasks... create reminders not linked to tasks"
-        // Usually reminders are transient. Completed ones disappear or move to bottom.
-        // Let's observe all sorted by time, but maybe visual distinction handled in adapter.
-        // Or activeReminders? Let's use allReminders for now so user can see history or uncheck.
-        // Actually, maybe distinct tab? Let's stick to allReminders.
         viewModel.allReminders.observe(viewLifecycleOwner) { reminders ->
             if (reminders.isEmpty()) {
                 binding.emptyState.visibility = View.VISIBLE

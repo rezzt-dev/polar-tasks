@@ -17,7 +17,7 @@ class TaskRepository(
   val allTaskLists: LiveData<List<TaskList>> = taskListDao.getAllLists()
   
   suspend fun getTaskListsSnapshot(): List<TaskList> {
-      return taskListDao.getAllListsSnapshot()
+      return taskListDao.getAllTaskListsSnapshot()
   }
   
   suspend fun insertTaskList(taskList: TaskList): Long {
@@ -108,5 +108,26 @@ class TaskRepository(
   
   suspend fun deleteAllSubtasksForTask(taskId: Long) {
     subtaskDao.deleteAllForTask(taskId)
+  }
+
+  // Trash operations
+  suspend fun softDeleteTask(taskId: Long) {
+      taskDao.softDelete(taskId)
+  }
+
+  suspend fun restoreTask(taskId: Long) {
+      taskDao.restore(taskId)
+  }
+
+  suspend fun permanentDeleteTask(taskId: Long) {
+      taskDao.permanentDelete(taskId)
+  }
+
+  suspend fun emptyTrash() {
+      taskDao.emptyTrash()
+  }
+
+  fun getDeletedTasks(): LiveData<List<Task>> {
+      return taskDao.getDeletedTasks()
   }
 }

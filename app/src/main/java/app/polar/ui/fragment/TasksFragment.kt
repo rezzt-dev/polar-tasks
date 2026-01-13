@@ -35,6 +35,7 @@ class TasksFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     
     setupRecyclerView()
+    setupFilters()
     observeTasks()
   }
   
@@ -54,17 +55,104 @@ class TasksFragment : Fragment() {
     )
     
     homeTaskAdapter = app.polar.ui.adapter.HomeTaskAdapter(
-        onGroupMove = { _, _ -> 
-            // Optional: local logic if needed, but we rely on dragDropHelper sending list to ViewModel
-        },
-        onTaskLongClick = { task, view ->
+        onTaskClick = { task -> openTaskDetail(task) },
+        onTaskLongClick = { task, view -> 
             showTaskPopupMenu(task, view)
             true
-        }
+        },
+        onTaskChecked = { task, _ -> viewModel.toggleTaskCompletion(task) },
+        viewModel = viewModel,
+        lifecycleOwner = viewLifecycleOwner
     )
     
     binding.recyclerTasks.layoutManager = LinearLayoutManager(context)
   }
+
+  private fun setupFilters() {
+      binding.chipPending.setOnCheckedChangeListener { _, isChecked ->
+          viewModel.setFilterPending(isChecked)
+      }
+      binding.chipOverdue.setOnCheckedChangeListener { _, isChecked ->
+          viewModel.setFilterOverdue(isChecked)
+      }
+  }
+  
+  private fun updateGreeting() {
+      val calendar = java.util.Calendar.getInstance()
+      val hour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+      val greetingText = when (hour) {
+          in 5..12 -> "buenos días"
+          in 13..20 -> "buenas tardes"
+          else -> "buenas noches"
+      }
+      binding.tvGreeting?.text = greetingText
+  }
+
+  // --- Wrapper for Swipe Logic ---
+  private fun setupSwipeActions() {
+      val simpleItemTouchCallback = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(
+          0, // No drag support here for now on home screen (complex with headers)
+          androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT
+      ) {
+          override fun onMove(
+              recyclerView: androidx.recyclerview.widget.RecyclerView,
+              viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+              target: androidx.recyclerview.widget.RecyclerView.ViewHolder
+          ): Boolean = false
+
+          override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+              val position = viewHolder.adapterPosition
+              if (position == androidx.recyclerview.widget.RecyclerView.NO_POSITION) return
+              
+              // Only TaskViewHolders are swipable? 
+              // We should check view type in getSwipeDirs but here we can just check class
+              val adapter = binding.recyclerTasks.adapter
+              
+              if (adapter is app.polar.ui.adapter.HomeTaskAdapter) {
+                  val item = adapter.currentList[position]
+                  if (item is app.polar.ui.adapter.HomeItem.TaskItem) {
+                      val task = item.task
+                      if (direction == androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+                          // Undo deletion snackbar
+                          viewModel.moveToTrash(task)
+                          com.google.android.material.snackbar.Snackbar.make(binding.root, "Tarea movida a la papelera", com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+                              .setAction("Deshacer") {
+                                  // Restore task
+                                  viewModel.restoreFromTrash(task)
+                              }.show()
+                      } else {
+                          // Complete
+                          viewModel.toggleTaskCompletion(task)
+                          // Adapter updates via LiveData
+                      }
+                  }
+              } else if (adapter is TaskAdapter) {
+                   // Standard list logic...
+                   val item = (adapter.currentList[position] as? app.polar.ui.adapter.TaskListItem.Item)?.task
+                   item?.let { task ->
+                       if (direction == androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+                           viewModel.moveToTrash(task)
+                           com.google.android.material.snackbar.Snackbar.make(binding.root, "Tarea movida a la papelera", com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+                              .setAction("Deshacer") {
+                                  viewModel.restoreFromTrash(task)
+                              }.show()
+                       } else {
+                           viewModel.toggleTaskCompletion(task)
+                       }
+                   }
+              }
+          }
+
+          override fun getSwipeDirs(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
+              if (viewHolder is app.polar.ui.adapter.HomeTaskAdapter.HeaderViewHolder) return 0
+              return super.getSwipeDirs(recyclerView, viewHolder)
+          }
+      }
+      
+      val itemTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(simpleItemTouchCallback)
+      itemTouchHelper.attachToRecyclerView(binding.recyclerTasks)
+  }
+
   private fun openTaskDetail(task: Task) {
         val intent = android.content.Intent(requireContext(), app.polar.ui.activity.TaskDetailActivity::class.java)
         intent.putExtra(app.polar.ui.activity.TaskDetailActivity.EXTRA_TASK_ID, task.id)
@@ -72,11 +160,14 @@ class TasksFragment : Fragment() {
   }
   
   private fun observeTasks() {
-      // Clean up previous observers not needed? 
-      // Actually simply observing both is fine, but we only set adapter based on mode.
-      
       viewModel.selectedListId.observe(viewLifecycleOwner) { listId ->
           configureMode(listId)
+          updateGreeting()
+          
+          // Force update if in home mode and we already have data
+          if (listId == -1L) {
+              viewModel.homeTaskGroups.value?.let { updateHomeUI(it) }
+          }
       }
       
       viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
@@ -88,58 +179,48 @@ class TasksFragment : Fragment() {
       
       viewModel.homeTaskGroups.observe(viewLifecycleOwner) { groups ->
           if (viewModel.selectedListId.value == -1L) {
-              updateEmptyState(groups.isEmpty())
-              homeTaskAdapter.submitList(groups)
+              updateHomeUI(groups)
           }
       }
   }
+
+  private fun updateHomeUI(groups: List<app.polar.data.model.TaskGroup>) {
+      val hasTasks = groups.any { it.tasks.isNotEmpty() }
+      updateEmptyState(!hasTasks)
+      
+      // Flatten groups to items
+      val items = mutableListOf<app.polar.ui.adapter.HomeItem>()
+      groups.forEach { group ->
+          if (group.tasks.isNotEmpty()) {
+              items.add(app.polar.ui.adapter.HomeItem.Header(group.listId, group.title))
+              group.tasks.forEach { task ->
+                  items.add(app.polar.ui.adapter.HomeItem.TaskItem(task))
+              }
+          }
+      }
+      homeTaskAdapter.submitList(items)
+  }
   
   private fun updateEmptyState(isEmpty: Boolean) {
-       if (isEmpty) {
-        binding.emptyState.visibility = View.VISIBLE
-        binding.recyclerTasks.visibility = View.GONE
-      } else {
-        binding.emptyState.visibility = View.GONE
-        binding.recyclerTasks.visibility = View.VISIBLE
-      }
+       binding.emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+       binding.recyclerTasks.visibility = if (isEmpty) View.GONE else View.VISIBLE
+       // Hide greeting if empty state is fully taking over? Or keep it?
+       // Keep greeting is nice.
   }
   
   private fun configureMode(listId: Long) {
-      // Detach existing helper
-      itemTouchHelper?.attachToRecyclerView(null)
-      
       if (listId == -1L) {
-          // Home Mode: Group Adapter
+          // Home Mode
           binding.recyclerTasks.adapter = homeTaskAdapter
-          
-          val dragDropHelper = app.polar.util.DragDropHelper(
-            onItemMove = { from, to -> homeTaskAdapter.onItemMove(from, to) },
-            onMoveFinished = {
-                val groups = homeTaskAdapter.getCurrentGroups()
-                viewModel.updateTaskGroupsOrder(groups)
-            }
-          )
-          itemTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(dragDropHelper)
-          itemTouchHelper?.attachToRecyclerView(binding.recyclerTasks)
-          
+          binding.tvGreeting?.visibility = View.VISIBLE
       } else {
-          // List Mode: Task Adapter
+          // List Mode
           binding.recyclerTasks.adapter = taskAdapter
-          
-          val dragDropHelper = app.polar.util.DragDropHelper(
-            onItemMove = { from, to -> taskAdapter.onItemMove(from, to) },
-            onMoveFinished = {
-                 val tasks = taskAdapter.currentList
-                    .filterIsInstance<app.polar.ui.adapter.TaskListItem.Item>()
-                    .mapIndexed { index, item ->
-                        item.task.copy(orderIndex = index)
-                    }
-                viewModel.updateTasksOrder(tasks)
-            }
-          )
-          itemTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(dragDropHelper)
-          itemTouchHelper?.attachToRecyclerView(binding.recyclerTasks)
+          binding.tvGreeting?.visibility = View.GONE
       }
+      
+      // Re-attach swipe actions (simplest way is to have one attached globally or re-configure)
+      setupSwipeActions()
   }
 
   private fun showTaskPopupMenu(task: Task, anchorView: View? = null) {
@@ -161,7 +242,7 @@ class TasksFragment : Fragment() {
             true
           }
           R.id.action_delete -> {
-            viewModel.deleteTask(task)
+            viewModel.moveToTrash(task)
             true
           }
           else -> false
@@ -172,31 +253,34 @@ class TasksFragment : Fragment() {
   }
   
   private fun showEditTaskDialog(task: Task) {
-    // Determine existing subtasks. Using a one-shot observer correct pattern
+    // determinar subtareas existentes. usamos un observador de un solo uso
+    val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
+    
     val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
         override fun onChanged(t: List<app.polar.data.entity.Subtask>) {
-            // Remove observer to avoid updates triggering dialog again
-            viewModel.getSubtasksForTask(task.id).removeObserver(this)
+            // eliminar observador para evitar que updates disparen el dialogo de nuevo
+            subtasksLiveData.removeObserver(this)
             
             TaskDialog(
                 task = task,
                 existingSubtasks = t,
-                onSave = { title, description, tags, subtaskTitles, dueDate ->
-                  // Fix: Delegate logic to ViewModel
+                onSave = { title, description, tags, subtaskList, dueDate, recurrence ->
+                  // delegar logica al viewmodel
                   viewModel.updateTask(
                       task.copy(
                           title = title, 
                           description = description, 
                           tags = tags,
-                          dueDate = dueDate
+                          dueDate = dueDate,
+                          recurrence = recurrence
                       ),
-                      subtaskTitles
+                      subtaskList
                   )
                 }
             ).show(parentFragmentManager, "EditTaskDialog")
         }
     }
-    viewModel.getSubtasksForTask(task.id).observe(viewLifecycleOwner, observer)
+    subtasksLiveData.observe(viewLifecycleOwner, observer)
   }
   
   override fun onDestroyView() {

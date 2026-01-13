@@ -12,7 +12,8 @@ import java.util.Locale
 
 class ReminderAdapter(
     private val onCheckChanged: (Reminder) -> Unit,
-    private val onItemClick: (Reminder) -> Unit
+    private val onItemClick: (Reminder) -> Unit,
+    private val onItemLongClick: (Reminder, android.view.View) -> Boolean
 ) : ListAdapter<Reminder, ReminderAdapter.ReminderViewHolder>(ReminderDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReminderViewHolder {
@@ -22,11 +23,16 @@ class ReminderAdapter(
 
     override fun onBindViewHolder(holder: ReminderViewHolder, position: Int) {
         val reminder = getItem(position)
-        holder.bind(reminder, onCheckChanged, onItemClick)
+        holder.bind(reminder, onCheckChanged, onItemClick, onItemLongClick)
     }
 
     class ReminderViewHolder(private val binding: ItemReminderBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(reminder: Reminder, onCheckChanged: (Reminder) -> Unit, onItemClick: (Reminder) -> Unit) {
+        fun bind(
+            reminder: Reminder, 
+            onCheckChanged: (Reminder) -> Unit, 
+            onItemClick: (Reminder) -> Unit,
+            onItemLongClick: (Reminder, android.view.View) -> Boolean
+        ) {
             binding.tvReminderTitle.text = reminder.title
             
             val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
@@ -52,6 +58,9 @@ class ReminderAdapter(
             }
             
             binding.root.setOnClickListener { onItemClick(reminder) }
+            binding.root.setOnLongClickListener { 
+                onItemLongClick(reminder, it)
+            }
         }
     }
 

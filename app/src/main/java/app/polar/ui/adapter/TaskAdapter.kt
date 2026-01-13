@@ -84,7 +84,9 @@ class TaskAdapter(
             // Tags logic
             if (task.tags.isNullOrEmpty()) {
                 binding.tvTaskTags.visibility = android.view.View.GONE
+                // Check if date is also missing to hide container (handled in date logic partially)
             } else {
+                binding.tagsContainer.visibility = android.view.View.VISIBLE
                 binding.tvTaskTags.visibility = android.view.View.VISIBLE
                 binding.tvTaskTags.text = task.tags
             }

@@ -20,20 +20,32 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ic_check_box"
-            app:tint="?attr/colorOnSurface"
-            android:alpha="0.3" />
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_empty_state"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:alpha="0.2" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="No reminders"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnSurface"
-            android:alpha="0.5" />
+            android:text="sin recordatorios"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:textColor="?attr/colorOnBackground" />
+            
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="crea un recordatorio para no olvidar nada"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:fontFamily="@font/poppins"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"/>
     </LinearLayout>
 
 </FrameLayout>

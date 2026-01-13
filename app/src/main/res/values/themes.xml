@@ -44,53 +44,7 @@
 
   <style name="Theme.Polar" parent="Base.Theme.Polar" />
   
-  <!-- Dark theme -->
-  <style name="Theme.Polar.Dark" parent="Theme.Material3.DayNight.NoActionBar">
-    <!-- 3. Accent -->
-    <item name="colorPrimary">@color/dark_c3_accent</item>
-    <item name="colorOnPrimary">@color/black</item>
-    <item name="colorPrimaryContainer">@color/dark_c4_border</item>
-    <item name="colorOnPrimaryContainer">@color/dark_c3_accent</item>
-    
-    <item name="colorSecondary">@color/dark_c3_accent</item>
-    <item name="colorOnSecondary">@color/black</item>
-    <item name="colorSecondaryContainer">@color/dark_c4_border</item> <!-- Dark Gray -->
-    <item name="colorOnSecondaryContainer">@color/dark_c5_foreground</item> <!-- White Text -->
-    <item name="colorError">@color/color_error</item>
-    
-    <!-- 1. Background -->
-    <item name="android:colorBackground">@color/dark_c1_background</item>
-    <item name="colorOnBackground">@color/dark_c5_foreground</item>
-    
-    <!-- 2. Surface -->
-    <item name="colorSurface">@color/dark_c2_surface</item>
-    <item name="colorOnSurface">@color/dark_c5_foreground</item>
-    <item name="colorSurfaceVariant">@color/dark_c1_background</item>
-    
-    <item name="colorSurfaceContainer">@color/dark_c2_surface</item> 
-    <item name="colorSurfaceContainerHigh">@color/dark_c4_border</item>
-    <item name="colorOutline">@color/dark_c4_border</item>
-    <item name="colorOutlineVariant">@color/dark_c4_border</item>
-    
-    <!-- STATUS BAR FIX: Matches background -->
-    <item name="android:statusBarColor">@color/dark_c1_background</item>
-    <item name="android:windowLightStatusBar">false</item>
-    <item name="android:navigationBarColor">@color/dark_c1_background</item>
-    <item name="android:windowLightNavigationBar">false</item>
-    
-    <item name="android:fontFamily">@font/poppins</item>
-    <item name="fontFamily">@font/poppins</item>
-    
-    <item name="taskBackground">@color/dark_c2_surface</item>
-    <item name="taskBorder">@color/dark_c4_border</item>
-    <item name="mainBorder">@color/dark_c4_border</item>
-    <item name="buttonBackground">@color/dark_c3_accent</item>
-
-    <item name="android:statusBarColor">@android:color/transparent</item>
-    <item name="android:navigationBarColor">@android:color/transparent</item>
-    <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar">false</item>
-  </style>
+  <!-- Theme.Polar.Dark moved to values-night/themes.xml for proper DayNight support -->
   
   <!-- iOS-style button -->
   <style name="Widget.Polar.Button" parent="Widget.Material3.Button">
@@ -111,10 +65,39 @@
     <item name="elevation">1dp</item>
   </style>
   
-  <!-- iOS-style card -->
   <style name="Widget.Polar.Card" parent="Widget.Material3.CardView.Elevated">
     <item name="cardCornerRadius">16dp</item>
     <item name="cardElevation">2dp</item>
     <item name="contentPadding">16dp</item>
+  </style>
+
+  <!-- Font Overlays -->
+  <style name="Overlay.Polar.Font.Poppins" parent="">
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+  </style>
+  
+  <style name="Overlay.Polar.Font.Comfortaa" parent="">
+    <item name="android:fontFamily">@font/comfortaa</item>
+    <item name="fontFamily">@font/comfortaa</item>
+  </style>
+  
+  <style name="Overlay.Polar.Font.Figtree" parent="">
+    <item name="android:fontFamily">@font/figtree</item>
+    <item name="fontFamily">@font/figtree</item>
+  </style>
+  
+  <style name="Overlay.Polar.Font.JetBrainsMono" parent="">
+    <item name="android:fontFamily">@font/jetbrains_mono</item>
+    <item name="fontFamily">@font/jetbrains_mono</item>
+  </style>
+  
+  <style name="Overlay.Polar.Font.Arial" parent="">
+    <item name="android:fontFamily">sans-serif</item>
+    <item name="fontFamily">sans-serif</item>
+  </style>
+  
+  <style name="Overlay.Polar.Font.System" parent="">
+     <!-- Inherit default -->
   </style>
 </resources>

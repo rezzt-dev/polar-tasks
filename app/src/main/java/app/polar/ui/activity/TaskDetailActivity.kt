@@ -13,7 +13,9 @@ import app.polar.ui.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TaskDetailActivity : AppCompatActivity() {
+import app.polar.ui.activity.BaseActivity
+
+class TaskDetailActivity : BaseActivity() {
   
   private lateinit var binding: ActivityTaskDetailBinding
   private val viewModel: TaskViewModel by viewModels()
@@ -90,6 +92,20 @@ class TaskDetailActivity : AppCompatActivity() {
                 binding.tvDetailDueDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
             } else {
                 binding.tvDetailDueDate.setTextColor(getColor(android.R.color.tab_indicator_text)) 
+            }
+            
+            // Recurrence info
+            if (task.recurrence != "NONE") {
+                binding.tvDetailRecurrence.visibility = View.VISIBLE
+                val recText = when(task.recurrence) {
+                    "DAILY" -> "Diario"
+                    "WEEKLY" -> "Semanal"
+                    "MONTHLY" -> "Mensual"
+                    else -> ""
+                }
+                binding.tvDetailRecurrence.text = recText
+            } else {
+                binding.tvDetailRecurrence.visibility = View.GONE
             }
         } else {
             binding.containerDueDate.visibility = View.GONE

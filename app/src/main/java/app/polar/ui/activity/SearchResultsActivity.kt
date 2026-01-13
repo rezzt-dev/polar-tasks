@@ -10,7 +10,9 @@ import app.polar.databinding.ActivitySearchResultsBinding
 import app.polar.ui.adapter.TaskAdapter
 import app.polar.ui.viewmodel.TaskViewModel
 
-class SearchResultsActivity : AppCompatActivity() {
+import app.polar.ui.activity.BaseActivity
+
+class SearchResultsActivity : BaseActivity() {
 
   private lateinit var binding: ActivitySearchResultsBinding
   private val viewModel: TaskViewModel by viewModels()

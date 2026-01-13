@@ -16,12 +16,26 @@ import app.polar.ui.adapter.TaskListItem
 import androidx.lifecycle.map
 
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
-  private val repository: TaskRepository
+  private val repository: TaskRepository = TaskRepository(
+      AppDatabase.getDatabase(application).taskListDao(),
+      AppDatabase.getDatabase(application).taskDao(),
+      AppDatabase.getDatabase(application).subtaskDao()
+  )
+
 
   private val _selectedListId = MutableLiveData<Long>()
   val selectedListId: LiveData<Long> = _selectedListId
   
-  // Raw tasks (existing logic kept for specific list view)
+  // Filter states
+  private val _filterPending = MutableLiveData(false)
+  private val _filterOverdue = MutableLiveData(false)
+  val filterPending: LiveData<Boolean> = _filterPending
+  val filterOverdue: LiveData<Boolean> = _filterOverdue
+
+  fun setFilterPending(enabled: Boolean) { _filterPending.value = enabled }
+  fun setFilterOverdue(enabled: Boolean) { _filterOverdue.value = enabled }
+
+  // Combined source for filtering
   private val _tasksSource: LiveData<List<Task>> = _selectedListId.switchMap { listId ->
     if (listId == -1L) {
         repository.getAllTasks()
@@ -30,53 +44,71 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     }
   }
 
-  // Grouped tasks for Home View (All Tasks)
-  // If listId == -1 (Home), use joined query and group.
-  // Else use simple list without headers (or single header?)
-  val tasks: LiveData<List<TaskListItem>> = _selectedListId.switchMap { listId ->
-      if (listId == -1L) {
-          // Fallback or empty if we switch to homeTaskGroups for Home
-          // Actually, let's keep this for now but we might not use it in Home Fragment if we swap adapters
-          repository.getTasksWithListTitles().map { joinedList -> 
-               val result = mutableListOf<TaskListItem>()
-               // Logic preserved just in case
-               result
+  // Filtered List for List Mode
+  private val _filteredTasks = androidx.lifecycle.MediatorLiveData<List<TaskListItem>>().apply {
+      fun update() {
+          val currentTasks = _tasksSource.value ?: emptyList()
+          val pendingOnly = _filterPending.value ?: false
+          val overdueOnly = _filterOverdue.value ?: false
+          val now = System.currentTimeMillis()
+
+          val filtered = currentTasks.filter { task ->
+              var matches = true
+              if (pendingOnly && task.completed) matches = false
+              if (overdueOnly && (task.dueDate == null || task.dueDate >= now || task.completed)) matches = false
+              matches
           }
-      } else {
-          repository.getTasksForList(listId).map { taskList ->
-              taskList.map { TaskListItem.Item(it) }
-          }
+          value = filtered.map { TaskListItem.Item(it) }
       }
+
+      addSource(_tasksSource) { update() }
+      addSource(_filterPending) { update() }
+      addSource(_filterOverdue) { update() }
   }
 
-  val homeTaskGroups: LiveData<List<app.polar.data.model.TaskGroup>> by lazy {
-      repository.getTasksWithListTitles().map { joinedList ->
-        // Group by listId (and title)
-        // Joined list is already ordered by List Order
-        
-        val grouped = joinedList.groupBy { it.task.listId }
-        
-        grouped.map { (listId, tasksWithList) ->
+  val tasks: LiveData<List<TaskListItem>> = _filteredTasks
+
+
+  private val _rawHomeTasks = repository.getTasksWithListTitles()
+  
+  val homeTaskGroups = androidx.lifecycle.MediatorLiveData<List<app.polar.data.model.TaskGroup>>().apply {
+      fun update() {
+          val rawList = _rawHomeTasks.value ?: emptyList()
+          val pendingOnly = _filterPending.value ?: false
+          val overdueOnly = _filterOverdue.value ?: false
+          val now = System.currentTimeMillis()
+          
+          val filteredList = rawList.filter { item ->
+              val task = item.task
+              var matches = true
+              if (pendingOnly && task.completed) matches = false
+              if (overdueOnly && (task.dueDate == null || task.dueDate >= now || task.completed)) matches = false
+              matches
+          }
+          
+          val grouped = filteredList.groupBy { it.task.listId }
+          
+          val result = grouped.map { (listId, tasksWithList) ->
             val title = tasksWithList.firstOrNull()?.listTitle ?: "Unknown List"
-            
             val tasks = tasksWithList.map { it.task }
             app.polar.data.model.TaskGroup(
                 listId = listId, 
                 title = title, 
                 tasks = tasks
             )
-        }
+          }
+          
+          // Sort groups if needed? e.g. by homeOrderIndex if available in lists, but listTitle query might order them.
+          // For now rely on query order preservation.
+          value = result
       }
+      
+      addSource(_rawHomeTasks) { update() }
+      addSource(_filterPending) { update() }
+      addSource(_filterOverdue) { update() }
   }
   
-  init {
-    val database = AppDatabase.getDatabase(application)
-    repository = TaskRepository(
-      database.taskListDao(),
-      database.taskDao(),
-      database.subtaskDao()
-    )
-  }
+
   
   fun loadTasksForList(listId: Long) {
     _selectedListId.value = listId
@@ -86,27 +118,29 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
       _selectedListId.value = -1L
   }
   
+  // obtener subtareas de una tarea
   fun getSubtasksForTask(taskId: Long): LiveData<List<Subtask>> {
     return repository.getSubtasksForTask(taskId)
   }
   
-  fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<String> = emptyList(), dueDate: Long? = null) = viewModelScope.launch {
+  fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<Subtask> = emptyList(), dueDate: Long? = null, recurrence: String = "NONE") = viewModelScope.launch {
     val task = Task(
       listId = listId,
       title = title,
       description = description,
       tags = tags,
-      dueDate = dueDate
+      dueDate = dueDate,
+      recurrence = recurrence
     )
     val taskId = repository.insertTask(task)
     
-    // Insert subtasks
-    subtasks.forEach { subtaskTitle ->
-        val subtask = Subtask(taskId = taskId, title = subtaskTitle)
-        repository.insertSubtask(subtask)
+    // insertar subtareas
+    subtasks.forEach { subtask ->
+        // asegurarnos de que se vinculan a la nueva tarea
+        repository.insertSubtask(subtask.copy(id = 0, taskId = taskId))
     }
     
-    // Schedule alarm
+    // programar alarma
     if (dueDate != null) {
         scheduleAlarm(taskId, dueDate)
     }
@@ -120,27 +154,16 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     return repository.getTasksForDateLive(start, end)
   }
   
-  fun updateTask(task: Task, subtasks: List<String>? = null) = viewModelScope.launch {
+  fun updateTask(task: Task, subtasks: List<Subtask>? = null) = viewModelScope.launch {
     repository.updateTask(task)
     
     if (subtasks != null) {
-        // Simple update strategy: delete existing subtasks for this task and re-insert
-        // Note: In a production app with syncing, we might want to diff IDs to preserve specific subtask completion states if possible.
-        // But for this local app, recreating ensures the list matches exactly what was in the dialog.
-        // However, we lose "completed" status of pre-existing subtasks if we just plain re-insert strings.
-        // The dialog should really return Subtask objects if we want to preserve state?
-        // Or we assume editing subtasks via dialog resets them? Usually yes or we need more complex logic.
-        // Given 'subtaskTitles' is just strings from the dialog, we might be destroying completion state.
-        // Let's first delete existing tasks.
-        // Need a method deleteSubtasksForTask in repository.
-        
-        // BETTER APPROACH: The user probably wants bugs FIXED. Losing completion state is a bug.
-        // But the Dialog only returning titles suggests we only have titles.
-        // For now, I will implement the delete-and-recreate pattern as it fixes the "saving" bug.
-        // Preserving completion state requires standardizing the Dialog to work with Subtask objects fully.
-        // I'll stick to fixing the persistence first.
-        
-        // Ideally we need deleteSubtasksForTask(taskId)
+        repository.deleteAllSubtasksForTask(task.id)
+        subtasks.forEach { subtask ->
+             // reinsertar subtarea manteniendo su estado (title, completed)
+             // reseteamos id para autogenerar uno nuevo
+             repository.insertSubtask(subtask.copy(id = 0, taskId = task.id))
+        }
     }
     
     if (task.dueDate != null) {
@@ -149,25 +172,48 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         cancelAlarm(task.id)
     }
   }
-  
-  fun updateTaskWithSubtasks(task: Task, newSubtaskTitles: List<String>) = viewModelScope.launch {
-      repository.updateTask(task)
-      
-      // Get existing subtasks to check states? Or just wipe and recreate?
-      // Since we don't have IDs for the new list elements easily mapped, wipe and recreate is safest for structure.
-      // To improve: matching by title?
-      
-      // Since I don't have deleteSubtasksForTask in DAO yet, I should add it or iterate delete.
-      val existing = repository.getSubtasksForTaskDirect(task.id) // Need direct access suspending
-      existing.forEach { repository.deleteSubtask(it) }
-      
-      newSubtaskTitles.forEach { title ->
-          repository.insertSubtask(Subtask(taskId = task.id, title = title))
-      }
+
+  fun updateTaskWithSubtasks(task: Task, newSubtasks: List<Subtask>) = viewModelScope.launch {
+      updateTask(task, newSubtasks)
   }
   
   fun toggleTaskCompletion(task: Task) = viewModelScope.launch {
-    repository.updateTask(task.copy(completed = !task.completed))
+    val newCompletedState = !task.completed
+    repository.updateTask(task.copy(completed = newCompletedState))
+    
+    if (newCompletedState && task.recurrence != "NONE" && task.dueDate != null) {
+        // crear instancia de recurrencia siguiente
+        val calendar = java.util.Calendar.getInstance()
+        calendar.timeInMillis = task.dueDate
+        
+        when (task.recurrence) {
+            "DAILY" -> calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+            "WEEKLY" -> calendar.add(java.util.Calendar.WEEK_OF_YEAR, 1)
+            "MONTHLY" -> calendar.add(java.util.Calendar.MONTH, 1)
+        }
+        
+        val nextDueDate = calendar.timeInMillis
+        
+        // clonar tarea
+        val nextTask = task.copy(
+            id = 0, // nuevo id
+            completed = false,
+            dueDate = nextDueDate,
+            createdAt = System.currentTimeMillis()
+        )
+        
+        val newTaskId = repository.insertTask(nextTask)
+        
+        // clonar subtareas?
+        // idealmente si, resetear a incompleto
+        val existingSubtasks = repository.getSubtasksForTaskDirect(task.id)
+        existingSubtasks.forEach { sub ->
+            repository.insertSubtask(sub.copy(id = 0, taskId = newTaskId, completed = false))
+        }
+        
+        // programar alarma para nueva tarea
+        scheduleAlarm(newTaskId, nextDueDate)
+    }
   }
   
   fun deleteTask(task: Task) = viewModelScope.launch {
@@ -206,7 +252,6 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
               if (alarmManager.canScheduleExactAlarms()) {
                   alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
               } else {
-                  // Fallback or request permission? checking permission usually done in Activity.
                   alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
               }
           } else {
@@ -249,7 +294,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
       
       val updatedLists = allLists.mapNotNull { list ->
           if (groupsMap.containsKey(list.id)) {
-              list.copy(orderIndex = groupsMap[list.id]!!)
+              list.copy(homeOrderIndex = groupsMap[list.id]!!)
           } else {
               null
           }
@@ -286,5 +331,34 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
   fun setCalendarRange(start: Long, end: Long) {
       _calendarRange.value = Pair(start, end)
+  }
+
+  // Trash Logic
+  fun moveToTrash(task: Task) = viewModelScope.launch {
+      repository.softDeleteTask(task.id)
+      // Cancel alarm if set
+      if (task.dueDate != null) {
+          cancelAlarm(task.id)
+      }
+  }
+
+  fun restoreFromTrash(task: Task) = viewModelScope.launch {
+      repository.restoreTask(task.id)
+      // Reschedule alarm if needed?
+      if (task.dueDate != null && !task.completed) {
+          scheduleAlarm(task.id, task.dueDate)
+      }
+  }
+
+  fun permanentDelete(task: Task) = viewModelScope.launch {
+      repository.permanentDeleteTask(task.id)
+  }
+
+  fun emptyTrash() = viewModelScope.launch {
+      repository.emptyTrash()
+  }
+
+  fun getDeletedTasks(): LiveData<List<Task>> {
+      return repository.getDeletedTasks()
   }
 }

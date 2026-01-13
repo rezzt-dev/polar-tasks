@@ -35,6 +35,34 @@ object NotificationHelper {
             context, taskId.toInt(), intent, android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+
+
+        // Action: Complete
+        val completeIntent = android.content.Intent(context, app.polar.receiver.NotificationActionReceiver::class.java).apply {
+            action = app.polar.receiver.NotificationActionReceiver.ACTION_COMPLETE
+            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_TASK_ID, taskId)
+            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_NOTIFICATION_ID, taskId.toInt())
+        }
+        val completePendingIntent = android.app.PendingIntent.getBroadcast(
+            context,
+            taskId.toInt() * 10, // Unique Request Code
+            completeIntent,
+            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Action: Snooze (1 Hour)
+        val snoozeIntent = android.content.Intent(context, app.polar.receiver.NotificationActionReceiver::class.java).apply {
+            action = app.polar.receiver.NotificationActionReceiver.ACTION_SNOOZE
+            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_TASK_ID, taskId)
+            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_NOTIFICATION_ID, taskId.toInt())
+        }
+        val snoozePendingIntent = android.app.PendingIntent.getBroadcast(
+            context,
+            taskId.toInt() * 10 + 1, // Unique Request Code
+            snoozeIntent,
+            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_check_box) 
             .setContentTitle(title)
@@ -42,6 +70,8 @@ object NotificationHelper {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .addAction(R.drawable.ic_check_box, "completar", completePendingIntent)
+            .addAction(R.drawable.ic_schedule, "posponer 1h", snoozePendingIntent)
 
         try {
            with(NotificationManagerCompat.from(context)) {
@@ -80,6 +110,37 @@ object NotificationHelper {
         try {
            with(NotificationManagerCompat.from(context)) {
                notify((reminder.id + 1000000).toInt(), builder.build())
+           }
+        } catch (e: SecurityException) {
+        }
+    }
+
+
+    fun showCreationConfirmation(context: Context, title: String, dateTime: Long) {
+        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+        val timeFormat = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        val dateObj = java.util.Date(dateTime)
+        
+        val dateStr = dateFormat.format(dateObj)
+        val timeStr = timeFormat.format(dateObj)
+        
+        // "se ha puesto un recordatorio el dia X a la hora X con el motivo de: [texto en negrita]"
+        // Using BigTextStyle to ensure full text is visible and styling
+        val message = "se ha puesto un recordatorio el dia $dateStr a la hora $timeStr con el motivo de: <b>$title</b>"
+        
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_check_box) 
+            .setContentTitle("recordatorio creado")
+             // setContentText usually strips HTML, use BigText for better support or Html.fromHtml if supported
+            .setContentText("se ha puesto un recordatorio el dia $dateStr...")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(androidx.core.text.HtmlCompat.fromHtml(message, androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY)))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            
+        try {
+           with(NotificationManagerCompat.from(context)) {
+               // Use a unique ID for confirmation, e.g., current time
+               notify(System.currentTimeMillis().toInt(), builder.build())
            }
         } catch (e: SecurityException) {
         }

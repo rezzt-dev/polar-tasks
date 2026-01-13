@@ -27,6 +27,9 @@ class RemindersViewModel(application: Application) : AndroidViewModel(applicatio
         val reminder = Reminder(title = title, description = description, dateTime = dateTime)
         val id = repository.insert(reminder)
         scheduleAlarm(id, dateTime)
+        
+        // Show confirmation notification immediately
+        app.polar.util.NotificationHelper.showCreationConfirmation(getApplication(), title, dateTime)
     }
 
     fun update(reminder: Reminder) = viewModelScope.launch {
@@ -38,9 +41,29 @@ class RemindersViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun delete(reminder: Reminder) = viewModelScope.launch {
-        repository.delete(reminder)
+    fun moveToTrash(reminder: Reminder) = viewModelScope.launch {
+        repository.softDelete(reminder.id)
         cancelAlarm(reminder.id)
+    }
+
+    fun restoreFromTrash(reminder: Reminder) = viewModelScope.launch {
+        repository.restore(reminder.id)
+        if (!reminder.isCompleted) {
+            scheduleAlarm(reminder.id, reminder.dateTime)
+        }
+    }
+    
+    fun emptyTrash() = viewModelScope.launch {
+        repository.emptyTrash()
+    }
+    
+    fun permanentDelete(reminder: Reminder) = viewModelScope.launch {
+        repository.permanentDelete(reminder.id)
+        cancelAlarm(reminder.id)
+    }
+
+    fun getDeletedReminders(): LiveData<List<Reminder>> {
+        return repository.getDeletedReminders()
     }
 
     fun toggleCompletion(reminder: Reminder) = viewModelScope.launch {

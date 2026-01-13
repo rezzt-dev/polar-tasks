@@ -5,20 +5,22 @@ import androidx.recyclerview.widget.RecyclerView
 
 class DragDropHelper(
     private val onItemMove: (fromPosition: Int, toPosition: Int) -> Unit,
-    private val onMoveFinished: () -> Unit
+    private val onMoveFinished: () -> Unit,
+    private val onSwiped: ((position: Int, direction: Int) -> Unit)? = null
 ) : ItemTouchHelper.Callback() {
 
     private var isMoved = false
 
     override fun isLongPressDragEnabled(): Boolean = true
-    override fun isItemViewSwipeEnabled(): Boolean = false
+    override fun isItemViewSwipeEnabled(): Boolean = true
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
         val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
-        return makeMovementFlags(dragFlags, 0)
+        val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
+        return makeMovementFlags(dragFlags, swipeFlags)
     }
 
     override fun onMove(
@@ -32,7 +34,7 @@ class DragDropHelper(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        // Not used
+        onSwiped?.invoke(viewHolder.adapterPosition, direction)
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {

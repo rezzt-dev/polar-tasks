@@ -24,4 +24,25 @@ class ReminderRepository(private val reminderDao: ReminderDao) {
     suspend fun getReminderById(id: Long): Reminder? {
         return reminderDao.getReminderById(id)
     }
+
+    // Trash operations
+    suspend fun softDelete(id: Long) {
+        reminderDao.softDelete(id)
+    }
+
+    suspend fun restore(id: Long) {
+        reminderDao.restore(id)
+    }
+
+    suspend fun permanentDelete(id: Long) {
+        reminderDao.permanentDelete(id)
+    }
+
+    suspend fun emptyTrash() {
+        reminderDao.emptyTrash()
+    }
+
+    fun getDeletedReminders(): LiveData<List<Reminder>> {
+        return reminderDao.getDeletedReminders()
+    }
 }

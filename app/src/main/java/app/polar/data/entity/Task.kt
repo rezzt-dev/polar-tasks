@@ -26,5 +26,7 @@ data class Task(
   val tags: String = "", // Comma-separated tags
   val createdAt: Long = System.currentTimeMillis(),
   @ColumnInfo(name = "dueDate") val dueDate: Long? = null,
-  @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0
+  @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0,
+  @ColumnInfo(name = "recurrence") val recurrence: String = "NONE", // NONE, DAILY, WEEKLY, MONTHLY
+  @ColumnInfo(name = "isDeleted") val isDeleted: Boolean = false
 )

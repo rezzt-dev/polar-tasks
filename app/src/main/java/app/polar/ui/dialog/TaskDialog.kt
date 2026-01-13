@@ -17,15 +17,17 @@ import app.polar.ui.adapter.TagAdapter
 class TaskDialog(
   private val task: Task? = null,
   private val existingSubtasks: List<Subtask> = emptyList(),
-  private val onSave: (String, String, String, List<String>, Long?) -> Unit
+  private val onSave: (String, String, String, List<Subtask>, Long?, String) -> Unit
 ) : DialogFragment() {
   
   private var _binding: DialogTaskBinding? = null
   private val binding get() = _binding!!
   
-  private val subtaskTitles = mutableListOf<String>()
+  // lista mutable para gestionar las subtareas directamente
+  private val subtaskList = mutableListOf<Subtask>()
   private val tagList = mutableListOf<String>()
   private var selectedDate: Long? = null
+  private var selectedRecurrence: String = "NONE"
   
   private lateinit var subtaskAdapter: SubtaskAdapter
   private lateinit var tagAdapter: TagAdapter
@@ -37,21 +39,22 @@ class TaskDialog(
       binding.tvDialogTitle.text = getString(R.string.edit_task)
       binding.etTaskTitle.setText(task.title)
       binding.etTaskDescription.setText(task.description)
-      // Load existing tags
+      // cargar etiquetas existentes
       if (task.tags.isNotEmpty()) {
           tagList.addAll(task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() })
       }
       
-      existingSubtasks.forEach { subtask ->
-        subtaskTitles.add(subtask.title)
-      }
+      // cargar subtareas existentes
+      subtaskList.addAll(existingSubtasks)
       
       selectedDate = task.dueDate
+      selectedRecurrence = task.recurrence
     } else {
       binding.tvDialogTitle.text = getString(R.string.create_task)
     }
     
     updateDateText()
+    updateRecurrenceText()
     
     setupSubtaskList()
     setupTagList()
@@ -63,43 +66,49 @@ class TaskDialog(
             .build()
             
         datePicker.addOnPositiveButtonClickListener { selection ->
-            // Date selected, now show time picker
-            val calendar = java.util.Calendar.getInstance()
-            calendar.timeInMillis = selection
-            // Reset to start of day to avoid timezone confusion or keep as is?
-            // MaterialDatePicker usually returns UTC midnight.
-            
-            // Adjust for local timezone? MaterialDatePicker returns UTC.
+            // ajustar a la zona horaria local inicio del dia
             val utcCalendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
             utcCalendar.timeInMillis = selection
             
             val localCalendar = java.util.Calendar.getInstance()
             localCalendar.set(utcCalendar.get(java.util.Calendar.YEAR), utcCalendar.get(java.util.Calendar.MONTH), utcCalendar.get(java.util.Calendar.DAY_OF_MONTH))
             
-            val timePicker = com.google.android.material.timepicker.MaterialTimePicker.Builder()
-                .setTimeFormat(com.google.android.material.timepicker.TimeFormat.CLOCK_12H) // Or 24H depending on locale
-                .setTitleText("Select time")
-                .build()
-                
-            timePicker.addOnPositiveButtonClickListener {
-                localCalendar.set(java.util.Calendar.HOUR_OF_DAY, timePicker.hour)
-                localCalendar.set(java.util.Calendar.MINUTE, timePicker.minute)
-                localCalendar.set(java.util.Calendar.SECOND, 0)
-                
-                selectedDate = localCalendar.timeInMillis
-                updateDateText()
-            }
+            localCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
+            localCalendar.set(java.util.Calendar.MINUTE, 0)
+            localCalendar.set(java.util.Calendar.SECOND, 0)
             
-            timePicker.show(parentFragmentManager, "TIME_PICKER")
+            selectedDate = localCalendar.timeInMillis
+            updateDateText()
         }
         
         datePicker.show(parentFragmentManager, "DATE_PICKER")
     }
     
+    binding.containerRecurrence.setOnClickListener {
+        val popup = android.widget.PopupMenu(requireContext(), it)
+        popup.menu.add(0, 0, 0, "No se repite")
+        popup.menu.add(0, 1, 1, "Diariamente")
+        popup.menu.add(0, 2, 2, "Semanalmente")
+        popup.menu.add(0, 3, 3, "Mensualmente")
+        
+        popup.setOnMenuItemClickListener { item ->
+            selectedRecurrence = when (item.itemId) {
+                1 -> "DAILY"
+                2 -> "WEEKLY"
+                3 -> "MONTHLY"
+                else -> "NONE"
+            }
+            updateRecurrenceText()
+            true
+        }
+        popup.show()
+    }
+    
     binding.btnAddSubtask.setOnClickListener {
       val subtaskTitle = binding.etSubtaskTitle.text.toString().trim()
       if (subtaskTitle.isNotEmpty()) {
-        subtaskTitles.add(subtaskTitle)
+        // crear nueva subtarea temporal
+        subtaskList.add(Subtask(taskId = 0, title = subtaskTitle))
         updateSubtaskList()
         binding.etSubtaskTitle.text?.clear()
       }
@@ -115,7 +124,7 @@ class TaskDialog(
     }
     
     binding.btnCancel.setOnClickListener {
-      dismiss()
+        dismiss()
     }
     
     binding.btnSave.setOnClickListener {
@@ -124,7 +133,7 @@ class TaskDialog(
       val tagsString = tagList.joinToString(",")
       
       if (title.isNotEmpty()) {
-        onSave(title, description, tagsString, subtaskTitles.toList(), selectedDate)
+        onSave(title, description, tagsString, subtaskList.toList(), selectedDate, selectedRecurrence)
         dismiss()
       }
     }
@@ -141,7 +150,7 @@ class TaskDialog(
   
   private fun updateDateText() {
       if (selectedDate != null) {
-          val format = java.text.SimpleDateFormat("MMM dd, yyyy HH:mm", java.util.Locale.getDefault())
+          val format = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
           binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
           binding.tvDueDate.alpha = 1.0f
       } else {
@@ -149,17 +158,35 @@ class TaskDialog(
           binding.tvDueDate.alpha = 0.6f
       }
   }
+
+  private fun updateRecurrenceText() {
+      val text = when (selectedRecurrence) {
+          "DAILY" -> "Se repite diariamente"
+          "WEEKLY" -> "Se repite semanalmente"
+          "MONTHLY" -> "Se repite mensualmente"
+          else -> "No se repite"
+      }
+      binding.tvRecurrence.text = text
+      
+      if (selectedRecurrence == "NONE") {
+          binding.tvRecurrence.alpha = 0.6f
+      } else {
+          binding.tvRecurrence.alpha = 1.0f
+      }
+  }
   
   private fun setupSubtaskList() {
     subtaskAdapter = SubtaskAdapter(
-      onCheckChanged = { _, _ -> /* Checkbox logic if needed, currently dialog only tracks titles */ },
-      onDelete = { subtask -> 
-          // Subtask ID in dialog is just the index
-          val index = subtask.id.toInt()
-          if (index in subtaskTitles.indices) {
-              subtaskTitles.removeAt(index)
-              updateSubtaskList()
+      onCheckChanged = { subtask, isChecked -> 
+          // actualizar estado de subtarea en la lista local
+          val index = subtaskList.indexOf(subtask)
+          if (index != -1) {
+              subtaskList[index] = subtask.copy(completed = isChecked)
           }
+      },
+      onDelete = { subtask -> 
+          subtaskList.remove(subtask)
+          updateSubtaskList()
       }
     )
     binding.recyclerSubtasks.layoutManager = LinearLayoutManager(context)
@@ -172,8 +199,6 @@ class TaskDialog(
           tagList.remove(tag)
           updateTagList()
       }
-      // Horizontal layout for tags often looks better, or vertical if "like subtasks"
-      // User said "like subtasks", so vertical list is safer interpretation + easier delete
       binding.recyclerTags.layoutManager = LinearLayoutManager(context)
       binding.recyclerTags.adapter = tagAdapter
       updateTagList()
@@ -189,13 +214,9 @@ class TaskDialog(
   }
   
   private fun updateSubtaskList() {
-    val tempSubtasks = subtaskTitles.mapIndexed { index, title ->
-      Subtask(id = index.toLong(), taskId = 0, title = title, completed = false)
-    }
-    
-    if (tempSubtasks.isNotEmpty()) {
+    if (subtaskList.isNotEmpty()) {
       binding.recyclerSubtasks.visibility = View.VISIBLE
-      subtaskAdapter.submitList(tempSubtasks)
+      subtaskAdapter.submitList(subtaskList.toList())
     } else {
       binding.recyclerSubtasks.visibility = View.GONE
     }

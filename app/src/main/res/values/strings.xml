@@ -5,6 +5,7 @@
   <!-- Menu -->
   <string name="menu_toggle">alternar menu</string>
   <string name="theme_toggle">cambiar tema</string>
+  <string name="settings">ajustes</string>
   <string name="search">buscar</string>
   <string name="search_hint">buscar tareas...</string>
   
@@ -18,19 +19,19 @@
   <string name="select_icon">seleccionar icono</string>
   
   <!-- Calendar Weeks -->
-  <string name="mon_short">Lun</string>
-  <string name="tue_short">Mar</string>
-  <string name="wed_short">Mié</string>
-  <string name="thu_short">Jue</string>
-  <string name="fri_short">Vie</string>
-  <string name="sat_short">Sáb</string>
-  <string name="sun_short">Dom</string>
+  <string name="mon_short">lun</string>
+  <string name="tue_short">mar</string>
+  <string name="wed_short">mié</string>
+  <string name="thu_short">jue</string>
+  <string name="fri_short">vie</string>
+  <string name="sat_short">sáb</string>
+  <string name="sun_short">dom</string>
   
   <!-- Calendar UI -->
-  <string name="tasks_for_selected_date">Tareas</string>
-  <string name="no_tasks_for_date">No hay tareas para este día</string>
-  <string name="today">Hoy</string>
-  <string name="tomorrow">Mañana</string>
+  <string name="tasks_for_selected_date">tareas</string>
+  <string name="no_tasks_for_date">no hay tareas para este día</string>
+  <string name="today">hoy</string>
+  <string name="tomorrow">mañana</string>
   
   <!-- Tasks -->
   <string name="create_task">crear tarea</string>
@@ -62,5 +63,16 @@
   <string name="add">agregar</string>
   
   <!-- Watermark -->
-  <string name="developed_by">developed by rezzt.dev</string>
+  <string name="developed_by">desarrollado por rezzt.dev</string>
+
+  <!-- Settings -->
+  <string name="appearance">apariencia</string>
+  <string name="dark_mode">modo oscuro</string>
+  <string name="font">fuente</string>
+  <string name="font_poppins">poppins</string>
+  <string name="font_comfortaa">comfortaa</string>
+  <string name="font_figtree">figtree</string>
+  <string name="font_arial">arial</string>
+  <string name="font_jetbrains_mono">jetbrains mono</string>
+  <string name="font_system">sistema</string>
 </resources>

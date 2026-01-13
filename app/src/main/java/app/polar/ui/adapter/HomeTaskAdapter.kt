@@ -1,7 +1,5 @@
 package app.polar.ui.adapter
 
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,141 +8,205 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import app.polar.data.entity.Task
-import app.polar.data.model.TaskGroup
-import app.polar.databinding.ItemTaskGroupBinding
 import app.polar.R
-import app.polar.ui.activity.TaskDetailActivity
-import app.polar.util.DragDropHelper
+import app.polar.data.entity.Task
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+sealed class HomeItem {
+    data class Header(val listId: Long, val title: String) : HomeItem() {
+        override val id: Long = -listId - 1000 // Unique ID for headers
+    }
+    data class TaskItem(val task: Task) : HomeItem() {
+        override val id: Long = task.id
+    }
+    
+    abstract val id: Long
+}
+
 class HomeTaskAdapter(
-    private val onGroupMove: (Int, Int) -> Unit,
-    private val onTaskClick: ((Task) -> Unit)? = null,
-    private val onTaskLongClick: ((Task, View) -> Boolean)? = null
-) : ListAdapter<TaskGroup, HomeTaskAdapter.GroupViewHolder>(GroupDiffCallback()), DragDropHelper.ItemTouchHelperAdapter {
+    private val onTaskClick: (Task) -> Unit,
+    private val onTaskLongClick: (Task, View) -> Boolean,
+    private val onTaskChecked: (Task, Boolean) -> Unit,
+    private val viewModel: app.polar.ui.viewmodel.TaskViewModel,
+    private val lifecycleOwner: androidx.lifecycle.LifecycleOwner
+) : ListAdapter<HomeItem, RecyclerView.ViewHolder>(HomeItemDiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val binding = ItemTaskGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return GroupViewHolder(binding, onTaskLongClick)
+    companion object {
+        const val VIEW_TYPE_HEADER = 0
+        const val VIEW_TYPE_TASK = 1
     }
 
-    override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        val currentList = currentList.toMutableList()
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                java.util.Collections.swap(currentList, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                java.util.Collections.swap(currentList, i, i - 1)
-            }
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is HomeItem.Header -> VIEW_TYPE_HEADER
+            is HomeItem.TaskItem -> VIEW_TYPE_TASK
         }
-        submitList(currentList)
-        onGroupMove(fromPosition, toPosition)
-        return true
     }
 
-    fun getCurrentGroups(): List<TaskGroup> {
-        return currentList
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            VIEW_TYPE_HEADER -> {
+                val view = inflater.inflate(R.layout.item_task_header, parent, false)
+                HeaderViewHolder(view)
+            }
+            VIEW_TYPE_TASK -> {
+                val view = inflater.inflate(R.layout.item_task, parent, false)
+                TaskViewHolder(view, viewModel, lifecycleOwner)
+            }
+            else -> throw IllegalArgumentException("Invalid view type")
+        }
     }
 
-    class GroupViewHolder(
-        private val binding: ItemTaskGroupBinding,
-        private val onTaskLongClick: ((Task, View) -> Boolean)?
-    ) : RecyclerView.ViewHolder(binding.root) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = getItem(position)) {
+            is HomeItem.Header -> (holder as HeaderViewHolder).bind(item)
+            is HomeItem.TaskItem -> (holder as TaskViewHolder).bind(item.task)
+        }
+    }
+    
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is TaskViewHolder) {
+            holder.unbind()
+        }
+    }
+
+    inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvTitle: TextView = itemView.findViewById(R.id.tvHeaderTitle)
         
-        fun bind(group: TaskGroup) {
-            binding.tvGroupTitle.text = group.title
-            binding.llTasksContainer.removeAllViews()
+        fun bind(header: HomeItem.Header) {
+            tvTitle.text = header.title
+        }
+    }
 
-            val context = binding.root.context
+    inner class TaskViewHolder(
+        itemView: View,
+        private val viewModel: app.polar.ui.viewmodel.TaskViewModel,
+        private val lifecycleOwner: androidx.lifecycle.LifecycleOwner
+    ) : RecyclerView.ViewHolder(itemView) {
+        private val tvTitle: TextView = itemView.findViewById(R.id.tvTaskTitle)
+        private val tvDescription: TextView = itemView.findViewById(R.id.tvTaskDescription)
+        private val tvDueDate: TextView = itemView.findViewById(R.id.tvTaskDate)
+        private val tvTags: TextView = itemView.findViewById(R.id.tvTaskTags)
+        private val cbCompleted: CheckBox = itemView.findViewById(R.id.cbTaskComplete)
+        private val tagsContainer: View = itemView.findViewById(R.id.tagsContainer)
+        private val recyclerSubtasks: RecyclerView = itemView.findViewById(R.id.recyclerSubtasks)
+        
+        private var subtaskObserver: androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>>? = null
+        private var currentTaskId: Long? = null
+
+        fun bind(task: Task) {
+            currentTaskId = task.id
+            tvTitle.text = task.title
             
-            group.tasks.forEach { task ->
-                val taskView = LayoutInflater.from(context).inflate(R.layout.item_task_minimal, binding.llTasksContainer, false)
-                
-                // ... (view finding code same as before) ...
-                val tvTitle = taskView.findViewById<TextView>(R.id.tvTaskTitle)
-                val tvDescription = taskView.findViewById<TextView>(R.id.tvTaskDescription)
-                val tvDueDate = taskView.findViewById<TextView>(R.id.tvDueDate)
-                val tvTags = taskView.findViewById<TextView>(R.id.tvTags)
-                val cbCompleted = taskView.findViewById<CheckBox>(R.id.cbCompleted)
-                
-                tvTitle.text = task.title
-                updateTaskVisuals(tvTitle, task.completed)
-
-                if (task.description.isNotBlank()) {
-                    tvDescription.text = task.description
-                    tvDescription.visibility = View.VISIBLE
-                } else {
-                    tvDescription.visibility = View.GONE
-                }
-
-                if (task.dueDate != null) {
-                    val format = SimpleDateFormat("MMM dd", Locale.getDefault())
-                    val dateStr = format.format(Date(task.dueDate))
-                    val isOverdue = !task.completed && task.dueDate < System.currentTimeMillis() && !android.text.format.DateUtils.isToday(task.dueDate)
-                    tvDueDate.text = if (android.text.format.DateUtils.isToday(task.dueDate)) "Today" else dateStr
-                    if (isOverdue) {
-                        tvDueDate.setTextColor(android.graphics.Color.RED)
-                        tvDueDate.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFEBEE"))
-                    }
-                    tvDueDate.visibility = View.VISIBLE
-                } else {
-                    tvDueDate.visibility = View.GONE
-                }
-                
-                if (!task.tags.isNullOrEmpty()) {
-                    tvTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
-                    tvTags.visibility = View.VISIBLE
-                } else {
-                    tvTags.visibility = View.GONE
-                }
-
-                cbCompleted.isChecked = task.completed
-                
-                taskView.setOnClickListener {
-                    val intent = Intent(context, TaskDetailActivity::class.java).apply {
-                        putExtra(TaskDetailActivity.EXTRA_TASK_ID, task.id)
-                    }
-                    context.startActivity(intent)
-                }
-
-                taskView.setOnLongClickListener { 
-                    onTaskLongClick?.invoke(task, taskView) ?: false
-                }
-
-                cbCompleted.setOnCheckedChangeListener { _, isChecked ->
-                    updateTaskVisuals(tvTitle, isChecked)
-                }
-
-                binding.llTasksContainer.addView(taskView)
+            if (task.description.isNotBlank()) {
+                tvDescription.text = task.description
+                tvDescription.visibility = View.VISIBLE
+            } else {
+                tvDescription.visibility = View.GONE
             }
+
+            if (task.dueDate != null) {
+                val format = SimpleDateFormat("MMM dd", Locale.getDefault())
+                val dateStr = format.format(Date(task.dueDate))
+                val displayDate = if (android.text.format.DateUtils.isToday(task.dueDate)) "hoy" else dateStr
+                
+                tvDueDate.text = displayDate
+                
+                val isOverdue = !task.completed && task.dueDate < System.currentTimeMillis() && !android.text.format.DateUtils.isToday(task.dueDate)
+                if (isOverdue) {
+                    tvDueDate.setTextColor(android.graphics.Color.RED)
+                } else {
+                    val typedValue = android.util.TypedValue()
+                    itemView.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+                    tvDueDate.setTextColor(typedValue.data)
+                }
+                tvDueDate.visibility = View.VISIBLE
+            } else {
+                tvDueDate.visibility = View.GONE
+            }
+            
+             if (!task.tags.isNullOrEmpty()) {
+                tvTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
+                tagsContainer.visibility = View.VISIBLE
+            } else {
+                tagsContainer.visibility = View.GONE
+                if (task.dueDate == null) {
+                     // Hide container if both are gone
+                }
+            }
+
+            cbCompleted.setOnCheckedChangeListener(null)
+            cbCompleted.isChecked = task.completed
+            updateVisuals(task.completed)
+
+            cbCompleted.setOnCheckedChangeListener { _, isChecked ->
+                updateVisuals(isChecked)
+                onTaskChecked(task, isChecked)
+            }
+
+            // --- Subtasks Logic ---
+            // Remove previous observer if any
+            unbind()
+            
+            val observer = androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> { subtasks ->
+                 if (subtasks.isNullOrEmpty()) {
+                     recyclerSubtasks.visibility = View.GONE
+                 } else {
+                     recyclerSubtasks.visibility = View.VISIBLE
+                     // Reuse SubtaskAdapter but we need a minimal version or standard one?
+                     // Standard one has checkboxes. We want them to complete the subtask.
+                     // IMPORTANT: Disable nested scrolling for this inner recycler
+                     recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(itemView.context)
+                     val adapter = app.polar.ui.adapter.SubtaskAdapter(
+                         onCheckChanged = { subtask, isChecked ->
+                             viewModel.toggleSubtaskCompletion(subtask)
+                         },
+                         onDelete = { 
+                             // No delete from home screen mini-view, simpler
+                         }
+                     )
+                     recyclerSubtasks.adapter = adapter
+                     adapter.submitList(subtasks)
+                 }
+            }
+            viewModel.getSubtasksForTask(task.id).observe(lifecycleOwner, observer)
+            subtaskObserver = observer
+            // --- End Subtasks Logic ---
+
+            itemView.setOnClickListener { onTaskClick(task) }
+            itemView.setOnLongClickListener { onTaskLongClick(task, itemView) }
         }
         
-        private fun updateTaskVisuals(textView: TextView, isCompleted: Boolean) {
+        fun unbind() {
+             subtaskObserver?.let {
+                 currentTaskId?.let { id ->
+                     viewModel.getSubtasksForTask(id).removeObserver(it)
+                 }
+             }
+             subtaskObserver = null
+        }
+
+        private fun updateVisuals(isCompleted: Boolean) {
             if (isCompleted) {
-                textView.paintFlags = textView.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-                textView.alpha = 0.5f
+                tvTitle.paintFlags = tvTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                tvTitle.alpha = 0.5f
             } else {
-                textView.paintFlags = textView.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                textView.alpha = 1.0f
+                tvTitle.paintFlags = tvTitle.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                tvTitle.alpha = 1.0f
             }
         }
     }
 
-    class GroupDiffCallback : DiffUtil.ItemCallback<TaskGroup>() {
-        override fun areItemsTheSame(oldItem: TaskGroup, newItem: TaskGroup): Boolean {
-            return oldItem.listId == newItem.listId
+    class HomeItemDiffCallback : DiffUtil.ItemCallback<HomeItem>() {
+        override fun areItemsTheSame(oldItem: HomeItem, newItem: HomeItem): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: TaskGroup, newItem: TaskGroup): Boolean {
+        override fun areContentsTheSame(oldItem: HomeItem, newItem: HomeItem): Boolean {
             return oldItem == newItem
         }
     }

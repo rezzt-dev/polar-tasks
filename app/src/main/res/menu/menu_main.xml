@@ -8,8 +8,8 @@
     app:showAsAction="always"
     app:actionViewClass="androidx.appcompat.widget.SearchView" />
   <item
-    android:id="@+id/action_theme"
-    android:icon="@drawable/ic_theme"
-    android:title="@string/theme_toggle"
+    android:id="@+id/action_settings"
+    android:icon="@drawable/ic_settings"
+    android:title="@string/settings"
     app:showAsAction="always" />
 </menu>
