@@ -42,13 +42,33 @@ class ReminderAdapter(
             binding.cbReminderComplete.setOnCheckedChangeListener(null)
             binding.cbReminderComplete.isChecked = reminder.isCompleted
             
-            // Strike through if completed
+            // Apply visual effects based on completion status
             if (reminder.isCompleted) {
+                // Strikethrough title
                 binding.tvReminderTitle.paintFlags = binding.tvReminderTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                
+                // Reduce opacity of entire card
                 binding.root.alpha = 0.5f
+                
+                // Reduce opacity of icon container
+                binding.iconContainer?.alpha = 0.4f
+                
+                // Dim text colors
+                binding.tvReminderTitle.alpha = 0.6f
+                binding.tvReminderTime.alpha = 0.5f
             } else {
+                // Remove strikethrough
                 binding.tvReminderTitle.paintFlags = binding.tvReminderTitle.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                
+                // Full opacity
                 binding.root.alpha = 1.0f
+                
+                // Full opacity for icon container
+                binding.iconContainer?.alpha = 1.0f
+                
+                // Full opacity for text
+                binding.tvReminderTitle.alpha = 1.0f
+                binding.tvReminderTime.alpha = 1.0f
             }
 
             binding.cbReminderComplete.setOnCheckedChangeListener { _, isChecked ->

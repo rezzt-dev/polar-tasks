@@ -5,16 +5,22 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.polar.R
 import app.polar.databinding.ActivityTaskDetailBinding
 import app.polar.ui.adapter.SubtaskAdapter
 import app.polar.ui.viewmodel.TaskViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 import app.polar.ui.activity.BaseActivity
 
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class TaskDetailActivity : BaseActivity() {
   
   private lateinit var binding: ActivityTaskDetailBinding
@@ -97,10 +103,11 @@ class TaskDetailActivity : BaseActivity() {
             // Recurrence info
             if (task.recurrence != "NONE") {
                 binding.tvDetailRecurrence.visibility = View.VISIBLE
+                binding.tvDetailRecurrence.visibility = View.VISIBLE
                 val recText = when(task.recurrence) {
-                    "DAILY" -> "Diario"
-                    "WEEKLY" -> "Semanal"
-                    "MONTHLY" -> "Mensual"
+                    "DAILY" -> getString(R.string.recurrence_daily)
+                    "WEEKLY" -> getString(R.string.recurrence_weekly)
+                    "MONTHLY" -> getString(R.string.recurrence_monthly)
                     else -> ""
                 }
                 binding.tvDetailRecurrence.text = recText
@@ -113,7 +120,7 @@ class TaskDetailActivity : BaseActivity() {
         
         // List Name
         viewModel.getTaskListById(task.listId).observe(this) { taskList ->
-            binding.tvDetailListName.text = taskList?.title ?: "No List"
+            binding.tvDetailListName.text = taskList?.title ?: getString(R.string.no_list)
         }
     }
     
@@ -123,6 +130,19 @@ class TaskDetailActivity : BaseActivity() {
     
     binding.btnAddSubtask.setOnClickListener {
         showAddSubtaskDialog(taskId)
+    }
+
+    lifecycleScope.launch {
+        repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+            launch {
+                viewModel.errorMessage.collect { error ->
+                    error?.let {
+                        com.google.android.material.snackbar.Snackbar.make(binding.root, it, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show()
+                        viewModel.clearError()
+                    }
+                }
+            }
+        }
     }
   }
   
@@ -138,7 +158,7 @@ class TaskDetailActivity : BaseActivity() {
       val dialogView = layoutInflater.inflate(R.layout.dialog_simple_input, null)
       val binding = app.polar.databinding.DialogSimpleInputBinding.bind(dialogView)
       
-      binding.tvDialogTitle.text = getString(R.string.add_subtask)
+      binding.tvDialogTitle.text = getString(R.string.add_subtask_title)
       binding.etInput.hint = getString(R.string.subtask_hint)
       
       val dialog = androidx.appcompat.app.AlertDialog.Builder(this)

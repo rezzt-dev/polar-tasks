@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +16,12 @@ import app.polar.databinding.FragmentTrashBinding
 import app.polar.ui.adapter.TrashAdapter
 import app.polar.ui.viewmodel.TaskViewModel
 import com.google.android.material.snackbar.Snackbar
+import app.polar.R
+import kotlinx.coroutines.launch
 
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class TrashFragment : Fragment() {
     private var _binding: FragmentTrashBinding? = null
     private val binding get() = _binding!!
@@ -45,7 +52,7 @@ class TrashFragment : Fragment() {
         binding.btnEmptyTrash.setOnClickListener {
             taskViewModel.emptyTrash()
             remindersViewModel.emptyTrash()
-            Snackbar.make(binding.root, "papelera vaciada", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, getString(R.string.trash_emptied), Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -75,14 +82,14 @@ class TrashFragment : Fragment() {
                         is app.polar.ui.adapter.TrashItem.DeletedTask -> taskViewModel.restoreFromTrash(item.task)
                         is app.polar.ui.adapter.TrashItem.DeletedReminder -> remindersViewModel.restoreFromTrash(item.reminder)
                     }
-                    Snackbar.make(binding.root, "elemento restaurado", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, getString(R.string.item_restored), Snackbar.LENGTH_SHORT).show()
                 } else {
                     // Permanent Delete
                     when (item) {
                         is app.polar.ui.adapter.TrashItem.DeletedTask -> taskViewModel.permanentDelete(item.task)
                         is app.polar.ui.adapter.TrashItem.DeletedReminder -> remindersViewModel.permanentDelete(item.reminder)
                     }
-                     Snackbar.make(binding.root, "eliminado permanentemente", Snackbar.LENGTH_SHORT).show()
+                     Snackbar.make(binding.root, getString(R.string.permanently_deleted), Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -99,6 +106,29 @@ class TrashFragment : Fragment() {
         remindersViewModel.getDeletedReminders().observe(viewLifecycleOwner) { reminders ->
             deletedReminders = reminders
             updateList()
+        }
+
+        // Observe error messages (StateFlow)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                launch {
+                    taskViewModel.errorMessage.collect { error ->
+                        error?.let {
+                            Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+                            taskViewModel.clearError()
+                        }
+                    }
+                }
+                
+                launch {
+                    remindersViewModel.errorMessage.collect { error ->
+                        error?.let {
+                            Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+                            remindersViewModel.clearError()
+                        }
+                    }
+                }
+            }
         }
     }
     

@@ -8,7 +8,9 @@ import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
 
-class TaskRepository(
+import javax.inject.Inject
+
+class TaskRepository @Inject constructor(
   private val taskListDao: TaskListDao,
   private val taskDao: TaskDao,
   private val subtaskDao: SubtaskDao
@@ -44,9 +46,17 @@ class TaskRepository(
   fun getTasksForList(listId: Long): LiveData<List<Task>> {
     return taskDao.getTasksForList(listId)
   }
+
+  fun getTasksForListFlow(listId: Long): kotlinx.coroutines.flow.Flow<List<Task>> {
+    return taskDao.getTasksForListFlow(listId)
+  }
   
   fun getAllTasks(): LiveData<List<Task>> {
     return taskDao.getAllTasks()
+  }
+
+  fun getAllTasksFlow(): kotlinx.coroutines.flow.Flow<List<Task>> {
+    return taskDao.getAllTasksFlow()
   }
   
   suspend fun insertTask(task: Task): Long {

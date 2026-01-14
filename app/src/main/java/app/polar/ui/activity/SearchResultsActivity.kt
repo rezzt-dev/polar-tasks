@@ -12,6 +12,9 @@ import app.polar.ui.viewmodel.TaskViewModel
 
 import app.polar.ui.activity.BaseActivity
 
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class SearchResultsActivity : BaseActivity() {
 
   private lateinit var binding: ActivitySearchResultsBinding
@@ -50,7 +53,7 @@ class SearchResultsActivity : BaseActivity() {
     taskAdapter = TaskAdapter(
       lifecycleOwner = this,
       viewModel = viewModel,
-      onCheckChanged = { task, _ ->
+      onCheckChanged = { task, _, _ ->
         viewModel.toggleTaskCompletion(task)
       },
       onItemLongClick = { task ->

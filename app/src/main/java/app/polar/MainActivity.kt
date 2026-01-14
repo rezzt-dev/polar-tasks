@@ -20,14 +20,18 @@ import app.polar.util.ThemeManager
 
 import app.polar.ui.activity.BaseActivity
 
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
   private lateinit var binding: ActivityMainBinding
   // themeManager is already in BaseActivity
   
   private val taskListViewModel: TaskListViewModel by viewModels()
   private val taskViewModel: TaskViewModel by viewModels()
+  private val remindersViewModel: app.polar.ui.viewmodel.RemindersViewModel by viewModels()
   
-  private lateinit var taskListAdapter: TaskListAdapter
+  private lateinit var drawerManager: app.polar.ui.manager.DrawerManager
   private var currentListId: Long? = null
   
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,9 +42,10 @@ class MainActivity : BaseActivity() {
     setContentView(binding.root)
     
     setupToolbar()
-    setupDrawer()
+    setupToolbar()
+    setupDrawerManager()
     setupFab()
-    observeTaskLists()
+    // observeTaskLists() moved to DrawerManager
     
     // Load initial fragment
     if (savedInstanceState == null) {
@@ -55,8 +60,8 @@ class MainActivity : BaseActivity() {
     
     onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            if (drawerManager.isDrawerOpen()) {
+                drawerManager.closeDrawer()
             } else {
                 if (isEnabled) {
                     isEnabled = false
@@ -89,181 +94,88 @@ class MainActivity : BaseActivity() {
 
   override fun onResume() {
     super.onResume()
-    // Asegurarse de que el SearchView esté colapsado al volver
+    // Ensure SearchView is collapsed on return
     invalidateOptionsMenu()
   }
 
   private fun setupToolbar() {
     setSupportActionBar(binding.toolbar)
     
-    // Configuración para Edge-to-Edge:
-    // La barra de estado se maneja vía fitsSystemWindows en el layout (activity_main.xml)
-    // No necesitamos establecer colores manualmente aquí si el layout está bien configurado.
+    // Edge-to-Edge Configuration:
+    // Status bar handled via fitsSystemWindows in layout (activity_main.xml)
+    // No need to set colors manually here if layout is configured correctly.
 
     binding.toolbar.setNavigationOnClickListener {
-      binding.drawerLayout.openDrawer(GravityCompat.START)
+      drawerManager.openDrawer()
     }
   }
   
-  private fun setupDrawer() {
-    binding.drawerLayout.setScrimColor(android.graphics.Color.parseColor("#99000000"))
-    
-    // Blur Effect for Android 12+
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-        val mainContent = binding.root.findViewById<android.view.View>(R.id.mainContent)
-        binding.drawerLayout.addDrawerListener(object : androidx.drawerlayout.widget.DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-                if (slideOffset > 0) {
-                     val radius = slideOffset * 20f + 1f // Max blur radius 20
-                     mainContent.setRenderEffect(android.graphics.RenderEffect.createBlurEffect(radius, radius, android.graphics.Shader.TileMode.CLAMP))
-                } else {
-                     mainContent.setRenderEffect(null)
-                }
-            }
-            override fun onDrawerOpened(drawerView: View) {
-                // Lock drawer open to prevent swipe-to-close conflict with list items
-                binding.drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_OPEN)
-            }
-            override fun onDrawerClosed(drawerView: View) {
-                mainContent.setRenderEffect(null)
-                // Unlock so we can swipe to open again (if desired) or generally reset state
-                binding.drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED)
-            }
-            override fun onDrawerStateChanged(newState: Int) {}
-        })
-    }
-
-    taskListAdapter = TaskListAdapter(
-        onItemClick = { taskList ->
-            currentListId = taskList.id
-            taskListViewModel.selectList(taskList.id)
-            taskViewModel.loadTasksForList(taskList.id)
-            binding.toolbar.title = taskList.title
-            
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, TasksFragment())
-                .commit()
-                
-            binding.fabAddTask.show()
-            binding.drawerLayout.close()
-        },
-        onItemLongClick = { taskList ->
-            showTaskListPopupMenu(taskList)
-            true
-        }
-    )
-    
-    val rvTaskLists = binding.root.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvTaskLists)
-    rvTaskLists.apply {
-      layoutManager = LinearLayoutManager(this@MainActivity)
-      adapter = taskListAdapter
-    }
-
-    val dragDropHelper = app.polar.util.DragDropHelper(
-        onItemMove = { from, to -> taskListAdapter.onItemMove(from, to) },
-        onMoveFinished = {
-            val taskLists = taskListAdapter.currentList.mapIndexed { index, taskList ->
-                taskList.copy(orderIndex = index)
-            }
-            taskViewModel.updateTaskListsOrder(taskLists)
-        },
-        onSwiped = { position, direction ->
-             val taskList = taskListAdapter.currentList[position]
-             if (direction == androidx.recyclerview.widget.ItemTouchHelper.START) {
-                 // Swipe LEFT -> Delete
-                 taskListViewModel.deleteTaskList(taskList)
-                 com.google.android.material.snackbar.Snackbar.make(binding.drawerLayout, "lista eliminada", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
-                 if (currentListId == taskList.id) {
-                      currentListId = null
-                      binding.toolbar.title = getString(R.string.app_name)
-                 }
-             } else {
-                 // Swipe RIGHT -> Edit
-                 showEditListDialog(taskList)
-                 // Reset swipe state to "unswiped" visual if needed, but Dialog opening usually covers it or adapter update resets it.
-                 // Actually, ItemTouchHelper removes the item on swipe usually. We need to prevent it from disappearing if we just Edit.
-                 // But default SimpleCallback/Callback animate it out. 
-                 // Since we are not removing the item from adapter in 'Edit' case immediately (unless edited), 
-                 // we should notify adapter to restore view.
-                 taskListAdapter.notifyItemChanged(position)
-             }
-        }
-    )
-    androidx.recyclerview.widget.ItemTouchHelper(dragDropHelper).attachToRecyclerView(rvTaskLists)
-    
-    val btnCreateList = binding.root.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCreateList)
-    btnCreateList.setOnClickListener {
-      showCreateListDialog()
-    }
-    
-    val btnHome = binding.root.findViewById<android.widget.LinearLayout>(R.id.btnHome)
-    btnHome.setOnClickListener {
-        currentListId = -1L
-        taskViewModel.loadAllTasks()
-        binding.toolbar.title = "inicio"
-        binding.fabAddTask.hide()
-        
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, TasksFragment())
-            .commit()
-            
-        binding.drawerLayout.close()
-    }
-    
-    val btnCalendar = binding.root.findViewById<android.widget.LinearLayout>(R.id.btnCalendar)
-    btnCalendar.setOnClickListener {
-        currentListId = null
-        binding.toolbar.title = "calendario"
-        binding.fabAddTask.hide()
-        
-        supportFragmentManager.beginTransaction()
-          .replace(R.id.fragmentContainer, app.polar.ui.fragment.CalendarFragment())
-          .commit()
-          
-        binding.drawerLayout.close()
-    }
-
-    val btnReminders = binding.root.findViewById<android.widget.LinearLayout>(R.id.btnReminders)
-    btnReminders.setOnClickListener {
-        openReminders()
-        binding.drawerLayout.close()
-    }
-
-    // --- Trash Button Logic ---
-    val btnTrash = binding.root.findViewById<android.widget.LinearLayout>(R.id.btnTrash)
-    val tvTrashCount = binding.root.findViewById<android.widget.TextView>(R.id.tvTrashCount)
-    
-    // Observers for Trash Count
-    val deletedTasksLiveData = taskViewModel.getDeletedTasks()
-    val remindersViewModel: app.polar.ui.viewmodel.RemindersViewModel by viewModels()
-    val deletedRemindersLiveData = remindersViewModel.getDeletedReminders()
-
-    val updateTrashCount = {
-        val taskCount = deletedTasksLiveData.value?.size ?: 0
-        val reminderCount = deletedRemindersLiveData.value?.size ?: 0
-        val total = taskCount + reminderCount
-        tvTrashCount.text = if (total > 0) "papelera ($total)" else "papelera"
-    }
-
-    deletedTasksLiveData.observe(this) { updateTrashCount() }
-    deletedRemindersLiveData.observe(this) { updateTrashCount() }
-
-    btnTrash.setOnClickListener {
-        currentListId = -3L // Special ID for Trash
-        binding.toolbar.title = "papelera"
-        binding.fabAddTask.hide()
-        
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, app.polar.ui.fragment.TrashFragment())
-            .commit()
-            
-        binding.drawerLayout.close()
-    }
+  private fun setupDrawerManager() {
+      drawerManager = app.polar.ui.manager.DrawerManager(
+          this, 
+          binding, 
+          taskListViewModel, 
+          taskViewModel, 
+          remindersViewModel
+      ) { event -> handleNavigation(event) }
+      drawerManager.setup()
   }
+
+  private fun handleNavigation(event: app.polar.ui.manager.DrawerManager.NavigationEvent) {
+      when (event) {
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.Home -> {
+                currentListId = -1L
+                taskViewModel.loadAllTasks()
+                binding.toolbar.title = getString(R.string.home)
+                binding.fabAddTask.hide()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, TasksFragment())
+                    .commit()
+          }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.Calendar -> {
+                currentListId = null
+                binding.toolbar.title = getString(R.string.calendar)
+                binding.fabAddTask.hide()
+                supportFragmentManager.beginTransaction()
+                  .replace(R.id.fragmentContainer, app.polar.ui.fragment.CalendarFragment())
+                  .commit()
+          }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.Reminders -> {
+                openReminders()
+          }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.Trash -> {
+                currentListId = -3L
+                binding.toolbar.title = getString(R.string.trash)
+                binding.fabAddTask.hide()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, app.polar.ui.fragment.TrashFragment())
+                    .commit()
+          }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.TaskListSelected -> {
+                val taskList = event.list
+                currentListId = taskList.id
+                taskListViewModel.selectList(taskList.id)
+                taskViewModel.loadTasksForList(taskList.id)
+                binding.toolbar.title = taskList.title
+                
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, TasksFragment())
+                    .commit()
+                binding.fabAddTask.show()
+          }
+           is app.polar.ui.manager.DrawerManager.NavigationEvent.CreateList -> {
+                showCreateListDialog()
+           }
+           is app.polar.ui.manager.DrawerManager.NavigationEvent.EditList -> {
+                showEditListDialog(event.list)
+           }
+      }
+  }
+
   
   private fun openReminders() {
       currentListId = -2L // Special ID for Reminders
-      binding.toolbar.title = "recordatorios"
+      binding.toolbar.title = getString(R.string.reminders)
       binding.fabAddTask.show()
       
       supportFragmentManager.beginTransaction()
@@ -292,20 +204,7 @@ class MainActivity : BaseActivity() {
     }
   }
   
-  private fun observeTaskLists() {
-    taskListViewModel.allTaskLists.observe(this) { lists ->
-      taskListAdapter.submitList(lists)
-      
-      // Select first list if none selected
-      if (currentListId == null) {
-          // Default to Home/All Tasks
-          taskViewModel.loadAllTasks()
-          currentListId = -1L
-          binding.toolbar.title = "inicio"
-          binding.fabAddTask.hide()
-      }
-    }
-  }
+
   
   private fun showCreateListDialog() {
     TaskListDialog(
@@ -328,34 +227,7 @@ class MainActivity : BaseActivity() {
     ).show(supportFragmentManager, "EditListDialog")
   }
   
-  private fun showTaskListPopupMenu(taskList: app.polar.data.entity.TaskList) {
-    // Find the view for this task list
-    val view = binding.rvTaskLists.findViewHolderForAdapterPosition(
-      taskListAdapter.currentList.indexOf(taskList)
-    )?.itemView ?: return
-    
-    PopupMenu(this, view).apply {
-      menuInflater.inflate(R.menu.menu_task_list, menu)
-      setOnMenuItemClickListener { item ->
-        when (item.itemId) {
-          R.id.action_edit -> {
-            showEditListDialog(taskList)
-            true
-          }
-          R.id.action_delete -> {
-            taskListViewModel.deleteTaskList(taskList)
-            if (currentListId == taskList.id) {
-              currentListId = null
-              binding.toolbar.title = getString(R.string.app_name)
-            }
-            true
-          }
-          else -> false
-        }
-      }
-      show()
-    }
-  }
+
   
   private fun showCreateTaskDialog(listId: Long) {
     TaskDialog(
@@ -379,7 +251,7 @@ class MainActivity : BaseActivity() {
       override fun onQueryTextSubmit(query: String?): Boolean {
         query?.let {
           performSearch(it)
-          // IMPORTANTE: Cerrar el SearchView después de buscar
+          // IMPORTANT: Close SearchView after search
           searchView.clearFocus()
           searchItem.collapseActionView()
         }

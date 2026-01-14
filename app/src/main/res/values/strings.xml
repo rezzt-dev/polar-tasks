@@ -74,5 +74,38 @@
   <string name="font_figtree">figtree</string>
   <string name="font_arial">arial</string>
   <string name="font_jetbrains_mono">jetbrains mono</string>
+  <!-- Navigation -->
+  <string name="home">inicio</string>
+  <string name="calendar">calendario</string>
+  <string name="reminders">recordatorios</string>
+  <string name="trash">papelera</string>
+  <string name="trash_with_count">papelera (%d)</string>
+  
+  <!-- Status Messages -->
+  <string name="list_deleted">lista eliminada</string>
+  
+  <!-- Greetings -->
+  <string name="good_morning">buenos días</string>
+  <string name="good_afternoon">buenas tardes</string>
+  <string name="good_night">buenas noches</string>
+  
+  <!-- Messages -->
+  <string name="task_moved_trash">tarea movida a la papelera</string>
+  <string name="reminder_moved_trash">recordatorio movido a la papelera</string>
+  <string name="undo">deshacer</string>
+  <string name="trash_emptied">papelera vaciada</string>
+  <string name="item_restored">elemento restaurado</string>
+  <string name="permanently_deleted">eliminado permanentemente</string>
+  <string name="error_saving_backup">error al guardar backup</string>
+  <string name="backup_saved">backup guardado correctamente</string>
+  <string name="backup_restored">backup restaurado. reiniciando...</string>
+  <string name="error_restoring_backup">error al restaurar backup</string>
+  
+  <string name="recurrence_daily">Diario</string>
+  <string name="recurrence_weekly">Semanal</string>
+  <string name="recurrence_monthly">Mensual</string>
+  <string name="no_list">Sin lista</string>
+  <string name="add_subtask_title">agregar subtarea</string>
+
   <string name="font_system">sistema</string>
 </resources>

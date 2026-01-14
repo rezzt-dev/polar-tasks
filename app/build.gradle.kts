@@ -2,6 +2,7 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   id("kotlin-kapt")
+  alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -56,12 +57,23 @@ dependencies {
   implementation("androidx.fragment:fragment-ktx:1.6.2")
   
   // Coroutines
+  // Coroutines
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+  // Hilt
+  implementation(libs.hilt.android)
+  kapt(libs.hilt.compiler)
   
   // Gson
   implementation("com.google.code.gson:gson:2.10.1")
   
+  // WorkManager
+  implementation("androidx.work:work-runtime-ktx:2.9.0")
+  
   testImplementation(libs.junit)
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+  testImplementation("io.mockk:mockk:1.13.10")
+  testImplementation("androidx.arch.core:core-testing:2.2.0")
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
 }

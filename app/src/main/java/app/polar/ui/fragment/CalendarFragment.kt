@@ -20,6 +20,9 @@ import app.polar.ui.viewmodel.TaskViewModel
 import java.util.Calendar
 import java.util.Locale
 
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class CalendarFragment : Fragment() {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
@@ -65,7 +68,7 @@ class CalendarFragment : Fragment() {
         tasksAdapter = TaskAdapter(
             lifecycleOwner = viewLifecycleOwner,
             viewModel = viewModel,
-            onCheckChanged = { task, _ -> viewModel.toggleTaskCompletion(task) },
+            onCheckChanged = { task, _, _ -> viewModel.toggleTaskCompletion(task) },
             onItemLongClick = { 
                 // Optional: Show edit on long press?
                 // For now return false or implement editing

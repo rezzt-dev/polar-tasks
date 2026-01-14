@@ -1,8 +1,10 @@
 package app.polar
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 import app.polar.util.NotificationHelper
 
+@HiltAndroidApp
 class PolarApplication : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -12,5 +14,16 @@ class PolarApplication : Application() {
         themeManager.applyTheme(themeManager.loadTheme())
         
         NotificationHelper.createNotificationChannel(this)
+        
+        // Schedule Recurrence Worker (runs periodically to check for tasks to reset)
+        val workRequest = androidx.work.PeriodicWorkRequestBuilder<app.polar.worker.RecurrenceWorker>(
+            12, java.util.concurrent.TimeUnit.HOURS
+        ).build()
+        
+        androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "RecurrenceWorker",
+            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 }

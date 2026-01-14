@@ -16,7 +16,7 @@ import com.google.android.material.R as MaterialR
 class TaskAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val viewModel: TaskViewModel,
-    private val onCheckChanged: (Task, Boolean) -> Unit,
+    private val onCheckChanged: (Task, Boolean, android.view.View) -> Unit,
     private val onItemLongClick: (Task) -> Boolean,
     private val onItemClick: (Task) -> Unit = {}
 ) : ListAdapter<TaskListItem, RecyclerView.ViewHolder>(TaskListItemDiffCallback()) {
@@ -54,6 +54,13 @@ class TaskAdapter(
         }
     }
 
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is TaskViewHolder) {
+            holder.resetVisuals()
+        }
+    }
+
     class HeaderViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
         private val textView: TextView = itemView as TextView
         fun bind(title: String) {
@@ -65,12 +72,13 @@ class TaskAdapter(
         private val binding: ItemTaskBinding,
         private val lifecycleOwner: LifecycleOwner,
         private val viewModel: TaskViewModel,
-        private val onCheckChanged: ((Task, Boolean) -> Unit),
+        private val onCheckChanged: ((Task, Boolean, android.view.View) -> Unit),
         private val onItemLongClick: ((Task) -> Boolean),
         private val onItemClick: ((Task) -> Unit)
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(task: Task) {
+            itemView.tag = task.id // Tag for finding view holder by tag match
             binding.tvTaskTitle.text = task.title
             
             // Description logic
@@ -84,11 +92,10 @@ class TaskAdapter(
             // Tags logic
             if (task.tags.isNullOrEmpty()) {
                 binding.tvTaskTags.visibility = android.view.View.GONE
-                // Check if date is also missing to hide container (handled in date logic partially)
             } else {
-                binding.tagsContainer.visibility = android.view.View.VISIBLE
                 binding.tvTaskTags.visibility = android.view.View.VISIBLE
-                binding.tvTaskTags.text = task.tags
+                // Format tags: split, trim, prepend #
+                binding.tvTaskTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
             }
 
             // Checkbox logic
@@ -104,32 +111,70 @@ class TaskAdapter(
             }
 
             binding.cbTaskComplete.setOnCheckedChangeListener { _, isChecked ->
-                onCheckChanged(task, isChecked)
+                onCheckChanged(task, isChecked, itemView)
             }
 
             // Date logic
             if (task.dueDate != null) {
-                binding.tvTaskDate.visibility = android.view.View.VISIBLE
+                val now = java.util.Calendar.getInstance()
+                val dueDate = java.util.Calendar.getInstance()
+                dueDate.timeInMillis = task.dueDate
+                
+                val isToday = now.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
+                              now.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
+                
+                // Check tomorrow
+                val tomorrow = java.util.Calendar.getInstance()
+                tomorrow.add(java.util.Calendar.DAY_OF_YEAR, 1)
+                val isTomorrow = tomorrow.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
+                                 tomorrow.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
                 
                 val format = java.text.SimpleDateFormat("MMM dd", java.util.Locale.getDefault())
                 val dateStr = when {
-                    android.text.format.DateUtils.isToday(task.dueDate) -> binding.root.context.getString(R.string.today)
-                    android.text.format.DateUtils.isToday(task.dueDate - 86400000L) -> binding.root.context.getString(R.string.tomorrow)
+                    isToday -> binding.root.context.getString(R.string.today)
+                    isTomorrow -> binding.root.context.getString(R.string.tomorrow)
                     else -> format.format(java.util.Date(task.dueDate))
                 }
                 
                 binding.tvTaskDate.text = dateStr
                 
-                // Color logic
-                val now = System.currentTimeMillis()
-                if (!task.completed && task.dueDate < now && !android.text.format.DateUtils.isToday(task.dueDate)) {
-                     binding.tvTaskDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
-                } else {
-                     binding.tvTaskDate.setTextColor(android.graphics.Color.GRAY)
+                // Color logic - set explicit colors
+                val startOfToday = java.util.Calendar.getInstance()
+                startOfToday.set(java.util.Calendar.HOUR_OF_DAY, 0)
+                startOfToday.set(java.util.Calendar.MINUTE, 0)
+                startOfToday.set(java.util.Calendar.SECOND, 0)
+                startOfToday.set(java.util.Calendar.MILLISECOND, 0)
+                
+                when {
+                    !task.completed && task.dueDate < startOfToday.timeInMillis && !isToday -> {
+                        // Overdue - red
+                        binding.tvTaskDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
+                    }
+                    isToday -> {
+                        // Today - use primary color to make it visible
+                        val typedValue = android.util.TypedValue()
+                        itemView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+                        binding.tvTaskDate.setTextColor(typedValue.data)
+                    }
+                    else -> {
+                        // Future date - use secondary color
+                        val typedValue = android.util.TypedValue()
+                        itemView.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+                        binding.tvTaskDate.setTextColor(typedValue.data)
+                    }
                 }
                 
+                // Set visibility AFTER setting text and color
+                binding.tvTaskDate.visibility = android.view.View.VISIBLE
             } else {
                 binding.tvTaskDate.visibility = android.view.View.GONE
+            }
+
+            // Show container if either Date OR Tags are present
+            if (task.dueDate != null || !task.tags.isNullOrEmpty()) {
+                binding.tagsContainer.visibility = android.view.View.VISIBLE
+            } else {
+                binding.tagsContainer.visibility = android.view.View.GONE
             }
 
             // Subtasks logic
@@ -156,6 +201,13 @@ class TaskAdapter(
             binding.root.setOnClickListener {
                  onItemClick(task)
             }
+        }
+        
+        fun resetVisuals() {
+             itemView.alpha = 1.0f
+             itemView.translationX = 0f
+             itemView.scaleX = 1.0f
+             itemView.scaleY = 1.0f
         }
     }
     fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {

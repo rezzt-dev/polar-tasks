@@ -8,9 +8,15 @@ import app.polar.data.entity.Task
 interface TaskDao {
   @Query("SELECT * FROM tasks WHERE listId = :listId AND isDeleted = 0 ORDER BY orderIndex ASC")
   fun getTasksForList(listId: Long): LiveData<List<Task>>
+
+  @Query("SELECT * FROM tasks WHERE listId = :listId AND isDeleted = 0 ORDER BY orderIndex ASC")
+  fun getTasksForListFlow(listId: Long): kotlinx.coroutines.flow.Flow<List<Task>>
   
   @Query("SELECT * FROM tasks WHERE isDeleted = 0 ORDER BY createdAt DESC")
   fun getAllTasks(): LiveData<List<Task>>
+
+  @Query("SELECT * FROM tasks WHERE isDeleted = 0 ORDER BY createdAt DESC")
+  fun getAllTasksFlow(): kotlinx.coroutines.flow.Flow<List<Task>>
 
   @Query("SELECT * FROM tasks")
   suspend fun getAllTasksSnapshot(): List<Task>

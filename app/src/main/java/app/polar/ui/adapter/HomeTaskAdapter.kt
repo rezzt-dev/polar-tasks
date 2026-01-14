@@ -28,7 +28,7 @@ sealed class HomeItem {
 class HomeTaskAdapter(
     private val onTaskClick: (Task) -> Unit,
     private val onTaskLongClick: (Task, View) -> Boolean,
-    private val onTaskChecked: (Task, Boolean) -> Unit,
+    private val onTaskChecked: (Task, Boolean, android.view.View) -> Unit,
     private val viewModel: app.polar.ui.viewmodel.TaskViewModel,
     private val lifecycleOwner: androidx.lifecycle.LifecycleOwner
 ) : ListAdapter<HomeItem, RecyclerView.ViewHolder>(HomeItemDiffCallback()) {
@@ -71,6 +71,7 @@ class HomeTaskAdapter(
         super.onViewRecycled(holder)
         if (holder is TaskViewHolder) {
             holder.unbind()
+            holder.resetVisuals()
         }
     }
 
@@ -100,6 +101,7 @@ class HomeTaskAdapter(
 
         fun bind(task: Task) {
             currentTaskId = task.id
+            itemView.tag = task.id // Tag for finding view holder by tag match
             tvTitle.text = task.title
             
             if (task.description.isNotBlank()) {
@@ -112,31 +114,60 @@ class HomeTaskAdapter(
             if (task.dueDate != null) {
                 val format = SimpleDateFormat("MMM dd", Locale.getDefault())
                 val dateStr = format.format(Date(task.dueDate))
-                val displayDate = if (android.text.format.DateUtils.isToday(task.dueDate)) "hoy" else dateStr
+                
+                val now = java.util.Calendar.getInstance()
+                val dueDate = java.util.Calendar.getInstance()
+                dueDate.timeInMillis = task.dueDate
+                
+                val isToday = now.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
+                              now.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
+                
+                // Use resource string for consistency
+                val displayDate = if (isToday) itemView.context.getString(R.string.today) else dateStr
                 
                 tvDueDate.text = displayDate
-                
-                val isOverdue = !task.completed && task.dueDate < System.currentTimeMillis() && !android.text.format.DateUtils.isToday(task.dueDate)
-                if (isOverdue) {
-                    tvDueDate.setTextColor(android.graphics.Color.RED)
-                } else {
-                    val typedValue = android.util.TypedValue()
-                    itemView.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
-                    tvDueDate.setTextColor(typedValue.data)
-                }
                 tvDueDate.visibility = View.VISIBLE
+                
+                val startOfToday = java.util.Calendar.getInstance()
+                startOfToday.set(java.util.Calendar.HOUR_OF_DAY, 0)
+                startOfToday.set(java.util.Calendar.MINUTE, 0)
+                startOfToday.set(java.util.Calendar.SECOND, 0)
+                startOfToday.set(java.util.Calendar.MILLISECOND, 0)
+                
+                val isOverdue = !task.completed && task.dueDate < startOfToday.timeInMillis && !isToday
+                
+                when {
+                    isOverdue -> {
+                        tvDueDate.setTextColor(android.graphics.Color.RED)
+                    }
+                    isToday -> {
+                        // Use primary color for today to make it visible
+                        val typedValue = android.util.TypedValue()
+                        itemView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+                        tvDueDate.setTextColor(typedValue.data)
+                    }
+                    else -> {
+                        val typedValue = android.util.TypedValue()
+                        itemView.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+                        tvDueDate.setTextColor(typedValue.data)
+                    }
+                }
             } else {
                 tvDueDate.visibility = View.GONE
             }
             
              if (!task.tags.isNullOrEmpty()) {
                 tvTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
+                tvTags.visibility = View.VISIBLE
+            } else {
+                tvTags.visibility = View.GONE
+            }
+
+            // Show container if either Date OR Tags are present
+            if (task.dueDate != null || !task.tags.isNullOrEmpty()) {
                 tagsContainer.visibility = View.VISIBLE
             } else {
                 tagsContainer.visibility = View.GONE
-                if (task.dueDate == null) {
-                     // Hide container if both are gone
-                }
             }
 
             cbCompleted.setOnCheckedChangeListener(null)
@@ -145,7 +176,7 @@ class HomeTaskAdapter(
 
             cbCompleted.setOnCheckedChangeListener { _, isChecked ->
                 updateVisuals(isChecked)
-                onTaskChecked(task, isChecked)
+                onTaskChecked(task, isChecked, itemView)
             }
 
             // --- Subtasks Logic ---
@@ -198,6 +229,13 @@ class HomeTaskAdapter(
                 tvTitle.paintFlags = tvTitle.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 tvTitle.alpha = 1.0f
             }
+        }
+
+        fun resetVisuals() {
+            itemView.alpha = 1.0f
+            itemView.translationX = 0f
+            itemView.scaleX = 1.0f
+            itemView.scaleY = 1.0f
         }
     }
 

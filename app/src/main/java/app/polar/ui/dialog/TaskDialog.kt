@@ -76,6 +76,7 @@ class TaskDialog(
             localCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
             localCalendar.set(java.util.Calendar.MINUTE, 0)
             localCalendar.set(java.util.Calendar.SECOND, 0)
+            localCalendar.set(java.util.Calendar.MILLISECOND, 0)
             
             selectedDate = localCalendar.timeInMillis
             updateDateText()

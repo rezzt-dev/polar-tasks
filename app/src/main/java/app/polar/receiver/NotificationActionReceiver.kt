@@ -10,8 +10,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.app.NotificationManagerCompat
 import java.util.Calendar
+import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NotificationActionReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var alarmHelper: app.polar.util.AlarmManagerHelper
+
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
@@ -40,7 +47,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
                         val snoozeTime = calendar.timeInMillis
                         
                         // Reschedule alarm
-                        scheduleAlarm(context, taskId, snoozeTime)
+                        alarmHelper.scheduleTaskAlarm(taskId, snoozeTime)
                         
                         // Cancel current notification
                         NotificationManagerCompat.from(context).cancel(notificationId)
@@ -52,33 +59,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun scheduleAlarm(context: Context, taskId: Long, timeInMillis: Long) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra("TASK_ID", taskId)
-            putExtra(AlarmReceiver.EXTRA_TYPE, AlarmReceiver.TYPE_TASK)
-        }
-        val pendingIntent = android.app.PendingIntent.getBroadcast(
-            context,
-            taskId.toInt(),
-            intent,
-            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        
-        try {
-           if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-               if (alarmManager.canScheduleExactAlarms()) {
-                   alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-               } else {
-                   alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-               }
-           } else {
-                alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-           }
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        }
-    }
+
 
     companion object {
         const val ACTION_COMPLETE = "app.polar.ACTION_COMPLETE"

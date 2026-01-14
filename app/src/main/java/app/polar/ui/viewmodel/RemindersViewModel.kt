@@ -10,108 +10,106 @@ import app.polar.data.repository.ReminderRepository
 import app.polar.receiver.AlarmReceiver
 import kotlinx.coroutines.launch
 
-class RemindersViewModel(application: Application) : AndroidViewModel(application) {
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-    private val repository: ReminderRepository
-    val allReminders: LiveData<List<Reminder>>
-    val activeReminders: LiveData<List<Reminder>>
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 
-    init {
-        val database = AppDatabase.getDatabase(application)
-        repository = ReminderRepository(database.reminderDao())
-        allReminders = repository.allReminders
-        activeReminders = repository.activeReminders
+@HiltViewModel
+class RemindersViewModel @Inject constructor(
+    application: Application,
+    private val repository: ReminderRepository,
+    private val alarmHelper: app.polar.util.AlarmManagerHelper
+) : AndroidViewModel(application) {
+
+    val allReminders: StateFlow<List<Reminder>> = repository.allRemindersFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+        
+    val activeReminders: StateFlow<List<Reminder>> = repository.activeRemindersFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun clearError() { _errorMessage.value = null }
+
+    private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
+        try {
+            block()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _errorMessage.value = "Error: ${e.message}"
+        }
     }
 
-    fun insert(title: String, description: String, dateTime: Long) = viewModelScope.launch {
+    fun insert(title: String, description: String, dateTime: Long) = safeLaunch {
         val reminder = Reminder(title = title, description = description, dateTime = dateTime)
         val id = repository.insert(reminder)
-        scheduleAlarm(id, dateTime)
+        alarmHelper.scheduleReminderAlarm(id, dateTime)
         
         // Show confirmation notification immediately
         app.polar.util.NotificationHelper.showCreationConfirmation(getApplication(), title, dateTime)
     }
 
-    fun update(reminder: Reminder) = viewModelScope.launch {
+    fun update(reminder: Reminder) = safeLaunch {
         repository.update(reminder)
         if (!reminder.isCompleted) {
-            scheduleAlarm(reminder.id, reminder.dateTime)
+            alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
         } else {
-            cancelAlarm(reminder.id)
+            alarmHelper.cancelReminderAlarm(reminder.id)
         }
     }
 
-    fun moveToTrash(reminder: Reminder) = viewModelScope.launch {
+    fun moveToTrash(reminder: Reminder) = safeLaunch {
         repository.softDelete(reminder.id)
-        cancelAlarm(reminder.id)
+        alarmHelper.cancelReminderAlarm(reminder.id)
     }
 
-    fun restoreFromTrash(reminder: Reminder) = viewModelScope.launch {
+    fun restoreFromTrash(reminder: Reminder) = safeLaunch {
         repository.restore(reminder.id)
         if (!reminder.isCompleted) {
-            scheduleAlarm(reminder.id, reminder.dateTime)
+            alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
         }
     }
     
-    fun emptyTrash() = viewModelScope.launch {
+    fun emptyTrash() = safeLaunch {
         repository.emptyTrash()
     }
     
-    fun permanentDelete(reminder: Reminder) = viewModelScope.launch {
+    fun permanentDelete(reminder: Reminder) = safeLaunch {
         repository.permanentDelete(reminder.id)
-        cancelAlarm(reminder.id)
+        alarmHelper.cancelReminderAlarm(reminder.id)
     }
 
     fun getDeletedReminders(): LiveData<List<Reminder>> {
         return repository.getDeletedReminders()
     }
+    
+    fun getDeletedRemindersFlow(): StateFlow<List<Reminder>> {
+        return repository.getDeletedRemindersFlow()
+             .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+    }
 
-    fun toggleCompletion(reminder: Reminder) = viewModelScope.launch {
+    fun toggleCompletion(reminder: Reminder) = safeLaunch {
         val updated = reminder.copy(isCompleted = !reminder.isCompleted)
         update(updated)
     }
 
-    private fun scheduleAlarm(reminderId: Long, timeInMillis: Long) {
-        if (timeInMillis <= System.currentTimeMillis()) return
 
-        val alarmManager = getApplication<Application>().getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
-        val intent = android.content.Intent(getApplication(), AlarmReceiver::class.java).apply {
-            putExtra(AlarmReceiver.EXTRA_REMINDER_ID, reminderId)
-            putExtra(AlarmReceiver.EXTRA_TYPE, AlarmReceiver.TYPE_REMINDER)
-        }
-        val pendingIntent = android.app.PendingIntent.getBroadcast(
-            getApplication(),
-            1000000 + reminderId.toInt(),
-            intent,
-            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-                } else {
-                    alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-                }
-            } else {
-                alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-            }
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun cancelAlarm(reminderId: Long) {
-        val alarmManager = getApplication<Application>().getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
-        val intent = android.content.Intent(getApplication(), AlarmReceiver::class.java)
-        val pendingIntent = android.app.PendingIntent.getBroadcast(
-            getApplication(),
-            1000000 + reminderId.toInt(),
-            intent,
-            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_NO_CREATE
-        )
-        if (pendingIntent != null) {
-            alarmManager.cancel(pendingIntent)
-        }
-    }
 }

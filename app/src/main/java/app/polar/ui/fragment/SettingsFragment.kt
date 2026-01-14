@@ -169,9 +169,9 @@ class SettingsFragment : Fragment() {
                     val backupManager = app.polar.data.backup.BackupManager(requireContext())
                     val result = backupManager.exportBackup(uri)
                     if (result.isSuccess) {
-                        com.google.android.material.snackbar.Snackbar.make(binding.root, "backup guardado correctamente", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
+                        com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.backup_saved), com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
                     } else {
-                        com.google.android.material.snackbar.Snackbar.make(binding.root, "error al guardar backup", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
+                        com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.error_saving_backup), com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -185,12 +185,12 @@ class SettingsFragment : Fragment() {
                     val backupManager = app.polar.data.backup.BackupManager(requireContext())
                     val result = backupManager.importBackup(uri)
                     if (result.isSuccess) {
-                        com.google.android.material.snackbar.Snackbar.make(binding.root, "backup restaurado. reiniciando...", com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show()
+                        com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.backup_restored), com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show()
                         kotlinx.coroutines.delay(1000)
                         requireActivity().recreate()
                         // Or restart app fully if needed, but recreate should trigger loaders again
                     } else {
-                        com.google.android.material.snackbar.Snackbar.make(binding.root, "error al restaurar backup", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
+                        com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.error_restoring_backup), com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }

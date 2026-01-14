@@ -9,8 +9,14 @@ interface ReminderDao {
     @Query("SELECT * FROM reminders WHERE isDeleted = 0 ORDER BY dateTime ASC")
     fun getAllReminders(): LiveData<List<Reminder>>
 
+    @Query("SELECT * FROM reminders WHERE isDeleted = 0 ORDER BY dateTime ASC")
+    fun getAllRemindersFlow(): kotlinx.coroutines.flow.Flow<List<Reminder>>
+
     @Query("SELECT * FROM reminders WHERE isCompleted = 0 AND isDeleted = 0 ORDER BY dateTime ASC")
     fun getActiveReminders(): LiveData<List<Reminder>>
+
+    @Query("SELECT * FROM reminders WHERE isCompleted = 0 AND isDeleted = 0 ORDER BY dateTime ASC")
+    fun getActiveRemindersFlow(): kotlinx.coroutines.flow.Flow<List<Reminder>>
 
     @Insert
     suspend fun insert(reminder: Reminder): Long
@@ -38,6 +44,9 @@ interface ReminderDao {
 
     @Query("SELECT * FROM reminders WHERE isDeleted = 1 ORDER BY dateTime DESC")
     fun getDeletedReminders(): LiveData<List<Reminder>>
+
+    @Query("SELECT * FROM reminders WHERE isDeleted = 1 ORDER BY dateTime DESC")
+    fun getDeletedRemindersFlow(): kotlinx.coroutines.flow.Flow<List<Reminder>>
 
     @Query("SELECT * FROM reminders WHERE id = :id")
     suspend fun getReminderById(id: Long): Reminder?

@@ -10,22 +10,18 @@ import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
 import kotlinx.coroutines.launch
 
-class TaskListViewModel(application: Application) : AndroidViewModel(application) {
-  private val repository: TaskRepository
-  val allTaskLists: LiveData<List<TaskList>>
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class TaskListViewModel @Inject constructor(
+    application: Application,
+    private val repository: TaskRepository
+) : AndroidViewModel(application) {
+  val allTaskLists: LiveData<List<TaskList>> = repository.allTaskLists
   
   private val _selectedListId = MutableLiveData<Long?>()
   val selectedListId: LiveData<Long?> = _selectedListId
-  
-  init {
-    val database = AppDatabase.getDatabase(application)
-    repository = TaskRepository(
-      database.taskListDao(),
-      database.taskDao(),
-      database.subtaskDao()
-    )
-    allTaskLists = repository.allTaskLists
-  }
   
   fun selectList(listId: Long?) {
     _selectedListId.value = listId
