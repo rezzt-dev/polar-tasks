@@ -22,10 +22,14 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         themeManager = ThemeManager(this)
         
-        // Theme logic is now properly initialized in Application class for Day/Night mode
-        // but we still need to apply attributes if necessary, though AppCompatDelegate usually handles it.
-        // Crucially, we MUST apply the Font Overlay style here.
-        setTheme(themeManager.getFontOverlayStyle())
+        // Apply multicolor theme if selected (must be before super.onCreate)
+        val themeRes = themeManager.getThemeStyleRes()
+        if (themeRes != 0) {
+            setTheme(themeRes)
+        }
+        
+        // Apply font overlay on top of any theme
+        theme.applyStyle(themeManager.getFontOverlayStyle(), true)
         
         super.onCreate(savedInstanceState)
     }

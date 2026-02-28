@@ -45,6 +45,84 @@
   <style name="Theme.Polar" parent="Base.Theme.Polar" />
   
   <!-- Theme.Polar.Dark moved to values-night/themes.xml for proper DayNight support -->
+
+  <!-- Multicolor Light Theme -->
+  <style name="Theme.Polar.MulticolorLight" parent="Theme.Material3.Light.NoActionBar">
+    <item name="colorPrimary">@color/multi_light_primary</item>
+    <item name="colorOnPrimary">@color/multi_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/multi_light_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/multi_light_on_primary_container</item>
+    
+    <item name="colorSecondary">@color/multi_light_secondary</item>
+    <item name="colorOnSecondary">@color/multi_light_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/multi_light_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/multi_light_on_secondary_container</item>
+    <item name="colorError">@color/color_error</item>
+    
+    <item name="android:colorBackground">@color/multi_light_background</item>
+    <item name="colorOnBackground">@color/multi_light_foreground</item>
+    
+    <item name="colorSurface">@color/multi_light_surface</item>
+    <item name="colorOnSurface">@color/multi_light_foreground</item>
+    <item name="colorSurfaceVariant">@color/multi_light_background</item>
+    
+    <item name="colorSurfaceContainer">@color/multi_light_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/multi_light_surface_container_high</item>
+    <item name="colorOutline">@color/multi_light_border</item>
+    <item name="colorOutlineVariant">@color/multi_light_border</item>
+    
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowLightNavigationBar">true</item>
+    
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+    
+    <item name="taskBackground">@color/multi_light_surface</item>
+    <item name="taskBorder">@color/multi_light_border</item>
+    <item name="mainBorder">@color/multi_light_border</item>
+    <item name="buttonBackground">@color/multi_light_primary</item>
+  </style>
+
+  <!-- Multicolor Dark Theme -->
+  <style name="Theme.Polar.MulticolorDark" parent="Theme.Material3.Dark.NoActionBar">
+    <item name="colorPrimary">@color/multi_dark_primary</item>
+    <item name="colorOnPrimary">@color/multi_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/multi_dark_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/multi_dark_on_primary_container</item>
+    
+    <item name="colorSecondary">@color/multi_dark_secondary</item>
+    <item name="colorOnSecondary">@color/multi_dark_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/multi_dark_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/multi_dark_on_secondary_container</item>
+    <item name="colorError">@color/color_error</item>
+    
+    <item name="android:colorBackground">@color/multi_dark_background</item>
+    <item name="colorOnBackground">@color/multi_dark_foreground</item>
+    
+    <item name="colorSurface">@color/multi_dark_surface</item>
+    <item name="colorOnSurface">@color/multi_dark_foreground</item>
+    <item name="colorSurfaceVariant">@color/multi_dark_background</item>
+    
+    <item name="colorSurfaceContainer">@color/multi_dark_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/multi_dark_surface_container_high</item>
+    <item name="colorOutline">@color/multi_dark_border</item>
+    <item name="colorOutlineVariant">@color/multi_dark_border</item>
+    
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:windowLightNavigationBar">false</item>
+    
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+    
+    <item name="taskBackground">@color/multi_dark_surface</item>
+    <item name="taskBorder">@color/multi_dark_border</item>
+    <item name="mainBorder">@color/multi_dark_border</item>
+    <item name="buttonBackground">@color/multi_dark_primary</item>
+  </style>
   
   <!-- iOS-style button -->
   <style name="Widget.Polar.Button" parent="Widget.Material3.Button">

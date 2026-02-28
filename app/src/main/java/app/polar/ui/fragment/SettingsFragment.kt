@@ -62,24 +62,28 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupThemeSwitch() {
-        // Set initial state based on current actual theme logic
-        // We use !isLightTheme() because switch ON = Dark Mode
-        binding.switchDarkMode.isChecked = !themeManager.isLightTheme()
+        val currentTheme = themeManager.loadTheme()
         
-        binding.switchDarkMode.setOnCheckedChangeListener { buttonView, isChecked ->
-            // Prevent triggering if the state hasn't actually changed logically
-            // (though UI click implies intent to change)
+        when (currentTheme) {
+            ThemeManager.THEME_LIGHT -> binding.rbThemeLight.isChecked = true
+            ThemeManager.THEME_DARK -> binding.rbThemeDark.isChecked = true
+            ThemeManager.THEME_MULTICOLOR_LIGHT -> binding.rbThemeMulticolorLight.isChecked = true
+            ThemeManager.THEME_MULTICOLOR_DARK -> binding.rbThemeMulticolorDark.isChecked = true
+            else -> binding.rbThemeDark.isChecked = true
+        }
+        
+        binding.rgThemes.setOnCheckedChangeListener { _, checkedId ->
+            val newTheme = when (checkedId) {
+                R.id.rbThemeLight -> ThemeManager.THEME_LIGHT
+                R.id.rbThemeDark -> ThemeManager.THEME_DARK
+                R.id.rbThemeMulticolorLight -> ThemeManager.THEME_MULTICOLOR_LIGHT
+                R.id.rbThemeMulticolorDark -> ThemeManager.THEME_MULTICOLOR_DARK
+                else -> ThemeManager.THEME_DARK
+            }
             
-            val newTheme = if (isChecked) ThemeManager.THEME_DARK else ThemeManager.THEME_LIGHT
-            
-            // Only save and recreate if different from current persisted/loaded theme
-            // to avoid potential loops if listener fires unexpectedly
             if (themeManager.loadTheme() != newTheme) {
                 themeManager.saveTheme(newTheme)
-                // Post recreate to allow switch animation to finish or state to settle
-                buttonView.postDelayed({
-                    activity?.recreate()
-                }, 200)
+                activity?.recreate()
             }
         }
     }

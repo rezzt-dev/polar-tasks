@@ -41,11 +41,14 @@ class TaskViewModel @Inject constructor(
   // Filter states
   private val _filterPending = MutableStateFlow(false)
   private val _filterOverdue = MutableStateFlow(false)
+  private val _filterRecurrent = MutableStateFlow(false)
   val filterPending: StateFlow<Boolean> = _filterPending.asStateFlow()
   val filterOverdue: StateFlow<Boolean> = _filterOverdue.asStateFlow()
+  val filterRecurrent: StateFlow<Boolean> = _filterRecurrent.asStateFlow()
 
   fun setFilterPending(enabled: Boolean) { _filterPending.value = enabled }
   fun setFilterOverdue(enabled: Boolean) { _filterOverdue.value = enabled }
+  fun setFilterRecurrent(enabled: Boolean) { _filterRecurrent.value = enabled }
 
   private val _errorMessage = MutableStateFlow<String?>(null)
   val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
@@ -65,7 +68,8 @@ class TaskViewModel @Inject constructor(
   val tasks: StateFlow<List<TaskListItem>> = getFilteredTasksUseCase(
         _selectedListId, 
         _filterPending, 
-        _filterOverdue
+        _filterOverdue,
+        _filterRecurrent
     )
     .map { list -> list.map { TaskListItem.Item(it) } }
     .stateIn(
@@ -91,6 +95,7 @@ class TaskViewModel @Inject constructor(
            val rawList = _rawHomeTasks.value ?: emptyList()
            val pendingOnly = _filterPending.value
            val overdueOnly = _filterOverdue.value
+           val recurrentOnly = _filterRecurrent.value
            val now = System.currentTimeMillis()
            
            val filteredList = rawList.filter { item ->
@@ -112,6 +117,9 @@ class TaskViewModel @Inject constructor(
                    }
                    if (task.completed) matches = false
                }
+               if (recurrentOnly) {
+                   if (task.recurrence == "NONE") matches = false
+               }
                matches
            }
            val grouped = filteredList.groupBy { it.task.listId }
@@ -123,16 +131,9 @@ class TaskViewModel @Inject constructor(
            value = result
       }
       addSource(_rawHomeTasks) { update() }
-      // addSource from StateFlow? MediatorLiveData doesn't support Flow source directly without conversion `asLiveData`.
-      // We are in a hybrid state. 
-      // Ideally I should convert `homeTaskGroups` to StateFlow too.
-      // But _rawHomeTasks is LiveData.
-      // For now, let's keep homeTaskGroups as LiveData to reduce breakage, but updated to read generic `.value` from StateFlows if accessed? 
-      // No, `_filterPending` is now StateFlow. I can't `addSource` a StateFlow to MediatorLiveData.
-      // I MUST convert `homeTaskGroups` to flow logic or adapter `asLiveData`.
-      // `asLiveData()` from StateFlow.
-
+      addSource(_filterPending.asLiveData()) { update() }
       addSource(_filterOverdue.asLiveData()) { update() }
+      addSource(_filterRecurrent.asLiveData()) { update() }
   }
   
 
@@ -208,6 +209,13 @@ class TaskViewModel @Inject constructor(
     if (task.completed == isCompleted) return@safeLaunch
     repository.updateTask(task.copy(completed = isCompleted))
     
+    // Sync subtasks
+    if (isCompleted) {
+        repository.completeSubtasksForTask(task.id)
+    } else {
+        repository.resetSubtasksForTask(task.id)
+    }
+    
     if (isCompleted) {
         if (task.dueDate != null) {
             alarmHelper.cancelTaskAlarm(task.id)
@@ -222,6 +230,13 @@ class TaskViewModel @Inject constructor(
   fun toggleTaskCompletion(task: Task) = safeLaunch {
     val newCompletedState = !task.completed
     repository.updateTask(task.copy(completed = newCompletedState))
+    
+    // Sync subtasks
+    if (newCompletedState) {
+        repository.completeSubtasksForTask(task.id)
+    } else {
+        repository.resetSubtasksForTask(task.id)
+    }
     
     if (newCompletedState) {
         // Task completed.

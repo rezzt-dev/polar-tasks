@@ -3,6 +3,7 @@ package app.polar.util
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
+import app.polar.R
 
 class ThemeManager(private val context: Context) {
   private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -14,6 +15,8 @@ class ThemeManager(private val context: Context) {
     
     const val THEME_LIGHT = "light"
     const val THEME_DARK = "dark"
+    const val THEME_MULTICOLOR_LIGHT = "multicolor_light"
+    const val THEME_MULTICOLOR_DARK = "multicolor_dark"
     const val THEME_SYSTEM = "system"
     
     const val FONT_POPPINS = "poppins"
@@ -54,20 +57,28 @@ class ThemeManager(private val context: Context) {
   
   fun getFontOverlayStyle(): Int {
       return when (loadFont()) {
-          FONT_POPPINS -> app.polar.R.style.Overlay_Polar_Font_Poppins
-          FONT_COMFORTAA -> app.polar.R.style.Overlay_Polar_Font_Comfortaa
-          FONT_FIGTREE -> app.polar.R.style.Overlay_Polar_Font_Figtree
-          FONT_JETBRAINS_MONO -> app.polar.R.style.Overlay_Polar_Font_JetBrainsMono
-          FONT_ARIAL -> app.polar.R.style.Overlay_Polar_Font_Arial
-          FONT_SYSTEM -> app.polar.R.style.Overlay_Polar_Font_System
-          else -> app.polar.R.style.Overlay_Polar_Font_Poppins
+          FONT_POPPINS -> R.style.Overlay_Polar_Font_Poppins
+          FONT_COMFORTAA -> R.style.Overlay_Polar_Font_Comfortaa
+          FONT_FIGTREE -> R.style.Overlay_Polar_Font_Figtree
+          FONT_JETBRAINS_MONO -> R.style.Overlay_Polar_Font_JetBrainsMono
+          FONT_ARIAL -> R.style.Overlay_Polar_Font_Arial
+          FONT_SYSTEM -> R.style.Overlay_Polar_Font_System
+          else -> R.style.Overlay_Polar_Font_Poppins
+      }
+  }
+
+  fun getThemeStyleRes(): Int {
+      return when (loadTheme()) {
+          THEME_MULTICOLOR_LIGHT -> R.style.Theme_Polar_MulticolorLight
+          THEME_MULTICOLOR_DARK -> R.style.Theme_Polar_MulticolorDark
+          else -> 0 // Default light/dark handled by DayNight
       }
   }
   
   fun applyTheme(theme: String) {
     when (theme) {
-      THEME_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-      THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      THEME_LIGHT, THEME_MULTICOLOR_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+      THEME_DARK, THEME_MULTICOLOR_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
   }
@@ -77,14 +88,14 @@ class ThemeManager(private val context: Context) {
     val newTheme = when (currentTheme) {
       THEME_LIGHT -> THEME_DARK
       THEME_DARK -> THEME_LIGHT
-      else -> THEME_DARK // Default to dark if system
+      else -> THEME_DARK
     }
     saveTheme(newTheme)
   }
 
   fun isLightTheme(): Boolean {
     val currentTheme = loadTheme()
-    return currentTheme == THEME_LIGHT ||
+    return currentTheme == THEME_LIGHT || currentTheme == THEME_MULTICOLOR_LIGHT ||
         (currentTheme == THEME_SYSTEM && !isSystemInDarkMode())
   }
 

@@ -68,6 +68,10 @@
   <!-- Settings -->
   <string name="appearance">apariencia</string>
   <string name="dark_mode">modo oscuro</string>
+  <string name="theme_light">claro</string>
+  <string name="theme_dark">oscuro</string>
+  <string name="theme_multicolor_light">multicolor claro</string>
+  <string name="theme_multicolor_dark">multicolor oscuro</string>
   <string name="font">fuente</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>

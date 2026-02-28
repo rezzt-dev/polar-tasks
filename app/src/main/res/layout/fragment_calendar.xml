@@ -110,23 +110,30 @@
             android:textColor="?attr/colorOnSurface"
             android:paddingVertical="8dp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerDayTasks"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="80dp"/>
-            
-        <TextView
-            android:id="@+id/tvNoTasks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/no_tasks_for_date"
-            android:gravity="center"
-            android:paddingTop="32dp"
-            android:visibility="gone"
-            android:textColor="?attr/colorOnSurface"
-            android:alpha="0.5"/>
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDayTasks"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp"/>
+
+            <TextView
+                android:id="@+id/tvNoTasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_tasks_for_date"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="14sp"
+                android:alpha="0.5"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 
