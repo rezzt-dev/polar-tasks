@@ -24,7 +24,5 @@
     android:textSize="@dimen/text_size_body"
     android:textColor="?attr/colorOnSurface"
     android:alpha="0.8"
-    android:maxLines="1"
-    android:ellipsize="end"
     tools:text="Review code changes" />
 </LinearLayout>

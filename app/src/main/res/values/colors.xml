@@ -63,6 +63,38 @@
   <color name="dark_button_background">@color/dark_c3_accent</color>
   <color name="dark_button_click">@color/dark_c4_border</color>
 
+  <!-- Multicolor Light Theme -->
+  <color name="multi_light_background">#F8F9FC</color>
+  <color name="multi_light_surface">#FFFFFF</color>
+  <color name="multi_light_primary">#00897B</color>         <!-- Teal -->
+  <color name="multi_light_on_primary">#FFFFFF</color>
+  <color name="multi_light_primary_container">#B2DFDB</color>
+  <color name="multi_light_on_primary_container">#004D40</color>
+  <color name="multi_light_secondary">#5C6BC0</color>       <!-- Indigo -->
+  <color name="multi_light_on_secondary">#FFFFFF</color>
+  <color name="multi_light_secondary_container">#C5CAE9</color>
+  <color name="multi_light_on_secondary_container">#1A237E</color>
+  <color name="multi_light_foreground">#1B1B1F</color>
+  <color name="multi_light_border">#E0E0E0</color>
+  <color name="multi_light_surface_container">#F0F1F5</color>
+  <color name="multi_light_surface_container_high">#E8E9ED</color>
+
+  <!-- Multicolor Dark Theme -->
+  <color name="multi_dark_background">#121318</color>
+  <color name="multi_dark_surface">#1E1F25</color>
+  <color name="multi_dark_primary">#4DB6AC</color>           <!-- Teal Light -->
+  <color name="multi_dark_on_primary">#003731</color>
+  <color name="multi_dark_primary_container">#00695C</color>
+  <color name="multi_dark_on_primary_container">#B2DFDB</color>
+  <color name="multi_dark_secondary">#9FA8DA</color>         <!-- Indigo Light -->
+  <color name="multi_dark_on_secondary">#1A237E</color>
+  <color name="multi_dark_secondary_container">#3949AB</color>
+  <color name="multi_dark_on_secondary_container">#C5CAE9</color>
+  <color name="multi_dark_foreground">#E6E1E5</color>
+  <color name="multi_dark_border">#2C2D33</color>
+  <color name="multi_dark_surface_container">#25262C</color>
+  <color name="multi_dark_surface_container_high">#2F3036</color>
+
   <!-- Semantics -->
   <color name="accent_primary">@color/light_c3_accent</color>
   <color name="accent_secondary">@color/light_c4_border</color>

@@ -129,11 +129,11 @@ class TaskAdapter(
                 val isTomorrow = tomorrow.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
                                  tomorrow.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
                 
-                val format = java.text.SimpleDateFormat("MMM dd", java.util.Locale.getDefault())
+                val format = java.text.SimpleDateFormat("d, MMM", java.util.Locale("es", "ES"))
                 val dateStr = when {
                     isToday -> binding.root.context.getString(R.string.today)
                     isTomorrow -> binding.root.context.getString(R.string.tomorrow)
-                    else -> format.format(java.util.Date(task.dueDate))
+                    else -> format.format(java.util.Date(task.dueDate)).lowercase()
                 }
                 
                 binding.tvTaskDate.text = dateStr
@@ -157,9 +157,9 @@ class TaskAdapter(
                         binding.tvTaskDate.setTextColor(typedValue.data)
                     }
                     else -> {
-                        // Future date - use secondary color
+                        // Future date - use onSurface color (alpha handled by layout)
                         val typedValue = android.util.TypedValue()
-                        itemView.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+                        itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
                         binding.tvTaskDate.setTextColor(typedValue.data)
                     }
                 }

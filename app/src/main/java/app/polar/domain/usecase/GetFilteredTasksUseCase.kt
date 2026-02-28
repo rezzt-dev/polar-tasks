@@ -13,7 +13,8 @@ class GetFilteredTasksUseCase @Inject constructor(
     operator fun invoke(
         listIdFlow: Flow<Long>,
         filterPendingFlow: Flow<Boolean>,
-        filterOverdueFlow: Flow<Boolean>
+        filterOverdueFlow: Flow<Boolean>,
+        filterRecurrentFlow: Flow<Boolean>
     ): Flow<List<Task>> {
         // 1. Get raw tasks based on listId
         val tasksFlow = listIdFlow.flatMapLatest { listId ->
@@ -25,7 +26,7 @@ class GetFilteredTasksUseCase @Inject constructor(
         }
 
         // 2. Combine and filter
-        return combine(tasksFlow, filterPendingFlow, filterOverdueFlow) { tasks, pendingOnly, overdueOnly ->
+        return combine(tasksFlow, filterPendingFlow, filterOverdueFlow, filterRecurrentFlow) { tasks, pendingOnly, overdueOnly, recurrentOnly ->
             val now = System.currentTimeMillis()
             tasks.filter { task ->
                 var matches = true
@@ -48,6 +49,11 @@ class GetFilteredTasksUseCase @Inject constructor(
                     // Overdue tasks must not be completed
                     if (task.completed) matches = false
                 }
+
+                if (recurrentOnly) {
+                    if (task.recurrence == "NONE") matches = false
+                }
+
                 matches
             }
         }

@@ -82,6 +82,9 @@ class TasksFragment : Fragment() {
       binding.chipOverdue.setOnCheckedChangeListener { _, isChecked ->
           viewModel.setFilterOverdue(isChecked)
       }
+      binding.chipRecurrent.setOnCheckedChangeListener { _, isChecked ->
+          viewModel.setFilterRecurrent(isChecked)
+      }
   }
   
   private fun updateGreeting() {
@@ -431,6 +434,14 @@ class TasksFragment : Fragment() {
                   viewModel.filterOverdue.collect { isChecked ->
                        if (binding.chipOverdue.isChecked != isChecked) {
                            binding.chipOverdue.isChecked = isChecked
+                       }
+                  }
+              }
+
+              launch {
+                  viewModel.filterRecurrent.collect { isChecked ->
+                       if (binding.chipRecurrent.isChecked != isChecked) {
+                           binding.chipRecurrent.isChecked = isChecked
                        }
                   }
               }

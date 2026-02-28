@@ -35,4 +35,7 @@ interface SubtaskDao {
 
   @Query("UPDATE subtasks SET completed = 0 WHERE taskId = :taskId")
   suspend fun resetSubtasksForTask(taskId: Long)
+
+  @Query("UPDATE subtasks SET completed = 1 WHERE taskId = :taskId")
+  suspend fun completeSubtasksForTask(taskId: Long)
 }

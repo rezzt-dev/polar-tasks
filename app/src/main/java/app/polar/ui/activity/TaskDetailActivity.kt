@@ -78,13 +78,13 @@ class TaskDetailActivity : BaseActivity() {
         }
         
         // Creation Date
-        val createFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val createFormat = SimpleDateFormat("d MMM, yyyy", Locale("es", "ES"))
         binding.tvDetailDate.text = createFormat.format(Date(task.createdAt))
         
         // Due Date logic
         if (task.dueDate != null) {
             binding.containerDueDate.visibility = View.VISIBLE
-            val format = SimpleDateFormat("EEEE, d MMMM", Locale.getDefault())
+            val format = SimpleDateFormat("EEEE, d MMMM", Locale("es", "ES"))
             
             val dateStr = when {
                 android.text.format.DateUtils.isToday(task.dueDate) -> getString(R.string.today)

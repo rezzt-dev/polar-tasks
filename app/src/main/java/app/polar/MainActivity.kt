@@ -45,6 +45,7 @@ class MainActivity : BaseActivity() {
     setupToolbar()
     setupDrawerManager()
     setupFab()
+    binding.fabAddTask.hide()
     // observeTaskLists() moved to DrawerManager
     
     // Load initial fragment

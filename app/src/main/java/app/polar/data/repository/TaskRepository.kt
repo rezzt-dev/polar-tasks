@@ -120,6 +120,14 @@ class TaskRepository @Inject constructor(
     subtaskDao.deleteAllForTask(taskId)
   }
 
+  suspend fun completeSubtasksForTask(taskId: Long) {
+    subtaskDao.completeSubtasksForTask(taskId)
+  }
+
+  suspend fun resetSubtasksForTask(taskId: Long) {
+    subtaskDao.resetSubtasksForTask(taskId)
+  }
+
   // Trash operations
   suspend fun softDeleteTask(taskId: Long) {
       taskDao.softDelete(taskId)

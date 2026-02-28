@@ -55,16 +55,15 @@
                 android:text="vencidas"
                 android:checkable="true"
                 app:checkedIconVisible="true"/>
-                
-             <!-- Future: Priority filter if we add Priority field
-             <com.google.android.material.chip.Chip
-                android:id="@+id/chipPriority"
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipRecurrent"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="prioridad alta"
-                android:checkable="true" /> 
-             -->
+                android:text="repetitivas"
+                android:checkable="true"
+                app:checkedIconVisible="true"/>
 
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>

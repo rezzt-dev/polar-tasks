@@ -112,8 +112,8 @@ class HomeTaskAdapter(
             }
 
             if (task.dueDate != null) {
-                val format = SimpleDateFormat("MMM dd", Locale.getDefault())
-                val dateStr = format.format(Date(task.dueDate))
+                val format = SimpleDateFormat("d, MMM", Locale("es", "ES"))
+                val dateStr = format.format(Date(task.dueDate)).lowercase()
                 
                 val now = java.util.Calendar.getInstance()
                 val dueDate = java.util.Calendar.getInstance()
@@ -122,8 +122,17 @@ class HomeTaskAdapter(
                 val isToday = now.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
                               now.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
                 
+                val tomorrow = java.util.Calendar.getInstance()
+                tomorrow.add(java.util.Calendar.DAY_OF_YEAR, 1)
+                val isTomorrow = tomorrow.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
+                                 tomorrow.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
+                
                 // Use resource string for consistency
-                val displayDate = if (isToday) itemView.context.getString(R.string.today) else dateStr
+                val displayDate = when {
+                    isToday -> itemView.context.getString(R.string.today)
+                    isTomorrow -> itemView.context.getString(R.string.tomorrow)
+                    else -> dateStr
+                }
                 
                 tvDueDate.text = displayDate
                 tvDueDate.visibility = View.VISIBLE
@@ -148,7 +157,7 @@ class HomeTaskAdapter(
                     }
                     else -> {
                         val typedValue = android.util.TypedValue()
-                        itemView.context.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
+                        itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
                         tvDueDate.setTextColor(typedValue.data)
                     }
                 }
