@@ -61,28 +61,42 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun setupThemeSwitch() {
-        val currentTheme = themeManager.loadTheme()
-        
-        when (currentTheme) {
-            ThemeManager.THEME_LIGHT -> binding.rbThemeLight.isChecked = true
-            ThemeManager.THEME_DARK -> binding.rbThemeDark.isChecked = true
-            ThemeManager.THEME_MULTICOLOR_LIGHT -> binding.rbThemeMulticolorLight.isChecked = true
-            ThemeManager.THEME_MULTICOLOR_DARK -> binding.rbThemeMulticolorDark.isChecked = true
-            else -> binding.rbThemeDark.isChecked = true
-        }
-        
-        binding.rgThemes.setOnCheckedChangeListener { _, checkedId ->
-            val newTheme = when (checkedId) {
-                R.id.rbThemeLight -> ThemeManager.THEME_LIGHT
-                R.id.rbThemeDark -> ThemeManager.THEME_DARK
-                R.id.rbThemeMulticolorLight -> ThemeManager.THEME_MULTICOLOR_LIGHT
-                R.id.rbThemeMulticolorDark -> ThemeManager.THEME_MULTICOLOR_DARK
-                else -> ThemeManager.THEME_DARK
+    private fun <T> createNonFilteringAdapter(items: List<T>): android.widget.ArrayAdapter<T> {
+        return object : android.widget.ArrayAdapter<T>(requireContext(), android.R.layout.simple_dropdown_item_1line, items) {
+            private val noFilter = object : android.widget.Filter() {
+                override fun performFiltering(constraint: CharSequence?): FilterResults {
+                    return FilterResults().apply {
+                        values = items
+                        count = items.size
+                    }
+                }
+                override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                    notifyDataSetChanged()
+                }
             }
-            
-            if (themeManager.loadTheme() != newTheme) {
-                themeManager.saveTheme(newTheme)
+            override fun getFilter(): android.widget.Filter = noFilter
+        }
+    }
+
+    private fun setupThemeSwitch() {
+        val themeEntries = linkedMapOf(
+            getString(R.string.theme_light) to ThemeManager.THEME_LIGHT,
+            getString(R.string.theme_dark) to ThemeManager.THEME_DARK,
+            getString(R.string.theme_multicolor_light) to ThemeManager.THEME_MULTICOLOR_LIGHT,
+            getString(R.string.theme_multicolor_dark) to ThemeManager.THEME_MULTICOLOR_DARK
+        )
+
+        val themeLabels = themeEntries.keys.toList()
+        binding.actvTheme.setAdapter(createNonFilteringAdapter(themeLabels))
+
+        val currentTheme = themeManager.loadTheme()
+        val currentLabel = themeEntries.entries.find { it.value == currentTheme }?.key ?: themeLabels[1]
+        binding.actvTheme.setText(currentLabel, false)
+
+        binding.actvTheme.setOnItemClickListener { _, _, position, _ ->
+            val selectedTheme = themeEntries.values.toList()[position]
+            if (themeManager.loadTheme() != selectedTheme) {
+                themeManager.saveTheme(selectedTheme)
                 activity?.recreate()
             }
         }
@@ -118,29 +132,25 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupFontSelection() {
-        val currentFont = themeManager.loadFont()
-        
-        when (currentFont) {
-            ThemeManager.FONT_POPPINS -> binding.rbPoppins.isChecked = true
-            ThemeManager.FONT_COMFORTAA -> binding.rbComfortaa.isChecked = true
-            ThemeManager.FONT_FIGTREE -> binding.rbFigtree.isChecked = true
-            ThemeManager.FONT_JETBRAINS_MONO -> binding.rbJetBrainsMono.isChecked = true
-            ThemeManager.FONT_ARIAL -> binding.rbArial.isChecked = true
-            ThemeManager.FONT_SYSTEM -> binding.rbSystem.isChecked = true
-        }
+        val fontEntries = linkedMapOf(
+            getString(R.string.font_poppins) to ThemeManager.FONT_POPPINS,
+            getString(R.string.font_comfortaa) to ThemeManager.FONT_COMFORTAA,
+            getString(R.string.font_figtree) to ThemeManager.FONT_FIGTREE,
+            getString(R.string.font_jetbrains_mono) to ThemeManager.FONT_JETBRAINS_MONO,
+            getString(R.string.font_arial) to ThemeManager.FONT_ARIAL,
+            getString(R.string.font_system) to ThemeManager.FONT_SYSTEM
+        )
 
-        binding.rgFonts.setOnCheckedChangeListener { _, checkedId ->
-            val selectedFont = when (checkedId) {
-                R.id.rbPoppins -> ThemeManager.FONT_POPPINS
-                R.id.rbComfortaa -> ThemeManager.FONT_COMFORTAA
-                R.id.rbFigtree -> ThemeManager.FONT_FIGTREE
-                R.id.rbJetBrainsMono -> ThemeManager.FONT_JETBRAINS_MONO
-                R.id.rbArial -> ThemeManager.FONT_ARIAL
-                R.id.rbSystem -> ThemeManager.FONT_SYSTEM
-                else -> ThemeManager.FONT_POPPINS
-            }
-            
-            if (selectedFont != currentFont) {
+        val fontLabels = fontEntries.keys.toList()
+        binding.actvFont.setAdapter(createNonFilteringAdapter(fontLabels))
+
+        val currentFont = themeManager.loadFont()
+        val currentLabel = fontEntries.entries.find { it.value == currentFont }?.key ?: fontLabels[0]
+        binding.actvFont.setText(currentLabel, false)
+
+        binding.actvFont.setOnItemClickListener { _, _, position, _ ->
+            val selectedFont = fontEntries.values.toList()[position]
+            if (themeManager.loadFont() != selectedFont) {
                 themeManager.saveFont(selectedFont)
                 requireActivity().recreate()
             }

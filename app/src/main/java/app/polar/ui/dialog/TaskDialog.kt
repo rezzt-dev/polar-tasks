@@ -129,12 +129,28 @@ class TaskDialog(
     }
     
     binding.btnSave.setOnClickListener {
-      val title = binding.etTaskTitle.text.toString().trim()
+      val rawTitle = binding.etTaskTitle.text.toString()
       val description = binding.etTaskDescription.text.toString().trim()
+      
+      // Parse natural language from title
+      val parsedInfo = app.polar.domain.util.SmartParser.parse(rawTitle, selectedDate)
+      
+      // Add newly parsed tags to our tagList (prevent duplicates)
+      parsedInfo.tags.forEach { tag ->
+          if (!tagList.contains(tag)) tagList.add(tag)
+      }
+      
       val tagsString = tagList.joinToString(",")
       
-      if (title.isNotEmpty()) {
-        onSave(title, description, tagsString, subtaskList.toList(), selectedDate, selectedRecurrence)
+      // Override selected recurrence if parser found one
+      val finalRecurrence = if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence else selectedRecurrence
+      
+      if (parsedInfo.title.isNotEmpty()) {
+        onSave(parsedInfo.title, description, tagsString, subtaskList.toList(), parsedInfo.dueDate, finalRecurrence)
+        dismiss()
+      } else if (rawTitle.trim().isNotEmpty()) {
+        // Fallback if the parser accidentally stripped everything (e.g. title was literally just "#tag")
+        onSave(rawTitle.trim(), description, tagsString, subtaskList.toList(), parsedInfo.dueDate, finalRecurrence)
         dismiss()
       }
     }
@@ -146,7 +162,14 @@ class TaskDialog(
   
   override fun onStart() {
       super.onStart()
-      dialog?.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+      dialog?.window?.apply {
+          setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+          // Set dialog size so ScrollView can properly constrain content
+          val displayMetrics = resources.displayMetrics
+          val width = (displayMetrics.widthPixels * 0.9).toInt()
+          val maxHeight = (displayMetrics.heightPixels * 0.85).toInt()
+          setLayout(width, maxHeight)
+      }
   }
   
   private fun updateDateText() {
@@ -179,7 +202,6 @@ class TaskDialog(
   private fun setupSubtaskList() {
     subtaskAdapter = SubtaskAdapter(
       onCheckChanged = { subtask, isChecked -> 
-          // actualizar estado de subtarea en la lista local
           val index = subtaskList.indexOf(subtask)
           if (index != -1) {
               subtaskList[index] = subtask.copy(completed = isChecked)
@@ -192,6 +214,7 @@ class TaskDialog(
     )
     binding.recyclerSubtasks.layoutManager = LinearLayoutManager(context)
     binding.recyclerSubtasks.adapter = subtaskAdapter
+    binding.recyclerSubtasks.isNestedScrollingEnabled = false
     updateSubtaskList()
   }
   
@@ -202,6 +225,7 @@ class TaskDialog(
       }
       binding.recyclerTags.layoutManager = LinearLayoutManager(context)
       binding.recyclerTags.adapter = tagAdapter
+      binding.recyclerTags.isNestedScrollingEnabled = false
       updateTagList()
   }
 

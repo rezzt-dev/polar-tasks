@@ -12,6 +12,7 @@ class GetFilteredTasksUseCase @Inject constructor(
 ) {
     operator fun invoke(
         listIdFlow: Flow<Long>,
+        filterTodayFlow: Flow<Boolean>,
         filterPendingFlow: Flow<Boolean>,
         filterOverdueFlow: Flow<Boolean>,
         filterRecurrentFlow: Flow<Boolean>
@@ -26,10 +27,18 @@ class GetFilteredTasksUseCase @Inject constructor(
         }
 
         // 2. Combine and filter
-        return combine(tasksFlow, filterPendingFlow, filterOverdueFlow, filterRecurrentFlow) { tasks, pendingOnly, overdueOnly, recurrentOnly ->
+        return combine(tasksFlow, filterTodayFlow, filterPendingFlow, filterOverdueFlow, filterRecurrentFlow) { tasks, todayOnly, pendingOnly, overdueOnly, recurrentOnly ->
             val now = System.currentTimeMillis()
             tasks.filter { task ->
                 var matches = true
+
+                if (todayOnly) {
+                    if (task.dueDate == null) {
+                        matches = false
+                    } else {
+                        if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
+                    }
+                }
 
                 if (pendingOnly) {
                     // Strict Pending: Task not completed

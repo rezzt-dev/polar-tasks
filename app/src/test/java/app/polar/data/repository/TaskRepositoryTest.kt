@@ -16,11 +16,13 @@ import org.junit.Test
 class TaskRepositoryTest {
     
     private val taskDao = mockk<TaskDao>()
-    private val repository = TaskRepository(taskDao)
+    private val taskListDao = mockk<app.polar.data.dao.TaskListDao>()
+    private val subtaskDao = mockk<app.polar.data.dao.SubtaskDao>()
+    private val repository = TaskRepository(taskListDao, taskDao, subtaskDao)
 
     @Test
     fun `getAllTasksFlow returns flow from dao`() = runTest {
-        val tasks = listOf(Task(title = "Test Task"))
+        val tasks = listOf(Task(listId = 1L, title = "Test Task"))
         every { taskDao.getAllTasksFlow() } returns flowOf(tasks)
 
         val result = repository.getAllTasksFlow()
@@ -47,32 +49,32 @@ class TaskRepositoryTest {
 
     @Test
     fun `insertTask calls dao insert`() = runTest {
-        val task = Task(title = "New Task")
-        coEvery { taskDao.insertTask(task) } returns 1L
+        val task = Task(listId = 1L, title = "New Task")
+        coEvery { taskDao.insert(task) } returns 1L
 
         val id = repository.insertTask(task)
 
         assertEquals(1L, id)
-        coVerify { taskDao.insertTask(task) }
+        coVerify { taskDao.insert(task) }
     }
 
     @Test
     fun `updateTask calls dao update`() = runTest {
-        val task = Task(id = 1, title = "Updated")
-        coEvery { taskDao.updateTask(task) } returns Unit
+        val task = Task(id = 1, listId = 1L, title = "Updated")
+        coEvery { taskDao.update(task) } returns Unit
 
         repository.updateTask(task)
 
-        coVerify { taskDao.updateTask(task) }
+        coVerify { taskDao.update(task) }
     }
     
     @Test
-    fun `deleteTask calls dao delete`() = runTest {
-        val task = Task(id = 1, title = "Delete me")
-        coEvery { taskDao.deleteTask(task) } returns Unit
+    fun `deleteTask calls dao softDelete`() = runTest {
+        val task = Task(id = 1, listId = 1L, title = "Delete me")
+        coEvery { taskDao.softDelete(1) } returns Unit
 
-        repository.deleteTask(task)
+        repository.softDeleteTask(1)
 
-        coVerify { taskDao.deleteTask(task) }
+        coVerify { taskDao.softDelete(1) }
     }
 }

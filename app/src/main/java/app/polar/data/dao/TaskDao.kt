@@ -85,4 +85,29 @@ interface TaskDao {
     ORDER BY task_lists.homeOrderIndex ASC, tasks.orderIndex ASC
   """)
   fun getTasksWithListTitles(): LiveData<List<app.polar.data.model.TaskWithList>>
+
+  // --- Statistics queries ---
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0")
+  suspend fun getTotalTaskCount(): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 1")
+  suspend fun getCompletedTaskCount(): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 0")
+  suspend fun getPendingTaskCount(): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 1 AND dueDate BETWEEN :start AND :end")
+  suspend fun getCompletedTaskCountBetween(start: Long, end: Long): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND dueDate BETWEEN :start AND :end")
+  suspend fun getTaskCountBetween(start: Long, end: Long): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND createdAt BETWEEN :start AND :end")
+  suspend fun getCreatedTaskCountBetween(start: Long, end: Long): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 0 AND dueDate < :now AND dueDate IS NOT NULL")
+  suspend fun getOverdueTaskCount(now: Long): Int
+
+  @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 1 ORDER BY createdAt DESC")
+  suspend fun getAllCompletedTasksSnapshot(): List<Task>
 }

@@ -28,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     application: Application,
-    private val repository: TaskRepository,
+    internal val repository: TaskRepository,
     private val alarmHelper: app.polar.util.AlarmManagerHelper,
     private val getFilteredTasksUseCase: GetFilteredTasksUseCase
 ) : AndroidViewModel(application) {
@@ -39,13 +39,16 @@ class TaskViewModel @Inject constructor(
   val selectedListId: StateFlow<Long> = _selectedListId.asStateFlow()
   
   // Filter states
+  private val _filterToday = MutableStateFlow(false)
   private val _filterPending = MutableStateFlow(false)
   private val _filterOverdue = MutableStateFlow(false)
   private val _filterRecurrent = MutableStateFlow(false)
+  val filterToday: StateFlow<Boolean> = _filterToday.asStateFlow()
   val filterPending: StateFlow<Boolean> = _filterPending.asStateFlow()
   val filterOverdue: StateFlow<Boolean> = _filterOverdue.asStateFlow()
   val filterRecurrent: StateFlow<Boolean> = _filterRecurrent.asStateFlow()
 
+  fun setFilterToday(enabled: Boolean) { _filterToday.value = enabled }
   fun setFilterPending(enabled: Boolean) { _filterPending.value = enabled }
   fun setFilterOverdue(enabled: Boolean) { _filterOverdue.value = enabled }
   fun setFilterRecurrent(enabled: Boolean) { _filterRecurrent.value = enabled }
@@ -66,7 +69,8 @@ class TaskViewModel @Inject constructor(
 
   // Filtered List for List Mode
   val tasks: StateFlow<List<TaskListItem>> = getFilteredTasksUseCase(
-        _selectedListId, 
+        _selectedListId,
+        _filterToday,
         _filterPending, 
         _filterOverdue,
         _filterRecurrent
@@ -93,6 +97,7 @@ class TaskViewModel @Inject constructor(
   val homeTaskGroups: LiveData<List<app.polar.data.model.TaskGroup>> = androidx.lifecycle.MediatorLiveData<List<app.polar.data.model.TaskGroup>>().apply {
       fun update() {
            val rawList = _rawHomeTasks.value ?: emptyList()
+           val todayOnly = _filterToday.value
            val pendingOnly = _filterPending.value
            val overdueOnly = _filterOverdue.value
            val recurrentOnly = _filterRecurrent.value
@@ -103,6 +108,13 @@ class TaskViewModel @Inject constructor(
               if (task.completed) return@filter false
                
               var matches = true
+               if (todayOnly) {
+                   if (task.dueDate == null) {
+                       matches = false
+                   } else {
+                       if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
+                   }
+               }
                if (pendingOnly) {
                   if (task.completed) matches = false
                   if (item.completedSubtasks > 0) matches = false
@@ -131,6 +143,7 @@ class TaskViewModel @Inject constructor(
            value = result
       }
       addSource(_rawHomeTasks) { update() }
+      addSource(_filterToday.asLiveData()) { update() }
       addSource(_filterPending.asLiveData()) { update() }
       addSource(_filterOverdue.asLiveData()) { update() }
       addSource(_filterRecurrent.asLiveData()) { update() }

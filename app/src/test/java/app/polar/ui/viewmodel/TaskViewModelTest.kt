@@ -34,33 +34,19 @@ class TaskViewModelTest {
     @Test
     fun `tasks StateFlow emits data from UseCase`() = runTest {
         // Given
-        val mockTasks = listOf(Task(id = 1, title = "Test Task"))
+        val mockTasks = listOf(Task(id = 1, listId = 1L, title = "Test Task"))
         
         // Mock UseCase to return a Flow
-        every { getFilteredTasksUseCase(any(), any(), any()) } returns flowOf(mockTasks)
+        every { getFilteredTasksUseCase(any(), any(), any(), any(), any()) } returns flowOf(mockTasks)
 
         // Init ViewModel
         viewModel = TaskViewModel(application, repository, alarmHelper, getFilteredTasksUseCase)
 
         // When/Then (collecting StateFlow)
-        // Note: StateFlow initial value is emptyList as per code.
-        // We need to wait for collection or just access value if started eagerly?
-        // SharingStarted.WhileSubscribed(5000) means it starts when collected.
-        
-        // We can check value after some collection time or simply collect it.
-        // Tests with StateFlow usually involve collecting in background or checking value.
-        
-        // Accessing .value immediately might be emptyList.
-        // But since we use flowOf which emits immediately, and runTest uses TestDispatcher...
-        // Let's see.
-        
-        // We need to trigger subscription.
         val collected = viewModel.tasks.value
-        // It might be empty initially.
-        // Better trigger it.
         
         // However, simpler test for logic delegation:
-        verify { getFilteredTasksUseCase(any(), any(), any()) }
+        verify { getFilteredTasksUseCase(any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -85,7 +71,7 @@ class TaskViewModelTest {
     fun `setTaskCompletion updates task and alarm`() = runTest {
          viewModel = TaskViewModel(application, repository, alarmHelper, getFilteredTasksUseCase)
          
-         val task = Task(id = 1, title = "Task", completed = false, dueDate = 1000L)
+         val task = Task(id = 1, listId = 1L, title = "Task", completed = false, dueDate = 1000L)
          
          viewModel.setTaskCompletion(task, true)
          

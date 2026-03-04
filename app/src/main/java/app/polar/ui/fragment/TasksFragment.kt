@@ -76,6 +76,9 @@ class TasksFragment : Fragment() {
   }
 
   private fun setupFilters() {
+      binding.chipToday.setOnCheckedChangeListener { _, isChecked ->
+          viewModel.setFilterToday(isChecked)
+      }
       binding.chipPending.setOnCheckedChangeListener { _, isChecked ->
           viewModel.setFilterPending(isChecked)
       }
@@ -423,6 +426,14 @@ class TasksFragment : Fragment() {
               }
               
               launch {
+                  viewModel.filterToday.collect { isChecked ->
+                       if (binding.chipToday.isChecked != isChecked) {
+                           binding.chipToday.isChecked = isChecked
+                       }
+                  }
+              }
+
+              launch {
                   viewModel.filterPending.collect { isChecked ->
                        if (binding.chipPending.isChecked != isChecked) {
                            binding.chipPending.isChecked = isChecked
@@ -522,6 +533,10 @@ class TasksFragment : Fragment() {
       menuInflater.inflate(R.menu.menu_task, menu)
       setOnMenuItemClickListener { item ->
         when (item.itemId) {
+          R.id.action_export -> {
+            exportTaskToClipboard(task)
+            true
+          }
           R.id.action_edit -> {
             showEditTaskDialog(task)
             true
@@ -535,6 +550,52 @@ class TasksFragment : Fragment() {
       }
       show()
     }
+  }
+
+  private fun exportTaskToClipboard(task: Task) {
+    val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
+    val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
+        override fun onChanged(subtasks: List<app.polar.data.entity.Subtask>) {
+            subtasksLiveData.removeObserver(this)
+
+            val sb = StringBuilder()
+            sb.appendLine(task.title)
+            if (task.description.isNotBlank()) {
+                sb.appendLine(task.description)
+            }
+
+            if (subtasks.isNotEmpty()) {
+                sb.appendLine()
+                subtasks.forEach { subtask ->
+                    sb.appendLine("- ${subtask.title}")
+                }
+            }
+
+            if (task.dueDate != null) {
+                sb.appendLine()
+                val cal = java.util.Calendar.getInstance()
+                cal.timeInMillis = task.dueDate
+                val hasTime = cal.get(java.util.Calendar.HOUR_OF_DAY) != 0 || cal.get(java.util.Calendar.MINUTE) != 0
+                val dateFormat = if (hasTime) {
+                    java.text.SimpleDateFormat("d 'de' MMMM 'de' yyyy, HH:mm", java.util.Locale("es", "ES"))
+                } else {
+                    java.text.SimpleDateFormat("d 'de' MMMM 'de' yyyy", java.util.Locale("es", "ES"))
+                }
+                sb.appendLine("Fecha: ${dateFormat.format(java.util.Date(task.dueDate))}")
+            }
+
+            val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText(task.title, sb.toString().trimEnd())
+            clipboard.setPrimaryClip(clip)
+
+            com.google.android.material.snackbar.Snackbar.make(
+                binding.root,
+                getString(R.string.task_copied),
+                com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+            ).show()
+        }
+    }
+    subtasksLiveData.observe(viewLifecycleOwner, observer)
   }
   
   private fun showEditTaskDialog(task: Task) {

@@ -57,8 +57,11 @@
   <!-- Actions -->
   <string name="save">guardar</string>
   <string name="cancel">cancelar</string>
+  <string name="export">exportar</string>
   <string name="edit">editar</string>
   <string name="delete">eliminar</string>
+  <string name="task_copied">tarea copiada al portapapeles</string>
+  <string name="filter_today">hoy</string>
   <string name="confirm_delete">estas seguro de eliminar esto?</string>
   <string name="add">agregar</string>
   
@@ -92,6 +95,24 @@
   <string name="good_morning">buenos días</string>
   <string name="good_afternoon">buenas tardes</string>
   <string name="good_night">buenas noches</string>
+
+  <!-- Statistics -->
+  <string name="statistics">estadísticas</string>
+  <string name="total_tasks">total de tareas</string>
+  <string name="completed_tasks">completadas</string>
+  <string name="pending_tasks">pendientes</string>
+  <string name="overdue_tasks">vencidas</string>
+  <string name="completion_rate">tasa de cumplimiento</string>
+  <string name="this_week">esta semana</string>
+  <string name="this_month">este mes</string>
+  <string name="weekly_activity">actividad semanal</string>
+  <string name="tasks_completed_week">tareas completadas esta semana</string>
+  <string name="tasks_completed_month">tareas completadas este mes</string>
+  <string name="tasks_created_week">tareas creadas esta semana</string>
+  <string name="tasks_created_month">tareas creadas este mes</string>
+  <string name="best_day">mejor día</string>
+  <string name="current_streak">racha actual</string>
+  <string name="days">días</string>
   
   <!-- Messages -->
   <string name="task_moved_trash">tarea movida a la papelera</string>

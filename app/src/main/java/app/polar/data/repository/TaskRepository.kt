@@ -148,4 +148,14 @@ class TaskRepository @Inject constructor(
   fun getDeletedTasks(): LiveData<List<Task>> {
       return taskDao.getDeletedTasks()
   }
+
+  // Statistics
+  suspend fun getTotalTaskCount(): Int = taskDao.getTotalTaskCount()
+  suspend fun getCompletedTaskCount(): Int = taskDao.getCompletedTaskCount()
+  suspend fun getPendingTaskCount(): Int = taskDao.getPendingTaskCount()
+  suspend fun getCompletedTaskCountBetween(start: Long, end: Long): Int = taskDao.getCompletedTaskCountBetween(start, end)
+  suspend fun getTaskCountBetween(start: Long, end: Long): Int = taskDao.getTaskCountBetween(start, end)
+  suspend fun getCreatedTaskCountBetween(start: Long, end: Long): Int = taskDao.getCreatedTaskCountBetween(start, end)
+  suspend fun getOverdueTaskCount(now: Long): Int = taskDao.getOverdueTaskCount(now)
+  suspend fun getAllCompletedTasksSnapshot(): List<Task> = taskDao.getAllCompletedTasksSnapshot()
 }

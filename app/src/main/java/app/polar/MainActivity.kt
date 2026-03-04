@@ -278,8 +278,18 @@ class MainActivity : BaseActivity() {
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     return when (item.itemId) {
+      R.id.action_stats -> {
+        binding.fabAddTask.hide()
+        currentListId = null
+        binding.toolbar.title = getString(R.string.statistics)
+        
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, app.polar.ui.fragment.StatsFragment())
+            .addToBackStack(null)
+            .commit()
+        true
+      }
       R.id.action_settings -> {
-        // Navigate to Settings
         binding.fabAddTask.hide()
         currentListId = null
         binding.toolbar.title = getString(R.string.settings)
