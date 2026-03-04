@@ -12,5 +12,6 @@ data class TaskList(
   val icon: String = "ic_list", // Default icon
   val createdAt: Long = System.currentTimeMillis(),
   @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0,
-  @ColumnInfo(name = "homeOrderIndex") val homeOrderIndex: Int = 0
+  @ColumnInfo(name = "homeOrderIndex") val homeOrderIndex: Int = 0,
+  @ColumnInfo(name = "isDependencyChain") val isDependencyChain: Boolean = false
 )

@@ -73,6 +73,7 @@ class TasksFragment : Fragment() {
     )
     
     binding.recyclerTasks.layoutManager = LinearLayoutManager(context)
+    binding.recyclerTasks.itemAnimator = null // Disable animations for instant, fluid updates
   }
 
   private fun setupFilters() {
@@ -102,33 +103,18 @@ class TasksFragment : Fragment() {
   }
 
   private fun handleTaskCompletion(task: Task, isChecked: Boolean, view: android.view.View) {
+       // Cancel any pending completion job for this task
        completionJobs[task.id]?.cancel()
-       
+       completionJobs.remove(task.id)
+
+       // Reset view state immediately to avoid stale alpha / translationX from swipe
+       view.alpha = 1.0f
+       view.translationX = 0f
+
        if (isChecked) {
-           val job = viewLifecycleOwner.lifecycleScope.launch {
-               // Delay to allow user to see the change
-               kotlinx.coroutines.delay(2500)
-               
-               // Animate if view is still valid for this task
-               if (view.tag == task.id) {
-                   view.animate()
-                       .alpha(0f)
-                       .setDuration(300)
-                       .start()
-                   kotlinx.coroutines.delay(300)
-               }
-               
-               viewModel.setTaskCompletion(task, true)
-               completionJobs.remove(task.id)
-           }
-           completionJobs[task.id] = job
+           viewModel.setTaskCompletion(task, true)
        } else {
-           // Unchecking
-           if (task.completed) {
-               viewModel.setTaskCompletion(task, false)
-           }
-           view.alpha = 1.0f
-           view.animate().cancel()
+           viewModel.setTaskCompletion(task, false)
        }
   }
 
@@ -220,26 +206,15 @@ class TasksFragment : Fragment() {
               return false
           }
 
-          override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
-              val position = viewHolder.bindingAdapterPosition
-              if (position == androidx.recyclerview.widget.RecyclerView.NO_POSITION) return
-              
-              val adapter = binding.recyclerTasks.adapter
-              if (adapter is app.polar.ui.adapter.HomeTaskAdapter) {
-                  val item = adapter.currentList[position]
-                  if (item is app.polar.ui.adapter.HomeItem.TaskItem) {
-                      val task = item.task
-                      if (direction == androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
-                          viewModel.moveToTrash(task)
-                          com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.task_moved_trash), com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
-                              .setAction(getString(R.string.undo)) { viewModel.restoreFromTrash(task) }.show()
-                      } else {
-                          viewModel.toggleTaskCompletion(task)
-                      }
-                  }
-              } else if (adapter is TaskAdapter) {
-                   val item = (adapter.currentList[position] as? app.polar.ui.adapter.TaskListItem.Item)?.task
-                   item?.let { task ->
+           override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+               val position = viewHolder.bindingAdapterPosition
+               if (position == androidx.recyclerview.widget.RecyclerView.NO_POSITION) return
+               
+               val adapter = binding.recyclerTasks.adapter
+               if (adapter is app.polar.ui.adapter.HomeTaskAdapter) {
+                   val item = adapter.currentList.getOrNull(position)
+                   if (item is app.polar.ui.adapter.HomeItem.TaskItem) {
+                       val task = item.task
                        if (direction == androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
                            viewModel.moveToTrash(task)
                            com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.task_moved_trash), com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
@@ -248,8 +223,19 @@ class TasksFragment : Fragment() {
                            viewModel.toggleTaskCompletion(task)
                        }
                    }
-              }
-          }
+               } else if (adapter is TaskAdapter) {
+                    val item = (adapter.currentList.getOrNull(position) as? app.polar.ui.adapter.TaskListItem.Item)?.task
+                    if (item != null) {
+                        if (direction == androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+                            viewModel.moveToTrash(item)
+                            com.google.android.material.snackbar.Snackbar.make(binding.root, getString(R.string.task_moved_trash), com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+                                .setAction(getString(R.string.undo)) { viewModel.restoreFromTrash(item) }.show()
+                        } else {
+                            viewModel.toggleTaskCompletion(item)
+                        }
+                    }
+               }
+           }
           
           override fun onChildDraw(
               c: android.graphics.Canvas,
@@ -460,10 +446,10 @@ class TasksFragment : Fragment() {
       }
       
       // Observe LiveData (HomeTaskGroups & Error)
+      // Note: Do NOT guard with selectedListId here – the LiveData can fire before selectedListId
+      // is updated, causing the home screen to get stuck blank after a task completion.
       viewModel.homeTaskGroups.observe(viewLifecycleOwner) { groups ->
-          if (viewModel.selectedListId.value == -1L) {
-              updateHomeUI(groups)
-          }
+          updateHomeUI(groups)
       }
 
       viewLifecycleOwner.lifecycleScope.launch {
@@ -481,6 +467,9 @@ class TasksFragment : Fragment() {
   }
 
   private fun updateHomeUI(groups: List<app.polar.data.model.TaskGroup>) {
+      // Only update the home RecyclerView when actually in home mode
+      if (viewModel.selectedListId.value != -1L) return
+
       val hasTasks = groups.any { it.tasks.isNotEmpty() }
       updateEmptyState(!hasTasks)
       
@@ -514,6 +503,7 @@ class TasksFragment : Fragment() {
           binding.recyclerTasks.adapter = taskAdapter
           binding.tvGreeting?.visibility = View.GONE
       }
+      binding.recyclerTasks.itemAnimator = null // Always keep animations off
       
       // Re-attach swipe actions (simplest way is to have one attached globally or re-configure)
       setupSwipeActions()

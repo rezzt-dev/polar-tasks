@@ -77,6 +77,7 @@ interface TaskDao {
     SELECT 
         tasks.*, 
         task_lists.title as listTitle,
+        task_lists.isDependencyChain as isDependencyChain,
         (SELECT COUNT(*) FROM subtasks WHERE taskId = tasks.id) as totalSubtasks,
         (SELECT COUNT(*) FROM subtasks WHERE taskId = tasks.id AND completed = 1) as completedSubtasks
     FROM tasks 

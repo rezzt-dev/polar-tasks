@@ -42,7 +42,6 @@ class MainActivity : BaseActivity() {
     setContentView(binding.root)
     
     setupToolbar()
-    setupToolbar()
     setupDrawerManager()
     setupFab()
     binding.fabAddTask.hide()
@@ -210,8 +209,8 @@ class MainActivity : BaseActivity() {
   private fun showCreateListDialog() {
     TaskListDialog(
       taskList = null,
-      onSave = { title, icon ->
-        taskListViewModel.insertTaskList(title, icon)
+      onSave = { title, icon, isChain ->
+        taskListViewModel.insertTaskList(title, icon, isChain)
       }
     ).show(supportFragmentManager, "CreateListDialog")
   }
@@ -219,7 +218,7 @@ class MainActivity : BaseActivity() {
   private fun showEditListDialog(taskList: app.polar.data.entity.TaskList) {
     TaskListDialog(
       taskList = taskList,
-      onSave = { title, icon ->
+      onSave = { title, icon, _ ->
         taskListViewModel.updateTaskList(taskList.copy(title = title, icon = icon))
         if (currentListId == taskList.id) {
           binding.toolbar.title = title

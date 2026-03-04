@@ -27,8 +27,8 @@ class TaskListViewModel @Inject constructor(
     _selectedListId.value = listId
   }
   
-  fun insertTaskList(title: String, icon: String = "ic_list") = viewModelScope.launch {
-    val taskList = TaskList(title = title, icon = icon)
+  fun insertTaskList(title: String, icon: String = "ic_list", isDependencyChain: Boolean = false) = viewModelScope.launch {
+    val taskList = TaskList(title = title, icon = icon, isDependencyChain = isDependencyChain)
     repository.insertTaskList(taskList)
   }
   

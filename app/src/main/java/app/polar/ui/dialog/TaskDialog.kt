@@ -27,7 +27,9 @@ class TaskDialog(
   private val subtaskList = mutableListOf<Subtask>()
   private val tagList = mutableListOf<String>()
   private var selectedDate: Long? = null
+  private var isDateExplicitlySet: Boolean = false
   private var selectedRecurrence: String = "NONE"
+  private var isRecurrenceExplicitlySet: Boolean = false
   
   private lateinit var subtaskAdapter: SubtaskAdapter
   private lateinit var tagAdapter: TagAdapter
@@ -79,6 +81,7 @@ class TaskDialog(
             localCalendar.set(java.util.Calendar.MILLISECOND, 0)
             
             selectedDate = localCalendar.timeInMillis
+            isDateExplicitlySet = true
             updateDateText()
         }
         
@@ -99,6 +102,7 @@ class TaskDialog(
                 3 -> "MONTHLY"
                 else -> "NONE"
             }
+            isRecurrenceExplicitlySet = true
             updateRecurrenceText()
             true
         }
@@ -142,15 +146,20 @@ class TaskDialog(
       
       val tagsString = tagList.joinToString(",")
       
-      // Override selected recurrence if parser found one
-      val finalRecurrence = if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence else selectedRecurrence
+      // Prioritize explicit Date selection
+      val finalDate = if (isDateExplicitlySet) selectedDate else parsedInfo.dueDate
+      
+      // Prioritize explicit Recurrence selection
+      val finalRecurrence = if (isRecurrenceExplicitlySet) selectedRecurrence 
+                            else if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence 
+                            else selectedRecurrence
       
       if (parsedInfo.title.isNotEmpty()) {
-        onSave(parsedInfo.title, description, tagsString, subtaskList.toList(), parsedInfo.dueDate, finalRecurrence)
+        onSave(parsedInfo.title, description, tagsString, subtaskList.toList(), finalDate, finalRecurrence)
         dismiss()
       } else if (rawTitle.trim().isNotEmpty()) {
         // Fallback if the parser accidentally stripped everything (e.g. title was literally just "#tag")
-        onSave(rawTitle.trim(), description, tagsString, subtaskList.toList(), parsedInfo.dueDate, finalRecurrence)
+        onSave(rawTitle.trim(), description, tagsString, subtaskList.toList(), finalDate, finalRecurrence)
         dismiss()
       }
     }

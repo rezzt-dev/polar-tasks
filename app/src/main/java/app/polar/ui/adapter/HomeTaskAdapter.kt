@@ -96,12 +96,24 @@ class HomeTaskAdapter(
         private val tagsContainer: View = itemView.findViewById(R.id.tagsContainer)
         private val recyclerSubtasks: RecyclerView = itemView.findViewById(R.id.recyclerSubtasks)
         
+        private val subtaskAdapter = app.polar.ui.adapter.SubtaskAdapter(
+            onCheckChanged = { subtask, _ -> viewModel.toggleSubtaskCompletion(subtask) },
+            onDelete = { /* no delete from home screen */ }
+        )
+
+        init {
+            recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(itemView.context)
+            recyclerSubtasks.adapter = subtaskAdapter
+            recyclerSubtasks.itemAnimator = null
+        }
+
         private var subtaskObserver: androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>>? = null
         private var currentTaskId: Long? = null
 
         fun bind(task: Task) {
+            resetVisuals()
             currentTaskId = task.id
-            itemView.tag = task.id // Tag for finding view holder by tag match
+            itemView.tag = task.id
             tvTitle.text = task.title
             
             if (task.description.isNotBlank()) {
@@ -112,45 +124,12 @@ class HomeTaskAdapter(
             }
 
             if (task.dueDate != null) {
-                val format = SimpleDateFormat("d, MMM", Locale("es", "ES"))
-                val dateStr = format.format(Date(task.dueDate)).lowercase()
-                
-                val now = java.util.Calendar.getInstance()
-                val dueDate = java.util.Calendar.getInstance()
-                dueDate.timeInMillis = task.dueDate
-                
-                val isToday = now.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
-                              now.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
-                
-                val tomorrow = java.util.Calendar.getInstance()
-                tomorrow.add(java.util.Calendar.DAY_OF_YEAR, 1)
-                val isTomorrow = tomorrow.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
-                                 tomorrow.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
-                
-                // Use resource string for consistency
-                val displayDate = when {
-                    isToday -> itemView.context.getString(R.string.today)
-                    isTomorrow -> itemView.context.getString(R.string.tomorrow)
-                    else -> dateStr
-                }
-                
-                tvDueDate.text = displayDate
+                tvDueDate.text = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
                 tvDueDate.visibility = View.VISIBLE
                 
-                val startOfToday = java.util.Calendar.getInstance()
-                startOfToday.set(java.util.Calendar.HOUR_OF_DAY, 0)
-                startOfToday.set(java.util.Calendar.MINUTE, 0)
-                startOfToday.set(java.util.Calendar.SECOND, 0)
-                startOfToday.set(java.util.Calendar.MILLISECOND, 0)
-                
-                val isOverdue = !task.completed && task.dueDate < startOfToday.timeInMillis && !isToday
-                
                 when {
-                    isOverdue -> {
-                        tvDueDate.setTextColor(android.graphics.Color.RED)
-                    }
-                    isToday -> {
-                        // Use primary color for today to make it visible
+                    !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) -> tvDueDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
+                    app.polar.util.DateUtils.isToday(task.dueDate) -> {
                         val typedValue = android.util.TypedValue()
                         itemView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
                         tvDueDate.setTextColor(typedValue.data)
@@ -165,19 +144,14 @@ class HomeTaskAdapter(
                 tvDueDate.visibility = View.GONE
             }
             
-             if (!task.tags.isNullOrEmpty()) {
+            if (!task.tags.isNullOrEmpty()) {
                 tvTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
                 tvTags.visibility = View.VISIBLE
             } else {
                 tvTags.visibility = View.GONE
             }
 
-            // Show container if either Date OR Tags are present
-            if (task.dueDate != null || !task.tags.isNullOrEmpty()) {
-                tagsContainer.visibility = View.VISIBLE
-            } else {
-                tagsContainer.visibility = View.GONE
-            }
+            tagsContainer.visibility = if (task.dueDate != null || !task.tags.isNullOrEmpty()) View.VISIBLE else View.GONE
 
             cbCompleted.setOnCheckedChangeListener(null)
             cbCompleted.isChecked = task.completed
@@ -188,34 +162,19 @@ class HomeTaskAdapter(
                 onTaskChecked(task, isChecked, itemView)
             }
 
-            // --- Subtasks Logic ---
-            // Remove previous observer if any
+            // Remove previous observer, attach new one
             unbind()
             
             val observer = androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> { subtasks ->
-                 if (subtasks.isNullOrEmpty()) {
-                     recyclerSubtasks.visibility = View.GONE
-                 } else {
-                     recyclerSubtasks.visibility = View.VISIBLE
-                     // Reuse SubtaskAdapter but we need a minimal version or standard one?
-                     // Standard one has checkboxes. We want them to complete the subtask.
-                     // IMPORTANT: Disable nested scrolling for this inner recycler
-                     recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(itemView.context)
-                     val adapter = app.polar.ui.adapter.SubtaskAdapter(
-                         onCheckChanged = { subtask, isChecked ->
-                             viewModel.toggleSubtaskCompletion(subtask)
-                         },
-                         onDelete = { 
-                             // No delete from home screen mini-view, simpler
-                         }
-                     )
-                     recyclerSubtasks.adapter = adapter
-                     adapter.submitList(subtasks)
-                 }
+                if (subtasks.isNullOrEmpty()) {
+                    recyclerSubtasks.visibility = View.GONE
+                } else {
+                    recyclerSubtasks.visibility = View.VISIBLE
+                    subtaskAdapter.submitList(subtasks)
+                }
             }
             viewModel.getSubtasksForTask(task.id).observe(lifecycleOwner, observer)
             subtaskObserver = observer
-            // --- End Subtasks Logic ---
 
             itemView.setOnClickListener { onTaskClick(task) }
             itemView.setOnLongClickListener { onTaskLongClick(task, itemView) }
@@ -241,8 +200,10 @@ class HomeTaskAdapter(
         }
 
         fun resetVisuals() {
+            itemView.animate().cancel()
             itemView.alpha = 1.0f
             itemView.translationX = 0f
+            itemView.translationY = 0f
             itemView.scaleX = 1.0f
             itemView.scaleY = 1.0f
         }
@@ -250,6 +211,9 @@ class HomeTaskAdapter(
 
     class HomeItemDiffCallback : DiffUtil.ItemCallback<HomeItem>() {
         override fun areItemsTheSame(oldItem: HomeItem, newItem: HomeItem): Boolean {
+            if (oldItem is HomeItem.TaskItem && newItem is HomeItem.TaskItem) {
+                return oldItem.id == newItem.id && oldItem.task.completed == newItem.task.completed
+            }
             return oldItem.id == newItem.id
         }
 

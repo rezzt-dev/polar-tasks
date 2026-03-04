@@ -13,7 +13,7 @@ import app.polar.ui.adapter.IconAdapter
 
 class TaskListDialog(
   private val taskList: TaskList? = null,
-  private val onSave: (String, String) -> Unit
+  private val onSave: (String, String, Boolean) -> Unit
 ) : DialogFragment() {
   
   private var _binding: DialogTaskListBinding? = null
@@ -48,6 +48,9 @@ class TaskListDialog(
       binding.tvDialogTitle.text = getString(R.string.edit_list)
       binding.etListTitle.setText(taskList.title)
       selectedIcon = taskList.icon
+      binding.switchDependencyChain.isChecked = taskList.isDependencyChain
+      // Cannot change chain mode after creation (would break existing tasks)
+      binding.switchDependencyChain.isEnabled = taskList.isDependencyChain.not()
     } else {
       binding.tvDialogTitle.text = getString(R.string.create_list)
     }
@@ -70,8 +73,9 @@ class TaskListDialog(
     
     binding.btnSave.setOnClickListener {
       val title = binding.etListTitle.text.toString().trim()
+      val isChain = binding.switchDependencyChain.isChecked
       if (title.isNotEmpty()) {
-        onSave(title, selectedIcon)
+        onSave(title, selectedIcon, isChain)
         dismiss()
       }
     }

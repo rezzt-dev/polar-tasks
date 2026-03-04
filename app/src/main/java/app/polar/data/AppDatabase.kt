@@ -15,7 +15,7 @@ import app.polar.data.entity.Reminder
 
 @Database(
   entities = [TaskList::class, Task::class, Subtask::class, Reminder::class],
-  version = 9,
+  version = 10,
   exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -44,6 +44,12 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
+    val MIGRATION_9_10 = object : androidx.room.migration.Migration(9, 10) {
+        override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE task_lists ADD COLUMN isDependencyChain INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
     @Volatile
     private var INSTANCE: AppDatabase? = null
     
@@ -54,7 +60,7 @@ abstract class AppDatabase : RoomDatabase() {
           AppDatabase::class.java,
           "polar_database"
         )
-        .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+        .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
         .fallbackToDestructiveMigration()
         .build()
         INSTANCE = instance

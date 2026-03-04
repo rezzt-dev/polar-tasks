@@ -67,15 +67,37 @@ class TaskViewModel @Inject constructor(
       }
   }
 
+  // Track whether the currently viewed list is a dependency chain
+  private val _isCurrentListChain = MutableStateFlow(false)
+  val isCurrentListChain: StateFlow<Boolean> = _isCurrentListChain.asStateFlow()
+
   // Filtered List for List Mode
-  val tasks: StateFlow<List<TaskListItem>> = getFilteredTasksUseCase(
-        _selectedListId,
-        _filterToday,
-        _filterPending, 
-        _filterOverdue,
-        _filterRecurrent
-    )
-    .map { list -> list.map { TaskListItem.Item(it) } }
+  val tasks: StateFlow<List<TaskListItem>> = combine(
+        getFilteredTasksUseCase(
+            _selectedListId,
+            _filterToday,
+            _filterPending,
+            _filterOverdue,
+            _filterRecurrent
+        ),
+        _isCurrentListChain
+    ) { taskList, isChain ->
+        if (isChain) {
+            // Sort all tasks by orderIndex, compute which ones are blocked
+            val sorted = taskList.sortedBy { it.orderIndex }
+            val activeIndex = sorted.indexOfFirst { !it.completed }
+            sorted.mapIndexed { index, task ->
+                TaskListItem.Item(
+                    task = task,
+                    isChainMode = true,
+                    isBlocked = activeIndex != -1 && index > activeIndex,
+                    isLast = index == sorted.lastIndex
+                )
+            }
+        } else {
+            taskList.map { TaskListItem.Item(it) }
+        }
+    }
     .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -103,42 +125,57 @@ class TaskViewModel @Inject constructor(
            val recurrentOnly = _filterRecurrent.value
            val now = System.currentTimeMillis()
            
-           val filteredList = rawList.filter { item ->
-              val task = item.task
-              if (task.completed) return@filter false
-               
-              var matches = true
-               if (todayOnly) {
-                   if (task.dueDate == null) {
-                       matches = false
-                   } else {
-                       if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
-                   }
-               }
-               if (pendingOnly) {
-                  if (task.completed) matches = false
-                  if (item.completedSubtasks > 0) matches = false
-               }
-               if (overdueOnly) {
-                    if (task.dueDate == null) {
-                       matches = false
-                   } else {
-                       val isToday = android.text.format.DateUtils.isToday(task.dueDate)
-                       val isFuture = task.dueDate >= now
-                       if (isToday || isFuture) matches = false
-                   }
-                   if (task.completed) matches = false
-               }
-               if (recurrentOnly) {
-                   if (task.recurrence == "NONE") matches = false
-               }
-               matches
-           }
-           val grouped = filteredList.groupBy { it.task.listId }
-           val result = grouped.map { (listId, tasksWithList) ->
+           // Group by listId first to handle per-chain filtering
+           val grouped = rawList.groupBy { it.task.listId }
+           
+           val result = grouped.mapNotNull { (listId, tasksWithList) ->
                 val title = tasksWithList.firstOrNull()?.listTitle ?: "Unknown List"
-                val tasks = tasksWithList.map { it.task }
-                app.polar.data.model.TaskGroup(listId, title, tasks)
+                val isDependencyChain = tasksWithList.firstOrNull()?.isDependencyChain ?: false
+                
+                // For chain lists: only show the first uncompleted task
+                val tasksToShow = if (isDependencyChain) {
+                    val firstUncompleted = tasksWithList
+                        .sortedBy { it.task.orderIndex }
+                        .firstOrNull { !it.task.completed }
+                    if (firstUncompleted != null) listOf(firstUncompleted) else emptyList()
+                } else {
+                    tasksWithList
+                }
+                
+                val filteredList = tasksToShow.filter { item ->
+                    val task = item.task
+                    if (task.completed) return@filter false
+                    
+                    var matches = true
+                    if (todayOnly) {
+                        if (task.dueDate == null) {
+                            matches = false
+                        } else {
+                            if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
+                        }
+                    }
+                    if (pendingOnly) {
+                       if (task.completed) matches = false
+                       if (item.completedSubtasks > 0) matches = false
+                    }
+                    if (overdueOnly) {
+                         if (task.dueDate == null) {
+                            matches = false
+                        } else {
+                            val isToday = android.text.format.DateUtils.isToday(task.dueDate)
+                            val isFuture = task.dueDate >= now
+                            if (isToday || isFuture) matches = false
+                        }
+                        if (task.completed) matches = false
+                    }
+                    if (recurrentOnly) {
+                        if (task.recurrence == "NONE") matches = false
+                    }
+                    matches
+                }
+                
+                if (filteredList.isEmpty()) null
+                else app.polar.data.model.TaskGroup(listId, title, filteredList.map { it.task })
            }
            value = result
       }
@@ -153,6 +190,11 @@ class TaskViewModel @Inject constructor(
   
   fun loadTasksForList(listId: Long) {
     _selectedListId.value = listId
+    // Update chain state asynchronously
+    viewModelScope.launch {
+        val list = repository.getTaskListById(listId)
+        _isCurrentListChain.value = list?.isDependencyChain ?: false
+    }
   }
   
   fun loadAllTasks() {

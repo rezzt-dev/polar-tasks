@@ -300,7 +300,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 app:cardCornerRadius="24dp"
@@ -317,11 +317,11 @@
                     android:paddingTop="28dp"
                     android:paddingBottom="28dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔥"
-                        android:textSize="36sp"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_stat_fire"
+                        android:contentDescription="Icono racha"
                         android:layout_marginBottom="12dp" />
 
                     <TextView
@@ -345,7 +345,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 app:cardCornerRadius="24dp"
@@ -362,11 +362,11 @@
                     android:paddingTop="28dp"
                     android:paddingBottom="28dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐"
-                        android:textSize="36sp"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_stat_star"
+                        android:contentDescription="Icono estrella"
                         android:layout_marginBottom="12dp" />
 
                     <TextView

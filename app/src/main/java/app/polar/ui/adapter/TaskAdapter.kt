@@ -50,7 +50,12 @@ class TaskAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is TaskListItem.Header -> (holder as HeaderViewHolder).bind(item.title)
-            is TaskListItem.Item -> (holder as TaskViewHolder).bind(item.task)
+            is TaskListItem.Item -> (holder as TaskViewHolder).bind(
+                task = item.task,
+                isBlocked = item.isBlocked,
+                isChainMode = item.isChainMode,
+                isLast = item.isLast
+            )
         }
     }
 
@@ -77,10 +82,24 @@ class TaskAdapter(
         private val onItemClick: ((Task) -> Unit)
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(task: Task) {
-            itemView.tag = task.id // Tag for finding view holder by tag match
+        private val subtaskAdapter = app.polar.ui.adapter.SubtaskAdapter(
+            onCheckChanged = { subtask, _ -> viewModel.toggleSubtaskCompletion(subtask) },
+            onDelete = { subtask -> viewModel.deleteSubtask(subtask) }
+        )
+        private var currentSubtaskLiveData: androidx.lifecycle.LiveData<List<app.polar.data.entity.Subtask>>? = null
+
+        init {
+            binding.recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(binding.root.context)
+            binding.recyclerSubtasks.adapter = subtaskAdapter
+            binding.recyclerSubtasks.itemAnimator = null
+        }
+
+        fun bind(task: Task, isBlocked: Boolean = false, isChainMode: Boolean = false, isLast: Boolean = false) {
+            // Reset any stale visual state from previous swipe/animation
+            resetVisuals()
+            itemView.tag = task.id
             binding.tvTaskTitle.text = task.title
-            
+
             // Description logic
             if (task.description.isNullOrEmpty()) {
                 binding.tvTaskDescription.visibility = android.view.View.GONE
@@ -94,8 +113,54 @@ class TaskAdapter(
                 binding.tvTaskTags.visibility = android.view.View.GONE
             } else {
                 binding.tvTaskTags.visibility = android.view.View.VISIBLE
-                // Format tags: split, trim, prepend #
                 binding.tvTaskTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
+            }
+
+            // --- Chain Mode Visuals ---
+            if (isChainMode) {
+                binding.chainTimelineColumn.visibility = android.view.View.VISIBLE
+                // Hide top line for the first item
+                binding.chainLineTop.visibility = if (task.orderIndex == 0) android.view.View.INVISIBLE else android.view.View.VISIBLE
+                // Hide bottom line if it's the last item
+                binding.chainLineBottom.visibility = if (isLast) android.view.View.INVISIBLE else android.view.View.VISIBLE
+
+                val ctx = itemView.context
+                val typedValue = android.util.TypedValue()
+                if (task.completed) {
+                     // Completed dot = primary color
+                    ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                } else if (!isBlocked) {
+                    // Active (unlocked, not completed) = primary color
+                    ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
+                    binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                } else {
+                    // Future/blocked dot = surface variant
+                    ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
+                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                }
+            } else {
+                binding.chainTimelineColumn.visibility = android.view.View.GONE
+            }
+
+            // --- Blocked state ---
+            if (isBlocked) {
+                itemView.alpha = 0.45f
+                binding.cbTaskComplete.isEnabled = false
+                binding.chainLockedBadge.visibility = android.view.View.VISIBLE
+                binding.root.isClickable = false
+            } else {
+                itemView.alpha = 1.0f
+                binding.cbTaskComplete.isEnabled = true
+                binding.chainLockedBadge.visibility = android.view.View.GONE
+                binding.root.isClickable = true
             }
 
             // Checkbox logic
@@ -107,105 +172,74 @@ class TaskAdapter(
                 binding.tvTaskTitle.alpha = 0.5f
             } else {
                 binding.tvTaskTitle.paintFlags = binding.tvTaskTitle.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                binding.tvTaskTitle.alpha = 1.0f
+                binding.tvTaskTitle.alpha = if (isBlocked) 0.5f else 1.0f
             }
 
-            binding.cbTaskComplete.setOnCheckedChangeListener { _, isChecked ->
-                onCheckChanged(task, isChecked, itemView)
+            if (!isBlocked) {
+                binding.cbTaskComplete.setOnCheckedChangeListener { _, isChecked ->
+                    onCheckChanged(task, isChecked, itemView)
+                }
             }
 
             // Date logic
             if (task.dueDate != null) {
-                val now = java.util.Calendar.getInstance()
-                val dueDate = java.util.Calendar.getInstance()
-                dueDate.timeInMillis = task.dueDate
-                
-                val isToday = now.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
-                              now.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
-                
-                // Check tomorrow
-                val tomorrow = java.util.Calendar.getInstance()
-                tomorrow.add(java.util.Calendar.DAY_OF_YEAR, 1)
-                val isTomorrow = tomorrow.get(java.util.Calendar.YEAR) == dueDate.get(java.util.Calendar.YEAR) &&
-                                 tomorrow.get(java.util.Calendar.DAY_OF_YEAR) == dueDate.get(java.util.Calendar.DAY_OF_YEAR)
-                
-                val format = java.text.SimpleDateFormat("d, MMM", java.util.Locale("es", "ES"))
-                val dateStr = when {
-                    isToday -> binding.root.context.getString(R.string.today)
-                    isTomorrow -> binding.root.context.getString(R.string.tomorrow)
-                    else -> format.format(java.util.Date(task.dueDate)).lowercase()
-                }
-                
-                binding.tvTaskDate.text = dateStr
-                
-                // Color logic - set explicit colors
-                val startOfToday = java.util.Calendar.getInstance()
-                startOfToday.set(java.util.Calendar.HOUR_OF_DAY, 0)
-                startOfToday.set(java.util.Calendar.MINUTE, 0)
-                startOfToday.set(java.util.Calendar.SECOND, 0)
-                startOfToday.set(java.util.Calendar.MILLISECOND, 0)
+                binding.tvTaskDate.text = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
                 
                 when {
-                    !task.completed && task.dueDate < startOfToday.timeInMillis && !isToday -> {
-                        // Overdue - red
+                    !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) -> {
                         binding.tvTaskDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
                     }
-                    isToday -> {
-                        // Today - use primary color to make it visible
+                    app.polar.util.DateUtils.isToday(task.dueDate) -> {
                         val typedValue = android.util.TypedValue()
                         itemView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
                         binding.tvTaskDate.setTextColor(typedValue.data)
                     }
                     else -> {
-                        // Future date - use onSurface color (alpha handled by layout)
                         val typedValue = android.util.TypedValue()
                         itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
                         binding.tvTaskDate.setTextColor(typedValue.data)
                     }
                 }
                 
-                // Set visibility AFTER setting text and color
                 binding.tvTaskDate.visibility = android.view.View.VISIBLE
             } else {
                 binding.tvTaskDate.visibility = android.view.View.GONE
             }
 
-            // Show container if either Date OR Tags are present
             if (task.dueDate != null || !task.tags.isNullOrEmpty()) {
                 binding.tagsContainer.visibility = android.view.View.VISIBLE
             } else {
                 binding.tagsContainer.visibility = android.view.View.GONE
             }
 
-            // Subtasks logic
-            val adapter = app.polar.ui.adapter.SubtaskAdapter(
-                 onCheckChanged = { subtask, _ -> viewModel.toggleSubtaskCompletion(subtask) },
-                 onDelete = { subtask -> viewModel.deleteSubtask(subtask) }
-            )
-            binding.recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(binding.root.context)
-            binding.recyclerSubtasks.adapter = adapter
-            
-            viewModel.getSubtasksForTask(task.id).observe(lifecycleOwner) { subtasks ->
+            // Subtasks
+            currentSubtaskLiveData?.removeObservers(lifecycleOwner)
+            val liveData = viewModel.getSubtasksForTask(task.id)
+            currentSubtaskLiveData = liveData
+            liveData.observe(lifecycleOwner) { subtasks ->
                 if (subtasks.isNullOrEmpty()) {
                     binding.recyclerSubtasks.visibility = android.view.View.GONE
                 } else {
                     binding.recyclerSubtasks.visibility = android.view.View.VISIBLE
-                    adapter.submitList(subtasks)
+                    subtaskAdapter.submitList(subtasks)
                 }
             }
 
             // Click listeners
-            binding.root.setOnLongClickListener {
-                 onItemLongClick(task)
-            }
-            binding.root.setOnClickListener {
-                 onItemClick(task)
+            if (!isBlocked) {
+                binding.root.setOnLongClickListener { onItemLongClick(task) }
+                binding.root.setOnClickListener { onItemClick(task) }
+            } else {
+                binding.root.setOnLongClickListener(null)
+                binding.root.setOnClickListener(null)
             }
         }
         
         fun resetVisuals() {
+             itemView.animate().cancel()
              itemView.alpha = 1.0f
              itemView.translationX = 0f
+             itemView.translationY = 0f
              itemView.scaleX = 1.0f
              itemView.scaleY = 1.0f
         }
@@ -237,7 +271,7 @@ class TaskAdapter(
 class TaskListItemDiffCallback : DiffUtil.ItemCallback<TaskListItem>() {
     override fun areItemsTheSame(oldItem: TaskListItem, newItem: TaskListItem): Boolean {
         return if (oldItem is TaskListItem.Item && newItem is TaskListItem.Item) {
-            oldItem.task.id == newItem.task.id
+            oldItem.task.id == newItem.task.id && oldItem.task.completed == newItem.task.completed
         } else if (oldItem is TaskListItem.Header && newItem is TaskListItem.Header) {
             oldItem.title == newItem.title
         } else {
