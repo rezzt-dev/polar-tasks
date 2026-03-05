@@ -94,47 +94,103 @@
         android:layout_marginVertical="8dp"/>
 
     <!-- Bottom Task List Section -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp">
-
-        <TextView
-            android:id="@+id/tvSelectedDateTasks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tasks_for_selected_date"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:paddingVertical="8dp"/>
-
-        <FrameLayout
+        android:fillViewport="true">
+        
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerDayTasks"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="80dp"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="80dp">
 
             <TextView
-                android:id="@+id/tvNoTasks"
-                android:layout_width="match_parent"
+                android:id="@+id/tvSelectedDateTasks"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_tasks_for_date"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:visibility="gone"
+                android:text="@string/tasks_for_selected_date"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="14sp"
-                android:alpha="0.5"/>
+                android:paddingVertical="8dp"/>
 
-        </FrameLayout>
+            <!-- Tasks Section -->
+            <TextView
+                android:id="@+id/tvTasksHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tareas"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"/>
 
-    </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerDayTasks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"/>
+
+                <TextView
+                    android:id="@+id/tvNoTasks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_tasks_for_date"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:paddingVertical="16dp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp"
+                    android:alpha="0.5"/>
+            </FrameLayout>
+
+            <!-- Reminders Section -->
+            <TextView
+                android:id="@+id/tvRemindersHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recordatorios"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerDayReminders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"/>
+
+                <TextView
+                    android:id="@+id/tvNoReminders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No hay recordatorios"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:paddingVertical="16dp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp"
+                    android:alpha="0.5"/>
+            </FrameLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

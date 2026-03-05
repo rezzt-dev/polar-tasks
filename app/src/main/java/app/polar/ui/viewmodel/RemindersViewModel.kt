@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 
 @HiltViewModel
 class RemindersViewModel @Inject constructor(
@@ -39,6 +41,27 @@ class RemindersViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    private val calendarRange = MutableStateFlow<Pair<Long, Long>?>(null)
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val calendarReminders: StateFlow<List<Reminder>> = calendarRange
+        .flatMapLatest { range ->
+            if (range == null) {
+                flowOf(emptyList<Reminder>())
+            } else {
+                repository.getRemindersBetweenDatesFlow(range.first, range.second)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    fun setCalendarRange(start: Long, end: Long) {
+        calendarRange.value = Pair(start, end)
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()

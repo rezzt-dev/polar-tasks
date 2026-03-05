@@ -41,7 +41,7 @@ class ReminderDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        binding.tvDialogTitle.text = if (reminder == null) "New Reminder" else "Edit Reminder"
+        binding.tvDialogTitle.text = if (reminder == null) getString(app.polar.R.string.new_reminder) else getString(app.polar.R.string.edit_reminder)
         
         if (reminder != null) {
             binding.etTitle.setText(reminder.title)
@@ -73,10 +73,9 @@ class ReminderDialog(
         }
     }
     
-    // Copy of DatePicker logic
     private fun showDateTimePicker() {
         val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Select date")
+            .setTitleText(getString(app.polar.R.string.select_date))
             .setSelection(selectedDate)
             .build()
             
@@ -85,14 +84,11 @@ class ReminderDialog(
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = dateSelection
             
-            // Should get current time if date is today?
-            // Just default to 12:00
-            
             val timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(if (DateFormat.is24HourFormat(requireContext())) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H)
                 .setHour(12)
                 .setMinute(0)
-                .setTitleText("Select time")
+                .setTitleText(getString(app.polar.R.string.select_time))
                 .build()
                 
             timePicker.addOnPositiveButtonClickListener {
@@ -110,7 +106,9 @@ class ReminderDialog(
     
     private fun updateDateDisplay() {
         val format = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-        binding.tvDueDate.text = format.format(java.util.Date(selectedDate))
+        // Apply lowercase and replace dots for visual consistency with tasks
+        val formattedDate = format.format(java.util.Date(selectedDate)).lowercase().replace(".", "")
+        binding.tvDueDate.text = formattedDate
     }
 
     override fun onDestroyView() {

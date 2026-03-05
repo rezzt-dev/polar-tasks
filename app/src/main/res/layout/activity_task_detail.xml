@@ -20,7 +20,7 @@
             android:layout_height="?attr/actionBarSize" />
     </com.google.android.material.appbar.AppBarLayout>
     
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -181,12 +181,14 @@
                 android:textSize="@dimen/text_size_subtitle"
                 android:textColor="?attr/colorOnBackground" />
                 
-            <androidx.recyclerview.widget.RecyclerView
+            <app.polar.ui.widget.MaxHeightRecyclerView
                 android:id="@+id/recyclerDetailSubtasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_small"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false" />
                 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddSubtask"
@@ -199,5 +201,5 @@
                 app:cornerRadius="12dp"/>
                 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

@@ -22,7 +22,7 @@
     android:layout_marginBottom="16dp"
     android:textColor="?attr/colorOnSurface" />
 
-  <ScrollView
+  <androidx.core.widget.NestedScrollView
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
@@ -226,15 +226,17 @@
           app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
       </LinearLayout>
 
-      <androidx.recyclerview.widget.RecyclerView
+      <app.polar.ui.widget.MaxHeightRecyclerView
         android:id="@+id/recyclerSubtasks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:nestedScrollingEnabled="false" />
+        android:nestedScrollingEnabled="false"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false" />
 
     </LinearLayout>
-  </ScrollView>
+  </androidx.core.widget.NestedScrollView>
 
   <!-- Action Buttons - Fixed at bottom -->
   <LinearLayout
