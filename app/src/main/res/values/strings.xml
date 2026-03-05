@@ -44,6 +44,13 @@
   <string name="no_search_results">no se encontraron tareas</string>
   <string name="try_different_search">intenta con otros terminos</string>
   
+  <!-- Reminders -->
+  <string name="new_reminder">nuevo recordatorio</string>
+  <string name="edit_reminder">editar recordatorio</string>
+  <string name="select_date_time">seleccionar fecha y hora</string>
+  <string name="select_date">seleccionar fecha</string>
+  <string name="select_time">seleccionar hora</string>
+  
   <!-- Subtasks -->
   <string name="add_subtask">agregar subtarea</string>
   <string name="subtask_hint">titulo de subtarea</string>

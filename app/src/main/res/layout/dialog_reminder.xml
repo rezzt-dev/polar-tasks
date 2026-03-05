@@ -11,7 +11,7 @@
     android:id="@+id/tvDialogTitle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="New Reminder"
+    android:text="@string/new_reminder"
     android:textSize="22sp"
     android:textStyle="bold"
     android:fontFamily="sans-serif-medium"
@@ -75,7 +75,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="12dp"
-      android:text="Select Date &amp; Time"
+      android:text="@string/select_date_time"
       android:textSize="16sp"
       android:textColor="?attr/colorOnSurface"/>
       

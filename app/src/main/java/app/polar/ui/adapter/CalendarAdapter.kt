@@ -18,11 +18,18 @@ class CalendarAdapter(
 
     private var days = listOf<Long?>()
     private var tasks = mapOf<Long, List<Task>>()
+    private var reminders = mapOf<Long, List<app.polar.data.entity.Reminder>>()
     private var selectedDate: Long? = null
 
-    fun submitData(days: List<Long?>, tasks: Map<Long, List<Task>>, selected: Long?) {
+    fun submitData(
+        days: List<Long?>, 
+        tasks: Map<Long, List<Task>>, 
+        reminders: Map<Long, List<app.polar.data.entity.Reminder>>,
+        selected: Long?
+    ) {
         this.days = days
         this.tasks = tasks
+        this.reminders = reminders
         this.selectedDate = selected
         notifyDataSetChanged()
     }
@@ -104,7 +111,9 @@ class CalendarAdapter(
 
             // Dots
             val dayTasks = tasks[getStartOfDay(date)]
-            if (!dayTasks.isNullOrEmpty()) {
+            val dayReminders = reminders[getStartOfDay(date)]
+            
+            if (!dayTasks.isNullOrEmpty() || !dayReminders.isNullOrEmpty()) {
                 binding.dotIndicator.visibility = View.VISIBLE
                 
                 // Dot color should match text color usually, or be accent
@@ -116,7 +125,10 @@ class CalendarAdapter(
                      binding.dotIndicator.background.setTint(colorOnSurface)
                 }
                 
-                val allCompleted = dayTasks.all { it.completed }
+                val allTasksCompleted = dayTasks?.all { it.completed } ?: true
+                val allRemindersCompleted = dayReminders?.all { it.isCompleted } ?: true
+                val allCompleted = allTasksCompleted && allRemindersCompleted
+                
                 binding.dotIndicator.alpha = if (allCompleted) 0.3f else 1.0f
             } else {
                 binding.dotIndicator.visibility = View.GONE

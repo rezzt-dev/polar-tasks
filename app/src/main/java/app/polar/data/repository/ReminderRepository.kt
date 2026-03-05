@@ -14,6 +14,10 @@ class ReminderRepository @Inject constructor(private val reminderDao: ReminderDa
     val allRemindersFlow: kotlinx.coroutines.flow.Flow<List<Reminder>> = reminderDao.getAllRemindersFlow()
     val activeRemindersFlow: kotlinx.coroutines.flow.Flow<List<Reminder>> = reminderDao.getActiveRemindersFlow()
 
+    fun getRemindersBetweenDatesFlow(start: Long, end: Long): kotlinx.coroutines.flow.Flow<List<Reminder>> {
+        return reminderDao.getRemindersBetweenDatesFlow(start, end)
+    }
+
     suspend fun insert(reminder: Reminder): Long {
         return reminderDao.insert(reminder)
     }

@@ -18,6 +18,9 @@ interface ReminderDao {
     @Query("SELECT * FROM reminders WHERE isCompleted = 0 AND isDeleted = 0 ORDER BY dateTime ASC")
     fun getActiveRemindersFlow(): kotlinx.coroutines.flow.Flow<List<Reminder>>
 
+    @Query("SELECT * FROM reminders WHERE dateTime >= :start AND dateTime <= :end AND isDeleted = 0")
+    fun getRemindersBetweenDatesFlow(start: Long, end: Long): kotlinx.coroutines.flow.Flow<List<Reminder>>
+
     @Insert
     suspend fun insert(reminder: Reminder): Long
 
