@@ -123,6 +123,84 @@
     <item name="mainBorder">@color/multi_dark_border</item>
     <item name="buttonBackground">@color/multi_dark_primary</item>
   </style>
+
+  <!-- Pastel Suave Theme -->
+  <style name="Theme.Polar.Pastel" parent="Theme.Material3.Light.NoActionBar">
+    <item name="colorPrimary">@color/pastel_primary</item>
+    <item name="colorOnPrimary">@color/pastel_on_primary</item>
+    <item name="colorPrimaryContainer">@color/pastel_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/pastel_on_primary_container</item>
+    
+    <item name="colorSecondary">@color/pastel_secondary</item>
+    <item name="colorOnSecondary">@color/pastel_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/pastel_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/pastel_on_secondary_container</item>
+    <item name="colorError">@color/pastel_error</item>
+    
+    <item name="android:colorBackground">@color/pastel_background</item>
+    <item name="colorOnBackground">@color/pastel_foreground</item>
+    
+    <item name="colorSurface">@color/pastel_surface</item>
+    <item name="colorOnSurface">@color/pastel_foreground</item>
+    <item name="colorSurfaceVariant">@color/pastel_background</item>
+    
+    <item name="colorSurfaceContainer">@color/pastel_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/pastel_surface_container_high</item>
+    <item name="colorOutline">@color/pastel_border</item>
+    <item name="colorOutlineVariant">@color/pastel_border</item>
+    
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowLightNavigationBar">true</item>
+    
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+    
+    <item name="taskBackground">@color/pastel_surface</item>
+    <item name="taskBorder">@color/pastel_border</item>
+    <item name="mainBorder">@color/pastel_border</item>
+    <item name="buttonBackground">@color/pastel_primary</item>
+  </style>
+
+  <!-- Neon Dark Theme -->
+  <style name="Theme.Polar.Neon" parent="Theme.Material3.Dark.NoActionBar">
+    <item name="colorPrimary">@color/neon_primary</item>
+    <item name="colorOnPrimary">@color/neon_on_primary</item>
+    <item name="colorPrimaryContainer">@color/neon_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/neon_on_primary_container</item>
+    
+    <item name="colorSecondary">@color/neon_secondary</item>
+    <item name="colorOnSecondary">@color/neon_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/neon_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/neon_on_secondary_container</item>
+    <item name="colorError">@color/neon_error</item>
+    
+    <item name="android:colorBackground">@color/neon_background</item>
+    <item name="colorOnBackground">@color/neon_foreground</item>
+    
+    <item name="colorSurface">@color/neon_surface</item>
+    <item name="colorOnSurface">@color/neon_foreground</item>
+    <item name="colorSurfaceVariant">@color/neon_background</item>
+    
+    <item name="colorSurfaceContainer">@color/neon_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/neon_surface_container_high</item>
+    <item name="colorOutline">@color/neon_border</item>
+    <item name="colorOutlineVariant">@color/neon_border</item>
+    
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:windowLightNavigationBar">false</item>
+    
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+    
+    <item name="taskBackground">@color/neon_surface</item>
+    <item name="taskBorder">@color/neon_border</item>
+    <item name="mainBorder">@color/neon_border</item>
+    <item name="buttonBackground">@color/neon_primary</item>
+  </style>
   
   <!-- iOS-style button -->
   <style name="Widget.Polar.Button" parent="Widget.Material3.Button">

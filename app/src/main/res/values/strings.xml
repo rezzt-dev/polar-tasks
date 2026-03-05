@@ -75,6 +75,8 @@
   <string name="theme_dark">oscuro</string>
   <string name="theme_multicolor_light">multicolor claro</string>
   <string name="theme_multicolor_dark">multicolor oscuro</string>
+  <string name="theme_pastel">pastel suave</string>
+  <string name="theme_neon">neón oscuro</string>
   <string name="font">fuente</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -133,4 +135,26 @@
   <string name="add_subtask_title">agregar subtarea</string>
 
   <string name="font_system">sistema</string>
+  
+  <!-- Tutorial -->
+  <string name="tutorial_title_1">bienvenido a polar.</string>
+  <string name="tutorial_desc_1">la aplicación minimalista diseñada meticulosamente para organizar tus tareas y recordatorios de la forma más elegante posible.\n\ndescubre cómo potenciar tu productividad diaria manteniendo siempre el control, sin distracciones y con un rendimiento excepcional.</string>
+  <string name="tutorial_title_2">gestión de tareas</string>
+  <string name="tutorial_desc_2">agrupa tus responsabilidades creando listas dedicadas para el trabajo, hogar o proyectos especiales, y organiza todo con etiquetas.\n\ndivide los grandes objetivos añadiendo subtareas ilimitadas y observa tu progreso de una forma completamente visual y satisfactoria.</string>
+  <string name="tutorial_title_3">creación inteligente</string>
+  <string name="tutorial_desc_3">escribe de forma completamente natural: "comprar pan a las 5pm el martes" o "reunión mañana por la mañana".\n\nnuestro potente motor inteligente detectará y extraerá la fecha y hora automáticamente, programando la tarea por ti.</string>
+  <string name="tutorial_title_4">acciones rápidas</string>
+  <string name="tutorial_desc_4">desliza suavemente una tarea hacia la derecha sobre la lista para marcarla como completada al instante.\n\n¿te has equivocado o ya no necesitas hacer algo? desliza hacia la izquierda y elimínala sin tener que abrir ningún menú.</string>
+  <string name="tutorial_title_5">calendario y avisos</string>
+  <string name="tutorial_desc_5">visualiza todas tus rutinas agrupadas mes a mes o por semanas en nuestro calendario de diseño premium.\n\nrecibe notificaciones precisas justo a tiempo para que nunca más se te pase ninguna reunión, entrega o detalle importante.</string>
+  <string name="tutorial_title_6">personalización total</string>
+  <string name="tutorial_desc_6">adapta la aplicación a tu propio estilo con nuestros 4 modos de visualización: oscuro, claro, multicolor oscuro y multicolor claro.\n\nademás, puedes elegir la tipografía que mejor se adapte a ti entre una cuidada selección de fuentes profesionales.</string>
+  <string name="tutorial_title_7">estadísticas y progreso</string>
+  <string name="tutorial_desc_7">lleva un registro exhaustivo de tu día a día, visualizando tareas completadas, vencidas y tu mejor día productivo.\n\nmantén grandes rachas de cumplimiento para superarte a ti mismo y lograr todo lo que te propongas con los datos de polar.</string>
+  
+  <string name="action_next">siguiente</string>
+  <string name="action_back">atrás</string>
+  <string name="action_finish">empezar</string>
+  <string name="action_skip">omitir</string>
+  <string name="action_view_tutorial">ver tutorial</string>
 </resources>

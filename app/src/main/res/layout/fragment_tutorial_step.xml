@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+        android:importantForAccessibility="no"
+        app:tint="?colorPrimary" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="12dp"
+        android:textAlignment="center"
+        android:textColor="?colorOnBackground"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        tools:text="bienvenido a polar" />
+
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textColor="?colorOnBackground"
+        android:textSize="15sp"
+        android:alpha="0.8"
+        android:lineSpacingExtra="5dp"
+        android:paddingHorizontal="16dp"
+        tools:text="la aplicación minimalista para organizar tus tareas y recordatorios de forma sencilla." />
+
+</LinearLayout>

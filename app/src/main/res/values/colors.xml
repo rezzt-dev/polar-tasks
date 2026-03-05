@@ -63,37 +63,71 @@
   <color name="dark_button_background">@color/dark_c3_accent</color>
   <color name="dark_button_click">@color/dark_c4_border</color>
 
-  <!-- Multicolor Light Theme -->
-  <color name="multi_light_background">#F8F9FC</color>
+  <!-- Multicolor Light Theme (Vibrant & Playful) -->
+  <color name="multi_light_background">#FDFCF6</color>      <!-- Warm off-white -->
   <color name="multi_light_surface">#FFFFFF</color>
-  <color name="multi_light_primary">#00897B</color>         <!-- Teal -->
+  <color name="multi_light_primary">#FF6B6B</color>         <!-- Coral Red -->
   <color name="multi_light_on_primary">#FFFFFF</color>
-  <color name="multi_light_primary_container">#B2DFDB</color>
-  <color name="multi_light_on_primary_container">#004D40</color>
-  <color name="multi_light_secondary">#5C6BC0</color>       <!-- Indigo -->
+  <color name="multi_light_primary_container">#FFD8D8</color>
+  <color name="multi_light_on_primary_container">#8B0000</color>
+  <color name="multi_light_secondary">#4D96FF</color>       <!-- Vibrant Blue -->
   <color name="multi_light_on_secondary">#FFFFFF</color>
-  <color name="multi_light_secondary_container">#C5CAE9</color>
-  <color name="multi_light_on_secondary_container">#1A237E</color>
-  <color name="multi_light_foreground">#1B1B1F</color>
-  <color name="multi_light_border">#E0E0E0</color>
-  <color name="multi_light_surface_container">#F0F1F5</color>
-  <color name="multi_light_surface_container_high">#E8E9ED</color>
+  <color name="multi_light_secondary_container">#D4E5FF</color>
+  <color name="multi_light_on_secondary_container">#002B7A</color>
+  <color name="multi_light_foreground">#1A1A24</color>
+  <color name="multi_light_border">#EAE1D8</color>
+  <color name="multi_light_surface_container">#FFFDF5</color>
+  <color name="multi_light_surface_container_high">#F5EFDF</color>
 
-  <!-- Multicolor Dark Theme -->
-  <color name="multi_dark_background">#121318</color>
-  <color name="multi_dark_surface">#1E1F25</color>
-  <color name="multi_dark_primary">#4DB6AC</color>           <!-- Teal Light -->
-  <color name="multi_dark_on_primary">#003731</color>
-  <color name="multi_dark_primary_container">#00695C</color>
-  <color name="multi_dark_on_primary_container">#B2DFDB</color>
-  <color name="multi_dark_secondary">#9FA8DA</color>         <!-- Indigo Light -->
-  <color name="multi_dark_on_secondary">#1A237E</color>
-  <color name="multi_dark_secondary_container">#3949AB</color>
-  <color name="multi_dark_on_secondary_container">#C5CAE9</color>
-  <color name="multi_dark_foreground">#E6E1E5</color>
-  <color name="multi_dark_border">#2C2D33</color>
-  <color name="multi_dark_surface_container">#25262C</color>
-  <color name="multi_dark_surface_container_high">#2F3036</color>
+  <!-- Multicolor Dark Theme (Deep & Colorful) -->
+  <color name="multi_dark_background">#0F111A</color>       <!-- Deep Navy/Black -->
+  <color name="multi_dark_surface">#181A26</color>
+  <color name="multi_dark_primary">#FF8585</color>          <!-- Soft Coral -->
+  <color name="multi_dark_on_primary">#4A0000</color>
+  <color name="multi_dark_primary_container">#820000</color>
+  <color name="multi_dark_on_primary_container">#FFD8D8</color>
+  <color name="multi_dark_secondary">#70AFFF</color>        <!-- Soft Bright Blue -->
+  <color name="multi_dark_on_secondary">#002466</color>
+  <color name="multi_dark_secondary_container">#0042B3</color>
+  <color name="multi_dark_on_secondary_container">#D4E5FF</color>
+  <color name="multi_dark_foreground">#EAECEE</color>
+  <color name="multi_dark_border">#2C3040</color>
+  <color name="multi_dark_surface_container">#202436</color>
+  <color name="multi_dark_surface_container_high">#2A2F45</color>
+
+  <!-- Pastel Suave Theme (Calm & Soft) -->
+  <color name="pastel_background">#F5F5F7</color>           <!-- Soft Grey/Beige -->
+  <color name="pastel_surface">#FFFFFF</color>              <!-- Pure White -->
+  <color name="pastel_primary">#87C2CA</color>              <!-- Pastel Green/Blue -->
+  <color name="pastel_on_primary">#FFFFFF</color>
+  <color name="pastel_primary_container">#E0F2F2</color>    <!-- Very light Green/Blue -->
+  <color name="pastel_on_primary_container">#1B4D52</color> 
+  <color name="pastel_secondary">#DDCDFF</color>            <!-- Pastel Lilac -->
+  <color name="pastel_on_secondary">#3E2088</color>
+  <color name="pastel_secondary_container">#F3EBFF</color>  <!-- Very light Lilac -->
+  <color name="pastel_on_secondary_container">#1A0054</color>
+  <color name="pastel_error">#EDB974</color>                <!-- Soft Yellow/Orange warning -->
+  <color name="pastel_foreground">#222222</color>           <!-- Soft Dark text -->
+  <color name="pastel_border">#E8E8EC</color>               <!-- Clean soft border -->
+  <color name="pastel_surface_container">#FAFAFC</color>
+  <color name="pastel_surface_container_high">#F0F0F3</color>
+
+  <!-- Neon Dark Theme (Cyberpunk & Energetic) -->
+  <color name="neon_background">#050509</color>             <!-- Near Black -->
+  <color name="neon_surface">#11121A</color>                <!-- Very dark tinted surface -->
+  <color name="neon_primary">#00E5FF</color>                <!-- Neon Cyan -->
+  <color name="neon_on_primary">#000000</color>             <!-- Black text on neon -->
+  <color name="neon_primary_container">#004D55</color>      <!-- Darked Cyan container -->
+  <color name="neon_on_primary_container">#8BFEFF</color>   <!-- Light Cyan text -->
+  <color name="neon_secondary">#FF4DFF</color>              <!-- Neon Magenta -->
+  <color name="neon_on_secondary">#000000</color>           <!-- Black text on magenta -->
+  <color name="neon_secondary_container">#660066</color>    <!-- Dark Magenta container -->
+  <color name="neon_on_secondary_container">#FFB3FF</color> <!-- Light Magenta text -->
+  <color name="neon_error">#A6FF00</color>                  <!-- Neon Lime green (used creatively for alerts) -->
+  <color name="neon_foreground">#F5F5F5</color>             <!-- Near white text -->
+  <color name="neon_border">#202438</color>                 <!-- Deep cool grey border -->
+  <color name="neon_surface_container">#151620</color>
+  <color name="neon_surface_container_high">#1A1C29</color>
 
   <!-- Semantics -->
   <color name="accent_primary">@color/light_c3_accent</color>

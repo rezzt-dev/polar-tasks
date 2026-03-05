@@ -17,6 +17,8 @@ class ThemeManager(private val context: Context) {
     const val THEME_DARK = "dark"
     const val THEME_MULTICOLOR_LIGHT = "multicolor_light"
     const val THEME_MULTICOLOR_DARK = "multicolor_dark"
+    const val THEME_PASTEL = "pastel"
+    const val THEME_NEON = "neon"
     const val THEME_SYSTEM = "system"
     
     const val FONT_POPPINS = "poppins"
@@ -71,14 +73,16 @@ class ThemeManager(private val context: Context) {
       return when (loadTheme()) {
           THEME_MULTICOLOR_LIGHT -> R.style.Theme_Polar_MulticolorLight
           THEME_MULTICOLOR_DARK -> R.style.Theme_Polar_MulticolorDark
+          THEME_PASTEL -> R.style.Theme_Polar_Pastel
+          THEME_NEON -> R.style.Theme_Polar_Neon
           else -> 0 // Default light/dark handled by DayNight
       }
   }
   
   fun applyTheme(theme: String) {
     when (theme) {
-      THEME_LIGHT, THEME_MULTICOLOR_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-      THEME_DARK, THEME_MULTICOLOR_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      THEME_LIGHT, THEME_MULTICOLOR_LIGHT, THEME_PASTEL -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+      THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
   }
@@ -95,7 +99,7 @@ class ThemeManager(private val context: Context) {
 
   fun isLightTheme(): Boolean {
     val currentTheme = loadTheme()
-    return currentTheme == THEME_LIGHT || currentTheme == THEME_MULTICOLOR_LIGHT ||
+    return currentTheme == THEME_LIGHT || currentTheme == THEME_MULTICOLOR_LIGHT || currentTheme == THEME_PASTEL ||
         (currentTheme == THEME_SYSTEM && !isSystemInDarkMode())
   }
 

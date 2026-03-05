@@ -76,4 +76,7 @@ dependencies {
   testImplementation("androidx.arch.core:core-testing:2.2.0")
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
+  
+  // ViewPager2
+  implementation("androidx.viewpager2:viewpager2:1.0.0")
 }

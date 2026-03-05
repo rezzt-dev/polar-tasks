@@ -74,16 +74,15 @@ class MainActivity : BaseActivity() {
     
     checkFirstRun()
   }
-  
-  private fun checkFirstRun() {
-      val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-      val isFirstRun = sharedPrefs.getBoolean("is_first_run", true)
-      
-      if (isFirstRun) {
-          app.polar.ui.dialog.OnboardingDialog(this).show()
-          sharedPrefs.edit().putBoolean("is_first_run", false).apply()
-      }
-  }
+    private fun checkFirstRun() {
+        val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isFirstRun = sharedPrefs.getBoolean("is_first_run", true)
+        
+        if (isFirstRun) {
+            startActivity(android.content.Intent(this, app.polar.ui.activity.TutorialActivity::class.java))
+            finish()
+        }
+    }
   
   override fun onNewIntent(intent: android.content.Intent) {
       super.onNewIntent(intent)

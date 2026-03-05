@@ -211,7 +211,7 @@
             android:layout_marginStart="8dp" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardNotifications"
+            android:id="@+id/cardSystem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
@@ -223,47 +223,106 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center_vertical">
-                
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_notifications"
-                    app:tint="?colorPrimary"
-                    android:layout_marginEnd="16dp" />
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
                     
-                    <TextView
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_notifications"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="notificaciones"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="gestiona los permisos desde el sistema"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurface"
+                            android:alpha="0.6" />
+                    </LinearLayout>
+                    
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnNotificationSettings"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="notificaciones"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="?colorOnSurface" />
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="gestiona los permisos desde el sistema"
-                        android:textSize="13sp"
-                        android:textColor="?colorOnSurface"
-                        android:alpha="0.6" />
+                        android:text="abrir"
+                        android:textAllCaps="false" />
                 </LinearLayout>
-                
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnNotificationSettings"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="abrir"
-                    android:textAllCaps="false" />
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_circle_outline"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="tutorial"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="vuelve a ver el tutorial inicial"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurface"
+                            android:alpha="0.6" />
+                    </LinearLayout>
+                    
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnViewTutorial"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/action_view_tutorial"
+                        android:textAllCaps="false" />
+                </LinearLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
