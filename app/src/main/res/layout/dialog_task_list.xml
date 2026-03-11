@@ -80,7 +80,7 @@
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cadena de dependencias"
+        android:text="@string/dependency_chain"
         android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"/>
@@ -88,7 +88,7 @@
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Las tareas se desbloquean en orden"
+        android:text="@string/unlock_in_order"
         android:textSize="12sp"
         android:textColor="?attr/colorOnSurface"
         android:alpha="0.6"/>

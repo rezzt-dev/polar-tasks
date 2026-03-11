@@ -527,6 +527,10 @@ class TasksFragment : Fragment() {
             exportTaskToClipboard(task)
             true
           }
+          R.id.action_share_image -> {
+            exportTaskAsImage(task)
+            true
+          }
           R.id.action_edit -> {
             showEditTaskDialog(task)
             true
@@ -583,6 +587,165 @@ class TasksFragment : Fragment() {
                 getString(R.string.task_copied),
                 com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
             ).show()
+        }
+    }
+    subtasksLiveData.observe(viewLifecycleOwner, observer)
+  }
+
+  private fun exportTaskAsImage(task: Task) {
+    val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
+    val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
+        override fun onChanged(subtasks: List<app.polar.data.entity.Subtask>) {
+            subtasksLiveData.removeObserver(this)
+            
+            try {
+                // 1. Inflate Layout
+                val inflater = android.view.LayoutInflater.from(requireContext())
+                val view = inflater.inflate(R.layout.layout_task_export_card, null)
+                
+                // 2. Bind Data
+                val tvTitle = view.findViewById<android.widget.TextView>(R.id.tvExportTaskTitle)
+                val tvDesc = view.findViewById<android.widget.TextView>(R.id.tvExportTaskDescription)
+                val llMetadata = view.findViewById<android.widget.LinearLayout>(R.id.llExportMetadata)
+                val tvDate = view.findViewById<android.widget.TextView>(R.id.tvExportDate)
+                val tvTags = view.findViewById<android.widget.TextView>(R.id.tvExportTags)
+                val llSubtasks = view.findViewById<android.widget.LinearLayout>(R.id.llExportSubtasks)
+                
+                tvTitle.text = task.title
+                
+                if (task.description.isNotBlank()) {
+                    tvDesc.visibility = View.VISIBLE
+                    tvDesc.text = task.description
+                }
+                
+                var hasMetadata = false
+                if (task.dueDate != null) {
+                    hasMetadata = true
+                    tvDate.visibility = View.VISIBLE
+                    val cal = java.util.Calendar.getInstance()
+                    cal.timeInMillis = task.dueDate!!
+                    val hasTime = cal.get(java.util.Calendar.HOUR_OF_DAY) != 0 || cal.get(java.util.Calendar.MINUTE) != 0
+                    val dateFormat = if (hasTime) {
+                        java.text.SimpleDateFormat("d MMM, HH:mm", java.util.Locale("es", "ES"))
+                    } else {
+                        java.text.SimpleDateFormat("d 'de' MMMM", java.util.Locale("es", "ES"))
+                    }
+                    tvDate.text = dateFormat.format(java.util.Date(task.dueDate!!))
+                }
+                
+                if (task.tags.isNotBlank()) {
+                    hasMetadata = true
+                    tvTags.visibility = View.VISIBLE
+                    tvTags.text = task.tags.split(",").joinToString(", ") { "#${it.trim()}" }
+                }
+                
+                if (!hasMetadata) {
+                    llMetadata.visibility = View.GONE
+                }
+                
+                if (subtasks.isNotEmpty()) {
+                    llSubtasks.visibility = View.VISIBLE
+                    subtasks.forEach { subtask ->
+                        val subtaskView = android.widget.TextView(requireContext()).apply {
+                            text = "• ${subtask.title}"
+                            textSize = 14f
+                            setTextColor(requireContext().getColor(android.R.color.black)) // Fallback if attr fails
+                            alpha = 0.8f
+                            setPadding(0, 0, 0, 8)
+                        }
+                        llSubtasks.addView(subtaskView)
+                    }
+                }
+                
+                // 3. Measure and Layout
+                // Width: Match standard screen width minus small margins (approx 1080px for a good quality image)
+                val displayMetrics = resources.displayMetrics
+                val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
+                val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                
+                view.measure(widthMeasureSpec, heightMeasureSpec)
+                view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+                
+                // 4. Create Bitmap
+                val bitmap = android.graphics.Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, android.graphics.Bitmap.Config.ARGB_8888)
+                val canvas = android.graphics.Canvas(bitmap)
+                // Draw background color based on theme
+                val typedValue = android.util.TypedValue()
+                requireContext().theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
+                canvas.drawColor(typedValue.data)
+                
+                view.draw(canvas)
+                
+                // 5. Save to Gallery (MediaStore)
+                val filename = "polar_task_${System.currentTimeMillis()}.png"
+                var imageUri: android.net.Uri? = null
+                
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    val contentValues = android.content.ContentValues().apply {
+                        put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                        put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/polar")
+                    }
+                    val resolver = requireContext().contentResolver
+                    imageUri = resolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                    imageUri?.let { uri ->
+                        resolver.openOutputStream(uri)?.use { stream ->
+                            bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                        }
+                    }
+                } else {
+                    // For older devices
+                    val imagesDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_PICTURES)
+                    val polarDir = java.io.File(imagesDir, "polar")
+                    if (!polarDir.exists()) polarDir.mkdirs()
+                    val image = java.io.File(polarDir, filename)
+                    java.io.FileOutputStream(image).use { stream ->
+                        bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                    }
+                    
+                    // Add to gallery
+                    android.content.Intent(android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
+                        mediaScanIntent.data = android.net.Uri.fromFile(image)
+                        requireContext().sendBroadcast(mediaScanIntent)
+                    }
+                    
+                    // We only use the FileProvider URI for sharing to ensure compatibility
+                }
+
+                // 6. Save to Cache for Sharing
+                val cachePath = java.io.File(requireContext().cacheDir, "images")
+                cachePath.mkdirs()
+                val cacheImageFile = java.io.File(cachePath, "share_$filename")
+                java.io.FileOutputStream(cacheImageFile).use { stream ->
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                }
+                
+                // 7. Share Intent using Cache File
+                val contentUri = androidx.core.content.FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", cacheImageFile)
+                val shareIntent = android.content.Intent().apply {
+                    action = android.content.Intent.ACTION_SEND
+                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    setDataAndType(contentUri, "image/png")
+                    putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
+                }
+                
+                // Show success message for gallery save
+                com.google.android.material.snackbar.Snackbar.make(
+                    binding.root,
+                    "Imagen guardada en la galería",
+                    com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                ).show()
+
+                startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.action_share_image)))
+                
+            } catch (e: Exception) {
+                e.printStackTrace()
+                com.google.android.material.snackbar.Snackbar.make(
+                    binding.root,
+                    getString(R.string.error_sharing_image),
+                    com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
     }
     subtasksLiveData.observe(viewLifecycleOwner, observer)

@@ -33,6 +33,7 @@ class SettingsFragment : Fragment() {
 
     setupThemeSwitch()
     setupFontSelection()
+    setupLanguageSelection()
     setupFontScale()
     setupNotificationSettings()
     setupBackupSettings()
@@ -145,6 +146,76 @@ class SettingsFragment : Fragment() {
         }
       }
     })
+  }
+
+  private fun setupLanguageSelection() {
+    val languageEntries = linkedMapOf(
+      getString(R.string.language_system) to ThemeManager.LANG_SYSTEM,
+      getString(R.string.language_es) to ThemeManager.LANG_ES,
+      getString(R.string.language_en) to ThemeManager.LANG_EN,
+      getString(R.string.language_fr) to ThemeManager.LANG_FR,
+      getString(R.string.language_de) to ThemeManager.LANG_DE
+    )
+
+    val languageLabels = languageEntries.keys.toList()
+    binding.actvLanguage.setAdapter(createNonFilteringAdapter(languageLabels))
+
+    val currentLanguage = themeManager.loadLanguage()
+    val currentLabel =
+      languageEntries.entries.find { it.value == currentLanguage }?.key ?: languageLabels[0]
+    binding.actvLanguage.setText(currentLabel, false)
+
+    binding.actvLanguage.setOnItemClickListener { _, _, position, _ ->
+      val selectedLanguage = languageEntries.values.toList()[position]
+      val currentLanguage = themeManager.loadLanguage()
+      
+      if (currentLanguage != selectedLanguage) {
+        val newLocale = if (selectedLanguage == ThemeManager.LANG_SYSTEM) {
+           android.content.res.Resources.getSystem().configuration.locales.get(0)
+        } else {
+           java.util.Locale(selectedLanguage)
+        }
+        
+        // Fix: To avoid context theme crashes, we will just manually read the translated 
+        // string resources using a new Configuration without creating a full Context.
+        val conf = android.content.res.Configuration(requireContext().resources.configuration)
+        conf.setLocale(newLocale)
+        val res = requireContext().createConfigurationContext(conf).resources
+        
+        val dialogView = layoutInflater.inflate(R.layout.dialog_language_restart, null)
+            
+        val tvDialogTitle = dialogView.findViewById<android.widget.TextView>(R.id.tvDialogTitle)
+        val tvDialogDesc = dialogView.findViewById<android.widget.TextView>(R.id.tvDialogDesc)
+        val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
+        val btnRestart = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRestart)
+
+        tvDialogTitle.text = res.getString(R.string.language_changed_title)
+        tvDialogDesc.text = res.getString(R.string.language_changed_desc)
+        btnCancel.text = res.getString(R.string.cancel)
+        btnRestart.text = res.getString(R.string.restart_now)
+            
+        val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+            
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+            // Revert dropdown selection visually
+            val previousLabel = languageEntries.entries.find { it.value == currentLanguage }?.key ?: languageLabels[0]
+            binding.actvLanguage.setText(previousLabel, false)
+        }
+        
+        btnRestart.setOnClickListener {
+            dialog.dismiss()
+            themeManager.saveLanguage(selectedLanguage)
+            // Recreate activity so string resources reload completely
+            requireActivity().recreate()
+        }
+        
+        dialog.show()
+      }
+    }
   }
 
   private fun setupFontSelection() {

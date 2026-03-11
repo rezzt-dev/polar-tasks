@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">polar.</string>
+  
+  <!-- Menu -->
+  <string name="menu_toggle">menü umschalten</string>
+  <string name="theme_toggle">design ändern</string>
+  <string name="settings">einstellungen</string>
+  <string name="search">suche</string>
+  <string name="search_hint">aufgaben suchen...</string>
+  
+  <!-- Task Lists -->
+  <string name="create_list">liste erstellen</string>
+  <string name="edit_list">liste bearbeiten</string>
+  <string name="delete_list">liste löschen</string>
+  <string name="list_title_hint">listentitel</string>
+  <string name="no_lists">keine aufgabenlisten</string>
+  <string name="create_first_list">erstelle deine erste liste, um zu beginnen</string>
+  <string name="select_icon">symbol auswählen</string>
+  
+  <!-- Calendar Weeks -->
+  <string name="mon_short">mo</string>
+  <string name="tue_short">di</string>
+  <string name="wed_short">mi</string>
+  <string name="thu_short">do</string>
+  <string name="fri_short">fr</string>
+  <string name="sat_short">sa</string>
+  <string name="sun_short">so</string>
+  
+  <!-- Calendar UI -->
+  <string name="tasks_for_selected_date">aufgaben</string>
+  <string name="no_tasks_for_date">keine aufgaben an diesem tag</string>
+  <string name="today">heute</string>
+  <string name="tomorrow">morgen</string>
+  
+  <!-- Tasks -->
+  <string name="create_task">aufgabe erstellen</string>
+  <string name="edit_task">aufgabe bearbeiten</string>
+  <string name="delete_task">aufgabe löschen</string>
+  <string name="task_title_hint">aufgabentitel</string>
+  <string name="task_description_hint">beschreibung (optional)</string>
+  <string name="no_tasks">keine aufgaben</string>
+  <string name="add_first_task">füge deine erste aufgabe hinzu</string>
+  <string name="no_search_results">keine aufgaben gefunden</string>
+  <string name="try_different_search">versuche andere begriffe</string>
+  
+  <!-- Reminders -->
+  <string name="new_reminder">neue erinnerung</string>
+  <string name="edit_reminder">erinnerung bearbeiten</string>
+  <string name="select_date_time">datum und uhrzeit wählen</string>
+  <string name="select_date">datum auswählen</string>
+  <string name="select_time">uhrzeit auswählen</string>
+  
+  <!-- Subtasks -->
+  <string name="add_subtask">teilaufgabe hinzufügen</string>
+  <string name="subtask_hint">teilaufgabentitel</string>
+  <string name="subtasks">teilaufgaben</string>
+  
+  <!-- Tags -->
+  <string name="tags">tags</string>
+  <string name="tags_hint">tags (mit kommas getrennt)</string>
+  <string name="add_tags">tags hinzufügen</string>
+  
+  <!-- Actions -->
+  <string name="save">speichern</string>
+  <string name="cancel">abbrechen</string>
+  <string name="export">exportieren</string>
+  <string name="edit">bearbeiten</string>
+  <string name="delete">löschen</string>
+  <string name="task_copied">aufgabe in die zwischenablage kopiert</string>
+  <string name="filter_today">heute</string>
+  <string name="confirm_delete">bist du sicher, dass du das löschen möchtest?</string>
+  <string name="add">hinzufügen</string>
+  <string name="action_share_image">als bild teilen</string>
+  <string name="error_sharing_image">fehler beim teilen des bildes</string>
+  
+  <!-- Watermark -->
+  <string name="developed_by">entwickelt von rezzt.dev</string>
+
+  <!-- Settings -->
+  <string name="appearance">erscheinungsbild</string>
+  <string name="dark_mode">dunkler modus</string>
+  <string name="theme_light">hell</string>
+  <string name="theme_dark">dunkel</string>
+  <string name="theme_multicolor_light">mehrfarbig hell</string>
+  <string name="theme_multicolor_dark">mehrfarbig dunkel</string>
+  <string name="theme_pastel">sanftes pastell</string>
+  <string name="theme_neon">dunkles neon</string>
+  <string name="font">schriftart</string>
+  <string name="font_poppins">poppins</string>
+  <string name="font_comfortaa">comfortaa</string>
+  <string name="font_figtree">figtree</string>
+  <string name="font_arial">arial</string>
+  <string name="font_jetbrains_mono">jetbrains mono</string>
+  
+  <!-- Language -->
+  <string name="language">sprache</string>
+  <string name="language_system">system</string>
+  <string name="language_es">spanisch</string>
+  <string name="language_en">englisch</string>
+  <string name="language_fr">französisch</string>
+  <string name="language_de">deutsch</string>
+
+  <!-- Navigation -->
+  <string name="home">startseite</string>
+  <string name="calendar">kalender</string>
+  <string name="reminders">erinnerungen</string>
+  <string name="trash">papierkorb</string>
+  <string name="trash_with_count">papierkorb (%d)</string>
+  
+  <!-- Status Messages -->
+  <string name="list_deleted">liste gelöscht</string>
+  
+  <!-- Greetings -->
+  <string name="good_morning">guten morgen</string>
+  <string name="good_afternoon">guten tag</string>
+  <string name="good_night">gute nacht</string>
+
+  <!-- Statistics -->
+  <string name="statistics">statistiken</string>
+  <string name="total_tasks">gesamte aufgaben</string>
+  <string name="completed_tasks">erledigt</string>
+  <string name="pending_tasks">ausstehend</string>
+  <string name="overdue_tasks">überfällig</string>
+  <string name="completion_rate">abschlussrate</string>
+  <string name="this_week">diese woche</string>
+  <string name="this_month">diesen monat</string>
+  <string name="weekly_activity">wöchentliche aktivität</string>
+  <string name="tasks_completed_week">diese woche erledigte aufgaben</string>
+  <string name="tasks_completed_month">diesen monat erledigte aufgaben</string>
+  <string name="tasks_created_week">diese woche erstellte aufgaben</string>
+  <string name="tasks_created_month">diesen monat erstellte aufgaben</string>
+  <string name="best_day">bester tag</string>
+  <string name="current_streak">aktuelle strähne</string>
+  <string name="days">tage</string>
+  
+  <!-- Messages -->
+  <string name="task_moved_trash">aufgabe in den papierkorb verschoben</string>
+  <string name="reminder_moved_trash">erinnerung in den papierkorb verschoben</string>
+  <string name="undo">rückgängig machen</string>
+  <string name="trash_emptied">papierkorb geleert</string>
+  <string name="item_restored">element wiederhergestellt</string>
+  <string name="permanently_deleted">dauerhaft gelöscht</string>
+  <string name="error_saving_backup">fehler beim speichern des backups</string>
+  <string name="backup_saved">backup erfolgreich gespeichert</string>
+  <string name="backup_restored">backup wiederhergestellt. neustart...</string>
+  <string name="error_restoring_backup">fehler beim wiederherstellen des backups</string>
+  
+  <string name="recurrence_daily">täglich</string>
+  <string name="recurrence_weekly">wöchentlich</string>
+  <string name="recurrence_monthly">monatlich</string>
+  <string name="no_list">keine liste</string>
+  <string name="add_subtask_title">teilaufgabe hinzufügen</string>
+
+  <string name="font_system">system</string>
+  <string name="font_size">schriftgröße</string>
+  
+  <string name="filter_pending">ausstehend</string>
+  <string name="filter_overdue">überfällig</string>
+  <string name="filter_recurrent">wiederkehrend</string>
+  <string name="restore">wiederherstellen</string>
+  <string name="tasks_title">Aufgaben</string>
+  <string name="no_reminders_today">Keine Erinnerungen</string>
+
+  <string name="language_changed_title">Sprache geändert</string>
+  <string name="language_changed_desc">Um die neue Sprache vollständig anzuwenden, muss die Anwendung neu gestartet werden.</string>
+  <string name="restart_now">Jetzt neu starten</string>
+  
+  <string name="backup">sicherung</string>
+  <string name="backup_desc">speichere deine aufgaben und einstellungen in einer lokalen datei, um sie nie zu verlieren.</string>
+  <string name="system">system</string>
+  <string name="notifications">benachrichtigungen</string>
+  <string name="notifications_desc">berechtigungen im system verwalten</string>
+  <string name="open">öffnen</string>
+  <string name="tutorial">tutorial</string>
+  <string name="tutorial_settings_desc">das erste tutorial nochmal ansehen</string>
+  <string name="no_reminders">keine erinnerungen</string>
+  <string name="create_reminder_desc">erstelle eine erinnerung, um nichts zu vergessen</string>
+  <string name="no_end_date">kein enddatum</string>
+  <string name="does_not_repeat">wiederholt sich nicht</string>
+  <string name="dependency_chain">abhängigkeitskette</string>
+  <string name="unlock_in_order">aufgaben werden der reihe nach freigeschaltet</string>
+  
+  <!-- Tutorial -->
+  <string name="tutorial_title_1">willkommen bei polar.</string>
+  <string name="tutorial_desc_1">die minimalistische anwendung, die sorgfältig darauf ausgelegt ist, deine aufgaben und erinnerungen so elegant wie möglich zu organisieren.\n\nentdecke, wie du deine tägliche produktivität steigern kannst, während du immer die kontrolle behältst – ganz ohne ablenkung und mit bemerkenswerter performance.</string>
+  <string name="tutorial_title_2">aufgabenverwaltung</string>
+  <string name="tutorial_desc_2">gruppiere deine pflichten in dedizierten listen für arbeit, privates oder spezielle projekte und ordne alles mit deinen eigenen tags.\n\nunterteile große ziele in beliebig viele teilaufgaben und verfolge deinen fortschritt auf eine visuell belohnende art und weise.</string>
+  <string name="tutorial_title_3">intelligente eingabe</string>
+  <string name="tutorial_desc_3">tippe ganz natürlich: "brot kaufen um 17 uhr am dienstag" oder "morgen früh besprechung".\n\nunser intelligenter motor erkennt automatisch datum und uhrzeit und plant die aufgabe für dich ein.</string>
+  <string name="tutorial_title_4">schnelle aktionen</string>
+  <string name="tutorial_desc_4">wische auf einer aufgabenliste einfach nach rechts, um sie sofort als erledigt zu markieren.\n\nein fehler passiert, oder du musst doch nichts erledigen? wische nach links und lösche sie, ganz ohne menü.</string>
+  <string name="tutorial_title_5">kalender und alarme</string>
+  <string name="tutorial_desc_5">betrachte all deine routinen übersichtlich gruppiert nach monaten oder wochen in unserem premium-kalender.\n\nerhalte exakte benachrichtigungen genau zur rechten zeit, sodass du nie wieder termine, fristen oder wichtige details vergisst.</string>
+  <string name="tutorial_title_6">volle anpassbarkeit</string>
+  <string name="tutorial_desc_6">passe die anwendung an deinen eigenen stil an mit unseren 4 ansichtsmodi: dunkel, hell, dunkles mehrfarbig und helles mehrfarbig.\n\nwähle zudem aus einer ausgewählten reihe professioneller schriftarten jene aus, die am besten zu dir passt.</string>
+  <string name="tutorial_title_7">statistiken und fortschritt</string>
+  <string name="tutorial_desc_7">behalte eine umfassende übersicht über deinen alltag, indem du deine erledigten und überfälligen aufgaben sowie deinen produktivsten tag auswertest.\n\nhalte großartige erledigungssträhnen aufrecht, wache über dich hinaus und erreiche all deine ziele mit polars daten.</string>
+  
+  <string name="action_next">weiter</string>
+  <string name="action_back">zurück</string>
+  <string name="action_finish">loslegen</string>
+  <string name="action_skip">überspringen</string>
+  <string name="action_view_tutorial">tutorial ansehen</string>
+</resources>

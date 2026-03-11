@@ -97,7 +97,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="inicio"
+          android:text="@string/home"
           android:textSize="14sp"
           android:textColor="?attr/colorOnSurface"/>
       </LinearLayout>
@@ -128,7 +128,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="recordatorios"
+          android:text="@string/reminders"
           android:textSize="14sp"
           android:textColor="?attr/colorOnSurface"/>
       </LinearLayout>
@@ -159,7 +159,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="calendario"
+          android:text="@string/calendar"
           android:textSize="14sp"
           android:textColor="?attr/colorOnSurface"/>
       </LinearLayout>
@@ -207,7 +207,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="papelera"
+          android:text="@string/trash"
           android:textSize="14sp"
           android:textColor="#D32F2F"
           android:textStyle="bold"/>

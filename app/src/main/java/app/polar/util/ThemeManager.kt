@@ -12,6 +12,9 @@ class ThemeManager(private val context: Context) {
     private const val PREFS_NAME = "polar_prefs"
     private const val KEY_THEME = "theme"
     private const val KEY_FONT = "font"
+    private const val KEY_LANGUAGE = "language"
+    
+    // Theme Constants
     
     const val THEME_LIGHT = "light"
     const val THEME_DARK = "dark"
@@ -28,6 +31,13 @@ class ThemeManager(private val context: Context) {
     const val FONT_ARIAL = "arial"
     const val FONT_SYSTEM = "system"
     
+    // Language Constants
+    const val LANG_SYSTEM = "system"
+    const val LANG_ES = "es"
+    const val LANG_EN = "en"
+    const val LANG_FR = "fr"
+    const val LANG_DE = "de"
+    
     private const val KEY_FONT_SCALE = "font_scale"
     const val DEFAULT_FONT_SCALE = 1.0f
   }
@@ -41,6 +51,11 @@ class ThemeManager(private val context: Context) {
       prefs.edit().putString(KEY_FONT, font).apply()
   }
   
+  fun saveLanguage(language: String) {
+      prefs.edit().putString(KEY_LANGUAGE, language).apply()
+      applyLanguage(language)
+  }
+  
   fun saveFontScale(scale: Float) {
       prefs.edit().putFloat(KEY_FONT_SCALE, scale).apply()
   }
@@ -51,6 +66,10 @@ class ThemeManager(private val context: Context) {
   
   fun loadFont(): String {
       return prefs.getString(KEY_FONT, FONT_POPPINS) ?: FONT_POPPINS
+  }
+  
+  fun loadLanguage(): String {
+      return prefs.getString(KEY_LANGUAGE, LANG_SYSTEM) ?: LANG_SYSTEM
   }
   
   fun loadFontScale(): Float {
@@ -85,6 +104,15 @@ class ThemeManager(private val context: Context) {
       THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
+  }
+  
+  fun applyLanguage(language: String) {
+      if (language == LANG_SYSTEM) {
+          AppCompatDelegate.setApplicationLocales(androidx.core.os.LocaleListCompat.getEmptyLocaleList())
+      } else {
+          val appLocale: androidx.core.os.LocaleListCompat = androidx.core.os.LocaleListCompat.forLanguageTags(language)
+          AppCompatDelegate.setApplicationLocales(appLocale)
+      }
   }
   
   fun toggleTheme() {

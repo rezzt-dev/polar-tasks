@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ajustes"
+            android:text="@string/settings"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="?colorOnSurface"
@@ -88,6 +88,27 @@
                         android:padding="16dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilLanguage"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/language"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp">
+                    <AutoCompleteTextView
+                        android:id="@+id/actvLanguage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:editable="false"
+                        android:padding="16dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -104,7 +125,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="tamaño de fuente"
+                            android:text="@string/font_size"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface"
@@ -133,7 +154,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="copia de seguridad"
+            android:text="@string/backup"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="?colorOnSurface"
@@ -161,7 +182,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="guarda tus tareas y configuración en un archivo local para no perderlas nunca."
+                    android:text="@string/backup_desc"
                     android:textSize="14sp"
                     android:textColor="?colorOnSurface"
                     android:alpha="0.8"
@@ -180,7 +201,7 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
-                        android:text="exportar"
+                        android:text="@string/export"
                         android:textAllCaps="false"
                         app:icon="@drawable/ic_share" />
 
@@ -191,9 +212,9 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
-                        android:text="restaurar"
+                        android:text="@string/restore"
                         android:textAllCaps="false"
-                        app:icon="@drawable/ic_sync" />
+                        app:icon="@drawable/ic_restore_material" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -201,7 +222,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sistema"
+            android:text="@string/system"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="?colorOnSurface"
@@ -248,7 +269,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="notificaciones"
+                            android:text="@string/notifications"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -256,7 +277,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="gestiona los permisos desde el sistema"
+                            android:text="@string/notifications_desc"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurface"
                             android:alpha="0.6" />
@@ -267,7 +288,7 @@
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="abrir"
+                        android:text="@string/open"
                         android:textAllCaps="false" />
                 </LinearLayout>
 
@@ -300,7 +321,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="tutorial"
+                            android:text="@string/tutorial"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -308,7 +329,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="vuelve a ver el tutorial inicial"
+                            android:text="@string/tutorial_settings_desc"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurface"
                             android:alpha="0.6" />

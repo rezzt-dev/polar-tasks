@@ -71,6 +71,8 @@
   <string name="filter_today">hoy</string>
   <string name="confirm_delete">estas seguro de eliminar esto?</string>
   <string name="add">agregar</string>
+  <string name="action_share_image">compartir como imagen</string>
+  <string name="error_sharing_image">error al compartir imagen</string>
   
   <!-- Watermark -->
   <string name="developed_by">desarrollado por rezzt.dev</string>
@@ -90,6 +92,14 @@
   <string name="font_figtree">figtree</string>
   <string name="font_arial">arial</string>
   <string name="font_jetbrains_mono">jetbrains mono</string>
+  <!-- Language -->
+  <string name="language">idioma</string>
+  <string name="language_system">sistema</string>
+  <string name="language_es">español</string>
+  <string name="language_en">inglés</string>
+  <string name="language_fr">francés</string>
+  <string name="language_de">alemán</string>
+
   <!-- Navigation -->
   <string name="home">inicio</string>
   <string name="calendar">calendario</string>
@@ -142,6 +152,33 @@
   <string name="add_subtask_title">agregar subtarea</string>
 
   <string name="font_system">sistema</string>
+  <string name="font_size">tamaño de fuente</string>
+  
+  <string name="filter_pending">pendientes</string>
+  <string name="filter_overdue">vencidas</string>
+  <string name="filter_recurrent">repetitivas</string>
+  <string name="restore">restaurar</string>
+  <string name="tasks_title">Tareas</string>
+  <string name="no_reminders_today">No hay recordatorios</string>
+  
+  <string name="language_changed_title">Idioma modificado</string>
+  <string name="language_changed_desc">Para aplicar el nuevo idioma completamente, es necesario reiniciar la aplicación.</string>
+  <string name="restart_now">Reiniciar ahora</string>
+  
+  <string name="backup">copia de seguridad</string>
+  <string name="backup_desc">guarda tus tareas y configuración en un archivo local para no perderlas nunca.</string>
+  <string name="system">sistema</string>
+  <string name="notifications">notificaciones</string>
+  <string name="notifications_desc">gestiona los permisos desde el sistema</string>
+  <string name="open">abrir</string>
+  <string name="tutorial">tutorial</string>
+  <string name="tutorial_settings_desc">vuelve a ver el tutorial inicial</string>
+  <string name="no_reminders">sin recordatorios</string>
+  <string name="create_reminder_desc">crea un recordatorio para no olvidar nada</string>
+  <string name="no_end_date">Sin fecha de finalización</string>
+  <string name="does_not_repeat">No se repite</string>
+  <string name="dependency_chain">Cadena de dependencias</string>
+  <string name="unlock_in_order">Las tareas se desbloquean en orden</string>
   
   <!-- Tutorial -->
   <string name="tutorial_title_1">bienvenido a polar.</string>

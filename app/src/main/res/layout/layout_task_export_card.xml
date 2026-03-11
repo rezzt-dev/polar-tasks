@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/exportCardRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="?android:attr/colorBackground"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorSurfaceVariant"
+    android:layout_margin="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Header: Logo/Watermark -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+            
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/polar_icon_round"
+                android:layout_marginEnd="8dp"/>
+                
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="polar."
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnBackground"/>
+        </LinearLayout>
+
+        <!-- Task Content -->
+        <TextView
+            android:id="@+id/tvExportTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textColor="?attr/colorOnBackground"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvExportTaskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnBackground"
+            android:alpha="0.7"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Metadata (Date / Tags) -->
+        <LinearLayout
+            android:id="@+id/llExportMetadata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:id="@+id/tvExportDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_calendar_mini"
+                android:drawablePadding="6dp"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:alpha="0.7"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone"/>
+                
+            <TextView
+                android:id="@+id/tvExportTags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="14sp"
+                android:alpha="0.8"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <!-- Subtasks Container -->
+        <LinearLayout
+            android:id="@+id/llExportSubtasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/subtasks"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnBackground"
+                android:alpha="0.6"
+                android:layout_marginBottom="8dp" />
+                
+            <!-- Subtask items will be added here programmatically -->
+        </LinearLayout>
+        
+        <!-- Footer -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorSurfaceVariant"
+            android:layout_marginBottom="12dp"
+            android:alpha="0.5"/>
+            
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/developed_by"
+            android:textSize="12sp"
+            android:textColor="?attr/colorOnBackground"
+            android:alpha="0.4"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

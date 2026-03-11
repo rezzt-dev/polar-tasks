@@ -12,6 +12,7 @@ class PolarApplication : Application() {
     // Initialize ThemeManager to apply saved theme preference immediately
     val themeManager = app.polar.util.ThemeManager(this)
     themeManager.applyTheme(themeManager.loadTheme())
+    themeManager.applyLanguage(themeManager.loadLanguage())
     
     NotificationHelper.createNotificationChannel(this)
     
