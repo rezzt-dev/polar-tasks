@@ -109,6 +109,15 @@ interface TaskDao {
   @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 0 AND dueDate < :now AND dueDate IS NOT NULL")
   suspend fun getOverdueTaskCount(now: Long): Int
 
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND dueDate BETWEEN :start AND :end")
+  suspend fun getTotalTaskCountBetween(start: Long, end: Long): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 0 AND dueDate BETWEEN :start AND :end")
+  suspend fun getPendingTaskCountBetween(start: Long, end: Long): Int
+
+  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 0 AND completed = 0 AND dueDate < :now AND dueDate BETWEEN :start AND :end")
+  suspend fun getOverdueTaskCountBetween(start: Long, end: Long, now: Long): Int
+
   @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 1 ORDER BY createdAt DESC")
   suspend fun getAllCompletedTasksSnapshot(): List<Task>
 }

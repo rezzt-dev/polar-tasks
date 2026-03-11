@@ -1,5 +1,0 @@
-- **Entrada de Tareas con Lenguaje Natural:** Extrae automáticamente la fecha y hora de lo que escribes.
-- **Cadenas de Dependencia entre Tareas:** Organiza tareas complejas vinculando subtareas requeridas.
-- **Panel de Estadisticas:** Visualiza claramente tu productividad, rachas y hábitos.
-- **Exportacion de Tareas a Texto Plano:** Comparte tus listas rápidamente copiándolas al portapapeles.
-- **Compartir Tarea como Imagen:** Genera una captura al instante para enviar por redes sociales.

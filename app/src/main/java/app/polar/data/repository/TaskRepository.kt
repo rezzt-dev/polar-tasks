@@ -157,5 +157,8 @@ class TaskRepository @Inject constructor(
   suspend fun getTaskCountBetween(start: Long, end: Long): Int = taskDao.getTaskCountBetween(start, end)
   suspend fun getCreatedTaskCountBetween(start: Long, end: Long): Int = taskDao.getCreatedTaskCountBetween(start, end)
   suspend fun getOverdueTaskCount(now: Long): Int = taskDao.getOverdueTaskCount(now)
+  suspend fun getTotalTaskCountBetween(start: Long, end: Long): Int = taskDao.getTotalTaskCountBetween(start, end)
+  suspend fun getPendingTaskCountBetween(start: Long, end: Long): Int = taskDao.getPendingTaskCountBetween(start, end)
+  suspend fun getOverdueTaskCountBetween(start: Long, end: Long, now: Long): Int = taskDao.getOverdueTaskCountBetween(start, end, now)
   suspend fun getAllCompletedTasksSnapshot(): List<Task> = taskDao.getAllCompletedTasksSnapshot()
 }

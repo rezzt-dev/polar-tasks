@@ -42,11 +42,27 @@ class StatsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val repository = viewModel.repository
 
-            // Basic counts
-            val totalTasks = repository.getTotalTaskCount()
-            val completedTasks = repository.getCompletedTaskCount()
-            val pendingTasks = repository.getPendingTaskCount()
-            val overdueTasks = repository.getOverdueTaskCount(System.currentTimeMillis())
+            // Week dates (Monday to Sunday)
+            val cal = Calendar.getInstance()
+            cal.firstDayOfWeek = Calendar.MONDAY
+            cal.set(Calendar.HOUR_OF_DAY, 0)
+            cal.set(Calendar.MINUTE, 0)
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+            val weekStart = cal.timeInMillis
+            
+            val tempCal = Calendar.getInstance()
+            tempCal.timeInMillis = weekStart
+            tempCal.add(Calendar.DAY_OF_YEAR, 7)
+            tempCal.add(Calendar.MILLISECOND, -1) // End of Sunday
+            val weekEnd = tempCal.timeInMillis
+
+            // Basic counts scoped to this week
+            val totalTasks = repository.getTotalTaskCountBetween(weekStart, weekEnd)
+            val completedTasks = repository.getCompletedTaskCountBetween(weekStart, weekEnd)
+            val pendingTasks = repository.getPendingTaskCountBetween(weekStart, weekEnd)
+            val overdueTasks = repository.getOverdueTaskCountBetween(weekStart, weekEnd, System.currentTimeMillis())
 
             // Summary cards
             binding.tvTotalCount.text = "$totalTasks"
@@ -54,21 +70,10 @@ class StatsFragment : Fragment() {
             binding.tvPendingCount.text = "$pendingTasks"
             binding.tvOverdueCount.text = "$overdueTasks"
 
-            // Completion rate
+            // Completion rate for this week
             val rate = if (totalTasks > 0) (completedTasks * 100) / totalTasks else 0
             binding.tvCompletionRate.text = "$rate%"
             binding.progressCompletion.setProgressCompat(rate, true)
-
-            // Week dates
-            val cal = Calendar.getInstance()
-            cal.set(Calendar.HOUR_OF_DAY, 0)
-            cal.set(Calendar.MINUTE, 0)
-            cal.set(Calendar.SECOND, 0)
-            cal.set(Calendar.MILLISECOND, 0)
-            cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
-            val weekStart = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_WEEK, 7)
-            val weekEnd = cal.timeInMillis
 
             // Month dates
             cal.timeInMillis = System.currentTimeMillis()
@@ -92,26 +97,20 @@ class StatsFragment : Fragment() {
             binding.tvCompletedMonth.text = "$completedMonth"
             binding.tvCreatedMonth.text = "$createdMonth"
 
-            // Weekly activity chart (last 7 days)
-            buildWeeklyChart(repository)
+            // Weekly activity chart (current week)
+            buildWeeklyChart(repository, weekStart)
 
             // Streak calculation
             calculateStreak(repository)
         }
     }
 
-    private suspend fun buildWeeklyChart(repository: app.polar.data.repository.TaskRepository) {
+    private suspend fun buildWeeklyChart(repository: app.polar.data.repository.TaskRepository, weekStart: Long) {
         val dayNames = arrayOf("L", "M", "X", "J", "V", "S", "D")
         val counts = mutableListOf<Int>()
 
         val cal = Calendar.getInstance()
-        // Go back to start of today
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        // Go to 6 days ago (start of the 7-day window)
-        cal.add(Calendar.DAY_OF_YEAR, -6)
+        cal.timeInMillis = weekStart
 
         val dayLabelsOrdered = mutableListOf<String>()
 
