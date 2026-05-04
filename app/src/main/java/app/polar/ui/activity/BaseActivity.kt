@@ -31,6 +31,12 @@ abstract class BaseActivity : AppCompatActivity() {
         // Apply font overlay on top of any theme
         theme.applyStyle(themeManager.getFontOverlayStyle(), true)
         
+        // Apply checkbox overlay
+        val checkboxOverlay = themeManager.getCheckboxOverlayStyle()
+        if (checkboxOverlay != 0) {
+            theme.applyStyle(checkboxOverlay, true)
+        }
+        
         super.onCreate(savedInstanceState)
     }
 }

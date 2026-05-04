@@ -27,7 +27,7 @@ object SmartParser {
     // Time regexes (e.g., 17:00, 17.00, 5:30pm, 5 pm, a las 17)
     private val timeRegex = Regex("""(?i)\b(?:a las?\s+)?(\d{1,2})[:.]?(\d{2})?\s*(am|a\.m\.|pm|p\.m\.)?\b""")
 
-    fun parse(input: String, defaultDate: Long? = null): ParsedTask {
+    fun parse(input: String, defaultDate: Long? = null, defaultHour: Int = 7, defaultMinute: Int = 30): ParsedTask {
         var cleanTitle = input
         val extractedTags = mutableListOf<String>()
         var extractedRecurrence = "NONE"
@@ -56,8 +56,8 @@ object SmartParser {
         // 3. Extract Dates
         var dateFound = false
         val cal = Calendar.getInstance()
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.HOUR_OF_DAY, defaultHour)
+        cal.set(Calendar.MINUTE, defaultMinute)
         cal.set(Calendar.SECOND, 0)
         cal.set(Calendar.MILLISECOND, 0)
 

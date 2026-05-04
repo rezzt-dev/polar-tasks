@@ -75,8 +75,12 @@ class TaskDialog(
             val localCalendar = java.util.Calendar.getInstance()
             localCalendar.set(utcCalendar.get(java.util.Calendar.YEAR), utcCalendar.get(java.util.Calendar.MONTH), utcCalendar.get(java.util.Calendar.DAY_OF_MONTH))
             
-            localCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
-            localCalendar.set(java.util.Calendar.MINUTE, 0)
+            val sharedPrefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+            val defaultHour = sharedPrefs.getInt("default_notification_hour", 7)
+            val defaultMinute = sharedPrefs.getInt("default_notification_minute", 30)
+
+            localCalendar.set(java.util.Calendar.HOUR_OF_DAY, defaultHour)
+            localCalendar.set(java.util.Calendar.MINUTE, defaultMinute)
             localCalendar.set(java.util.Calendar.SECOND, 0)
             localCalendar.set(java.util.Calendar.MILLISECOND, 0)
             
@@ -137,7 +141,10 @@ class TaskDialog(
       val description = binding.etTaskDescription.text.toString().trim()
       
       // Parse natural language from title
-      val parsedInfo = app.polar.domain.util.SmartParser.parse(rawTitle, selectedDate)
+      val sharedPrefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+      val defaultHour = sharedPrefs.getInt("default_notification_hour", 7)
+      val defaultMinute = sharedPrefs.getInt("default_notification_minute", 30)
+      val parsedInfo = app.polar.domain.util.SmartParser.parse(rawTitle, selectedDate, defaultHour, defaultMinute)
       
       // Add newly parsed tags to our tagList (prevent duplicates)
       parsedInfo.tags.forEach { tag ->

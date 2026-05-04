@@ -21,14 +21,14 @@
             android:textColor="?colorOnSurface"
             android:layout_marginBottom="24dp" />
 
+        <!-- APARIENCIA -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/appearance"
+            android:text="Apariencia"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="?colorOnSurface"
-            android:alpha="0.7"
+            android:textColor="?colorPrimary"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp" />
 
@@ -39,76 +39,181 @@
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
             app:strokeColor="?colorSurfaceVariant"
-            app:cardBackgroundColor="?colorSurface">
+            app:cardBackgroundColor="?colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilTheme"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                <!-- Tema -->
+                <LinearLayout
+                    android:id="@+id/btnThemeSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/appearance"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp">
-                    <AutoCompleteTextView
-                        android:id="@+id/actvTheme"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none"
-                        android:editable="false"
-                        android:padding="16dp" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_theme"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilFont"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tema visual"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:id="@+id/tvThemeValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cargando..."
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <!-- Tipografía -->
+                <LinearLayout
+                    android:id="@+id/btnFontSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/font"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp">
-                    <AutoCompleteTextView
-                        android:id="@+id/actvFont"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none"
-                        android:editable="false"
-                        android:padding="16dp" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_text_format"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tipografía"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:id="@+id/tvFontValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cargando..."
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <!-- Estilo de casillas -->
+                <LinearLayout
+                    android:id="@+id/btnCheckboxStyleSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:id="@+id/ivCheckboxIconPreview"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_check_box"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Estilo de casillas"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:id="@+id/tvCheckboxValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cargando..."
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+                
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <!-- Tamaño de fuente -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="16dp">
+                    android:padding="16dp">
+                    
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_text_size"
+                            app:tint="?colorPrimary"
+                            android:layout_marginEnd="16dp" />
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="tamaño de fuente"
-                            android:textSize="14sp"
+                            android:text="Tamaño de fuente"
+                            android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="?colorOnSurface"
-                            android:alpha="0.8" />
+                            android:textColor="?colorOnSurface" />
                         <TextView
                             android:id="@+id/tvFontSizeLabel"
                             android:layout_width="wrap_content"
@@ -122,103 +227,37 @@
                         android:id="@+id/sliderFontSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="32dp"
                         android:valueFrom="8.0"
                         android:valueTo="20.0"
                         android:stepSize="1.0"
                         android:value="14.0" />
                 </LinearLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- DATOS Y COPIAS DE SEGURIDAD -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="copia de seguridad"
+            android:text="Datos y Sincronización"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="?colorOnSurface"
-            android:alpha="0.7"
+            android:textColor="?colorPrimary"
             android:layout_marginTop="28dp"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardBackup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
             app:strokeColor="?colorSurfaceVariant"
-            app:cardBackgroundColor="?colorSurface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="guarda tus tareas y configuración en un archivo local para no perderlas nunca."
-                    android:textSize="14sp"
-                    android:textColor="?colorOnSurface"
-                    android:alpha="0.8"
-                    android:layout_marginBottom="16dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnBackupExport"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:text="exportar"
-                        android:textAllCaps="false"
-                        app:icon="@drawable/ic_share" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnBackupImport"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="restaurar"
-                        android:textAllCaps="false"
-                        app:icon="@drawable/ic_sync" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="sistema"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="?colorOnSurface"
-            android:alpha="0.7"
-            android:layout_marginTop="28dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardSystem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?colorSurfaceVariant"
-            app:cardBackgroundColor="?colorSurface">
+            app:cardBackgroundColor="?colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -226,11 +265,127 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/btnBackupExport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_share"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Exportar copia local"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Genera un archivo JSON con tus datos"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <LinearLayout
+                    android:id="@+id/btnBackupImport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_sync"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Restaurar datos"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Recuperar desde archivo de copia de seguridad"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- SISTEMA -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sistema"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?colorPrimary"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?colorSurfaceVariant"
+            app:cardBackgroundColor="?colorSurfaceContainer">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/btnNotificationSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
                     
                     <ImageView
                         android:layout_width="24dp"
@@ -244,31 +399,20 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
-                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="notificaciones"
+                            android:text="Permisos de notificaciones"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
-                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="gestiona los permisos desde el sistema"
+                            android:text="Ajustes de notificaciones en Android"
                             android:textSize="13sp"
-                            android:textColor="?colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
-                    
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnNotificationSettings"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="abrir"
-                        android:textAllCaps="false" />
                 </LinearLayout>
 
                 <View
@@ -278,16 +422,20 @@
                     android:background="?colorSurfaceVariant" />
 
                 <LinearLayout
+                    android:id="@+id/btnDailyNotificationTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
                     
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_circle_outline"
+                        android:src="@drawable/ic_schedule"
                         app:tint="?colorPrimary"
                         android:layout_marginEnd="16dp" />
 
@@ -296,45 +444,80 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
-                        
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="tutorial"
+                            android:text="Notificación de tareas"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
-                        
+                        <TextView
+                            android:id="@+id/tvDailyNotificationTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Diariamente a las 07:30"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <LinearLayout
+                    android:id="@+id/btnViewTutorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_star"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="vuelve a ver el tutorial inicial"
+                            android:text="Tutorial inicial"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Revisar guía de uso de la aplicación"
                             android:textSize="13sp"
-                            android:textColor="?colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
-                    
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnViewTutorial"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/action_view_tutorial"
-                        android:textAllCaps="false" />
                 </LinearLayout>
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:id="@+id/tvFooter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/developed_by"
+            android:text="Polar Tasks v1.5\nDesarrollado por rezzt.dev"
             android:textSize="12sp"
-            android:alpha="0.4"
+            android:textColor="?colorOnSurfaceVariant"
+            android:alpha="0.6"
+            android:gravity="center"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>

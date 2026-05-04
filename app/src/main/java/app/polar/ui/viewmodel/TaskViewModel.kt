@@ -91,6 +91,7 @@ class TaskViewModel @Inject constructor(
                     task = task,
                     isChainMode = true,
                     isBlocked = activeIndex != -1 && index > activeIndex,
+                    isFirst = index == 0,
                     isLast = index == sorted.lastIndex
                 )
             }

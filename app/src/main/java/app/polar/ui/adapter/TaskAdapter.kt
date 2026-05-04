@@ -54,6 +54,7 @@ class TaskAdapter(
                 task = item.task,
                 isBlocked = item.isBlocked,
                 isChainMode = item.isChainMode,
+                isFirst = item.isFirst,
                 isLast = item.isLast
             )
         }
@@ -94,7 +95,7 @@ class TaskAdapter(
             binding.recyclerSubtasks.itemAnimator = null
         }
 
-        fun bind(task: Task, isBlocked: Boolean = false, isChainMode: Boolean = false, isLast: Boolean = false) {
+        fun bind(task: Task, isBlocked: Boolean = false, isChainMode: Boolean = false, isFirst: Boolean = false, isLast: Boolean = false) {
             // Reset any stale visual state from previous swipe/animation
             resetVisuals()
             itemView.tag = task.id
@@ -120,27 +121,30 @@ class TaskAdapter(
             if (isChainMode) {
                 binding.chainTimelineColumn.visibility = android.view.View.VISIBLE
                 // Hide top line for the first item
-                binding.chainLineTop.visibility = if (task.orderIndex == 0) android.view.View.INVISIBLE else android.view.View.VISIBLE
+                binding.chainLineTop.visibility = if (isFirst) android.view.View.INVISIBLE else android.view.View.VISIBLE
                 // Hide bottom line if it's the last item
                 binding.chainLineBottom.visibility = if (isLast) android.view.View.INVISIBLE else android.view.View.VISIBLE
 
                 val ctx = itemView.context
                 val typedValue = android.util.TypedValue()
                 if (task.completed) {
-                     // Completed dot = primary color
+                     // Completed dot = filled and primary color
+                    binding.chainDot.setBackgroundResource(R.drawable.ic_circle)
                     ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
                     binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                     binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                     binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                 } else if (!isBlocked) {
-                    // Active (unlocked, not completed) = primary color
+                    // Active (unlocked, not completed) = outline and primary color
+                    binding.chainDot.setBackgroundResource(R.drawable.ic_circle_outline)
                     ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
                     binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                     ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
                     binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                     binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                 } else {
-                    // Future/blocked dot = surface variant
+                    // Future/blocked dot = outline and surface variant
+                    binding.chainDot.setBackgroundResource(R.drawable.ic_circle_outline)
                     ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
                     binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
                     binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)

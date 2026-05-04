@@ -12,6 +12,7 @@ class ThemeManager(private val context: Context) {
     private const val PREFS_NAME = "polar_prefs"
     private const val KEY_THEME = "theme"
     private const val KEY_FONT = "font"
+    private const val KEY_CHECKBOX_STYLE = "checkbox_style"
     
     const val THEME_LIGHT = "light"
     const val THEME_DARK = "dark"
@@ -28,6 +29,9 @@ class ThemeManager(private val context: Context) {
     const val FONT_ARIAL = "arial"
     const val FONT_SYSTEM = "system"
     
+    const val CHECKBOX_SQUARE = "square"
+    const val CHECKBOX_CIRCULAR = "circular"
+    
     private const val KEY_FONT_SCALE = "font_scale"
     const val DEFAULT_FONT_SCALE = 1.0f
   }
@@ -41,6 +45,10 @@ class ThemeManager(private val context: Context) {
       prefs.edit().putString(KEY_FONT, font).apply()
   }
   
+  fun saveCheckboxStyle(style: String) {
+      prefs.edit().putString(KEY_CHECKBOX_STYLE, style).apply()
+  }
+  
   fun saveFontScale(scale: Float) {
       prefs.edit().putFloat(KEY_FONT_SCALE, scale).apply()
   }
@@ -51,6 +59,10 @@ class ThemeManager(private val context: Context) {
   
   fun loadFont(): String {
       return prefs.getString(KEY_FONT, FONT_POPPINS) ?: FONT_POPPINS
+  }
+  
+  fun loadCheckboxStyle(): String {
+      return prefs.getString(KEY_CHECKBOX_STYLE, CHECKBOX_SQUARE) ?: CHECKBOX_SQUARE
   }
   
   fun loadFontScale(): Float {
@@ -66,6 +78,13 @@ class ThemeManager(private val context: Context) {
           FONT_ARIAL -> R.style.Overlay_Polar_Font_Arial
           FONT_SYSTEM -> R.style.Overlay_Polar_Font_System
           else -> R.style.Overlay_Polar_Font_Poppins
+      }
+  }
+
+  fun getCheckboxOverlayStyle(): Int {
+      return when (loadCheckboxStyle()) {
+          CHECKBOX_CIRCULAR -> R.style.Overlay_Polar_Checkbox_Circular
+          else -> 0 // 0 means no overlay, default square behavior
       }
   }
 
