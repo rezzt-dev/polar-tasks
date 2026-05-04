@@ -473,11 +473,13 @@ class TasksFragment : Fragment() {
       val hasTasks = groups.any { it.tasks.isNotEmpty() }
       updateEmptyState(!hasTasks)
       
-      // Flatten groups to items
       val items = mutableListOf<app.polar.ui.adapter.HomeItem>()
       groups.forEach { group ->
           if (group.tasks.isNotEmpty()) {
-              items.add(app.polar.ui.adapter.HomeItem.Header(group.listId, group.title))
+              val completed = group.tasks.count { it.completed }
+              val total = group.tasks.size
+              val progressText = if (total > 0) "($completed/$total)" else ""
+              items.add(app.polar.ui.adapter.HomeItem.Header(group.listId, group.title, progressText))
               group.tasks.forEach { task ->
                   items.add(app.polar.ui.adapter.HomeItem.TaskItem(task))
               }
@@ -498,10 +500,17 @@ class TasksFragment : Fragment() {
           // Home Mode
           binding.recyclerTasks.adapter = homeTaskAdapter
           binding.tvGreeting?.visibility = View.VISIBLE
+          binding.chipGroupFilters.visibility = View.GONE
+      } else if (listId == -4L) {
+          // Mi Día Mode — use taskAdapter, hide filters (they are force-set by ViewModel)
+          binding.recyclerTasks.adapter = taskAdapter
+          binding.tvGreeting?.visibility = View.GONE
+          binding.chipGroupFilters.visibility = View.GONE
       } else {
           // List Mode
           binding.recyclerTasks.adapter = taskAdapter
           binding.tvGreeting?.visibility = View.GONE
+          binding.chipGroupFilters.visibility = View.VISIBLE
       }
       binding.recyclerTasks.itemAnimator = null // Always keep animations off
       
@@ -520,11 +529,15 @@ class TasksFragment : Fragment() {
     if (view == null) return
     
     PopupMenu(requireContext(), view).apply {
-      menuInflater.inflate(R.menu.menu_task, menu)
+       menuInflater.inflate(R.menu.menu_task, menu)
       setOnMenuItemClickListener { item ->
         when (item.itemId) {
           R.id.action_export -> {
             exportTaskToClipboard(task)
+            true
+          }
+          R.id.action_export_image -> {
+            exportTaskAsImage(task)
             true
           }
           R.id.action_edit -> {
@@ -540,6 +553,114 @@ class TasksFragment : Fragment() {
       }
       show()
     }
+  }
+
+  private fun exportTaskAsImage(task: Task) {
+    val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
+    val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
+        override fun onChanged(subtasks: List<app.polar.data.entity.Subtask>) {
+            subtasksLiveData.removeObserver(this)
+            val context = requireContext()
+            val inflater = android.view.LayoutInflater.from(context)
+            val cardView = inflater.inflate(R.layout.layout_task_export_card, null)
+
+            val tvTitle = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskTitle)
+            val tvDesc = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskDesc)
+            val tvPriority = cardView.findViewById<android.widget.TextView>(R.id.tvPriorityBadge)
+            val llSubtasksList = cardView.findViewById<android.widget.LinearLayout>(R.id.llSubtasksList)
+            val containerSubtasks = cardView.findViewById<android.widget.LinearLayout>(R.id.containerExportSubtasks)
+            val llDueDate = cardView.findViewById<android.widget.LinearLayout>(R.id.llExportDueDate)
+            val tvDueDate = cardView.findViewById<android.widget.TextView>(R.id.tvExportDueDate)
+            val tvTags = cardView.findViewById<android.widget.TextView>(R.id.tvExportTags)
+
+            tvTitle.text = task.title
+            if (task.description.isNotBlank()) {
+                tvDesc.text = task.description
+                tvDesc.visibility = android.view.View.VISIBLE
+            } else {
+                tvDesc.visibility = android.view.View.GONE
+            }
+
+            val (priorityText, priorityColor) = when (task.priority) {
+                1 -> getString(R.string.priority_low) to "#2196F3"
+                2 -> getString(R.string.priority_medium) to "#FF9800"
+                3 -> getString(R.string.priority_high) to "#F44336"
+                else -> getString(R.string.priority_none) to "#9E9E9E"
+            }
+            tvPriority.text = priorityText
+            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(priorityColor))
+            tvPriority.setTextColor(android.graphics.Color.WHITE)
+
+            if (subtasks.isNotEmpty()) {
+                containerSubtasks.visibility = android.view.View.VISIBLE
+                llSubtasksList.removeAllViews()
+                subtasks.take(8).forEach { sub ->
+                    val stTv = android.widget.TextView(context).apply {
+                        text = "• ${sub.title}"
+                        textSize = 13f
+                        setPadding(0, 4, 0, 4)
+                        val typedValue = android.util.TypedValue()
+                        context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                        setTextColor(typedValue.data)
+                        alpha = 0.85f
+                    }
+                    llSubtasksList.addView(stTv)
+                }
+            } else {
+                containerSubtasks.visibility = android.view.View.GONE
+            }
+
+            if (task.dueDate != null) {
+                llDueDate.visibility = android.view.View.VISIBLE
+                tvDueDate.text = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
+            } else {
+                llDueDate.visibility = android.view.View.GONE
+            }
+
+            val extractedTags = task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            if (extractedTags.isNotEmpty()) {
+                tvTags.visibility = android.view.View.VISIBLE
+                tvTags.text = extractedTags.joinToString(" ") { "#$it" }
+            } else {
+                tvTags.visibility = android.view.View.GONE
+            }
+
+            val widthSpec = android.view.View.MeasureSpec.makeMeasureSpec(
+                android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380f, context.resources.displayMetrics).toInt(),
+                android.view.View.MeasureSpec.EXACTLY
+            )
+            val heightSpec = android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
+            cardView.measure(widthSpec, heightSpec)
+            cardView.layout(0, 0, cardView.measuredWidth, cardView.measuredHeight)
+
+            val bitmap = android.graphics.Bitmap.createBitmap(cardView.measuredWidth, cardView.measuredHeight, android.graphics.Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            cardView.draw(canvas)
+
+            try {
+                val cachePath = java.io.File(context.cacheDir, "shared_images")
+                cachePath.mkdirs()
+                val newFile = java.io.File(cachePath, "task_export_${task.id}.png")
+                val stream = java.io.FileOutputStream(newFile)
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                stream.close()
+
+                val contentUri = androidx.core.content.FileProvider.getUriForFile(context, "app.polar.fileprovider", newFile)
+                if (contentUri != null) {
+                    val shareIntent = android.content.Intent().apply {
+                        action = android.content.Intent.ACTION_SEND
+                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        setDataAndType(contentUri, context.contentResolver.getType(contentUri))
+                        putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
+                    }
+                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Compartir Tarea como Imagen"))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    subtasksLiveData.observe(viewLifecycleOwner, observer)
   }
 
   private fun exportTaskToClipboard(task: Task) {
@@ -563,15 +684,8 @@ class TasksFragment : Fragment() {
 
             if (task.dueDate != null) {
                 sb.appendLine()
-                val cal = java.util.Calendar.getInstance()
-                cal.timeInMillis = task.dueDate
-                val hasTime = cal.get(java.util.Calendar.HOUR_OF_DAY) != 0 || cal.get(java.util.Calendar.MINUTE) != 0
-                val dateFormat = if (hasTime) {
-                    java.text.SimpleDateFormat("d 'de' MMMM 'de' yyyy, HH:mm", java.util.Locale("es", "ES"))
-                } else {
-                    java.text.SimpleDateFormat("d 'de' MMMM 'de' yyyy", java.util.Locale("es", "ES"))
-                }
-                sb.appendLine("Fecha: ${dateFormat.format(java.util.Date(task.dueDate))}")
+                val formattedDate = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
+                sb.appendLine("Fecha: $formattedDate")
             }
 
             val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
@@ -600,7 +714,7 @@ class TasksFragment : Fragment() {
             TaskDialog(
                 task = task,
                 existingSubtasks = t,
-                onSave = { title, description, tags, subtaskList, dueDate, recurrence ->
+                onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate ->
                   // Delegate logic to ViewModel
                   viewModel.updateTask(
                       task.copy(
@@ -608,7 +722,9 @@ class TasksFragment : Fragment() {
                           description = description, 
                           tags = tags,
                           dueDate = dueDate,
-                          recurrence = recurrence
+                          recurrence = recurrence,
+                          priority = priority,
+                          timeEstimate = timeEstimate
                       ),
                       subtaskList
                   )

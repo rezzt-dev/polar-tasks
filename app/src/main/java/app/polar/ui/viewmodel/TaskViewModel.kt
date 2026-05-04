@@ -191,6 +191,11 @@ class TaskViewModel @Inject constructor(
   
   fun loadTasksForList(listId: Long) {
     _selectedListId.value = listId
+    // Reset filters
+    _filterToday.value = false
+    _filterPending.value = false
+    _filterOverdue.value = false
+    _filterRecurrent.value = false
     // Update chain state asynchronously
     viewModelScope.launch {
         val list = repository.getTaskListById(listId)
@@ -200,6 +205,20 @@ class TaskViewModel @Inject constructor(
   
   fun loadAllTasks() {
       _selectedListId.value = -1L
+      // Reset filters
+      _filterToday.value = false
+      _filterPending.value = false
+      _filterOverdue.value = false
+      _filterRecurrent.value = false
+  }
+
+  fun loadMyDayTasks() {
+      _selectedListId.value = -4L
+      // Force filters: today + overdue + pending
+      _filterToday.value = true
+      _filterOverdue.value = true
+      _filterPending.value = true
+      _filterRecurrent.value = false
   }
   
   // Get subtasks for a task
@@ -207,14 +226,16 @@ class TaskViewModel @Inject constructor(
     return repository.getSubtasksForTask(taskId)
   }
   
-  fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<Subtask> = emptyList(), dueDate: Long? = null, recurrence: String = "NONE") = safeLaunch {
+  fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<Subtask> = emptyList(), dueDate: Long? = null, recurrence: String = "NONE", priority: Int = 0, timeEstimate: Int = 0) = safeLaunch {
     val task = Task(
       listId = listId,
       title = title,
       description = description,
       tags = tags,
       dueDate = dueDate,
-      recurrence = recurrence
+      recurrence = recurrence,
+      priority = priority,
+      timeEstimate = timeEstimate
     )
     val taskId = repository.insertTask(task)
     
@@ -236,6 +257,10 @@ class TaskViewModel @Inject constructor(
 
   fun getTasksForDate(start: Long, end: Long): LiveData<List<Task>> {
     return repository.getTasksForDateLive(start, end)
+  }
+
+  fun getAllTasks(): LiveData<List<Task>> {
+    return repository.getAllTasks()
   }
   
   fun updateTask(task: Task, subtasks: List<Subtask>? = null) = safeLaunch {
@@ -331,6 +356,10 @@ class TaskViewModel @Inject constructor(
 
   fun renameSubtask(subtask: Subtask, newTitle: String) = safeLaunch {
     repository.updateSubtask(subtask.copy(title = newTitle))
+  }
+
+  fun updateSubtask(subtask: Subtask) = safeLaunch {
+    repository.updateSubtask(subtask)
   }
 
   fun updateTasksOrder(tasks: List<Task>) = safeLaunch {

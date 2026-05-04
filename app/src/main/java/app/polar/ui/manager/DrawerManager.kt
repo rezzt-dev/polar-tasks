@@ -28,8 +28,11 @@ class DrawerManager(
 
     sealed class NavigationEvent {
         object Home : NavigationEvent()
+        object MyDay : NavigationEvent()
         object Calendar : NavigationEvent()
+        object Tags : NavigationEvent()
         object Reminders : NavigationEvent()
+        object Eisenhower : NavigationEvent()
         object Trash : NavigationEvent()
         data class TaskListSelected(val list: TaskList) : NavigationEvent()
         object CreateList : NavigationEvent()
@@ -123,13 +126,28 @@ class DrawerManager(
             closeDrawer()
         }
 
+        binding.root.findViewById<View>(R.id.btnMyDay).setOnClickListener {
+            onNavigate(NavigationEvent.MyDay)
+            closeDrawer()
+        }
+
         binding.root.findViewById<View>(R.id.btnCalendar).setOnClickListener {
             onNavigate(NavigationEvent.Calendar)
             closeDrawer()
         }
 
+        binding.root.findViewById<View>(R.id.btnTags).setOnClickListener {
+            onNavigate(NavigationEvent.Tags)
+            closeDrawer()
+        }
+
         binding.root.findViewById<View>(R.id.btnReminders).setOnClickListener {
             onNavigate(NavigationEvent.Reminders)
+            closeDrawer()
+        }
+
+        binding.root.findViewById<View>(R.id.btnEisenhower).setOnClickListener {
+            onNavigate(NavigationEvent.Eisenhower)
             closeDrawer()
         }
 

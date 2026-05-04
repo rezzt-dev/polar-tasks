@@ -24,6 +24,7 @@ class RemindersFragment : Fragment() {
     
     private val viewModel: RemindersViewModel by activityViewModels()
     private lateinit var adapter: ReminderAdapter
+    private val completionJobs = mutableMapOf<Long, kotlinx.coroutines.Job>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +43,14 @@ class RemindersFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = ReminderAdapter(
-            onCheckChanged = { reminder -> viewModel.toggleCompletion(reminder) },
+            onCheckChanged = { reminder, isChecked, view -> 
+                completionJobs[reminder.id]?.cancel()
+                completionJobs.remove(reminder.id)
+                view.alpha = 1.0f
+                view.translationX = 0f
+                val newReminder = reminder.copy(isCompleted = isChecked)
+                viewModel.update(newReminder)
+            },
             onItemClick = { reminder -> 
                 showEditReminderDialog(reminder)
             },
@@ -53,6 +61,7 @@ class RemindersFragment : Fragment() {
         )
         binding.recyclerReminders.layoutManager = LinearLayoutManager(context)
         binding.recyclerReminders.adapter = adapter
+        binding.recyclerReminders.itemAnimator = null // Instant updates sin parpadeos
         
         // Setup swipe gestures
         setupSwipeGestures()
@@ -68,6 +77,15 @@ class RemindersFragment : Fragment() {
                 viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
                 target: androidx.recyclerview.widget.RecyclerView.ViewHolder
             ): Boolean = false
+            
+            override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.animate()
+                    .alpha(1.0f)
+                    .translationX(0f)
+                    .setDuration(150)
+                    .start()
+            }
             
             override fun onSwiped(
                 viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
@@ -104,8 +122,8 @@ class RemindersFragment : Fragment() {
     private fun showEditReminderDialog(reminder: app.polar.data.entity.Reminder) {
         app.polar.ui.dialog.ReminderDialog(
             reminder = reminder,
-            onSave = { title, desc, time ->
-                 viewModel.update(reminder.copy(title = title, description = desc, dateTime = time))
+            onSaveWithLocation = { title, desc, time, lat, lng, radius, locName ->
+                 viewModel.update(reminder.copy(title = title, description = desc, dateTime = time, latitude = lat, longitude = lng, radius = radius, locationName = locName))
             }
         ).show(parentFragmentManager, "EditReminderDialog")
     }

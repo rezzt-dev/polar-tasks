@@ -11,5 +11,10 @@ data class Reminder(
     val dateTime: Long, // Epoch millis
     val isCompleted: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val radius: Float? = null,
+    val locationName: String? = null
 )
+

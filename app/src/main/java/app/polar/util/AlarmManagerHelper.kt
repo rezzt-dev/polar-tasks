@@ -74,7 +74,36 @@ class AlarmManagerHelper @Inject constructor(
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
         )
         pendingIntent?.let { alarmManager.cancel(it) }
+    }
 
+    fun scheduleSubtaskAlarm(subtaskId: Long, timeInMillis: Long) {
+        if (timeInMillis <= System.currentTimeMillis()) return
+
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(AlarmReceiver.EXTRA_TYPE, AlarmReceiver.TYPE_SUBTASK)
+            putExtra(AlarmReceiver.EXTRA_SUBTASK_ID, subtaskId)
+        }
+
+        // Subtasks use a 2_000_000 offset to avoid collision with tasks and reminders
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            2000000 + subtaskId.toInt(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        scheduleExact(timeInMillis, pendingIntent)
+    }
+
+    fun cancelSubtaskAlarm(subtaskId: Long) {
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            2000000 + subtaskId.toInt(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+        )
+        pendingIntent?.let { alarmManager.cancel(it) }
     }
 
     private fun scheduleExact(timeInMillis: Long, pendingIntent: PendingIntent) {

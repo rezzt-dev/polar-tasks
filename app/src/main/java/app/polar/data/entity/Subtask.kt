@@ -20,5 +20,6 @@ data class Subtask(
   val id: Long = 0,
   val taskId: Long,
   val title: String,
-  val completed: Boolean = false
+  val completed: Boolean = false,
+  @androidx.room.ColumnInfo(name = "dueDate") val dueDate: Long? = null
 )

@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ajustes"
+            android:text="@string/settings"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="?colorOnSurface"
@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apariencia"
+            android:text="@string/appearance"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="?colorPrimary"
@@ -73,7 +73,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tema visual"
+                            android:text="@string/visual_theme"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -81,7 +81,7 @@
                             android:id="@+id/tvThemeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cargando..."
+                            android:text="@string/loading"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -120,7 +120,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tipografía"
+                            android:text="@string/typography"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -128,7 +128,7 @@
                             android:id="@+id/tvFontValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cargando..."
+                            android:text="@string/loading"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -168,7 +168,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Estilo de casillas"
+                            android:text="@string/checkbox_style"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -176,7 +176,7 @@
                             android:id="@+id/tvCheckboxValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cargando..."
+                            android:text="@string/loading"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -210,7 +210,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="Tamaño de fuente"
+                            android:text="@string/font_size"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -235,6 +235,53 @@
                         android:value="14.0" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <!-- Idioma -->
+                <LinearLayout
+                    android:id="@+id/btnLanguageSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_sort"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/language"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:id="@+id/tvLanguageValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loading"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -242,7 +289,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Datos y Sincronización"
+            android:text="@string/data_and_sync"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="?colorPrimary"
@@ -290,14 +337,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Exportar copia local"
+                            android:text="@string/export_local_backup"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Genera un archivo JSON con tus datos"
+                            android:text="@string/export_local_backup_desc"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -335,14 +382,59 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Restaurar datos"
+                            android:text="@string/restore_data"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Recuperar desde archivo de copia de seguridad"
+                            android:text="@string/restore_data_desc"
+                            android:textSize="13sp"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?colorSurfaceVariant" />
+
+                <LinearLayout
+                    android:id="@+id/btnImportCsv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_list"
+                        app:tint="?colorPrimary"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Importar CSV"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?colorOnSurface" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cargar tareas desde archivo .csv"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -354,7 +446,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sistema"
+            android:text="@string/system_label"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="?colorPrimary"
@@ -402,14 +494,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Permisos de notificaciones"
+                            android:text="@string/notification_permissions"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ajustes de notificaciones en Android"
+                            android:text="@string/notification_permissions_desc"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -447,7 +539,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Notificación de tareas"
+                            android:text="@string/tasks_notification"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
@@ -455,7 +547,7 @@
                             android:id="@+id/tvDailyNotificationTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Diariamente a las 07:30"
+                            android:text="07:30"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -493,14 +585,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tutorial inicial"
+                            android:text="@string/initial_tutorial"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Revisar guía de uso de la aplicación"
+                            android:text="@string/initial_tutorial_desc"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -513,7 +605,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="24dp"
-            android:text="Polar Tasks v1.5\nDesarrollado por rezzt.dev"
+            android:text="@string/developed_by_full"
             android:textSize="12sp"
             android:textColor="?colorOnSurfaceVariant"
             android:alpha="0.6"

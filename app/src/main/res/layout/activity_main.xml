@@ -97,7 +97,38 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="inicio"
+          android:text="@string/home"
+          android:textSize="14sp"
+          android:textColor="?attr/colorOnSurface"/>
+      </LinearLayout>
+
+      <!-- Mi Día Item -->
+      <LinearLayout
+        android:id="@+id/btnMyDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+          android:layout_width="20dp"
+          android:layout_height="20dp"
+          android:src="@drawable/ic_schedule"
+          app:tint="?attr/colorOnSurface"
+          android:alpha="0.7"/>
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:text="@string/my_day"
           android:textSize="14sp"
           android:textColor="?attr/colorOnSurface"/>
       </LinearLayout>
@@ -128,12 +159,12 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="recordatorios"
+          android:text="@string/reminders"
           android:textSize="14sp"
           android:textColor="?attr/colorOnSurface"/>
       </LinearLayout>
 
-      <!-- Calendar Item -->
+       <!-- Calendar Item -->
       <LinearLayout
         android:id="@+id/btnCalendar"
         android:layout_width="match_parent"
@@ -159,7 +190,71 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
-          android:text="calendario"
+          android:text="@string/calendar"
+          android:textSize="14sp"
+          android:textColor="?attr/colorOnSurface"/>
+      </LinearLayout>
+
+      <!-- Tags Item -->
+      <LinearLayout
+        android:id="@+id/btnTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ImageView
+          android:layout_width="20dp"
+          android:layout_height="20dp"
+          android:src="@drawable/ic_label" 
+          app:tint="?attr/colorOnSurface"
+          android:alpha="0.7"/>
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:text="Todas las etiquetas"
+          android:textSize="14sp"
+          android:textColor="?attr/colorOnSurface"/>
+      </LinearLayout>
+
+      <!-- Matriz Eisenhower Item -->
+      <LinearLayout
+        android:id="@+id/btnEisenhower"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ImageView
+          android:layout_width="20dp"
+          android:layout_height="20dp"
+          android:src="@drawable/ic_folder" 
+          app:tint="?attr/colorOnSurface"
+          android:alpha="0.7"/>
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:text="Matriz de Eisenhower"
           android:textSize="14sp"
           android:textColor="?attr/colorOnSurface"/>
       </LinearLayout>

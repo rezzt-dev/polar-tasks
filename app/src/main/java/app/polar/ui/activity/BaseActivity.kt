@@ -15,6 +15,17 @@ abstract class BaseActivity : AppCompatActivity() {
         val config = newBase.resources.configuration
         config.fontScale = fontScale
         
+        val sharedPrefs = newBase.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val localeStr = sharedPrefs.getString("app_locale", "es") ?: "es"
+        val locale = if (localeStr.contains("-r")) {
+            val parts = localeStr.split("-r")
+            java.util.Locale(parts[0], parts[1])
+        } else {
+            java.util.Locale(localeStr)
+        }
+        java.util.Locale.setDefault(locale)
+        config.setLocale(locale)
+        
         val newContext = newBase.createConfigurationContext(config)
         super.attachBaseContext(newContext)
     }

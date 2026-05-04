@@ -21,7 +21,8 @@ import java.util.Locale
 
 class ReminderDialog(
     private val reminder: app.polar.data.entity.Reminder? = null,
-    private val onSave: (String, String, Long) -> Unit
+    private val onSave: ((String, String, Long) -> Unit)? = null,
+    private val onSaveWithLocation: ((String, String, Long, Double?, Double?, Float?, String?) -> Unit)? = null
 ) : BottomSheetDialogFragment() {
 
     private var _binding: DialogReminderBinding? = null
@@ -47,6 +48,9 @@ class ReminderDialog(
             binding.etTitle.setText(reminder.title)
             binding.etDescription.setText(reminder.description)
             selectedDate = reminder.dateTime
+            binding.etLocationName.setText(reminder.locationName ?: "")
+            binding.etLatitude.setText(reminder.latitude?.toString() ?: "")
+            binding.etLongitude.setText(reminder.longitude?.toString() ?: "")
             updateDateDisplay()
         } else {
              // Default to +1 hour? or current time.
@@ -56,13 +60,20 @@ class ReminderDialog(
         binding.btnSave.setOnClickListener {
             val title = binding.etTitle.text.toString()
             if (title.isBlank()) {
-                // Fixed: The simpler layout doesn't use TextInputLayout IDs for errors 
-                // effectively unless we add them or just error on EditText
                 binding.etTitle.error = "Required"
                 return@setOnClickListener
             }
             val description = binding.etDescription.text.toString()
-            onSave(title, description, selectedDate)
+            
+            val locName = binding.etLocationName.text.toString().trim().takeIf { it.isNotEmpty() }
+            val lat = binding.etLatitude.text.toString().trim().toDoubleOrNull()
+            val lng = binding.etLongitude.text.toString().trim().toDoubleOrNull()
+            
+            if (onSaveWithLocation != null) {
+                onSaveWithLocation.invoke(title, description, selectedDate, lat, lng, 100f, locName)
+            } else {
+                onSave?.invoke(title, description, selectedDate)
+            }
             dismiss()
         }
         

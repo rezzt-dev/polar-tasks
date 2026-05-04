@@ -47,6 +47,28 @@ class AlarmReceiver : BroadcastReceiver() {
                      }
                  }
             }
+        } else if (type == TYPE_SUBTASK) {
+            val subtaskId = intent.getLongExtra(EXTRA_SUBTASK_ID, -1L)
+            if (subtaskId != -1L) {
+                 val goAsync = goAsync()
+                 kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                     try {
+                         val database = app.polar.data.AppDatabase.getDatabase(context)
+                         val subtask = database.subtaskDao().getSubtaskById(subtaskId)
+                         if (subtask != null && !subtask.completed) {
+                             app.polar.util.NotificationHelper.showNotification(
+                                 context,
+                                 // Use negative ID space for subtasks to avoid collision
+                                 (subtaskId + 2_000_000L).toInt().toLong(),
+                                 subtask.title,
+                                 ""
+                             )
+                         }
+                     } finally {
+                         goAsync.finish()
+                     }
+                 }
+            }
         }
     }
 
@@ -54,6 +76,8 @@ class AlarmReceiver : BroadcastReceiver() {
         const val EXTRA_TYPE = "EXTRA_TYPE"
         const val TYPE_TASK = "TYPE_TASK"
         const val TYPE_REMINDER = "TYPE_REMINDER"
+        const val TYPE_SUBTASK = "TYPE_SUBTASK"
         const val EXTRA_REMINDER_ID = "EXTRA_REMINDER_ID"
+        const val EXTRA_SUBTASK_ID = "EXTRA_SUBTASK_ID"
     }
 }

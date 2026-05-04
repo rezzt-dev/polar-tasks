@@ -77,8 +77,24 @@ class RemindersViewModel @Inject constructor(
         }
     }
 
-    fun insert(title: String, description: String, dateTime: Long) = safeLaunch {
-        val reminder = Reminder(title = title, description = description, dateTime = dateTime)
+    fun insert(
+        title: String, 
+        description: String, 
+        dateTime: Long, 
+        latitude: Double? = null, 
+        longitude: Double? = null, 
+        radius: Float? = null, 
+        locationName: String? = null
+    ) = safeLaunch {
+        val reminder = Reminder(
+            title = title, 
+            description = description, 
+            dateTime = dateTime,
+            latitude = latitude,
+            longitude = longitude,
+            radius = radius,
+            locationName = locationName
+        )
         val id = repository.insert(reminder)
         alarmHelper.scheduleReminderAlarm(id, dateTime)
         

@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class ReminderAdapter(
-    private val onCheckChanged: (Reminder) -> Unit,
+    private val onCheckChanged: (Reminder, Boolean, android.view.View) -> Unit,
     private val onItemClick: (Reminder) -> Unit,
     private val onItemLongClick: (Reminder, android.view.View) -> Boolean
 ) : ListAdapter<Reminder, ReminderAdapter.ReminderViewHolder>(ReminderDiffCallback()) {
@@ -29,7 +29,7 @@ class ReminderAdapter(
     class ReminderViewHolder(private val binding: ItemReminderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             reminder: Reminder, 
-            onCheckChanged: (Reminder) -> Unit, 
+            onCheckChanged: (Reminder, Boolean, android.view.View) -> Unit, 
             onItemClick: (Reminder) -> Unit,
             onItemLongClick: (Reminder, android.view.View) -> Boolean
         ) {
@@ -38,6 +38,13 @@ class ReminderAdapter(
             val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
             binding.tvReminderTime.text = dateFormat.format(java.util.Date(reminder.dateTime))
             
+            if (reminder.locationName != null && reminder.locationName.isNotEmpty()) {
+                binding.layoutLocation.visibility = android.view.View.VISIBLE
+                binding.tvReminderLocation.text = reminder.locationName
+            } else {
+                binding.layoutLocation.visibility = android.view.View.GONE
+            }
+
             // Remove listener to avoid triggering loop
             binding.cbReminderComplete.setOnCheckedChangeListener(null)
             binding.cbReminderComplete.isChecked = reminder.isCompleted
@@ -73,7 +80,7 @@ class ReminderAdapter(
 
             binding.cbReminderComplete.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked != reminder.isCompleted) {
-                    onCheckChanged(reminder)
+                    onCheckChanged(reminder, isChecked, binding.root)
                 }
             }
             

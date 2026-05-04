@@ -170,6 +170,26 @@ class TaskAdapter(
             // Checkbox logic
             binding.cbTaskComplete.setOnCheckedChangeListener(null)
             binding.cbTaskComplete.isChecked = task.completed
+
+            // Priority tinting
+            val priorityColor = when (task.priority) {
+                3 -> android.graphics.Color.parseColor("#F44336") // High - Red
+                2 -> android.graphics.Color.parseColor("#FF9800") // Medium - Orange
+                1 -> android.graphics.Color.parseColor("#2196F3") // Low - Blue
+                else -> {
+                    val typedValue = android.util.TypedValue()
+                    itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                    typedValue.data
+                }
+            }
+            binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
+            
+            if (task.priority in 1..3) {
+                binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
+                binding.viewPriorityStripe.setBackgroundColor(priorityColor)
+            } else {
+                binding.viewPriorityStripe.visibility = android.view.View.GONE
+            }
             
             if (task.completed) {
                 binding.tvTaskTitle.paintFlags = binding.tvTaskTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG

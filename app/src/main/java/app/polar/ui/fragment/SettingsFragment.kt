@@ -39,6 +39,7 @@ class SettingsFragment : Fragment() {
     setupFontScale()
     setupNotificationSettings()
     setupBackupSettings()
+    setupLanguageSelection()
   }
 
   private fun setupThemeSelection() {
@@ -189,7 +190,7 @@ class SettingsFragment : Fragment() {
     fun updateTimeLabel() {
         val defaultHour = sharedPrefs.getInt("default_notification_hour", 7)
         val defaultMinute = sharedPrefs.getInt("default_notification_minute", 30)
-        binding.tvDailyNotificationTime.text = String.format("Diariamente a las %02d:%02d", defaultHour, defaultMinute)
+        binding.tvDailyNotificationTime.text = getString(R.string.daily_at, String.format("%02d:%02d", defaultHour, defaultMinute))
     }
     updateTimeLabel()
 
@@ -255,6 +256,14 @@ class SettingsFragment : Fragment() {
       }
       restoreBackupLauncher.launch(intent)
     }
+
+    binding.btnImportCsv.setOnClickListener {
+      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = "*/*"
+      }
+      importCsvLauncher.launch(intent)
+    }
   }
 
   private val createBackupLauncher =
@@ -292,6 +301,91 @@ class SettingsFragment : Fragment() {
         }
       }
     }
+
+  private val importCsvLauncher =
+    registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
+      if (result.resultCode == android.app.Activity.RESULT_OK) {
+        result.data?.data?.let { uri ->
+          viewLifecycleOwner.lifecycleScope.launch {
+            try {
+              val contentResolver = requireContext().contentResolver
+              contentResolver.openInputStream(uri)?.use { inputStream ->
+                java.io.BufferedReader(java.io.InputStreamReader(inputStream)).use { reader ->
+                  var line: String? = reader.readLine()
+                  val lines = mutableListOf<String>()
+                  while (line != null) {
+                    if (line.isNotBlank()) lines.add(line)
+                    line = reader.readLine()
+                  }
+                  
+                  val db = app.polar.data.AppDatabase.getDatabase(requireContext())
+                  val taskListId = db.taskListDao().insert(app.polar.data.entity.TaskList(title = "Tareas Importadas"))
+                  
+                  for ((index, row) in lines.withIndex()) {
+                    if (index == 0 && (row.contains("title", ignoreCase = true) || row.contains("desc", ignoreCase = true))) {
+                      continue
+                    }
+                    val parts = row.split(",")
+                    val title = parts.getOrNull(0)?.trim()?.removeSurrounding("\"")
+                    val desc = parts.getOrNull(1)?.trim()?.removeSurrounding("\"") ?: ""
+                    if (!title.isNullOrBlank()) {
+                      db.taskDao().insert(app.polar.data.entity.Task(
+                        listId = taskListId,
+                        title = title,
+                        description = desc,
+                        priority = 0
+                      ))
+                    }
+                  }
+                }
+              }
+              Snackbar.make(binding.root, "Tareas importadas correctamente", Snackbar.LENGTH_LONG).show()
+            } catch (e: Exception) {
+              Snackbar.make(binding.root, "Error al importar el archivo CSV", Snackbar.LENGTH_SHORT).show()
+            }
+          }
+        }
+      }
+    }
+
+  private fun setupLanguageSelection() {
+    val sharedPrefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+    val currentLocale = sharedPrefs.getString("app_locale", "es") ?: "es"
+
+    val langEntries = linkedMapOf(
+      "Castellano" to "es",
+      "English (UK)" to "en-rGB",
+      "English (US)" to "en-rUS",
+      "Deutsch" to "de",
+      "Français" to "fr"
+    )
+    val langLabels = langEntries.keys.toTypedArray()
+    val langValues = langEntries.values.toList()
+
+    fun updateLabel() {
+        val locale = sharedPrefs.getString("app_locale", "es") ?: "es"
+        val label = langEntries.entries.find { it.value == locale }?.key ?: "Español"
+        binding.tvLanguageValue.text = label
+    }
+    updateLabel()
+
+    binding.btnLanguageSettings.setOnClickListener {
+      val checkedItem = langValues.indexOf(currentLocale).takeIf { it >= 0 } ?: 0
+
+      MaterialAlertDialogBuilder(requireContext())
+        .setTitle("Seleccionar idioma")
+        .setSingleChoiceItems(langLabels, checkedItem) { dialog, which ->
+            val selectedLocale = langValues[which]
+            if (currentLocale != selectedLocale) {
+                sharedPrefs.edit().putString("app_locale", selectedLocale).apply()
+                requireActivity().recreate()
+            }
+            dialog.dismiss()
+        }
+        .setNegativeButton("Cancelar", null)
+        .show()
+    }
+  }
 
   override fun onDestroyView() {
     super.onDestroyView()
