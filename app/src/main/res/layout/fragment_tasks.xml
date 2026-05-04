@@ -21,7 +21,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnBackground"
-        android:text="buenos días"
+        android:text="@string/good_morning"
         android:visibility="visible"/>
 
     <HorizontalScrollView
@@ -55,7 +55,7 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="pendientes"
+                android:text="@string/filter_pending"
                 android:checkable="true"
                 app:checkedIconVisible="true"/>
 
@@ -64,7 +64,7 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="vencidas"
+                android:text="@string/filter_overdue"
                 android:checkable="true"
                 app:checkedIconVisible="true"/>
 
@@ -73,7 +73,7 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="repetitivas"
+                android:text="@string/filter_recurrent"
                 android:checkable="true"
                 app:checkedIconVisible="true"/>
 

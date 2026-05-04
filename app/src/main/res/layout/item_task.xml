@@ -19,7 +19,8 @@
         <View
             android:id="@+id/chainLineTop"
             android:layout_width="2dp"
-            android:layout_height="20dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="?attr/colorSurfaceVariant"/>
 
         <!-- Dot indicator -->
@@ -44,16 +45,29 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:background="?android:attr/colorBackground">
+
+        <View
+            android:id="@+id/viewPriorityStripe"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="@dimen/spacing_medium"
-            android:paddingHorizontal="@dimen/spacing_medium"
-            android:gravity="top">
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/spacing_medium"
+                android:paddingHorizontal="@dimen/spacing_medium"
+                android:gravity="center_vertical">
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/cbTaskComplete"
@@ -61,8 +75,7 @@
                 android:layout_height="wrap_content"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
-                android:padding="0dp"
-                android:layout_marginTop="-4dp"/>
+                android:padding="0dp"/>
 
             <LinearLayout
                 android:id="@+id/taskContentContainer"
@@ -167,6 +180,7 @@
 
             </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
         
         <!-- Divider -->
         <View

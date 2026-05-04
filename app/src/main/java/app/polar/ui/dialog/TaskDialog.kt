@@ -17,7 +17,7 @@ import app.polar.ui.adapter.TagAdapter
 class TaskDialog(
   private val task: Task? = null,
   private val existingSubtasks: List<Subtask> = emptyList(),
-  private val onSave: (String, String, String, List<Subtask>, Long?, String) -> Unit
+  private val onSave: (String, String, String, List<Subtask>, Long?, String, Int, Int) -> Unit
 ) : DialogFragment() {
   
   private var _binding: DialogTaskBinding? = null
@@ -30,6 +30,7 @@ class TaskDialog(
   private var isDateExplicitlySet: Boolean = false
   private var selectedRecurrence: String = "NONE"
   private var isRecurrenceExplicitlySet: Boolean = false
+  private var selectedPriority: Int = 0
   
   private lateinit var subtaskAdapter: SubtaskAdapter
   private lateinit var tagAdapter: TagAdapter
@@ -41,9 +42,12 @@ class TaskDialog(
       binding.tvDialogTitle.text = getString(R.string.edit_task)
       binding.etTaskTitle.setText(task.title)
       binding.etTaskDescription.setText(task.description)
+      if (task.timeEstimate > 0) {
+          binding.etTimeEstimate.setText(task.timeEstimate.toString())
+      }
       // cargar etiquetas existentes
       if (task.tags.isNotEmpty()) {
-          tagList.addAll(task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() })
+        tagList.addAll(task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() })
       }
       
       // cargar subtareas existentes
@@ -51,62 +55,96 @@ class TaskDialog(
       
       selectedDate = task.dueDate
       selectedRecurrence = task.recurrence
+      selectedPriority = task.priority
     } else {
       binding.tvDialogTitle.text = getString(R.string.create_task)
     }
     
     updateDateText()
     updateRecurrenceText()
+    updatePriorityText()
     
     setupSubtaskList()
     setupTagList()
     
     binding.containerDate.setOnClickListener {
-        val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Select date")
-            .setSelection(selectedDate ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
-            .build()
-            
-        datePicker.addOnPositiveButtonClickListener { selection ->
-            // ajustar a la zona horaria local inicio del dia
-            val utcCalendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
-            utcCalendar.timeInMillis = selection
-            
-            val localCalendar = java.util.Calendar.getInstance()
-            localCalendar.set(utcCalendar.get(java.util.Calendar.YEAR), utcCalendar.get(java.util.Calendar.MONTH), utcCalendar.get(java.util.Calendar.DAY_OF_MONTH))
-            
-            localCalendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
-            localCalendar.set(java.util.Calendar.MINUTE, 0)
-            localCalendar.set(java.util.Calendar.SECOND, 0)
-            localCalendar.set(java.util.Calendar.MILLISECOND, 0)
-            
-            selectedDate = localCalendar.timeInMillis
-            isDateExplicitlySet = true
-            updateDateText()
-        }
+      val datePicker =
+        com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+          .setTitleText("Select date")
+          .setSelection(
+            selectedDate
+              ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds()
+          )
+          .build()
+      
+      datePicker.addOnPositiveButtonClickListener { selection ->
+        // ajustar a la zona horaria local inicio del dia
+        val utcCalendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+        utcCalendar.timeInMillis = selection
         
-        datePicker.show(parentFragmentManager, "DATE_PICKER")
+        val localCalendar = java.util.Calendar.getInstance()
+        localCalendar.set(
+          utcCalendar.get(java.util.Calendar.YEAR),
+          utcCalendar.get(java.util.Calendar.MONTH),
+          utcCalendar.get(java.util.Calendar.DAY_OF_MONTH)
+        )
+        
+        val sharedPrefs =
+          requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val defaultHour = sharedPrefs.getInt("default_notification_hour", 7)
+        val defaultMinute = sharedPrefs.getInt("default_notification_minute", 30)
+        
+        localCalendar.set(java.util.Calendar.HOUR_OF_DAY, defaultHour)
+        localCalendar.set(java.util.Calendar.MINUTE, defaultMinute)
+        localCalendar.set(java.util.Calendar.SECOND, 0)
+        localCalendar.set(java.util.Calendar.MILLISECOND, 0)
+        
+        selectedDate = localCalendar.timeInMillis
+        isDateExplicitlySet = true
+        updateDateText()
+      }
+      
+      datePicker.show(parentFragmentManager, "DATE_PICKER")
     }
     
     binding.containerRecurrence.setOnClickListener {
-        val popup = android.widget.PopupMenu(requireContext(), it)
-        popup.menu.add(0, 0, 0, "No se repite")
-        popup.menu.add(0, 1, 1, "Diariamente")
-        popup.menu.add(0, 2, 2, "Semanalmente")
-        popup.menu.add(0, 3, 3, "Mensualmente")
-        
-        popup.setOnMenuItemClickListener { item ->
-            selectedRecurrence = when (item.itemId) {
-                1 -> "DAILY"
-                2 -> "WEEKLY"
-                3 -> "MONTHLY"
-                else -> "NONE"
-            }
-            isRecurrenceExplicitlySet = true
-            updateRecurrenceText()
-            true
+      val popup = android.widget.PopupMenu(requireContext(), it)
+      popup.menu.add(0, 0, 0, "No se repite")
+      popup.menu.add(0, 1, 1, "Diariamente")
+      popup.menu.add(0, 2, 2, "Semanalmente")
+      popup.menu.add(0, 3, 3, "Mensualmente")
+      popup.menu.add(0, 4, 4, "Cada lunes y miércoles")
+      popup.menu.add(0, 5, 5, "Primer día del mes")
+      
+      popup.setOnMenuItemClickListener { item ->
+        selectedRecurrence = when (item.itemId) {
+          1 -> "DAILY"
+          2 -> "WEEKLY"
+          3 -> "MONTHLY"
+          4 -> "MON_WED"
+          5 -> "FIRST_DAY_MONTH"
+          else -> "NONE"
         }
-        popup.show()
+        isRecurrenceExplicitlySet = true
+        updateRecurrenceText()
+        true
+      }
+      popup.show()
+    }
+    
+    binding.containerPriority.setOnClickListener {
+      val popup = android.widget.PopupMenu(requireContext(), it)
+      popup.menu.add(0, 0, 0, "Sin prioridad")
+      popup.menu.add(0, 1, 1, "Prioridad Baja")
+      popup.menu.add(0, 2, 2, "Prioridad Media")
+      popup.menu.add(0, 3, 3, "Prioridad Alta")
+      
+      popup.setOnMenuItemClickListener { item ->
+        selectedPriority = item.itemId
+        updatePriorityText()
+        true
+      }
+      popup.show()
     }
     
     binding.btnAddSubtask.setOnClickListener {
@@ -118,18 +156,18 @@ class TaskDialog(
         binding.etSubtaskTitle.text?.clear()
       }
     }
-
+    
     binding.btnAddTag.setOnClickListener {
-        val tagText = binding.etTag.text.toString().trim()
-        if (tagText.isNotEmpty() && !tagList.contains(tagText)) {
-            tagList.add(tagText)
-            updateTagList()
-            binding.etTag.text?.clear()
-        }
+      val tagText = binding.etTag.text.toString().trim()
+      if (tagText.isNotEmpty() && !tagList.contains(tagText)) {
+        tagList.add(tagText)
+        updateTagList()
+        binding.etTag.text?.clear()
+      }
     }
     
     binding.btnCancel.setOnClickListener {
-        dismiss()
+      dismiss()
     }
     
     binding.btnSave.setOnClickListener {
@@ -137,11 +175,16 @@ class TaskDialog(
       val description = binding.etTaskDescription.text.toString().trim()
       
       // Parse natural language from title
-      val parsedInfo = app.polar.domain.util.SmartParser.parse(rawTitle, selectedDate)
+      val sharedPrefs =
+        requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+      val defaultHour = sharedPrefs.getInt("default_notification_hour", 7)
+      val defaultMinute = sharedPrefs.getInt("default_notification_minute", 30)
+      val parsedInfo =
+        app.polar.domain.util.SmartParser.parse(rawTitle, selectedDate, defaultHour, defaultMinute)
       
       // Add newly parsed tags to our tagList (prevent duplicates)
       parsedInfo.tags.forEach { tag ->
-          if (!tagList.contains(tag)) tagList.add(tag)
+        if (!tagList.contains(tag)) tagList.add(tag)
       }
       
       val tagsString = tagList.joinToString(",")
@@ -150,16 +193,35 @@ class TaskDialog(
       val finalDate = if (isDateExplicitlySet) selectedDate else parsedInfo.dueDate
       
       // Prioritize explicit Recurrence selection
-      val finalRecurrence = if (isRecurrenceExplicitlySet) selectedRecurrence 
-                            else if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence 
-                            else selectedRecurrence
+      val finalRecurrence = if (isRecurrenceExplicitlySet) selectedRecurrence
+      else if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence
+      else selectedRecurrence
       
+      val timeEstimate = binding.etTimeEstimate.text.toString().toIntOrNull() ?: 0
+
       if (parsedInfo.title.isNotEmpty()) {
-        onSave(parsedInfo.title, description, tagsString, subtaskList.toList(), finalDate, finalRecurrence)
+        onSave(
+          parsedInfo.title,
+          description,
+          tagsString,
+          subtaskList.toList(),
+          finalDate,
+          finalRecurrence,
+          selectedPriority,
+          timeEstimate
+        )
         dismiss()
       } else if (rawTitle.trim().isNotEmpty()) {
-        // Fallback if the parser accidentally stripped everything (e.g. title was literally just "#tag")
-        onSave(rawTitle.trim(), description, tagsString, subtaskList.toList(), finalDate, finalRecurrence)
+        onSave(
+          rawTitle.trim(),
+          description,
+          tagsString,
+          subtaskList.toList(),
+          finalDate,
+          finalRecurrence,
+          selectedPriority,
+          timeEstimate
+        )
         dismiss()
       }
     }
@@ -170,55 +232,93 @@ class TaskDialog(
   }
   
   override fun onStart() {
-      super.onStart()
-      dialog?.window?.apply {
-          setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
-          // Set dialog size so ScrollView can properly constrain content
-          val displayMetrics = resources.displayMetrics
-          val width = (displayMetrics.widthPixels * 0.9).toInt()
-          val maxHeight = (displayMetrics.heightPixels * 0.85).toInt()
-          setLayout(width, maxHeight)
-      }
+    super.onStart()
+    dialog?.window?.apply {
+      setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+      // Set dialog size so ScrollView can properly constrain content
+      val displayMetrics = resources.displayMetrics
+      val width = (displayMetrics.widthPixels * 0.9).toInt()
+      val maxHeight = (displayMetrics.heightPixels * 0.85).toInt()
+      setLayout(width, maxHeight)
+    }
   }
   
   private fun updateDateText() {
-      if (selectedDate != null) {
-          val format = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
-          binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
-          binding.tvDueDate.alpha = 1.0f
-      } else {
-          binding.tvDueDate.text = "Sin fecha de finalización"
-          binding.tvDueDate.alpha = 0.6f
-      }
+    if (selectedDate != null) {
+      val format = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+      binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
+      binding.tvDueDate.alpha = 1.0f
+    } else {
+      binding.tvDueDate.text = "Sin fecha de finalización"
+      binding.tvDueDate.alpha = 0.6f
+    }
   }
-
+  
   private fun updateRecurrenceText() {
-      val text = when (selectedRecurrence) {
-          "DAILY" -> "Se repite diariamente"
-          "WEEKLY" -> "Se repite semanalmente"
-          "MONTHLY" -> "Se repite mensualmente"
-          else -> "No se repite"
-      }
-      binding.tvRecurrence.text = text
-      
-      if (selectedRecurrence == "NONE") {
-          binding.tvRecurrence.alpha = 0.6f
-      } else {
-          binding.tvRecurrence.alpha = 1.0f
-      }
+    val text = when (selectedRecurrence) {
+      "DAILY" -> "Se repite diariamente"
+      "WEEKLY" -> "Se repite semanalmente"
+      "MONTHLY" -> "Se repite mensualmente"
+      "MON_WED" -> "Cada lunes y miércoles"
+      "FIRST_DAY_MONTH" -> "Primer día del mes"
+      else -> "No se repite"
+    }
+    binding.tvRecurrence.text = text
+    
+    if (selectedRecurrence == "NONE") {
+      binding.tvRecurrence.alpha = 0.6f
+    } else {
+      binding.tvRecurrence.alpha = 1.0f
+    }
+  }
+  
+  private fun updatePriorityText() {
+    val text = when (selectedPriority) {
+      3 -> "Prioridad Alta"
+      2 -> "Prioridad Media"
+      1 -> "Prioridad Baja"
+      else -> "Sin prioridad"
+    }
+    binding.tvPriority.text = text
+    
+    val colorStr = when (selectedPriority) {
+      3 -> "#F44336" // Red
+      2 -> "#FF9800" // Orange
+      1 -> "#2196F3" // Blue
+      else -> null
+    }
+    
+    if (colorStr != null) {
+      val color = android.graphics.Color.parseColor(colorStr)
+      binding.ivPriorityIcon.imageTintList = android.content.res.ColorStateList.valueOf(color)
+      binding.tvPriority.setTextColor(color)
+      binding.tvPriority.alpha = 1.0f
+    } else {
+      val typedValue = android.util.TypedValue()
+      requireContext().theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+      binding.ivPriorityIcon.imageTintList =
+        android.content.res.ColorStateList.valueOf(typedValue.data)
+      requireContext().theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnSurface,
+        typedValue,
+        true
+      )
+      binding.tvPriority.setTextColor(typedValue.data)
+      binding.tvPriority.alpha = 0.6f
+    }
   }
   
   private fun setupSubtaskList() {
     subtaskAdapter = SubtaskAdapter(
-      onCheckChanged = { subtask, isChecked -> 
-          val index = subtaskList.indexOf(subtask)
-          if (index != -1) {
-              subtaskList[index] = subtask.copy(completed = isChecked)
-          }
+      onCheckChanged = { subtask, isChecked ->
+        val index = subtaskList.indexOf(subtask)
+        if (index != -1) {
+          subtaskList[index] = subtask.copy(completed = isChecked)
+        }
       },
-      onDelete = { subtask -> 
-          subtaskList.remove(subtask)
-          updateSubtaskList()
+      onDelete = { subtask ->
+        subtaskList.remove(subtask)
+        updateSubtaskList()
       }
     )
     binding.recyclerSubtasks.layoutManager = LinearLayoutManager(context)
@@ -228,23 +328,23 @@ class TaskDialog(
   }
   
   private fun setupTagList() {
-      tagAdapter = TagAdapter { tag ->
-          tagList.remove(tag)
-          updateTagList()
-      }
-      binding.recyclerTags.layoutManager = LinearLayoutManager(context)
-      binding.recyclerTags.adapter = tagAdapter
-      binding.recyclerTags.isNestedScrollingEnabled = false
+    tagAdapter = TagAdapter { tag ->
+      tagList.remove(tag)
       updateTagList()
+    }
+    binding.recyclerTags.layoutManager = LinearLayoutManager(context)
+    binding.recyclerTags.adapter = tagAdapter
+    binding.recyclerTags.isNestedScrollingEnabled = false
+    updateTagList()
   }
-
+  
   private fun updateTagList() {
-      if (tagList.isNotEmpty()) {
-          binding.recyclerTags.visibility = View.VISIBLE
-          tagAdapter.submitList(tagList.toList())
-      } else {
-          binding.recyclerTags.visibility = View.GONE
-      }
+    if (tagList.isNotEmpty()) {
+      binding.recyclerTags.visibility = View.VISIBLE
+      tagAdapter.submitList(tagList.toList())
+    } else {
+      binding.recyclerTags.visibility = View.GONE
+    }
   }
   
   private fun updateSubtaskList() {

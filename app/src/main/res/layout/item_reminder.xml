@@ -73,8 +73,7 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_calendar"
-                    android:tint="?attr/colorPrimary"
-                    tools:ignore="ContentDescription" />
+                    android:tint="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/tvReminderTime"
@@ -88,6 +87,32 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/layoutLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="2dp"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_location"
+                    android:tint="?attr/colorOnSurfaceVariant" />
+
+                <TextView
+                    android:id="@+id/tvReminderLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:fontFamily="sans-serif"
+                    tools:text="Casa" />
+
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Checkbox -->

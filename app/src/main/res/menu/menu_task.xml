@@ -4,6 +4,9 @@
     android:id="@+id/action_export"
     android:title="@string/export" />
   <item
+    android:id="@+id/action_export_image"
+    android:title="Exportar como imagen" />
+  <item
     android:id="@+id/action_edit"
     android:title="@string/edit" />
   <item

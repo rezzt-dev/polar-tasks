@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="12dp"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent">
         
@@ -19,10 +21,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="elementos eliminados"
-            android:textSize="20sp"
+            android:text="@string/deleted_items"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:fontFamily="@font/poppins"
+            android:fontFamily="sans-serif-black"
             android:textColor="?attr/colorOnBackground"/>
 
         <com.google.android.material.button.MaterialButton
@@ -30,8 +32,10 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="vaciar papelera"
-            android:textSize="12sp"
+            android:text="@string/empty_trash"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
             android:textColor="#D32F2F"
             app:icon="@drawable/ic_delete"
             app:iconTint="#D32F2F"/>
@@ -71,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="papelera limpia"
+            android:text="@string/trash_clean"
             android:textSize="18sp"
             android:textStyle="bold"
             android:fontFamily="@font/poppins"
@@ -81,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="no hay elementos eliminados"
+            android:text="@string/no_deleted_items"
             android:textSize="14sp"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:fontFamily="@font/poppins"/>

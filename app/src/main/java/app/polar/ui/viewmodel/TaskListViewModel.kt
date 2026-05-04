@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import app.polar.data.AppDatabase
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,20 +26,34 @@ class TaskListViewModel @Inject constructor(
   private val _selectedListId = MutableLiveData<Long?>()
   val selectedListId: LiveData<Long?> = _selectedListId
   
+  private val _errorMessage = MutableStateFlow<String?>(null)
+  val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+  fun clearError() { _errorMessage.value = null }
+
+  private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
+      try {
+          block()
+      } catch (e: Exception) {
+          e.printStackTrace()
+          _errorMessage.value = "Error: ${e.message}"
+      }
+  }
+  
   fun selectList(listId: Long?) {
     _selectedListId.value = listId
   }
   
-  fun insertTaskList(title: String, icon: String = "ic_list", isDependencyChain: Boolean = false) = viewModelScope.launch {
-    val taskList = TaskList(title = title, icon = icon, isDependencyChain = isDependencyChain)
+  fun insertTaskList(title: String, icon: String = "ic_list", isDependencyChain: Boolean = false, color: String = "#7F52FF") = safeLaunch {
+    val taskList = TaskList(title = title, icon = icon, isDependencyChain = isDependencyChain, color = color)
     repository.insertTaskList(taskList)
   }
   
-  fun updateTaskList(taskList: TaskList) = viewModelScope.launch {
+  fun updateTaskList(taskList: TaskList) = safeLaunch {
     repository.updateTaskList(taskList)
   }
   
-  fun deleteTaskList(taskList: TaskList) = viewModelScope.launch {
+  fun deleteTaskList(taskList: TaskList) = safeLaunch {
     repository.deleteTaskList(taskList)
   }
 }

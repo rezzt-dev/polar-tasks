@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">polar.</string>
+  
+  <!-- Menu -->
+  <string name="menu_toggle">toggle menu</string>
+  <string name="theme_toggle">toggle theme</string>
+  <string name="settings">settings</string>
+  <string name="search">search</string>
+  <string name="search_hint">search tasks...</string>
+  
+  <!-- Task Lists -->
+  <string name="create_list">create list</string>
+  <string name="edit_list">edit list</string>
+  <string name="delete_list">delete list</string>
+  <string name="list_title_hint">list title</string>
+  <string name="no_lists">no task lists</string>
+  <string name="create_first_list">create your first list to get started</string>
+  <string name="select_icon">select icon</string>
+  
+  <!-- Calendar Weeks -->
+  <string name="mon_short">mon</string>
+  <string name="tue_short">tue</string>
+  <string name="wed_short">wed</string>
+  <string name="thu_short">thu</string>
+  <string name="fri_short">fri</string>
+  <string name="sat_short">sat</string>
+  <string name="sun_short">sun</string>
+  
+  <!-- Calendar UI -->
+  <string name="tasks_for_selected_date">tasks</string>
+  <string name="no_tasks_for_date">no tasks for this day</string>
+  <string name="today">today</string>
+  <string name="tomorrow">tomorrow</string>
+  <string name="my_day">my day</string>
+  
+  <!-- Tasks -->
+  <string name="create_task">create task</string>
+  <string name="edit_task">edit task</string>
+  <string name="delete_task">delete task</string>
+  <string name="task_title_hint">task title</string>
+  <string name="task_description_hint">description (optional)</string>
+  <string name="no_tasks">no tasks</string>
+  <string name="add_first_task">add your first task</string>
+  <string name="no_search_results">no tasks found</string>
+  <string name="try_different_search">try with other terms</string>
+  
+  <!-- Reminders -->
+  <string name="new_reminder">new reminder</string>
+  <string name="edit_reminder">edit reminder</string>
+  <string name="select_date_time">select date and time</string>
+  <string name="select_date">select date</string>
+  <string name="select_time">select time</string>
+  
+  <!-- Subtasks -->
+  <string name="add_subtask">add subtask</string>
+  <string name="subtask_hint">subtask title</string>
+  <string name="subtasks">subtasks</string>
+  
+  <!-- Tags -->
+  <string name="tags">tags</string>
+  <string name="tags_hint">tags (separated by commas)</string>
+  <string name="add_tags">add tags</string>
+  
+  <!-- Actions -->
+  <string name="save">save</string>
+  <string name="cancel">cancel</string>
+  <string name="export">export</string>
+  <string name="edit">edit</string>
+  <string name="delete">delete</string>
+  <string name="task_copied">task copied to clipboard</string>
+  <string name="filter_today">today</string>
+  <string name="filter_pending">pending</string>
+  <string name="filter_overdue">overdue</string>
+  <string name="filter_recurrent">recurring</string>
+  <string name="confirm_delete">are you sure you want to delete this?</string>
+  <string name="add">add</string>
+  
+  <!-- Watermark -->
+  <string name="developed_by">developed by rezzt.dev</string>
+
+  <!-- Settings -->
+  <string name="appearance">appearance</string>
+  <string name="dark_mode">dark mode</string>
+  <string name="theme_light">light</string>
+  <string name="theme_dark">dark</string>
+  <string name="theme_multicolor_light">multicolour light</string>
+  <string name="theme_multicolor_dark">multicolour dark</string>
+  <string name="theme_pastel">soft pastel</string>
+  <string name="theme_neon">dark neon</string>
+  <string name="font">font</string>
+  <string name="font_poppins">poppins</string>
+  <string name="font_comfortaa">comfortaa</string>
+  <string name="font_figtree">figtree</string>
+  <string name="font_arial">arial</string>
+  <string name="font_jetbrains_mono">jetbrains mono</string>
+  <!-- Navigation -->
+  <string name="home">home</string>
+  <string name="calendar">calendar</string>
+  <string name="reminders">reminders</string>
+  <string name="trash">recycle bin</string>
+  <string name="trash_with_count">recycle bin (%d)</string>
+  
+  <!-- Status Messages -->
+  <string name="list_deleted">list deleted</string>
+  
+  <!-- Greetings -->
+  <string name="good_morning">good morning</string>
+  <string name="good_afternoon">good afternoon</string>
+  <string name="good_night">good night</string>
+
+  <!-- Statistics -->
+  <string name="statistics">statistics</string>
+  <string name="total_tasks">total tasks</string>
+  <string name="completed_tasks">completed</string>
+  <string name="pending_tasks">pending</string>
+  <string name="overdue_tasks">overdue</string>
+  <string name="completion_rate">completion rate</string>
+  <string name="this_week">this week</string>
+  <string name="this_month">this month</string>
+  <string name="weekly_activity">weekly activity</string>
+  <string name="tasks_completed_week">tasks completed this week</string>
+  <string name="tasks_completed_month">tasks completed this month</string>
+  <string name="tasks_created_week">tasks created this week</string>
+  <string name="tasks_created_month">tasks created this month</string>
+  <string name="best_day">best day</string>
+  <string name="current_streak">current streak</string>
+  <string name="days">days</string>
+  
+  <!-- Messages -->
+  <string name="task_moved_trash">task moved to recycle bin</string>
+  <string name="reminder_moved_trash">reminder moved to recycle bin</string>
+  <string name="undo">undo</string>
+  <string name="trash_emptied">recycle bin emptied</string>
+  <string name="empty_trash">empty bin</string>
+  <string name="trash_clean">bin clean</string>
+  <string name="no_deleted_items">no deleted items</string>
+  <string name="deleted_items">deleted items</string>
+  <string name="item_restored">item restored</string>
+  <string name="permanently_deleted">permanently deleted</string>
+  <string name="error_saving_backup">error saving backup</string>
+  <string name="backup_saved">backup saved successfully</string>
+  <string name="backup_restored">backup restored. restarting...</string>
+  <string name="error_restoring_backup">error restoring backup</string>
+  
+  <string name="recurrence_daily">Daily</string>
+  <string name="recurrence_weekly">Weekly</string>
+  <string name="recurrence_monthly">Monthly</string>
+  <string name="no_list">No list</string>
+  <string name="add_subtask_title">add subtask</string>
+  <string name="priority_low">Low</string>
+  <string name="priority_medium">Medium</string>
+  <string name="priority_high">High</string>
+  <string name="priority_none">No priority</string>
+
+  <string name="font_system">system</string>
+  
+  <!-- Settings Screen -->
+  <string name="visual_theme">visual theme</string>
+  <string name="loading">loading...</string>
+  <string name="typography">typography</string>
+  <string name="checkbox_style">checkbox style</string>
+  <string name="font_size">font size</string>
+  <string name="language">language</string>
+  <string name="data_and_sync">data &amp; synchronisation</string>
+  <string name="export_local_backup">export local backup</string>
+  <string name="export_local_backup_desc">generate a JSON file with your data</string>
+  <string name="restore_data">restore data</string>
+  <string name="restore_data_desc">recover from a backup file</string>
+  <string name="system_label">system</string>
+  <string name="notification_permissions">notification permissions</string>
+  <string name="notification_permissions_desc">Android notification settings</string>
+  <string name="tasks_notification">tasks notification</string>
+  <string name="daily_at">daily at %s</string>
+  <string name="initial_tutorial">initial tutorial</string>
+  <string name="initial_tutorial_desc">review application usage guide</string>
+  <string name="developed_by_full">polar tasks v1.5\ndeveloped by rezzt.dev</string>
+  
+  <!-- Tutorial -->
+  <string name="tutorial_title_1">welcome to polar.</string>
+  <string name="tutorial_desc_1">the minimalist app meticulously designed to organise your tasks and reminders as elegantly as possible.\n\ndiscover how to boost your daily productivity while staying in control, without distractions and with exceptional performance.</string>
+  <string name="tutorial_title_2">task management</string>
+  <string name="tutorial_desc_2">group your responsibilities by creating dedicated lists for work, home or special projects, and organise everything with tags.\n\nbreak down big goals by adding unlimited subtasks and see your progress in a completely visual and satisfying way.</string>
+  <string name="tutorial_title_3">smart creation</string>
+  <string name="tutorial_desc_3">write completely naturally: "buy bread at 5pm on Tuesday" or "meeting tomorrow morning".\n\nour powerful smart engine will detect and extract the date and time automatically, scheduling the task for you.</string>
+  <string name="tutorial_title_4">quick actions</string>
+  <string name="tutorial_desc_4">smoothly swipe a task to the right on the list to immediately mark it as completed.\n\nmade a mistake or no longer need to do something? swipe left to delete it without opening any menus.</string>
+  <string name="tutorial_title_5">calendar and notifications</string>
+  <string name="tutorial_desc_5">visualise all your routines grouped month by month or by weeks in our premium-designed calendar.\n\nreceive accurate notifications just on time so you never miss a meeting, delivery or important detail again.</string>
+  <string name="tutorial_title_6">total personalisation</string>
+  <string name="tutorial_desc_6">adapt the app to your own style with our 4 visual modes: dark, light, multicolour dark and multicolour light.\n\nplus, you can pick the typography that suits you best from a curated selection of professional fonts.</string>
+  <string name="tutorial_title_7">statistics and progress</string>
+  <string name="tutorial_desc_7">keep an exhaustive log of your day to day, viewing completed, overdue tasks and your best productive day.\n\nmaintain long streaks of completion to outdo yourself and achieve everything you set out to do with polar\'s data.</string>
+  
+  <string name="action_next">next</string>
+  <string name="action_back">back</string>
+  <string name="action_finish">start</string>
+  <string name="action_skip">skip</string>
+  <string name="action_view_tutorial">view tutorial</string>
+</resources>

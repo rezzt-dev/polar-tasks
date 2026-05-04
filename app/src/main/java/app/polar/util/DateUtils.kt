@@ -68,4 +68,22 @@ object DateUtils {
         return now.get(Calendar.YEAR) == dueDate.get(Calendar.YEAR) &&
                now.get(Calendar.DAY_OF_YEAR) == dueDate.get(Calendar.DAY_OF_YEAR)
     }
+
+    /**
+     * Formats a date smartly. If the time is exactly 00:00, it omits the time component.
+     * Useful for due dates where only the day was specified.
+     */
+    fun formatSmartDate(timeInMillis: Long): String {
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = timeInMillis
+        val hasTime = cal.get(Calendar.HOUR_OF_DAY) != 0 || cal.get(Calendar.MINUTE) != 0
+        
+        val format = if (hasTime) {
+            SimpleDateFormat("d 'de' MMMM 'de' yyyy, HH:mm", Locale.getDefault())
+        } else {
+            SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale.getDefault())
+        }
+        
+        return format.format(Date(timeInMillis))
+    }
 }

@@ -256,4 +256,13 @@
   <style name="Overlay.Polar.Font.System" parent="">
      <!-- Inherit default -->
   </style>
+  
+  <!-- Checkbox Overlay -->
+  <style name="Overlay.Polar.Checkbox.Circular" parent="">
+    <item name="checkboxStyle">@style/Widget.Polar.Checkbox.Circular</item>
+  </style>
+  
+  <style name="Widget.Polar.Checkbox.Circular" parent="Widget.Material3.CompoundButton.CheckBox">
+    <item name="buttonCompat">@drawable/sel_checkbox_circular</item>
+  </style>
 </resources>

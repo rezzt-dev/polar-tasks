@@ -131,6 +131,15 @@ class MainActivity : BaseActivity() {
                     .replace(R.id.fragmentContainer, TasksFragment())
                     .commit()
           }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.MyDay -> {
+                currentListId = -4L
+                taskViewModel.loadMyDayTasks()
+                binding.toolbar.title = "Mi Día"
+                binding.fabAddTask.hide()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, TasksFragment())
+                    .commit()
+          }
           is app.polar.ui.manager.DrawerManager.NavigationEvent.Calendar -> {
                 currentListId = null
                 binding.toolbar.title = getString(R.string.calendar)
@@ -139,8 +148,24 @@ class MainActivity : BaseActivity() {
                   .replace(R.id.fragmentContainer, app.polar.ui.fragment.CalendarFragment())
                   .commit()
           }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.Tags -> {
+                currentListId = null
+                binding.toolbar.title = "Todas las etiquetas"
+                binding.fabAddTask.hide()
+                supportFragmentManager.beginTransaction()
+                  .replace(R.id.fragmentContainer, app.polar.ui.fragment.TagsFragment())
+                  .commit()
+          }
           is app.polar.ui.manager.DrawerManager.NavigationEvent.Reminders -> {
                 openReminders()
+          }
+          is app.polar.ui.manager.DrawerManager.NavigationEvent.Eisenhower -> {
+                currentListId = null
+                binding.toolbar.title = "Matriz de Eisenhower"
+                binding.fabAddTask.hide()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, app.polar.ui.fragment.EisenhowerFragment())
+                    .commit()
           }
           is app.polar.ui.manager.DrawerManager.NavigationEvent.Trash -> {
                 currentListId = -3L
@@ -186,13 +211,9 @@ class MainActivity : BaseActivity() {
     binding.fabAddTask.setOnClickListener {
       if (currentListId == -2L) {
           app.polar.ui.dialog.ReminderDialog(
-              onSave = { title, desc, time ->
-                   // ViewModel call logic is inside Fragment usually if we use FragmentManager,
-                   // but here the FAB is in Activity.
-                   // We need to communicate with RemindersViewModel.
-                   // Since ViewModel is scoped to Activity (by viewModels()), we can use it here.
+              onSaveWithLocation = { title, desc, time, lat, lng, radius, locName ->
                    val remindersViewModel: app.polar.ui.viewmodel.RemindersViewModel by viewModels()
-                   remindersViewModel.insert(title, desc, time)
+                   remindersViewModel.insert(title, desc, time, lat, lng, radius, locName)
               }
           ).show(supportFragmentManager, "CreateReminderDialog")
       } else {
@@ -208,8 +229,8 @@ class MainActivity : BaseActivity() {
   private fun showCreateListDialog() {
     TaskListDialog(
       taskList = null,
-      onSave = { title, icon, isChain ->
-        taskListViewModel.insertTaskList(title, icon, isChain)
+      onSaveWithColor = { title, icon, isChain, color ->
+        taskListViewModel.insertTaskList(title, icon, isChain, color)
       }
     ).show(supportFragmentManager, "CreateListDialog")
   }
@@ -217,8 +238,8 @@ class MainActivity : BaseActivity() {
   private fun showEditListDialog(taskList: app.polar.data.entity.TaskList) {
     TaskListDialog(
       taskList = taskList,
-      onSave = { title, icon, _ ->
-        taskListViewModel.updateTaskList(taskList.copy(title = title, icon = icon))
+      onSaveWithColor = { title, icon, isChain, color ->
+        taskListViewModel.updateTaskList(taskList.copy(title = title, icon = icon, isDependencyChain = isChain, color = color))
         if (currentListId == taskList.id) {
           binding.toolbar.title = title
         }
@@ -232,8 +253,8 @@ class MainActivity : BaseActivity() {
     TaskDialog(
       task = null,
       existingSubtasks = emptyList(),
-      onSave = { title, description, tags, subtaskList, dueDate, recurrence ->
-        taskViewModel.insertTask(listId, title, description, tags, subtaskList, dueDate, recurrence)
+      onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate ->
+        taskViewModel.insertTask(listId, title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate)
       }
     ).show(supportFragmentManager, "CreateTaskDialog")
   }

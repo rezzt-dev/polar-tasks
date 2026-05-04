@@ -12,6 +12,9 @@ interface SubtaskDao {
   @Query("SELECT * FROM subtasks WHERE taskId = :taskId")
   suspend fun getSubtasksForTaskDirect(taskId: Long): List<Subtask>
 
+  @Query("SELECT * FROM subtasks WHERE id = :subtaskId LIMIT 1")
+  suspend fun getSubtaskById(subtaskId: Long): Subtask?
+
   @Query("SELECT * FROM subtasks")
   suspend fun getAllSubtasksSnapshot(): List<Subtask>
   

@@ -15,7 +15,7 @@ import java.util.Date
 import java.util.Locale
 
 sealed class HomeItem {
-    data class Header(val listId: Long, val title: String) : HomeItem() {
+    data class Header(val listId: Long, val title: String, val progress: String = "") : HomeItem() {
         override val id: Long = -listId - 1000 // Unique ID for headers
     }
     data class TaskItem(val task: Task) : HomeItem() {
@@ -79,7 +79,7 @@ class HomeTaskAdapter(
         private val tvTitle: TextView = itemView.findViewById(R.id.tvHeaderTitle)
         
         fun bind(header: HomeItem.Header) {
-            tvTitle.text = header.title
+            tvTitle.text = if (header.progress.isNotBlank()) "${header.title} ${header.progress}" else header.title
         }
     }
 
@@ -95,6 +95,7 @@ class HomeTaskAdapter(
         private val cbCompleted: CheckBox = itemView.findViewById(R.id.cbTaskComplete)
         private val tagsContainer: View = itemView.findViewById(R.id.tagsContainer)
         private val recyclerSubtasks: RecyclerView = itemView.findViewById(R.id.recyclerSubtasks)
+        private val viewPriorityStripe: View = itemView.findViewById(R.id.viewPriorityStripe)
         
         private val subtaskAdapter = app.polar.ui.adapter.SubtaskAdapter(
             onCheckChanged = { subtask, _ -> viewModel.toggleSubtaskCompletion(subtask) },
@@ -124,7 +125,11 @@ class HomeTaskAdapter(
             }
 
             if (task.dueDate != null) {
-                tvDueDate.text = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
+                var dateStr = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
+                if (task.timeEstimate > 0) {
+                    dateStr += " • ${task.timeEstimate} min"
+                }
+                tvDueDate.text = dateStr
                 tvDueDate.visibility = View.VISIBLE
                 
                 when {
@@ -140,6 +145,12 @@ class HomeTaskAdapter(
                         tvDueDate.setTextColor(typedValue.data)
                     }
                 }
+            } else if (task.timeEstimate > 0) {
+                tvDueDate.text = "${task.timeEstimate} min"
+                tvDueDate.visibility = View.VISIBLE
+                val typedValue = android.util.TypedValue()
+                itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                tvDueDate.setTextColor(typedValue.data)
             } else {
                 tvDueDate.visibility = View.GONE
             }
@@ -151,10 +162,31 @@ class HomeTaskAdapter(
                 tvTags.visibility = View.GONE
             }
 
-            tagsContainer.visibility = if (task.dueDate != null || !task.tags.isNullOrEmpty()) View.VISIBLE else View.GONE
+            tagsContainer.visibility = if (task.dueDate != null || task.timeEstimate > 0 || !task.tags.isNullOrEmpty()) View.VISIBLE else View.GONE
 
             cbCompleted.setOnCheckedChangeListener(null)
             cbCompleted.isChecked = task.completed
+
+            // Priority tinting
+            val priorityColor = when (task.priority) {
+                3 -> android.graphics.Color.parseColor("#F44336") // High - Red
+                2 -> android.graphics.Color.parseColor("#FF9800") // Medium - Orange
+                1 -> android.graphics.Color.parseColor("#2196F3") // Low - Blue
+                else -> {
+                    val typedValue = android.util.TypedValue()
+                    itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                    typedValue.data
+                }
+            }
+            cbCompleted.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
+
+            if (task.priority in 1..3) {
+                viewPriorityStripe.visibility = View.VISIBLE
+                viewPriorityStripe.setBackgroundColor(priorityColor)
+            } else {
+                viewPriorityStripe.visibility = View.GONE
+            }
+
             updateVisuals(task.completed)
 
             cbCompleted.setOnCheckedChangeListener { _, isChecked ->

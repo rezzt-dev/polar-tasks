@@ -13,5 +13,6 @@ data class TaskList(
   val createdAt: Long = System.currentTimeMillis(),
   @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0,
   @ColumnInfo(name = "homeOrderIndex") val homeOrderIndex: Int = 0,
-  @ColumnInfo(name = "isDependencyChain") val isDependencyChain: Boolean = false
+  @ColumnInfo(name = "isDependencyChain") val isDependencyChain: Boolean = false,
+  @ColumnInfo(name = "color") val color: String = "#7F52FF"
 )

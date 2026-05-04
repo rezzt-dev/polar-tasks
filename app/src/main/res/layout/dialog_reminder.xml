@@ -67,7 +67,7 @@
     <ImageView
        android:layout_width="24dp"
        android:layout_height="24dp"
-       android:src="@drawable/ic_sort" 
+       android:src="@drawable/ic_schedule" 
        app:tint="?attr/colorPrimary"/>
 
     <TextView
@@ -79,6 +79,76 @@
       android:textSize="16sp"
       android:textColor="?attr/colorOnSurface"/>
       
+  </LinearLayout>
+
+  <!-- Recordatorio por Ubicación Section -->
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="Ubicación (Opcional)"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    android:textColor="?attr/colorPrimary"/>
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:hint="Nombre de la ubicación (Ej: Casa)"
+    app:boxBackgroundColor="@android:color/transparent"
+    style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/etLocationName"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="16sp"
+      android:inputType="textCapWords"
+      android:maxLines="1" />
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:orientation="horizontal">
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      android:hint="Latitud"
+      app:boxBackgroundColor="@android:color/transparent"
+      style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etLatitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:inputType="numberDecimal|numberSigned"
+        android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Space android:layout_width="8dp" android:layout_height="wrap_content"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="wrap_content"
+      android:hint="Longitud"
+      app:boxBackgroundColor="@android:color/transparent"
+      style="@style/Widget.Material3.TextInputLayout.FilledBox">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etLongitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:inputType="numberDecimal|numberSigned"
+        android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
   </LinearLayout>
 
   <LinearLayout

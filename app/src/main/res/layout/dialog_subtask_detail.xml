@@ -30,6 +30,34 @@
         android:layout_marginBottom="32dp" />
 
     <LinearLayout
+        android:id="@+id/containerDueDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_schedule"
+            app:tint="?attr/colorPrimary"/>
+
+        <TextView
+            android:id="@+id/tvSubtaskDueDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Sin recordatorio"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

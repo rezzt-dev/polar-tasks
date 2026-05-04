@@ -8,6 +8,7 @@ sealed class TaskListItem {
         val task: Task,
         val isBlocked: Boolean = false,
         val isChainMode: Boolean = false,
+        val isFirst: Boolean = false,
         val isLast: Boolean = false
     ) : TaskListItem()
 }

@@ -43,6 +43,13 @@ class TaskListAdapter(
         binding.ivListIcon.setImageResource(iconResId)
       }
       
+      try {
+        val parsedColor = android.graphics.Color.parseColor(taskList.color)
+        binding.ivListIcon.setColorFilter(parsedColor)
+      } catch (e: Exception) {
+        // ignore
+      }
+      
       binding.root.setOnClickListener {
         onItemClick(taskList)
       }

@@ -26,6 +26,22 @@ class TaskDetailActivity : BaseActivity() {
   private lateinit var binding: ActivityTaskDetailBinding
   private val viewModel: TaskViewModel by viewModels()
   private lateinit var subtaskAdapter: SubtaskAdapter
+  private var currentTask: app.polar.data.entity.Task? = null
+
+  private val pickImageLauncher = registerForActivityResult(
+      androidx.activity.result.contract.ActivityResultContracts.GetContent()
+  ) { uri ->
+      uri?.let {
+          // Take persistable permission so the URI stays valid across reboots
+          contentResolver.takePersistableUriPermission(
+              it,
+              android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+          )
+          val task = currentTask ?: return@let
+          val updatedTask = task.copy(imageUri = it.toString())
+          viewModel.updateTask(updatedTask)
+      }
+  }
   
   companion object {
     const val EXTRA_TASK_ID = "task_id"
@@ -44,9 +60,87 @@ class TaskDetailActivity : BaseActivity() {
     
     setupToolbar()
     setupSubtaskList()
+    setupAttachImage()
+    setupFocusMode()
     loadTaskData(taskId)
   }
-  
+
+  private var countDownTimer: android.os.CountDownTimer? = null
+  private var timeLeftInMillis: Long = 25 * 60 * 1000L
+  private var isTimerRunning: Boolean = false
+
+  private fun setupFocusMode() {
+      binding.btnStartFocus.setOnClickListener {
+          if (binding.containerFocusMode.visibility == android.view.View.VISIBLE) {
+              binding.containerFocusMode.visibility = android.view.View.GONE
+              binding.btnStartFocus.text = "Modo Focus"
+          } else {
+              binding.containerFocusMode.visibility = android.view.View.VISIBLE
+              binding.btnStartFocus.text = "Cerrar Modo Focus"
+          }
+      }
+
+      binding.btnFocusPlayPause.setOnClickListener {
+          if (isTimerRunning) {
+              pauseTimer()
+          } else {
+              startTimer()
+          }
+      }
+
+      binding.btnFocusReset.setOnClickListener {
+          resetTimer()
+      }
+  }
+
+  private fun startTimer() {
+      countDownTimer = object : android.os.CountDownTimer(timeLeftInMillis, 1000) {
+          override fun onTick(millisUntilFinished: Long) {
+              timeLeftInMillis = millisUntilFinished
+              updateCountDownText()
+          }
+
+          override fun onFinish() {
+              isTimerRunning = false
+              binding.btnFocusPlayPause.text = "Empezar"
+              com.google.android.material.snackbar.Snackbar.make(
+                  binding.root,
+                  "¡Sesión Pomodoro completada!",
+                  com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+              ).show()
+          }
+      }.start()
+
+      isTimerRunning = true
+      binding.btnFocusPlayPause.text = "Pausar"
+  }
+
+  private fun pauseTimer() {
+      countDownTimer?.cancel()
+      isTimerRunning = false
+      binding.btnFocusPlayPause.text = "Continuar"
+  }
+
+  private fun resetTimer() {
+      countDownTimer?.cancel()
+      isTimerRunning = false
+      timeLeftInMillis = 25 * 60 * 1000L
+      updateCountDownText()
+      binding.btnFocusPlayPause.text = "Empezar"
+  }
+
+  private fun updateCountDownText() {
+      val minutes = (timeLeftInMillis / 1000) / 60
+      val seconds = (timeLeftInMillis / 1000) % 60
+      binding.tvFocusTimer.text = String.format(java.util.Locale.getDefault(), "%02d:%02d", minutes, seconds)
+  }
+
+  private fun setupAttachImage() {
+      binding.btnAttachImage.setOnClickListener {
+          pickImageLauncher.launch("image/*")
+      }
+  }
+
   private fun setupToolbar() {
     binding.toolbar.setNavigationOnClickListener { finish() }
     setSupportActionBar(binding.toolbar)
@@ -59,6 +153,7 @@ class TaskDetailActivity : BaseActivity() {
         if (task == null) return@observe
         
         // Title & Description
+        currentTask = task
         binding.tvDetailTitle.text = task.title
         binding.tvDetailDescription.text = task.description.ifEmpty { getString(R.string.no_tasks) } 
         
@@ -79,7 +174,7 @@ class TaskDetailActivity : BaseActivity() {
         
         // Creation Date
         val createFormat = SimpleDateFormat("d MMM, yyyy", Locale("es", "ES"))
-        binding.tvDetailDate.text = createFormat.format(Date(task.createdAt))
+        binding.tvDetailDate.text = createFormat.format(Date(task.createdAt)) + if (task.timeEstimate > 0) " • ${task.timeEstimate} min" else ""
         
         // Due Date logic
         if (task.dueDate != null) {
@@ -117,6 +212,14 @@ class TaskDetailActivity : BaseActivity() {
         } else {
             binding.containerDueDate.visibility = View.GONE
         }
+
+        // Image attachment
+        if (!task.imageUri.isNullOrEmpty()) {
+            binding.containerImage.visibility = View.VISIBLE
+            binding.ivTaskImage.setImageURI(android.net.Uri.parse(task.imageUri))
+        } else {
+            binding.containerImage.visibility = View.GONE
+        }
         
         // List Name
         viewModel.getTaskListById(task.listId).observe(this) { taskList ->
@@ -148,9 +251,16 @@ class TaskDetailActivity : BaseActivity() {
   
   private fun showSubtaskOptionsDialog(subtask: app.polar.data.entity.Subtask) {
       app.polar.ui.dialog.SubtaskDetailBottomSheet(
-          content = subtask.title,
+          subtask = subtask,
           onEdit = { showRenameSubtaskDialog(subtask) },
-          onDelete = { viewModel.deleteSubtask(subtask) }
+          onDelete = { viewModel.deleteSubtask(subtask) },
+          onDueDateSet = { dueDate ->
+              viewModel.updateSubtask(subtask.copy(dueDate = dueDate))
+              if (dueDate != null) {
+                  // Schedule alarm
+                  app.polar.util.AlarmManagerHelper(this).scheduleSubtaskAlarm(subtask.id, dueDate)
+              }
+          }
       ).show(supportFragmentManager, "SubtaskDetail")
   }
   
@@ -215,11 +325,131 @@ class TaskDetailActivity : BaseActivity() {
     binding.recyclerDetailSubtasks.adapter = subtaskAdapter
   }
 
+  override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+    menuInflater.inflate(R.menu.menu_task_detail, menu)
+    return true
+  }
+
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    if (item.itemId == android.R.id.home) {
-        finish()
-        return true
+    when (item.itemId) {
+        android.R.id.home -> {
+            finish()
+            return true
+        }
+        R.id.action_export_image -> {
+            val task = currentTask ?: return true
+            exportTaskAsImage(task)
+            return true
+        }
     }
     return super.onOptionsItemSelected(item)
+  }
+
+  private fun exportTaskAsImage(task: app.polar.data.entity.Task) {
+    val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
+    val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
+        override fun onChanged(subtasks: List<app.polar.data.entity.Subtask>) {
+            subtasksLiveData.removeObserver(this)
+            val context = this@TaskDetailActivity
+            val inflater = android.view.LayoutInflater.from(context)
+            val cardView = inflater.inflate(R.layout.layout_task_export_card, null)
+
+            val tvTitle = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskTitle)
+            val tvDesc = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskDesc)
+            val tvPriority = cardView.findViewById<android.widget.TextView>(R.id.tvPriorityBadge)
+            val llSubtasksList = cardView.findViewById<android.widget.LinearLayout>(R.id.llSubtasksList)
+            val containerSubtasks = cardView.findViewById<android.widget.LinearLayout>(R.id.containerExportSubtasks)
+            val llDueDate = cardView.findViewById<android.widget.LinearLayout>(R.id.llExportDueDate)
+            val tvDueDate = cardView.findViewById<android.widget.TextView>(R.id.tvExportDueDate)
+            val tvTags = cardView.findViewById<android.widget.TextView>(R.id.tvExportTags)
+
+            tvTitle.text = task.title
+            if (task.description.isNotBlank()) {
+                tvDesc.text = task.description
+                tvDesc.visibility = android.view.View.VISIBLE
+            } else {
+                tvDesc.visibility = android.view.View.GONE
+            }
+
+            val (priorityText, priorityColor) = when (task.priority) {
+                1 -> getString(R.string.priority_low) to "#2196F3"
+                2 -> getString(R.string.priority_medium) to "#FF9800"
+                3 -> getString(R.string.priority_high) to "#F44336"
+                else -> getString(R.string.priority_none) to "#9E9E9E"
+            }
+            tvPriority.text = priorityText
+            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(priorityColor))
+            tvPriority.setTextColor(android.graphics.Color.WHITE)
+
+            if (subtasks.isNotEmpty()) {
+                containerSubtasks.visibility = android.view.View.VISIBLE
+                llSubtasksList.removeAllViews()
+                subtasks.take(8).forEach { sub ->
+                    val stTv = android.widget.TextView(context).apply {
+                        text = "• ${sub.title}"
+                        textSize = 13f
+                        setPadding(0, 4, 0, 4)
+                        val typedValue = android.util.TypedValue()
+                        context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                        setTextColor(typedValue.data)
+                        alpha = 0.85f
+                    }
+                    llSubtasksList.addView(stTv)
+                }
+            } else {
+                containerSubtasks.visibility = android.view.View.GONE
+            }
+
+            if (task.dueDate != null) {
+                llDueDate.visibility = android.view.View.VISIBLE
+                tvDueDate.text = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
+            } else {
+                llDueDate.visibility = android.view.View.GONE
+            }
+
+            val extractedTags = task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            if (extractedTags.isNotEmpty()) {
+                tvTags.visibility = android.view.View.VISIBLE
+                tvTags.text = extractedTags.joinToString(" ") { "#$it" }
+            } else {
+                tvTags.visibility = android.view.View.GONE
+            }
+
+            val widthSpec = android.view.View.MeasureSpec.makeMeasureSpec(
+                android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380f, context.resources.displayMetrics).toInt(),
+                android.view.View.MeasureSpec.EXACTLY
+            )
+            val heightSpec = android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
+            cardView.measure(widthSpec, heightSpec)
+            cardView.layout(0, 0, cardView.measuredWidth, cardView.measuredHeight)
+
+            val bitmap = android.graphics.Bitmap.createBitmap(cardView.measuredWidth, cardView.measuredHeight, android.graphics.Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            cardView.draw(canvas)
+
+            try {
+                val cachePath = java.io.File(context.cacheDir, "shared_images")
+                cachePath.mkdirs()
+                val newFile = java.io.File(cachePath, "task_export_${task.id}.png")
+                val stream = java.io.FileOutputStream(newFile)
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                stream.close()
+
+                val contentUri = androidx.core.content.FileProvider.getUriForFile(context, "app.polar.fileprovider", newFile)
+                if (contentUri != null) {
+                    val shareIntent = android.content.Intent().apply {
+                        action = android.content.Intent.ACTION_SEND
+                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        setDataAndType(contentUri, context.contentResolver.getType(contentUri))
+                        putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
+                    }
+                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Compartir Tarea como Imagen"))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    subtasksLiveData.observe(this@TaskDetailActivity, observer)
   }
 }

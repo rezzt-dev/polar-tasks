@@ -42,6 +42,8 @@ class CalendarFragment : Fragment() {
     private var monthTasksMap = mapOf<Long, List<Task>>()
     private var monthRemindersMap = mapOf<Long, List<Reminder>>()
     private var selectedDate: Long = System.currentTimeMillis() // Default to today
+    
+    private val completionJobs = mutableMapOf<Long, kotlinx.coroutines.Job>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,7 +78,13 @@ class CalendarFragment : Fragment() {
         tasksAdapter = TaskAdapter(
             lifecycleOwner = viewLifecycleOwner,
             viewModel = viewModel,
-            onCheckChanged = { task, _, _ -> viewModel.toggleTaskCompletion(task) },
+            onCheckChanged = { task, isChecked, view -> 
+                completionJobs[task.id]?.cancel()
+                completionJobs.remove(task.id)
+                view.alpha = 1.0f
+                view.translationX = 0f
+                viewModel.setTaskCompletion(task, isChecked)
+            },
             onItemLongClick = { 
                 // Optional: Show edit on long press?
                 // For now return false or implement editing
@@ -90,22 +98,40 @@ class CalendarFragment : Fragment() {
         )
         binding.recyclerDayTasks.layoutManager = LinearLayoutManager(context)
         binding.recyclerDayTasks.adapter = tasksAdapter
+        binding.recyclerDayTasks.itemAnimator = null
 
         // 3. Reminders List
         remindersAdapter = ReminderAdapter(
-            onCheckChanged = { reminder -> remindersViewModel.toggleCompletion(reminder) },
+            onCheckChanged = { reminder, isChecked, view -> 
+                completionJobs[reminder.id]?.cancel()
+                completionJobs.remove(reminder.id)
+                view.alpha = 1.0f
+                view.translationX = 0f
+                remindersViewModel.update(reminder.copy(isCompleted = isChecked))
+            },
             onItemLongClick = { _, _ -> false },
             onItemClick = { reminder -> 
-                val fragment = app.polar.ui.dialog.ReminderDialog(reminder) { title, desc, time ->
-                    // Guardado mediante el RemindersViewModel
-                    val updated = reminder.copy(title = title, description = desc, dateTime = time)
-                    remindersViewModel.update(updated)
-                }
+                val fragment = app.polar.ui.dialog.ReminderDialog(
+                    reminder = reminder,
+                    onSaveWithLocation = { title, desc, time, lat, lon, radius, locationName ->
+                        val updated = reminder.copy(
+                            title = title,
+                            description = desc,
+                            dateTime = time,
+                            latitude = lat,
+                            longitude = lon,
+                            radius = radius,
+                            locationName = locationName
+                        )
+                        remindersViewModel.update(updated)
+                    }
+                )
                 fragment.show(parentFragmentManager, "ReminderDialog")
             }
         )
         binding.recyclerDayReminders.layoutManager = LinearLayoutManager(context)
         binding.recyclerDayReminders.adapter = remindersAdapter
+        binding.recyclerDayReminders.itemAnimator = null
     }
 
     private fun setupNavigation() {

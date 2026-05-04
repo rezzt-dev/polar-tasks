@@ -32,6 +32,7 @@
   <string name="no_tasks_for_date">no hay tareas para este día</string>
   <string name="today">hoy</string>
   <string name="tomorrow">mañana</string>
+  <string name="my_day">mi día</string>
   
   <!-- Tasks -->
   <string name="create_task">crear tarea</string>
@@ -69,6 +70,9 @@
   <string name="delete">eliminar</string>
   <string name="task_copied">tarea copiada al portapapeles</string>
   <string name="filter_today">hoy</string>
+  <string name="filter_pending">pendientes</string>
+  <string name="filter_overdue">vencidas</string>
+  <string name="filter_recurrent">repetitivas</string>
   <string name="confirm_delete">estas seguro de eliminar esto?</string>
   <string name="add">agregar</string>
   
@@ -128,6 +132,10 @@
   <string name="reminder_moved_trash">recordatorio movido a la papelera</string>
   <string name="undo">deshacer</string>
   <string name="trash_emptied">papelera vaciada</string>
+  <string name="empty_trash">vaciar papelera</string>
+  <string name="trash_clean">papelera limpia</string>
+  <string name="no_deleted_items">no hay elementos eliminados</string>
+  <string name="deleted_items">elementos eliminados</string>
   <string name="item_restored">elemento restaurado</string>
   <string name="permanently_deleted">eliminado permanentemente</string>
   <string name="error_saving_backup">error al guardar backup</string>
@@ -140,8 +148,33 @@
   <string name="recurrence_monthly">Mensual</string>
   <string name="no_list">Sin lista</string>
   <string name="add_subtask_title">agregar subtarea</string>
+  <string name="priority_low">Baja</string>
+  <string name="priority_medium">Media</string>
+  <string name="priority_high">Alta</string>
+  <string name="priority_none">Sin prioridad</string>
 
   <string name="font_system">sistema</string>
+  
+  <!-- Settings Screen -->
+  <string name="visual_theme">tema visual</string>
+  <string name="loading">cargando...</string>
+  <string name="typography">tipografía</string>
+  <string name="checkbox_style">estilo de casillas</string>
+  <string name="font_size">tamaño de fuente</string>
+  <string name="language">idioma</string>
+  <string name="data_and_sync">datos y sincronización</string>
+  <string name="export_local_backup">exportar copia local</string>
+  <string name="export_local_backup_desc">genera un archivo JSON con tus datos</string>
+  <string name="restore_data">restaurar datos</string>
+  <string name="restore_data_desc">recuperar desde archivo de copia de seguridad</string>
+  <string name="system_label">sistema</string>
+  <string name="notification_permissions">permisos de notificaciones</string>
+  <string name="notification_permissions_desc">ajustes de notificaciones en Android</string>
+  <string name="tasks_notification">notificación de tareas</string>
+  <string name="daily_at">diariamente a las %s</string>
+  <string name="initial_tutorial">tutorial inicial</string>
+  <string name="initial_tutorial_desc">revisar guía de uso de la aplicación</string>
+  <string name="developed_by_full">polar tasks v1.5\ndesarrollado por rezzt.dev</string>
   
   <!-- Tutorial -->
   <string name="tutorial_title_1">bienvenido a polar.</string>
