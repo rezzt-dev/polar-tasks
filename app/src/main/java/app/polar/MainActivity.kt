@@ -134,7 +134,7 @@ class MainActivity : BaseActivity() {
           is app.polar.ui.manager.DrawerManager.NavigationEvent.MyDay -> {
                 currentListId = -4L
                 taskViewModel.loadMyDayTasks()
-                binding.toolbar.title = "Mi Día"
+                binding.toolbar.title = getString(R.string.my_day)
                 binding.fabAddTask.hide()
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, TasksFragment())
@@ -150,7 +150,7 @@ class MainActivity : BaseActivity() {
           }
           is app.polar.ui.manager.DrawerManager.NavigationEvent.Tags -> {
                 currentListId = null
-                binding.toolbar.title = "Todas las etiquetas"
+                binding.toolbar.title = getString(R.string.all_tags)
                 binding.fabAddTask.hide()
                 supportFragmentManager.beginTransaction()
                   .replace(R.id.fragmentContainer, app.polar.ui.fragment.TagsFragment())
@@ -161,7 +161,7 @@ class MainActivity : BaseActivity() {
           }
           is app.polar.ui.manager.DrawerManager.NavigationEvent.Eisenhower -> {
                 currentListId = null
-                binding.toolbar.title = "Matriz de Eisenhower"
+                binding.toolbar.title = getString(R.string.eisenhower_matrix)
                 binding.fabAddTask.hide()
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, app.polar.ui.fragment.EisenhowerFragment())

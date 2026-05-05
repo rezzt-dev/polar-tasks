@@ -73,10 +73,10 @@ class TaskDetailActivity : BaseActivity() {
       binding.btnStartFocus.setOnClickListener {
           if (binding.containerFocusMode.visibility == android.view.View.VISIBLE) {
               binding.containerFocusMode.visibility = android.view.View.GONE
-              binding.btnStartFocus.text = "Modo Focus"
+              binding.btnStartFocus.text = getString(R.string.focus_mode)
           } else {
               binding.containerFocusMode.visibility = android.view.View.VISIBLE
-              binding.btnStartFocus.text = "Cerrar Modo Focus"
+              binding.btnStartFocus.text = getString(R.string.focus_mode_close)
           }
       }
 
@@ -102,23 +102,23 @@ class TaskDetailActivity : BaseActivity() {
 
           override fun onFinish() {
               isTimerRunning = false
-              binding.btnFocusPlayPause.text = "Empezar"
+              binding.btnFocusPlayPause.text = getString(R.string.focus_start)
               com.google.android.material.snackbar.Snackbar.make(
                   binding.root,
-                  "¡Sesión Pomodoro completada!",
+                  getString(R.string.focus_session_done),
                   com.google.android.material.snackbar.Snackbar.LENGTH_LONG
               ).show()
           }
       }.start()
 
       isTimerRunning = true
-      binding.btnFocusPlayPause.text = "Pausar"
+      binding.btnFocusPlayPause.text = getString(R.string.focus_pause)
   }
 
   private fun pauseTimer() {
       countDownTimer?.cancel()
       isTimerRunning = false
-      binding.btnFocusPlayPause.text = "Continuar"
+      binding.btnFocusPlayPause.text = getString(R.string.focus_resume)
   }
 
   private fun resetTimer() {
@@ -126,7 +126,7 @@ class TaskDetailActivity : BaseActivity() {
       isTimerRunning = false
       timeLeftInMillis = 25 * 60 * 1000L
       updateCountDownText()
-      binding.btnFocusPlayPause.text = "Empezar"
+      binding.btnFocusPlayPause.text = getString(R.string.focus_start)
   }
 
   private fun updateCountDownText() {
@@ -443,7 +443,7 @@ class TaskDetailActivity : BaseActivity() {
                         setDataAndType(contentUri, context.contentResolver.getType(contentUri))
                         putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
                     }
-                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Compartir Tarea como Imagen"))
+                    context.startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.share_task_as_image)))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

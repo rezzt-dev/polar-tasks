@@ -24,6 +24,12 @@ class TaskAdapter(
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_ITEM = 1
+
+        // Pre-computed once — Color.parseColor is not free, avoid calling it on every bind()
+        private val COLOR_PRIORITY_HIGH   = android.graphics.Color.parseColor("#F44336")
+        private val COLOR_PRIORITY_MEDIUM = android.graphics.Color.parseColor("#FF9800")
+        private val COLOR_PRIORITY_LOW    = android.graphics.Color.parseColor("#2196F3")
+        private val COLOR_DATE_OVERDUE    = android.graphics.Color.parseColor("#B3261E")
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -89,10 +95,26 @@ class TaskAdapter(
         )
         private var currentSubtaskLiveData: androidx.lifecycle.LiveData<List<app.polar.data.entity.Subtask>>? = null
 
+        // Reusable TypedValue — avoids allocating a new object on every bind()
+        private val typedValue = android.util.TypedValue()
+
+        // Theme colors resolved once in init{} — theme does not change during adapter lifetime
+        private val colorPrimary: Int
+        private val colorOnSurface: Int
+        private val colorSurfaceVariant: Int
+
         init {
             binding.recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(binding.root.context)
             binding.recyclerSubtasks.adapter = subtaskAdapter
             binding.recyclerSubtasks.itemAnimator = null
+
+            val ctx = binding.root.context
+            ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+            colorPrimary = typedValue.data
+            ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+            colorOnSurface = typedValue.data
+            ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
+            colorSurfaceVariant = typedValue.data
         }
 
         fun bind(task: Task, isBlocked: Boolean = false, isChainMode: Boolean = false, isFirst: Boolean = false, isLast: Boolean = false) {
@@ -125,30 +147,25 @@ class TaskAdapter(
                 // Hide bottom line if it's the last item
                 binding.chainLineBottom.visibility = if (isLast) android.view.View.INVISIBLE else android.view.View.VISIBLE
 
-                val ctx = itemView.context
-                val typedValue = android.util.TypedValue()
+                // Use pre-resolved theme colors (no allocations, no theme lookups)
                 if (task.completed) {
-                     // Completed dot = filled and primary color
                     binding.chainDot.setBackgroundResource(R.drawable.ic_circle)
-                    ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
-                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                    binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                    binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    val tint = android.content.res.ColorStateList.valueOf(colorPrimary)
+                    binding.chainDot.backgroundTintList = tint
+                    binding.chainLineTop.backgroundTintList = tint
+                    binding.chainLineBottom.backgroundTintList = tint
                 } else if (!isBlocked) {
-                    // Active (unlocked, not completed) = outline and primary color
                     binding.chainDot.setBackgroundResource(R.drawable.ic_circle_outline)
-                    ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
-                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                    ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
-                    binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                    binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(colorPrimary)
+                    val surfaceTint = android.content.res.ColorStateList.valueOf(colorSurfaceVariant)
+                    binding.chainLineTop.backgroundTintList = surfaceTint
+                    binding.chainLineBottom.backgroundTintList = surfaceTint
                 } else {
-                    // Future/blocked dot = outline and surface variant
                     binding.chainDot.setBackgroundResource(R.drawable.ic_circle_outline)
-                    ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
-                    binding.chainDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                    binding.chainLineTop.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                    binding.chainLineBottom.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
+                    val tint = android.content.res.ColorStateList.valueOf(colorSurfaceVariant)
+                    binding.chainDot.backgroundTintList = tint
+                    binding.chainLineTop.backgroundTintList = tint
+                    binding.chainLineBottom.backgroundTintList = tint
                 }
             } else {
                 binding.chainTimelineColumn.visibility = android.view.View.GONE
@@ -171,19 +188,15 @@ class TaskAdapter(
             binding.cbTaskComplete.setOnCheckedChangeListener(null)
             binding.cbTaskComplete.isChecked = task.completed
 
-            // Priority tinting
+            // Priority tinting — uses pre-computed color constants (no parseColor on hot path)
             val priorityColor = when (task.priority) {
-                3 -> android.graphics.Color.parseColor("#F44336") // High - Red
-                2 -> android.graphics.Color.parseColor("#FF9800") // Medium - Orange
-                1 -> android.graphics.Color.parseColor("#2196F3") // Low - Blue
-                else -> {
-                    val typedValue = android.util.TypedValue()
-                    itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                    typedValue.data
-                }
+                3 -> COLOR_PRIORITY_HIGH
+                2 -> COLOR_PRIORITY_MEDIUM
+                1 -> COLOR_PRIORITY_LOW
+                else -> colorOnSurface
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
-            
+
             if (task.priority in 1..3) {
                 binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
                 binding.viewPriorityStripe.setBackgroundColor(priorityColor)
@@ -205,26 +218,19 @@ class TaskAdapter(
                 }
             }
 
-            // Date logic
+            // Date logic — uses pre-resolved theme colors and pre-computed COLOR_DATE_OVERDUE
             if (task.dueDate != null) {
                 binding.tvTaskDate.text = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
-                
+
                 when {
-                    !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) -> {
-                        binding.tvTaskDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
-                    }
-                    app.polar.util.DateUtils.isToday(task.dueDate) -> {
-                        val typedValue = android.util.TypedValue()
-                        itemView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
-                        binding.tvTaskDate.setTextColor(typedValue.data)
-                    }
-                    else -> {
-                        val typedValue = android.util.TypedValue()
-                        itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                        binding.tvTaskDate.setTextColor(typedValue.data)
-                    }
+                    !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) ->
+                        binding.tvTaskDate.setTextColor(COLOR_DATE_OVERDUE)
+                    app.polar.util.DateUtils.isToday(task.dueDate) ->
+                        binding.tvTaskDate.setTextColor(colorPrimary)
+                    else ->
+                        binding.tvTaskDate.setTextColor(colorOnSurface)
                 }
-                
+
                 binding.tvTaskDate.visibility = android.view.View.VISIBLE
             } else {
                 binding.tvTaskDate.visibility = android.view.View.GONE
@@ -294,6 +300,13 @@ class TaskAdapter(
 
 class TaskListItemDiffCallback : DiffUtil.ItemCallback<TaskListItem>() {
     override fun areItemsTheSame(oldItem: TaskListItem, newItem: TaskListItem): Boolean {
+        // We intentionally include `completed` here alongside the ID.
+        // Reason: after a swipe gesture, the ItemTouchHelper leaves the view with a non-zero
+        // translationX. If DiffUtil only does an in-place notifyItemChanged(), the same
+        // ViewHolder is reused and the displaced translationX is never reset, making the item
+        // appear "stuck" until the user navigates away. By treating a completed-state change
+        // as a different item, DiffUtil does a REMOVE+ADD which destroys and recreates the
+        // ViewHolder, naturally clearing all animation state.
         return if (oldItem is TaskListItem.Item && newItem is TaskListItem.Item) {
             oldItem.task.id == newItem.task.id && oldItem.task.completed == newItem.task.completed
         } else if (oldItem is TaskListItem.Header && newItem is TaskListItem.Header) {

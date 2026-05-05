@@ -36,6 +36,12 @@ class HomeTaskAdapter(
     companion object {
         const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_TASK = 1
+
+        // Pre-computed once — Color.parseColor is not free, avoid calling it on every bind()
+        private val COLOR_PRIORITY_HIGH   = android.graphics.Color.parseColor("#F44336")
+        private val COLOR_PRIORITY_MEDIUM = android.graphics.Color.parseColor("#FF9800")
+        private val COLOR_PRIORITY_LOW    = android.graphics.Color.parseColor("#2196F3")
+        private val COLOR_DATE_OVERDUE    = android.graphics.Color.parseColor("#B3261E")
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -96,16 +102,29 @@ class HomeTaskAdapter(
         private val tagsContainer: View = itemView.findViewById(R.id.tagsContainer)
         private val recyclerSubtasks: RecyclerView = itemView.findViewById(R.id.recyclerSubtasks)
         private val viewPriorityStripe: View = itemView.findViewById(R.id.viewPriorityStripe)
-        
+
         private val subtaskAdapter = app.polar.ui.adapter.SubtaskAdapter(
             onCheckChanged = { subtask, _ -> viewModel.toggleSubtaskCompletion(subtask) },
             onDelete = { /* no delete from home screen */ }
         )
 
+        // Reusable TypedValue — avoids allocating a new object on every bind()
+        private val typedValue = android.util.TypedValue()
+
+        // Theme colors resolved once in init{} — theme does not change during adapter lifetime
+        private val colorPrimary: Int
+        private val colorOnSurface: Int
+
         init {
             recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(itemView.context)
             recyclerSubtasks.adapter = subtaskAdapter
             recyclerSubtasks.itemAnimator = null
+
+            val ctx = itemView.context
+            ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+            colorPrimary = typedValue.data
+            ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+            colorOnSurface = typedValue.data
         }
 
         private var subtaskObserver: androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>>? = null
@@ -124,6 +143,7 @@ class HomeTaskAdapter(
                 tvDescription.visibility = View.GONE
             }
 
+            // Date — uses pre-resolved theme colors and pre-computed COLOR_DATE_OVERDUE
             if (task.dueDate != null) {
                 var dateStr = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
                 if (task.timeEstimate > 0) {
@@ -131,26 +151,19 @@ class HomeTaskAdapter(
                 }
                 tvDueDate.text = dateStr
                 tvDueDate.visibility = View.VISIBLE
-                
+
                 when {
-                    !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) -> tvDueDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
-                    app.polar.util.DateUtils.isToday(task.dueDate) -> {
-                        val typedValue = android.util.TypedValue()
-                        itemView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
-                        tvDueDate.setTextColor(typedValue.data)
-                    }
-                    else -> {
-                        val typedValue = android.util.TypedValue()
-                        itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                        tvDueDate.setTextColor(typedValue.data)
-                    }
+                    !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) ->
+                        tvDueDate.setTextColor(COLOR_DATE_OVERDUE)
+                    app.polar.util.DateUtils.isToday(task.dueDate) ->
+                        tvDueDate.setTextColor(colorPrimary)
+                    else ->
+                        tvDueDate.setTextColor(colorOnSurface)
                 }
             } else if (task.timeEstimate > 0) {
                 tvDueDate.text = "${task.timeEstimate} min"
                 tvDueDate.visibility = View.VISIBLE
-                val typedValue = android.util.TypedValue()
-                itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                tvDueDate.setTextColor(typedValue.data)
+                tvDueDate.setTextColor(colorOnSurface)
             } else {
                 tvDueDate.visibility = View.GONE
             }
@@ -167,16 +180,12 @@ class HomeTaskAdapter(
             cbCompleted.setOnCheckedChangeListener(null)
             cbCompleted.isChecked = task.completed
 
-            // Priority tinting
+            // Priority tinting — uses pre-computed color constants (no parseColor on hot path)
             val priorityColor = when (task.priority) {
-                3 -> android.graphics.Color.parseColor("#F44336") // High - Red
-                2 -> android.graphics.Color.parseColor("#FF9800") // Medium - Orange
-                1 -> android.graphics.Color.parseColor("#2196F3") // Low - Blue
-                else -> {
-                    val typedValue = android.util.TypedValue()
-                    itemView.context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                    typedValue.data
-                }
+                3 -> COLOR_PRIORITY_HIGH
+                2 -> COLOR_PRIORITY_MEDIUM
+                1 -> COLOR_PRIORITY_LOW
+                else -> colorOnSurface
             }
             cbCompleted.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
@@ -243,6 +252,10 @@ class HomeTaskAdapter(
 
     class HomeItemDiffCallback : DiffUtil.ItemCallback<HomeItem>() {
         override fun areItemsTheSame(oldItem: HomeItem, newItem: HomeItem): Boolean {
+            // We intentionally include `completed` for TaskItems: the swipe animation leaves
+            // a non-zero translationX on the ViewHolder. Without a full REMOVE+ADD, the view
+            // stays visually displaced. Including `completed` forces DiffUtil to recreate the
+            // ViewHolder on completion, clearing the swipe animation state naturally.
             if (oldItem is HomeItem.TaskItem && newItem is HomeItem.TaskItem) {
                 return oldItem.id == newItem.id && oldItem.task.completed == newItem.task.completed
             }

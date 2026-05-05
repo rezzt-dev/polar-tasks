@@ -8,6 +8,9 @@ import app.polar.data.entity.Subtask
 interface SubtaskDao {
   @Query("SELECT * FROM subtasks WHERE taskId = :taskId ORDER BY id ASC")
   fun getSubtasksForTask(taskId: Long): LiveData<List<Subtask>>
+
+  @Query("SELECT * FROM subtasks WHERE taskId = :taskId ORDER BY id ASC")
+  fun getSubtasksForTaskFlow(taskId: Long): kotlinx.coroutines.flow.Flow<List<Subtask>>
   
   @Query("SELECT * FROM subtasks WHERE taskId = :taskId")
   suspend fun getSubtasksForTaskDirect(taskId: Long): List<Subtask>
