@@ -194,7 +194,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_small"
-                android:text="Adjuntar imagen"
+                android:text="@string/attach_image"
                 app:icon="@drawable/ic_attach_file"
                 style="@style/Widget.Material3.Button.TextButton"
                 android:textColor="?attr/colorPrimary" />
@@ -211,7 +211,7 @@
                     android:id="@+id/btnStartFocus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Modo Focus"
+                    android:text="@string/focus_mode"
                     app:icon="@drawable/ic_schedule"
                     style="@style/Widget.Material3.Button.TonalButton"
                     app:cornerRadius="12dp" />
@@ -255,7 +255,7 @@
                                 android:id="@+id/btnFocusPlayPause"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Empezar"
+                                android:text="@string/focus_start"
                                 app:icon="@drawable/ic_schedule"
                                 app:cornerRadius="12dp"
                                 style="@style/Widget.Material3.Button" />
@@ -265,7 +265,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="12dp"
-                                android:text="Reiniciar"
+                                android:text="@string/focus_reset"
                                 app:cornerRadius="12dp"
                                 style="@style/Widget.Material3.Button.TextButton" />
                         </LinearLayout>

@@ -43,6 +43,10 @@ class TasksFragment : Fragment() {
     
     setupRecyclerView()
     setupFilters()
+    // setupSwipeActions must be called once here, NOT inside configureMode().
+    // Calling it there created a new ItemTouchHelper on every navigation change,
+    // stacking multiple touch handlers on the same RecyclerView.
+    setupSwipeActions()
     observeTasks()
   }
   
@@ -513,9 +517,6 @@ class TasksFragment : Fragment() {
           binding.chipGroupFilters.visibility = View.VISIBLE
       }
       binding.recyclerTasks.itemAnimator = null // Always keep animations off
-      
-      // Re-attach swipe actions (simplest way is to have one attached globally or re-configure)
-      setupSwipeActions()
   }
 
   private fun showTaskPopupMenu(task: Task, anchorView: View? = null) {
@@ -653,7 +654,7 @@ class TasksFragment : Fragment() {
                         setDataAndType(contentUri, context.contentResolver.getType(contentUri))
                         putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
                     }
-                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Compartir Tarea como Imagen"))
+                    context.startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.share_task_as_image)))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

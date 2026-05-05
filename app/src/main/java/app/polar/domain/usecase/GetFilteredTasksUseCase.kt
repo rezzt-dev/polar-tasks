@@ -19,10 +19,10 @@ class GetFilteredTasksUseCase @Inject constructor(
     ): Flow<List<Task>> {
         // 1. Get raw tasks based on listId
         val tasksFlow = listIdFlow.flatMapLatest { listId ->
-            if (listId == -1L) {
-                repository.getAllTasksFlow()
-            } else {
-                repository.getTasksForListFlow(listId)
+            when {
+                // -1L = All tasks (Home), -4L = "mi día" (also needs all tasks — filters do the scoping)
+                listId == -1L || listId == -4L -> repository.getAllTasksFlow()
+                else -> repository.getTasksForListFlow(listId)
             }
         }
 

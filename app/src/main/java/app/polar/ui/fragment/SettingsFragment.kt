@@ -66,7 +66,7 @@ class SettingsFragment : Fragment() {
       val checkedItem = themeValues.indexOf(currentTheme).takeIf { it >= 0 } ?: 1
 
       MaterialAlertDialogBuilder(requireContext())
-        .setTitle("Seleccionar tema visual")
+        .setTitle(getString(R.string.dialog_select_theme))
         .setSingleChoiceItems(themeLabels, checkedItem) { dialog, which ->
             val selectedTheme = themeValues[which]
             if (currentTheme != selectedTheme) {
@@ -75,7 +75,7 @@ class SettingsFragment : Fragment() {
             }
             dialog.dismiss()
         }
-        .setNegativeButton("Cancelar", null)
+        .setNegativeButton(getString(R.string.cancel), null)
         .show()
     }
   }
@@ -104,7 +104,7 @@ class SettingsFragment : Fragment() {
       val checkedItem = fontValues.indexOf(currentFont).takeIf { it >= 0 } ?: 0
 
       MaterialAlertDialogBuilder(requireContext())
-        .setTitle("Seleccionar tipografía")
+        .setTitle(getString(R.string.dialog_select_font))
         .setSingleChoiceItems(fontLabels, checkedItem) { dialog, which ->
             val selectedFont = fontValues[which]
             if (currentFont != selectedFont) {
@@ -113,15 +113,15 @@ class SettingsFragment : Fragment() {
             }
             dialog.dismiss()
         }
-        .setNegativeButton("Cancelar", null)
+        .setNegativeButton(getString(R.string.cancel), null)
         .show()
     }
   }
 
   private fun setupCheckboxStyle() {
     val styleEntries = linkedMapOf(
-      "Cuadradas (Material)" to ThemeManager.CHECKBOX_SQUARE,
-      "Circulares (Moderno)" to ThemeManager.CHECKBOX_CIRCULAR
+      getString(R.string.checkbox_square) to ThemeManager.CHECKBOX_SQUARE,
+      getString(R.string.checkbox_circular) to ThemeManager.CHECKBOX_CIRCULAR
     )
     val styleLabels = styleEntries.keys.toTypedArray()
     val styleValues = styleEntries.values.toList()
@@ -145,7 +145,7 @@ class SettingsFragment : Fragment() {
       val checkedItem = styleValues.indexOf(currentStyle).takeIf { it >= 0 } ?: 0
 
       MaterialAlertDialogBuilder(requireContext())
-        .setTitle("Estilo de casillas")
+        .setTitle(getString(R.string.dialog_select_checkbox_style))
         .setSingleChoiceItems(styleLabels, checkedItem) { dialog, which ->
             val selectedStyle = styleValues[which]
             if (currentStyle != selectedStyle) {
@@ -154,7 +154,7 @@ class SettingsFragment : Fragment() {
             }
             dialog.dismiss()
         }
-        .setNegativeButton("Cancelar", null)
+        .setNegativeButton(getString(R.string.cancel), null)
         .show()
     }
   }
@@ -319,7 +319,7 @@ class SettingsFragment : Fragment() {
                   }
                   
                   val db = app.polar.data.AppDatabase.getDatabase(requireContext())
-                  val taskListId = db.taskListDao().insert(app.polar.data.entity.TaskList(title = "Tareas Importadas"))
+                  val taskListId = db.taskListDao().insert(app.polar.data.entity.TaskList(title = getString(R.string.imported_tasks_list_name)))
                   
                   for ((index, row) in lines.withIndex()) {
                     if (index == 0 && (row.contains("title", ignoreCase = true) || row.contains("desc", ignoreCase = true))) {
@@ -339,9 +339,9 @@ class SettingsFragment : Fragment() {
                   }
                 }
               }
-              Snackbar.make(binding.root, "Tareas importadas correctamente", Snackbar.LENGTH_LONG).show()
+              Snackbar.make(binding.root, getString(R.string.tasks_imported_ok), Snackbar.LENGTH_LONG).show()
             } catch (e: Exception) {
-              Snackbar.make(binding.root, "Error al importar el archivo CSV", Snackbar.LENGTH_SHORT).show()
+              Snackbar.make(binding.root, getString(R.string.error_importing_csv), Snackbar.LENGTH_SHORT).show()
             }
           }
         }
@@ -373,7 +373,7 @@ class SettingsFragment : Fragment() {
       val checkedItem = langValues.indexOf(currentLocale).takeIf { it >= 0 } ?: 0
 
       MaterialAlertDialogBuilder(requireContext())
-        .setTitle("Seleccionar idioma")
+        .setTitle(getString(R.string.dialog_select_language))
         .setSingleChoiceItems(langLabels, checkedItem) { dialog, which ->
             val selectedLocale = langValues[which]
             if (currentLocale != selectedLocale) {
@@ -382,7 +382,7 @@ class SettingsFragment : Fragment() {
             }
             dialog.dismiss()
         }
-        .setNegativeButton("Cancelar", null)
+        .setNegativeButton(getString(R.string.cancel), null)
         .show()
     }
   }

@@ -4,7 +4,9 @@ import android.app.Dialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -95,9 +97,28 @@ class TaskListDialog(
 
   override fun onStart() {
     super.onStart()
-    dialog?.window?.setBackgroundDrawable(
-      android.graphics.drawable.ColorDrawable(Color.TRANSPARENT)
-    )
+    val win = dialog?.window ?: return
+
+    // Transparent background so dialog_background drawable shows
+    win.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
+
+    // Measure screen dimensions
+    val dm = DisplayMetrics()
+    @Suppress("DEPRECATION")
+    win.windowManager.defaultDisplay.getMetrics(dm)
+
+    // Width: 92 % of screen width (comfortable on phones and tablets)
+    val width = (dm.widthPixels * 0.92).toInt()
+
+    // Height: cap at 87 % of screen height so content scrolls and buttons
+    // stay visible on small devices; shrinks naturally on larger screens.
+    val maxHeight = (dm.heightPixels * 0.87).toInt()
+
+    // Apply size and centre the dialog on screen
+    win.setLayout(width, maxHeight)
+    val lp = win.attributes
+    lp.gravity = android.view.Gravity.CENTER
+    win.attributes = lp
   }
 
   override fun onDestroyView() {
