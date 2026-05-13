@@ -80,8 +80,8 @@ class RemindersFragment : Fragment() {
             
             override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
+                // Only reset translationX; let bind() control alpha based on completion state
                 viewHolder.itemView.animate()
-                    .alpha(1.0f)
                     .translationX(0f)
                     .setDuration(150)
                     .start()
@@ -109,7 +109,25 @@ class RemindersFragment : Fragment() {
                         }.show()
                     }
                     ItemTouchHelper.RIGHT -> {
-                        // Swipe right: Toggle completion
+                        // Swipe right: Toggle completion with visual feedback
+                        // Scale pulse animation for tactile completion feedback
+                        viewHolder.itemView.animate()
+                            .scaleX(0.95f)
+                            .scaleY(0.95f)
+                            .setDuration(150)
+                            .withEndAction {
+                                viewHolder.itemView.animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(150)
+                                    .start()
+                            }
+                            .start()
+
+                        // Prevent ItemTouchHelper from removing the card from the list
+                        adapter.notifyItemChanged(position)
+
+                        // Toggle completion state in database
                         viewModel.toggleCompletion(reminder)
                     }
                 }

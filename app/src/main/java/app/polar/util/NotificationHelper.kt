@@ -3,6 +3,8 @@ package app.polar.util
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -15,13 +17,29 @@ object NotificationHelper {
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
                 description = CHANNEL_DESC
+                setSound(soundUri, audioAttributes)
             }
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun isDndActive(context: Context): Boolean {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+        } else {
+            false
         }
     }
 
@@ -83,22 +101,18 @@ object NotificationHelper {
     }
 
     fun showReminderNotification(context: Context, reminder: app.polar.data.entity.Reminder) {
-        // Intent to open Main Activity -> Reminders Fragment?
-        // Or specific detail? Reminders are simple. Opening app is enough.
-        // We can create an intent that triggers a specific navigation in MainActivity if we want.
         val intent = android.content.Intent(context, app.polar.MainActivity::class.java).apply {
              flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-             // Helper extra to navigate
              putExtra("NAVIGATE_TO_REMINDERS", true)
         }
-        
+
         val pendingIntent = android.app.PendingIntent.getActivity(
-            context, 
-            (reminder.id + 1000000).toInt(), 
-            intent, 
+            context,
+            (reminder.id + 1000000).toInt(),
+            intent,
             android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
         )
-        
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_check_box)
             .setContentTitle("Reminder: ${reminder.title}")
@@ -106,12 +120,19 @@ object NotificationHelper {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            
+
+        if (isDndActive(context)) {
+            builder.setSilent(true)
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+        }
+
         try {
            with(NotificationManagerCompat.from(context)) {
                notify((reminder.id + 1000000).toInt(), builder.build())
            }
         } catch (e: SecurityException) {
+            e.printStackTrace()
         }
     }
 

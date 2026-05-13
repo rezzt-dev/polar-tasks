@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import app.polar.ui.viewmodel.TaskViewModel
+import app.polar.domain.model.SortMode
 
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,6 +44,7 @@ class TasksFragment : Fragment() {
     
     setupRecyclerView()
     setupFilters()
+    setupSortButton()
     // setupSwipeActions must be called once here, NOT inside configureMode().
     // Calling it there created a new ItemTouchHelper on every navigation change,
     // stacking multiple touch handlers on the same RecyclerView.
@@ -92,6 +94,37 @@ class TasksFragment : Fragment() {
       }
       binding.chipRecurrent.setOnCheckedChangeListener { _, isChecked ->
           viewModel.setFilterRecurrent(isChecked)
+      }
+  }
+
+  private fun setupSortButton() {
+      binding.btnSort.setOnClickListener { anchor ->
+          PopupMenu(requireContext(), anchor).apply {
+              menuInflater.inflate(R.menu.menu_sort, menu)
+              setOnMenuItemClickListener { item ->
+                  when (item.itemId) {
+                      R.id.action_sort_default -> {
+                          viewModel.setSortMode(SortMode.DEFAULT)
+                          true
+                      }
+                      R.id.action_sort_unmark_first -> {
+                          viewModel.setSortMode(SortMode.UNMARK_FIRST)
+                          true
+                      }
+                      else -> false
+                  }
+              }
+              show()
+          }
+      }
+  }
+
+  private fun updateSortIndicator(mode: SortMode) {
+      val isListMode = viewModel.selectedListId.value?.let { it > 0 } == true
+      if (mode == SortMode.UNMARK_FIRST && isListMode) {
+          binding.chipSortIndicator.visibility = View.VISIBLE
+      } else {
+          binding.chipSortIndicator.visibility = View.GONE
       }
   }
   
@@ -416,6 +449,12 @@ class TasksFragment : Fragment() {
               }
               
               launch {
+                  viewModel.listProgress.collect { progress ->
+                      updateListProgress(progress)
+                  }
+              }
+              
+              launch {
                   viewModel.filterToday.collect { isChecked ->
                        if (binding.chipToday.isChecked != isChecked) {
                            binding.chipToday.isChecked = isChecked
@@ -444,6 +483,16 @@ class TasksFragment : Fragment() {
                        if (binding.chipRecurrent.isChecked != isChecked) {
                            binding.chipRecurrent.isChecked = isChecked
                        }
+                  }
+              }
+
+              launch {
+                  viewModel.sortMode.collect { mode ->
+                      updateSortIndicator(mode)
+                      // Accessibility announcement
+                      if (mode == SortMode.UNMARK_FIRST) {
+                          binding.root.announceForAccessibility(getString(R.string.sort_unmark_first))
+                      }
                   }
               }
           }
@@ -480,10 +529,7 @@ class TasksFragment : Fragment() {
       val items = mutableListOf<app.polar.ui.adapter.HomeItem>()
       groups.forEach { group ->
           if (group.tasks.isNotEmpty()) {
-              val completed = group.tasks.count { it.completed }
-              val total = group.tasks.size
-              val progressText = if (total > 0) "($completed/$total)" else ""
-              items.add(app.polar.ui.adapter.HomeItem.Header(group.listId, group.title, progressText))
+              items.add(app.polar.ui.adapter.HomeItem.Header(group.listId, group.title))
               group.tasks.forEach { task ->
                   items.add(app.polar.ui.adapter.HomeItem.TaskItem(task))
               }
@@ -499,22 +545,34 @@ class TasksFragment : Fragment() {
        // Keep greeting is nice.
   }
   
+  private fun updateListProgress(progress: app.polar.ui.viewmodel.TaskViewModel.ListProgress) {
+      val isListMode = viewModel.selectedListId.value?.let { it > 0 } == true
+      if (!isListMode || progress.total == 0) {
+          binding.progressContainer.visibility = View.GONE
+          return
+      }
+      binding.progressContainer.visibility = View.VISIBLE
+      binding.progressBar.setProgress(progress.percent, true)
+      binding.tvProgressText.text = "${progress.completed}/${progress.total} (${progress.percent}%)"
+  }
+
   private fun configureMode(listId: Long) {
       if (listId == -1L) {
           // Home Mode
           binding.recyclerTasks.adapter = homeTaskAdapter
           binding.tvGreeting?.visibility = View.VISIBLE
           binding.chipGroupFilters.visibility = View.GONE
-      } else if (listId == -4L) {
-          // Mi Día Mode — use taskAdapter, hide filters (they are force-set by ViewModel)
-          binding.recyclerTasks.adapter = taskAdapter
-          binding.tvGreeting?.visibility = View.GONE
-          binding.chipGroupFilters.visibility = View.GONE
+          binding.progressContainer.visibility = View.GONE
+          binding.btnSort.visibility = View.GONE
+          binding.chipSortIndicator.visibility = View.GONE
       } else {
           // List Mode
           binding.recyclerTasks.adapter = taskAdapter
           binding.tvGreeting?.visibility = View.GONE
           binding.chipGroupFilters.visibility = View.VISIBLE
+          binding.btnSort.visibility = View.VISIBLE
+          updateSortIndicator(viewModel.sortMode.value)
+          // Progress visibility will be handled by updateListProgress observation
       }
       binding.recyclerTasks.itemAnimator = null // Always keep animations off
   }

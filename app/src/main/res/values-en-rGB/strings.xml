@@ -32,7 +32,6 @@
   <string name="no_tasks_for_date">no tasks for this day</string>
   <string name="today">today</string>
   <string name="tomorrow">tomorrow</string>
-  <string name="my_day">my day</string>
   
   <!-- Tasks -->
   <string name="create_task">create task</string>

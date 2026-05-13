@@ -28,7 +28,6 @@ class DrawerManager(
 
     sealed class NavigationEvent {
         object Home : NavigationEvent()
-        object MyDay : NavigationEvent()
         object Calendar : NavigationEvent()
         object Tags : NavigationEvent()
         object Reminders : NavigationEvent()
@@ -123,11 +122,6 @@ class DrawerManager(
 
         binding.root.findViewById<View>(R.id.btnHome).setOnClickListener {
             onNavigate(NavigationEvent.Home)
-            closeDrawer()
-        }
-
-        binding.root.findViewById<View>(R.id.btnMyDay).setOnClickListener {
-            onNavigate(NavigationEvent.MyDay)
             closeDrawer()
         }
 

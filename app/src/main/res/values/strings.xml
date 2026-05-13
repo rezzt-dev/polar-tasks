@@ -32,7 +32,6 @@
   <string name="no_tasks_for_date">no hay tareas para este día</string>
   <string name="today">hoy</string>
   <string name="tomorrow">mañana</string>
-  <string name="my_day">mi día</string>
   
   <!-- Tasks -->
   <string name="create_task">crear tarea</string>
@@ -73,6 +72,9 @@
   <string name="filter_pending">pendientes</string>
   <string name="filter_overdue">vencidas</string>
   <string name="filter_recurrent">repetitivas</string>
+  <string name="sort_by">ordenar por</string>
+  <string name="sort_default">predeterminado</string>
+  <string name="sort_unmark_first">no completadas primero</string>
   <string name="confirm_delete">estas seguro de eliminar esto?</string>
   <string name="add">agregar</string>
   
@@ -183,8 +185,8 @@
   <string name="tutorial_desc_2">agrupa tus responsabilidades creando listas dedicadas para el trabajo, hogar o proyectos especiales, y organiza todo con etiquetas.\n\ndivide los grandes objetivos añadiendo subtareas ilimitadas y observa tu progreso de una forma completamente visual y satisfactoria.</string>
   <string name="tutorial_title_3">acciones rápidas</string>
   <string name="tutorial_desc_3">desliza suavemente una tarea hacia la derecha para marcarla como completada al instante.\n\n¿ya no necesitas hacer algo? desliza hacia la izquierda y elimínala sin ningún menú. mantén pulsada cualquier tarea para ver todas las opciones disponibles.</string>
-  <string name="tutorial_title_4">mi día y modo focus</string>
-  <string name="tutorial_desc_4">la sección “mi día” agrupa automáticamente tus tareas pendientes de hoy y las vencidas, dándote una vista clara de lo que necesitas hacer ahora.\n\nabre cualquier tarea y activa el “modo focus” para iniciar un temporizador pomodoro de 25 minutos que te ayuda a concentrarte en completarla sin distracciones.</string>
+  <string name="tutorial_title_4">modo focus</string>
+  <string name="tutorial_desc_4">abre cualquier tarea y activa el "modo focus" para iniciar un temporizador pomodoro de 25 minutos que te ayuda a concentrarte en completarla sin distracciones.</string>
   <string name="tutorial_title_5">calendario y recordatorios</string>
   <string name="tutorial_desc_5">visualiza todas tus tareas agrupadas mes a mes o por semanas en nuestro calendario de diseño premium.\n\ncrea recordatorios con fecha, hora y ubicación para recibir una notificación precisa justo cuando más lo necesitas.</string>
   <string name="tutorial_title_6">personalización total</string>

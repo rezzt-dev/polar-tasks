@@ -111,4 +111,11 @@ interface TaskDao {
 
   @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 1 ORDER BY createdAt DESC")
   suspend fun getAllCompletedTasksSnapshot(): List<Task>
+
+  @Query("""
+    SELECT * FROM tasks
+    WHERE isDeleted = 0
+    ORDER BY completed ASC, priority DESC, createdAt DESC, title ASC
+  """)
+  fun getTasksUnmarkFirst(): kotlinx.coroutines.flow.Flow<List<Task>>
 }
