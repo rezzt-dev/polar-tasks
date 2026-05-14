@@ -15,7 +15,7 @@ import java.util.Date
 import java.util.Locale
 
 sealed class HomeItem {
-    data class Header(val listId: Long, val title: String, val progress: String = "") : HomeItem() {
+    data class Header(val listId: Long, val title: String) : HomeItem() {
         override val id: Long = -listId - 1000 // Unique ID for headers
     }
     data class TaskItem(val task: Task) : HomeItem() {
@@ -85,7 +85,7 @@ class HomeTaskAdapter(
         private val tvTitle: TextView = itemView.findViewById(R.id.tvHeaderTitle)
         
         fun bind(header: HomeItem.Header) {
-            tvTitle.text = if (header.progress.isNotBlank()) "${header.title} ${header.progress}" else header.title
+            tvTitle.text = header.title
         }
     }
 

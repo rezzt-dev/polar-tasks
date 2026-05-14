@@ -24,61 +24,121 @@
         android:text="@string/good_morning"
         android:visibility="visible"/>
 
-    <HorizontalScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/spacing_medium"
         android:paddingBottom="@dimen/spacing_small"
         android:background="@android:color/transparent"
         android:clipToPadding="false">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupFilters"
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scrollbars="none"
+            android:background="@android:color/transparent"
+            android:clipToPadding="false">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                app:singleSelection="false"
+                app:selectionRequired="false">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipToday"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_today"
+                    android:checkable="true"
+                    app:checkedIconVisible="true"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPending"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_pending"
+                    android:checkable="true"
+                    app:checkedIconVisible="true"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOverdue"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_overdue"
+                    android:checkable="true"
+                    app:checkedIconVisible="true"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRecurrent"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_recurrent"
+                    android:checkable="true"
+                    app:checkedIconVisible="true"/>
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <ImageButton
+            android:id="@+id/btnSort"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_sort"
+            android:contentDescription="@string/sort_by"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="?attr/colorOnSurface" />
+    </LinearLayout>
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipSortIndicator"
+        style="@style/Widget.Material3.Chip.Assist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:text="@string/sort_unmark_first"
+        android:visibility="gone"
+        app:chipIcon="@drawable/ic_sort" />
+
+    <LinearLayout
+        android:id="@+id/progressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        android:paddingBottom="@dimen/spacing_small"
+        android:visibility="gone">
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:trackThickness="4dp"
+            app:indicatorColor="?attr/colorPrimary"
+            app:trackColor="?attr/colorSurfaceVariant" />
+
+        <TextView
+            android:id="@+id/tvProgressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:singleSelection="false"
-            app:selectionRequired="false">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipToday"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_today"
-                android:checkable="true"
-                app:checkedIconVisible="true"/>
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPending"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_pending"
-                android:checkable="true"
-                app:checkedIconVisible="true"/>
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipOverdue"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_overdue"
-                android:checkable="true"
-                app:checkedIconVisible="true"/>
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipRecurrent"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/filter_recurrent"
-                android:checkable="true"
-                app:checkedIconVisible="true"/>
-
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:textColor="?attr/colorOnSurface"
+            android:alpha="0.7" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerTasks"

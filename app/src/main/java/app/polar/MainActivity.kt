@@ -1,12 +1,17 @@
 package app.polar
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.polar.databinding.ActivityMainBinding
@@ -33,6 +38,12 @@ class MainActivity : BaseActivity() {
   
   private lateinit var drawerManager: app.polar.ui.manager.DrawerManager
   private var currentListId: Long? = null
+  
+  private val requestNotificationPermissionLauncher = registerForActivityResult(
+      ActivityResultContracts.RequestPermission()
+  ) { _ ->
+      // App continues regardless of permission result
+  }
   
   override fun onCreate(savedInstanceState: Bundle?) {
     // BaseActivity handles theme init
@@ -73,6 +84,7 @@ class MainActivity : BaseActivity() {
     })
     
     checkFirstRun()
+    requestNotificationPermissionIfNeeded()
   }
     private fun checkFirstRun() {
         val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
@@ -81,6 +93,22 @@ class MainActivity : BaseActivity() {
         if (isFirstRun) {
             startActivity(android.content.Intent(this, app.polar.ui.activity.TutorialActivity::class.java))
             finish()
+        }
+    }
+    
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                else -> {
+                    requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
         }
     }
   
@@ -126,15 +154,6 @@ class MainActivity : BaseActivity() {
                 currentListId = -1L
                 taskViewModel.loadAllTasks()
                 binding.toolbar.title = getString(R.string.home)
-                binding.fabAddTask.hide()
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, TasksFragment())
-                    .commit()
-          }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.MyDay -> {
-                currentListId = -4L
-                taskViewModel.loadMyDayTasks()
-                binding.toolbar.title = getString(R.string.my_day)
                 binding.fabAddTask.hide()
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainer, TasksFragment())

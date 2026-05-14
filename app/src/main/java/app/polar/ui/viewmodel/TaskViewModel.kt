@@ -13,6 +13,7 @@ import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
 import app.polar.domain.usecase.GetFilteredTasksUseCase
+import app.polar.domain.model.SortMode
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import app.polar.ui.adapter.TaskListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -53,6 +56,22 @@ class TaskViewModel @Inject constructor(
   fun setFilterOverdue(enabled: Boolean) { _filterOverdue.value = enabled }
   fun setFilterRecurrent(enabled: Boolean) { _filterRecurrent.value = enabled }
 
+  // Sort mode persistence
+  private val prefs = application.getSharedPreferences("task_prefs", android.content.Context.MODE_PRIVATE)
+  private val _sortMode = MutableStateFlow(
+      try {
+          SortMode.valueOf(prefs.getString("sort_mode", SortMode.UNMARK_FIRST.name) ?: SortMode.UNMARK_FIRST.name)
+      } catch (_: IllegalArgumentException) {
+          SortMode.UNMARK_FIRST
+      }
+  )
+  val sortMode: StateFlow<SortMode> = _sortMode.asStateFlow()
+
+  fun setSortMode(mode: SortMode) {
+      _sortMode.value = mode
+      prefs.edit().putString("sort_mode", mode.name).apply()
+  }
+
   private val _errorMessage = MutableStateFlow<String?>(null)
   val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
@@ -80,8 +99,9 @@ class TaskViewModel @Inject constructor(
             _filterOverdue,
             _filterRecurrent
         ),
-        _isCurrentListChain
-    ) { taskList, isChain ->
+        _isCurrentListChain,
+        _sortMode
+    ) { taskList, isChain, sortMode ->
         if (isChain) {
             // Sort all tasks by orderIndex, compute which ones are blocked
             val sorted = taskList.sortedBy { it.orderIndex }
@@ -96,7 +116,16 @@ class TaskViewModel @Inject constructor(
                 )
             }
         } else {
-            taskList.map { TaskListItem.Item(it) }
+            val sorted = when (sortMode) {
+                SortMode.UNMARK_FIRST -> taskList.sortedWith(
+                    compareBy<Task> { it.completed }
+                        .thenByDescending { it.priority }
+                        .thenByDescending { it.createdAt }
+                        .thenBy { it.title }
+                )
+                SortMode.DEFAULT -> taskList
+            }
+            sorted.map { TaskListItem.Item(it) }
         }
     }
     .stateIn(
@@ -212,15 +241,29 @@ class TaskViewModel @Inject constructor(
       _filterRecurrent.value = false
   }
 
-  fun loadMyDayTasks() {
-      _selectedListId.value = -4L
-      // Force filters: today + overdue + pending
-      _filterToday.value = true
-      _filterOverdue.value = true
-      _filterPending.value = true
-      _filterRecurrent.value = false
+  data class ListProgress(val completed: Int, val total: Int) {
+      val percent: Int = if (total > 0) (completed * 100 / total) else 0
   }
-  
+
+  val listProgress: StateFlow<ListProgress> = _selectedListId
+      .flatMapLatest { listId ->
+          if (listId > 0) {
+              repository.getTasksForListFlow(listId)
+          } else {
+              flowOf(emptyList())
+          }
+      }
+      .map { tasks ->
+          val total = tasks.size
+          val completed = tasks.count { it.completed }
+          ListProgress(completed, total)
+      }
+      .stateIn(
+          scope = viewModelScope,
+          started = SharingStarted.WhileSubscribed(5000),
+          initialValue = ListProgress(0, 0)
+      )
+
   // Get subtasks for a task
   fun getSubtasksForTask(taskId: Long): LiveData<List<Subtask>> {
     return repository.getSubtasksForTask(taskId)

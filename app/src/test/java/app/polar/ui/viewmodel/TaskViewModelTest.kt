@@ -31,6 +31,11 @@ class TaskViewModelTest {
 
     private lateinit var viewModel: TaskViewModel
 
+    private fun setupViewModel() {
+        every { getFilteredTasksUseCase(any(), any(), any(), any(), any()) } returns flowOf(emptyList())
+        viewModel = TaskViewModel(application, repository, alarmHelper, getFilteredTasksUseCase)
+    }
+
     @Test
     fun `tasks StateFlow emits data from UseCase`() = runTest {
         // Given
@@ -51,7 +56,7 @@ class TaskViewModelTest {
 
     @Test
     fun `insertTask calls repository and alarmHelper`() = runTest {
-        viewModel = TaskViewModel(application, repository, alarmHelper, getFilteredTasksUseCase)
+        setupViewModel()
         
         val taskTitle = "New Task"
         val dueDate = 123456789L
@@ -69,7 +74,7 @@ class TaskViewModelTest {
 
     @Test
     fun `setTaskCompletion updates task and alarm`() = runTest {
-         viewModel = TaskViewModel(application, repository, alarmHelper, getFilteredTasksUseCase)
+         setupViewModel()
          
          val task = Task(id = 1, listId = 1L, title = "Task", completed = false, dueDate = 1000L)
          

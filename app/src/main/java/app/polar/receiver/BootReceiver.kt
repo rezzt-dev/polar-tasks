@@ -28,15 +28,15 @@ class BootReceiver : BroadcastReceiver() {
                     
                     tasks.forEach { task ->
                         if (!task.completed && task.dueDate != null && task.dueDate > now) {
-                            // Schedule alarm
-                             // We need a helper or copy logic from ViewModel. 
-                             // Ideally logic should be in a shared helper, but for now we can duplicate or create a Utils class.
-                             // Let's create a minimal scheduler here or reuse if possible.
-                             // NotificationHelper is UI focused. 
-                             // We'll reimplement simple scheduling here to avoid heavy dependencies, 
-                             // or better, extract scheduleAlarm to a global utility. 
-                             
                              alarmHelper.scheduleTaskAlarm(task.id, task.dueDate!!)
+                        }
+                    }
+                    
+                    // Reschedule reminder alarms on boot
+                    val reminders = database.reminderDao().getAllRemindersSnapshot()
+                    reminders.forEach { reminder ->
+                        if (!reminder.isCompleted && !reminder.isDeleted && reminder.dateTime > now) {
+                            alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
                         }
                     }
                 } finally {

@@ -32,7 +32,6 @@
   <string name="no_tasks_for_date">keine aufgaben für diesen tag</string>
   <string name="today">heute</string>
   <string name="tomorrow">morgen</string>
-  <string name="my_day">mein tag</string>
   
   <!-- Tasks -->
   <string name="create_task">aufgabe erstellen</string>
