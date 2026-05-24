@@ -11,7 +11,7 @@
         android:id="@+id/tvSheetTagTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tareas con etiqueta"
+        android:text="tareas con etiqueta"
         android:textSize="20sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-medium"

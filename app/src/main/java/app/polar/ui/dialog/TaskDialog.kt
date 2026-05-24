@@ -70,7 +70,7 @@ class TaskDialog(
     binding.containerDate.setOnClickListener {
       val datePicker =
         com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
-          .setTitleText("Select date")
+          .setTitleText("select date")
           .setSelection(
             selectedDate
               ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds()
@@ -109,12 +109,12 @@ class TaskDialog(
     
     binding.containerRecurrence.setOnClickListener {
       val popup = android.widget.PopupMenu(requireContext(), it)
-      popup.menu.add(0, 0, 0, "No se repite")
-      popup.menu.add(0, 1, 1, "Diariamente")
-      popup.menu.add(0, 2, 2, "Semanalmente")
-      popup.menu.add(0, 3, 3, "Mensualmente")
-      popup.menu.add(0, 4, 4, "Cada lunes y miércoles")
-      popup.menu.add(0, 5, 5, "Primer día del mes")
+      popup.menu.add(0, 0, 0, "no se repite")
+      popup.menu.add(0, 1, 1, "diariamente")
+      popup.menu.add(0, 2, 2, "semanalmente")
+      popup.menu.add(0, 3, 3, "mensualmente")
+      popup.menu.add(0, 4, 4, "cada lunes y miercoles")
+      popup.menu.add(0, 5, 5, "primer dia del mes")
       
       popup.setOnMenuItemClickListener { item ->
         selectedRecurrence = when (item.itemId) {
@@ -134,10 +134,10 @@ class TaskDialog(
     
     binding.containerPriority.setOnClickListener {
       val popup = android.widget.PopupMenu(requireContext(), it)
-      popup.menu.add(0, 0, 0, "Sin prioridad")
-      popup.menu.add(0, 1, 1, "Prioridad Baja")
-      popup.menu.add(0, 2, 2, "Prioridad Media")
-      popup.menu.add(0, 3, 3, "Prioridad Alta")
+      popup.menu.add(0, 0, 0, "sin prioridad")
+      popup.menu.add(0, 1, 1, "prioridad baja")
+      popup.menu.add(0, 2, 2, "prioridad media")
+      popup.menu.add(0, 3, 3, "prioridad alta")
       
       popup.setOnMenuItemClickListener { item ->
         selectedPriority = item.itemId
@@ -249,19 +249,19 @@ class TaskDialog(
       binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
       binding.tvDueDate.alpha = 1.0f
     } else {
-      binding.tvDueDate.text = "Sin fecha de finalización"
+      binding.tvDueDate.text = "sin fecha de finalizacion"
       binding.tvDueDate.alpha = 0.6f
     }
   }
   
   private fun updateRecurrenceText() {
     val text = when (selectedRecurrence) {
-      "DAILY" -> "Se repite diariamente"
-      "WEEKLY" -> "Se repite semanalmente"
-      "MONTHLY" -> "Se repite mensualmente"
-      "MON_WED" -> "Cada lunes y miércoles"
-      "FIRST_DAY_MONTH" -> "Primer día del mes"
-      else -> "No se repite"
+      "DAILY" -> "se repite diariamente"
+      "WEEKLY" -> "se repite semanalmente"
+      "MONTHLY" -> "se repite mensualmente"
+      "MON_WED" -> "cada lunes y miercoles"
+      "FIRST_DAY_MONTH" -> "primer dia del mes"
+      else -> "no se repite"
     }
     binding.tvRecurrence.text = text
     
@@ -274,10 +274,10 @@ class TaskDialog(
   
   private fun updatePriorityText() {
     val text = when (selectedPriority) {
-      3 -> "Prioridad Alta"
-      2 -> "Prioridad Media"
-      1 -> "Prioridad Baja"
-      else -> "Sin prioridad"
+      3 -> "prioridad alta"
+      2 -> "prioridad media"
+      1 -> "prioridad baja"
+      else -> "sin prioridad"
     }
     binding.tvPriority.text = text
     

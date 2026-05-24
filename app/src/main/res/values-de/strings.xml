@@ -3,7 +3,7 @@
   <string name="app_name">polar.</string>
   
   <!-- Menu -->
-  <string name="menu_toggle">menü umschalten</string>
+  <string name="menu_toggle">menu umschalten</string>
   <string name="theme_toggle">thema umschalten</string>
   <string name="settings">einstellungen</string>
   <string name="search">suchen</string>
@@ -12,11 +12,11 @@
   <!-- Task Lists -->
   <string name="create_list">liste erstellen</string>
   <string name="edit_list">liste bearbeiten</string>
-  <string name="delete_list">liste löschen</string>
+  <string name="delete_list">liste loschen</string>
   <string name="list_title_hint">listentitel</string>
   <string name="no_lists">keine aufgabenlisten</string>
   <string name="create_first_list">erstellen sie ihre erste liste, um loszulegen</string>
-  <string name="select_icon">symbol auswählen</string>
+  <string name="select_icon">symbol auswahlen</string>
   
   <!-- Calendar Weeks -->
   <string name="mon_short">mo</string>
@@ -29,51 +29,51 @@
   
   <!-- Calendar UI -->
   <string name="tasks_for_selected_date">aufgaben</string>
-  <string name="no_tasks_for_date">keine aufgaben für diesen tag</string>
+  <string name="no_tasks_for_date">keine aufgaben fur diesen tag</string>
   <string name="today">heute</string>
   <string name="tomorrow">morgen</string>
   
   <!-- Tasks -->
   <string name="create_task">aufgabe erstellen</string>
   <string name="edit_task">aufgabe bearbeiten</string>
-  <string name="delete_task">aufgabe löschen</string>
+  <string name="delete_task">aufgabe loschen</string>
   <string name="task_title_hint">aufgabentitel</string>
   <string name="task_description_hint">beschreibung (optional)</string>
   <string name="no_tasks">keine aufgaben</string>
-  <string name="add_first_task">fügen sie ihre erste aufgabe hinzu</string>
+  <string name="add_first_task">fugen sie ihre erste aufgabe hinzu</string>
   <string name="no_search_results">keine aufgaben gefunden</string>
   <string name="try_different_search">versuchen sie andere begriffe</string>
   
   <!-- Reminders -->
   <string name="new_reminder">neue erinnerung</string>
   <string name="edit_reminder">erinnerung bearbeiten</string>
-  <string name="select_date_time">datum und uhrzeit auswählen</string>
-  <string name="select_date">datum auswählen</string>
-  <string name="select_time">uhrzeit auswählen</string>
+  <string name="select_date_time">datum und uhrzeit auswahlen</string>
+  <string name="select_date">datum auswahlen</string>
+  <string name="select_time">uhrzeit auswahlen</string>
   
   <!-- Subtasks -->
-  <string name="add_subtask">unteraufgabe hinzufügen</string>
+  <string name="add_subtask">unteraufgabe hinzufugen</string>
   <string name="subtask_hint">titel der unteraufgabe</string>
   <string name="subtasks">unteraufgaben</string>
   
   <!-- Tags -->
   <string name="tags">tags</string>
   <string name="tags_hint">tags (durch kommas getrennt)</string>
-  <string name="add_tags">tags hinzufügen</string>
+  <string name="add_tags">tags hinzufugen</string>
   
   <!-- Actions -->
   <string name="save">speichern</string>
   <string name="cancel">abbrechen</string>
   <string name="export">exportieren</string>
   <string name="edit">bearbeiten</string>
-  <string name="delete">löschen</string>
+  <string name="delete">loschen</string>
   <string name="task_copied">aufgabe in die zwischenablage kopiert</string>
   <string name="filter_today">heute</string>
   <string name="filter_pending">ausstehend</string>
-  <string name="filter_overdue">überfällig</string>
+  <string name="filter_overdue">uberfallig</string>
   <string name="filter_recurrent">wiederkehrend</string>
-  <string name="confirm_delete">sind sie sicher, dass sie das löschen möchten?</string>
-  <string name="add">hinzufügen</string>
+  <string name="confirm_delete">sind sie sicher, dass sie das loschen mochten?</string>
+  <string name="add">hinzufugen</string>
   
   <!-- Watermark -->
   <string name="developed_by">entwickelt von rezzt.dev</string>
@@ -101,7 +101,7 @@
   <string name="trash_with_count">papierkorb (%d)</string>
   
   <!-- Status Messages -->
-  <string name="list_deleted">liste gelöscht</string>
+  <string name="list_deleted">liste geloscht</string>
   
   <!-- Greetings -->
   <string name="good_morning">guten morgen</string>
@@ -113,11 +113,11 @@
   <string name="total_tasks">aufgaben gesamt</string>
   <string name="completed_tasks">abgeschlossen</string>
   <string name="pending_tasks">ausstehend</string>
-  <string name="overdue_tasks">überfällig</string>
+  <string name="overdue_tasks">uberfallig</string>
   <string name="completion_rate">abschlussrate</string>
   <string name="this_week">diese woche</string>
   <string name="this_month">diesen monat</string>
-  <string name="weekly_activity">wöchentliche aktivität</string>
+  <string name="weekly_activity">wochentliche aktivitat</string>
   <string name="tasks_completed_week">diese woche erledigte aufgaben</string>
   <string name="tasks_completed_month">diesen monat erledigte aufgaben</string>
   <string name="tasks_created_week">diese woche erstellte aufgaben</string>
@@ -129,28 +129,28 @@
   <!-- Messages -->
   <string name="task_moved_trash">aufgabe in den papierkorb verschoben</string>
   <string name="reminder_moved_trash">erinnerung in den papierkorb verschoben</string>
-  <string name="undo">rückgängig</string>
+  <string name="undo">ruckgangig</string>
   <string name="trash_emptied">papierkorb geleert</string>
   <string name="empty_trash">papierkorb leeren</string>
   <string name="trash_clean">papierkorb sauber</string>
-  <string name="no_deleted_items">keine gelöschten elemente</string>
-  <string name="deleted_items">gelöschte elemente</string>
+  <string name="no_deleted_items">keine geloschten elemente</string>
+  <string name="deleted_items">geloschte elemente</string>
   <string name="item_restored">element wiederhergestellt</string>
-  <string name="permanently_deleted">dauerhaft gelöscht</string>
+  <string name="permanently_deleted">dauerhaft geloscht</string>
   <string name="error_saving_backup">fehler beim speichern des backups</string>
   <string name="backup_saved">backup erfolgreich gespeichert</string>
   <string name="backup_restored">backup wiederhergestellt. neustart...</string>
   <string name="error_restoring_backup">fehler beim wiederherstellen des backups</string>
   
-  <string name="recurrence_daily">Täglich</string>
-  <string name="recurrence_weekly">Wöchentlich</string>
-  <string name="recurrence_monthly">Monatlich</string>
-  <string name="no_list">Keine liste</string>
-  <string name="add_subtask_title">unteraufgabe hinzufügen</string>
-  <string name="priority_low">Niedrig</string>
-  <string name="priority_medium">Mittel</string>
-  <string name="priority_high">Hoch</string>
-  <string name="priority_none">Keine priorität</string>
+  <string name="recurrence_daily">taglich</string>
+  <string name="recurrence_weekly">wochentlich</string>
+  <string name="recurrence_monthly">monatlich</string>
+  <string name="no_list">keine liste</string>
+  <string name="add_subtask_title">unteraufgabe hinzufugen</string>
+  <string name="priority_low">niedrig</string>
+  <string name="priority_medium">mittel</string>
+  <string name="priority_high">hoch</string>
+  <string name="priority_none">keine prioritat</string>
 
   <string name="font_system">system</string>
   
@@ -158,42 +158,42 @@
   <string name="visual_theme">visuelles thema</string>
   <string name="loading">wird geladen...</string>
   <string name="typography">typografie</string>
-  <string name="checkbox_style">kontrollkästchen-stil</string>
-  <string name="font_size">schriftgröße</string>
+  <string name="checkbox_style">kontrollkastchen-stil</string>
+  <string name="font_size">schriftgrosse</string>
   <string name="language">sprache</string>
   <string name="data_and_sync">daten &amp; synchronisierung</string>
   <string name="export_local_backup">lokales backup exportieren</string>
-  <string name="export_local_backup_desc">erstellen sie eine JSON-datei mit ihren daten</string>
+  <string name="export_local_backup_desc">erstellen sie eine json-datei mit ihren daten</string>
   <string name="restore_data">daten wiederherstellen</string>
   <string name="restore_data_desc">von einer backup-datei wiederherstellen</string>
   <string name="system_label">system</string>
   <string name="notification_permissions">benachrichtigungsberechtigungen</string>
-  <string name="notification_permissions_desc">Android-benachrichtigungseinstellungen</string>
+  <string name="notification_permissions_desc">android-benachrichtigungseinstellungen</string>
   <string name="tasks_notification">aufgabenbenachrichtigung</string>
-  <string name="daily_at">täglich um %s</string>
-  <string name="initial_tutorial">einführungs-tutorial</string>
-  <string name="initial_tutorial_desc">überprüfen sie die anleitung zur app-nutzung</string>
+  <string name="daily_at">taglich um %s</string>
+  <string name="initial_tutorial">einfuhrungs-tutorial</string>
+  <string name="initial_tutorial_desc">uberprufen sie die anleitung zur app-nutzung</string>
   <string name="developed_by_full">polar tasks v1.5\nentwickelt von rezzt.dev</string>
   
   <!-- Tutorial -->
   <string name="tutorial_title_1">willkommen bei polar.</string>
-  <string name="tutorial_desc_1">die minimalistische app, die sorgfältig entworfen wurde, um ihre aufgaben und erinnerungen so elegant wie möglich zu organisieren.\n\nentdecken sie, wie sie ihre tägliche produktivität steigern und dabei stets die kontrolle behalten, ohne ablenkungen und mit außergewöhnlicher leistung.</string>
+  <string name="tutorial_desc_1">die minimalistische app, die sorgfaltig entworfen wurde, um ihre aufgaben und erinnerungen so elegant wie moglich zu organisieren.\n\nentdecken sie, wie sie ihre tagliche produktivitat steigern und dabei stets die kontrolle behalten, ohne ablenkungen und mit aussergewohnlicher leistung.</string>
   <string name="tutorial_title_2">aufgabenverwaltung</string>
-  <string name="tutorial_desc_2">gruppieren sie ihre verantwortlichkeiten, indem sie dedizierte listen für arbeit, privatleben oder spezielle projekte erstellen, und organisieren sie alles mit tags.\n\nbrechen sie große ziele herunter, indem sie unbegrenzt unteraufgaben hinzufügen, und sehen sie ihren fortschritt auf eine völlig visuelle und zufriedenstellende weise.</string>
+  <string name="tutorial_desc_2">gruppieren sie ihre verantwortlichkeiten, indem sie dedizierte listen fur arbeit, privatleben oder spezielle projekte erstellen, und organisieren sie alles mit tags.\n\nbrechen sie grosse ziele herunter, indem sie unbegrenzt unteraufgaben hinzufugen, und sehen sie ihren fortschritt auf eine vollig visuelle und zufriedenstellende weise.</string>
   <string name="tutorial_title_3">intelligente erstellung</string>
-  <string name="tutorial_desc_3">schreiben sie völlig natürlich: "brot kaufen am dienstag um 17 uhr" oder "meeting morgen früh".\n\nunser leistungsstarkes intelligentes modul erkennt und extrahiert automatisch das datum und die uhrzeit und plant die aufgabe für sie.</string>
+  <string name="tutorial_desc_3">schreiben sie vollig naturlich: "brot kaufen am dienstag um 17 uhr" oder "meeting morgen fruh".\n\nunser leistungsstarkes intelligentes modul erkennt und extrahiert automatisch das datum und die uhrzeit und plant die aufgabe fur sie.</string>
   <string name="tutorial_title_4">schnellaktionen</string>
-  <string name="tutorial_desc_4">wischen sie eine aufgabe in der liste sanft nach rechts, um sie sofort als erledigt zu markieren.\n\nhaben sie einen fehler gemacht oder müssen etwas nicht mehr tun? wischen sie nach links, um es zu löschen, ohne ein menü öffnen zu müssen.</string>
+  <string name="tutorial_desc_4">wischen sie eine aufgabe in der liste sanft nach rechts, um sie sofort als erledigt zu markieren.\n\nhaben sie einen fehler gemacht oder mussen etwas nicht mehr tun? wischen sie nach links, um es zu loschen, ohne ein menu offnen zu mussen.</string>
   <string name="tutorial_title_5">kalender und benachrichtigungen</string>
-  <string name="tutorial_desc_5">visualisieren sie alle ihre routinen monat für monat oder wochenweise in unserem kalender im premium-design.\n\nerhalten sie präzise benachrichtigungen pünktlich, damit sie nie wieder ein meeting, eine lieferung oder ein wichtiges detail verpassen.</string>
+  <string name="tutorial_desc_5">visualisieren sie alle ihre routinen monat fur monat oder wochenweise in unserem kalender im premium-design.\n\nerhalten sie prazise benachrichtigungen punktlich, damit sie nie wieder ein meeting, eine lieferung oder ein wichtiges detail verpassen.</string>
   <string name="tutorial_title_6">totale personalisierung</string>
-  <string name="tutorial_desc_6">passen sie die app mit unseren 4 visuellen modi an ihren eigenen stil an: dunkel, hell, mehrfarbig dunkel und mehrfarbig hell.\n\nzudem können sie aus einer sorgfältigen auswahl professioneller schriftarten diejenige auswählen, die am besten zu ihnen passt.</string>
+  <string name="tutorial_desc_6">passen sie die app mit unseren 4 visuellen modi an ihren eigenen stil an: dunkel, hell, mehrfarbig dunkel und mehrfarbig hell.\n\nzudem konnen sie aus einer sorgfaltigen auswahl professioneller schriftarten diejenige auswahlen, die am besten zu ihnen passt.</string>
   <string name="tutorial_title_7">statistiken und fortschritt</string>
-  <string name="tutorial_desc_7">führen sie ein umfassendes protokoll ihres alltags und sehen sie abgeschlossene, überfällige aufgaben und ihren produktivsten tag.\n\nhalten sie lange abschlusssträhnen aufrecht, um sich selbst zu übertreffen und mit den daten von polar alles zu erreichen, was sie sich vornehmen.</string>
+  <string name="tutorial_desc_7">fuhren sie ein umfassendes protokoll ihres alltags und sehen sie abgeschlossene, uberfallige aufgaben und ihren produktivsten tag.\n\nhalten sie lange abschlussstrahnen aufrecht, um sich selbst zu ubertreffen und mit den daten von polar alles zu erreichen, was sie sich vornehmen.</string>
   
   <string name="action_next">weiter</string>
-  <string name="action_back">zurück</string>
+  <string name="action_back">zuruck</string>
   <string name="action_finish">starten</string>
-  <string name="action_skip">überspringen</string>
+  <string name="action_skip">uberspringen</string>
   <string name="action_view_tutorial">tutorial ansehen</string>
 </resources>

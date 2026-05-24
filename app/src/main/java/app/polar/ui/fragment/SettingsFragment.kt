@@ -353,18 +353,18 @@ class SettingsFragment : Fragment() {
     val currentLocale = sharedPrefs.getString("app_locale", "es") ?: "es"
 
     val langEntries = linkedMapOf(
-      "Castellano" to "es",
-      "English (UK)" to "en-rGB",
-      "English (US)" to "en-rUS",
-      "Deutsch" to "de",
-      "Français" to "fr"
+      "castellano" to "es",
+      "english (uk)" to "en-rGB",
+      "english (us)" to "en-rUS",
+      "deutsch" to "de",
+      "francais" to "fr"
     )
     val langLabels = langEntries.keys.toTypedArray()
     val langValues = langEntries.values.toList()
 
     fun updateLabel() {
         val locale = sharedPrefs.getString("app_locale", "es") ?: "es"
-        val label = langEntries.entries.find { it.value == locale }?.key ?: "Español"
+        val label = langEntries.entries.find { it.value == locale }?.key ?: "espanol"
         binding.tvLanguageValue.text = label
     }
     updateLabel()

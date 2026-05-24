@@ -60,7 +60,7 @@ class ReminderDialog(
         binding.btnSave.setOnClickListener {
             val title = binding.etTitle.text.toString()
             if (title.isBlank()) {
-                binding.etTitle.error = "Required"
+                binding.etTitle.error = "obligatorio"
                 return@setOnClickListener
             }
             val description = binding.etDescription.text.toString()

@@ -142,15 +142,15 @@
   <string name="backup_restored">backup restored. restarting...</string>
   <string name="error_restoring_backup">error restoring backup</string>
   
-  <string name="recurrence_daily">Daily</string>
-  <string name="recurrence_weekly">Weekly</string>
-  <string name="recurrence_monthly">Monthly</string>
-  <string name="no_list">No list</string>
+  <string name="recurrence_daily">daily</string>
+  <string name="recurrence_weekly">weekly</string>
+  <string name="recurrence_monthly">monthly</string>
+  <string name="no_list">no list</string>
   <string name="add_subtask_title">add subtask</string>
-  <string name="priority_low">Low</string>
-  <string name="priority_medium">Medium</string>
-  <string name="priority_high">High</string>
-  <string name="priority_none">No priority</string>
+  <string name="priority_low">low</string>
+  <string name="priority_medium">medium</string>
+  <string name="priority_high">high</string>
+  <string name="priority_none">no priority</string>
 
   <string name="font_system">system</string>
   
@@ -163,12 +163,12 @@
   <string name="language">language</string>
   <string name="data_and_sync">data &amp; synchronization</string>
   <string name="export_local_backup">export local backup</string>
-  <string name="export_local_backup_desc">generate a JSON file with your data</string>
+  <string name="export_local_backup_desc">generate a json file with your data</string>
   <string name="restore_data">restore data</string>
   <string name="restore_data_desc">recover from a backup file</string>
   <string name="system_label">system</string>
   <string name="notification_permissions">notification permissions</string>
-  <string name="notification_permissions_desc">Android notification settings</string>
+  <string name="notification_permissions_desc">android notification settings</string>
   <string name="tasks_notification">tasks notification</string>
   <string name="daily_at">daily at %s</string>
   <string name="initial_tutorial">initial tutorial</string>
@@ -181,7 +181,7 @@
   <string name="tutorial_title_2">task management</string>
   <string name="tutorial_desc_2">group your responsibilities by creating dedicated lists for work, home or special projects, and organize everything with tags.\n\nbreak down big goals by adding unlimited subtasks and see your progress in a completely visual and satisfying way.</string>
   <string name="tutorial_title_3">smart creation</string>
-  <string name="tutorial_desc_3">write completely naturally: "buy bread at 5pm on Tuesday" or "meeting tomorrow morning".\n\nour powerful smart engine will detect and extract the date and time automatically, scheduling the task for you.</string>
+  <string name="tutorial_desc_3">write completely naturally: "buy bread at 5pm on tuesday" or "meeting tomorrow morning".\n\nour powerful smart engine will detect and extract the date and time automatically, scheduling the task for you.</string>
   <string name="tutorial_title_4">quick actions</string>
   <string name="tutorial_desc_4">smoothly swipe a task to the right on the list to immediately mark it as completed.\n\nmade a mistake or no longer need to do something? swipe left to delete it without opening any menus.</string>
   <string name="tutorial_title_5">calendar and notifications</string>

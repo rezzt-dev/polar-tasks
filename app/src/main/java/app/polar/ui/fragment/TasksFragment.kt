@@ -744,7 +744,7 @@ class TasksFragment : Fragment() {
             if (task.dueDate != null) {
                 sb.appendLine()
                 val formattedDate = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
-                sb.appendLine("Fecha: $formattedDate")
+                sb.appendLine("fecha: $formattedDate")
             }
 
             val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
