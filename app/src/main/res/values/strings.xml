@@ -21,17 +21,17 @@
   <!-- Calendar Weeks -->
   <string name="mon_short">lun</string>
   <string name="tue_short">mar</string>
-  <string name="wed_short">mié</string>
+  <string name="wed_short">mie</string>
   <string name="thu_short">jue</string>
   <string name="fri_short">vie</string>
-  <string name="sat_short">sáb</string>
+  <string name="sat_short">sab</string>
   <string name="sun_short">dom</string>
   
   <!-- Calendar UI -->
   <string name="tasks_for_selected_date">tareas</string>
-  <string name="no_tasks_for_date">no hay tareas para este día</string>
+  <string name="no_tasks_for_date">no hay tareas para este dia</string>
   <string name="today">hoy</string>
-  <string name="tomorrow">mañana</string>
+  <string name="tomorrow">manana</string>
   
   <!-- Tasks -->
   <string name="create_task">crear tarea</string>
@@ -89,7 +89,7 @@
   <string name="theme_multicolor_light">multicolor claro</string>
   <string name="theme_multicolor_dark">multicolor oscuro</string>
   <string name="theme_pastel">pastel suave</string>
-  <string name="theme_neon">neón oscuro</string>
+  <string name="theme_neon">neon oscuro</string>
   <string name="font">fuente</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -107,12 +107,12 @@
   <string name="list_deleted">lista eliminada</string>
   
   <!-- Greetings -->
-  <string name="good_morning">buenos días</string>
+  <string name="good_morning">buenos dias</string>
   <string name="good_afternoon">buenas tardes</string>
   <string name="good_night">buenas noches</string>
 
   <!-- Statistics -->
-  <string name="statistics">estadísticas</string>
+  <string name="statistics">estadisticas</string>
   <string name="total_tasks">total de tareas</string>
   <string name="completed_tasks">completadas</string>
   <string name="pending_tasks">pendientes</string>
@@ -125,9 +125,9 @@
   <string name="tasks_completed_month">tareas completadas este mes</string>
   <string name="tasks_created_week">tareas creadas esta semana</string>
   <string name="tasks_created_month">tareas creadas este mes</string>
-  <string name="best_day">mejor día</string>
+  <string name="best_day">mejor dia</string>
   <string name="current_streak">racha actual</string>
-  <string name="days">días</string>
+  <string name="days">dias</string>
   
   <!-- Messages -->
   <string name="task_moved_trash">tarea movida a la papelera</string>
@@ -160,42 +160,42 @@
   <!-- Settings Screen -->
   <string name="visual_theme">tema visual</string>
   <string name="loading">cargando...</string>
-  <string name="typography">tipografía</string>
+  <string name="typography">tipografia</string>
   <string name="checkbox_style">estilo de casillas</string>
-  <string name="font_size">tamaño de fuente</string>
+  <string name="font_size">tamano de fuente</string>
   <string name="language">idioma</string>
-  <string name="data_and_sync">datos y sincronización</string>
+  <string name="data_and_sync">datos y sincronizacion</string>
   <string name="export_local_backup">exportar copia local</string>
-  <string name="export_local_backup_desc">genera un archivo JSON con tus datos</string>
+  <string name="export_local_backup_desc">genera un archivo json con tus datos</string>
   <string name="restore_data">restaurar datos</string>
   <string name="restore_data_desc">recuperar desde archivo de copia de seguridad</string>
   <string name="system_label">sistema</string>
   <string name="notification_permissions">permisos de notificaciones</string>
-  <string name="notification_permissions_desc">ajustes de notificaciones en Android</string>
-  <string name="tasks_notification">notificación de tareas</string>
+  <string name="notification_permissions_desc">ajustes de notificaciones en android</string>
+  <string name="tasks_notification">notificacion de tareas</string>
   <string name="daily_at">diariamente a las %s</string>
   <string name="initial_tutorial">tutorial inicial</string>
-  <string name="initial_tutorial_desc">revisar guía de uso de la aplicación</string>
+  <string name="initial_tutorial_desc">revisar guia de uso de la aplicacion</string>
   <string name="developed_by_full">polar tasks v1.5\ndesarrollado por rezzt.dev</string>
   
   <!-- Tutorial -->
   <string name="tutorial_title_1">bienvenido a polar.</string>
-  <string name="tutorial_desc_1">la aplicación minimalista diseñada meticulosamente para organizar tus tareas y recordatorios de la forma más elegante posible.\n\ndescubre cómo potenciar tu productividad diaria manteniendo siempre el control, sin distracciones y con un rendimiento excepcional.</string>
-  <string name="tutorial_title_2">gestión de tareas</string>
-  <string name="tutorial_desc_2">agrupa tus responsabilidades creando listas dedicadas para el trabajo, hogar o proyectos especiales, y organiza todo con etiquetas.\n\ndivide los grandes objetivos añadiendo subtareas ilimitadas y observa tu progreso de una forma completamente visual y satisfactoria.</string>
-  <string name="tutorial_title_3">acciones rápidas</string>
-  <string name="tutorial_desc_3">desliza suavemente una tarea hacia la derecha para marcarla como completada al instante.\n\n¿ya no necesitas hacer algo? desliza hacia la izquierda y elimínala sin ningún menú. mantén pulsada cualquier tarea para ver todas las opciones disponibles.</string>
+  <string name="tutorial_desc_1">la aplicacion minimalista disenada meticulosamente para organizar tus tareas y recordatorios de la forma mas elegante posible.\n\ndescubre como potenciar tu productividad diaria manteniendo siempre el control, sin distracciones y con un rendimiento excepcional.</string>
+  <string name="tutorial_title_2">gestion de tareas</string>
+  <string name="tutorial_desc_2">agrupa tus responsabilidades creando listas dedicadas para el trabajo, hogar o proyectos especiales, y organiza todo con etiquetas.\n\ndivide los grandes objetivos anadiendo subtareas ilimitadas y observa tu progreso de una forma completamente visual y satisfactoria.</string>
+  <string name="tutorial_title_3">acciones rapidas</string>
+  <string name="tutorial_desc_3">desliza suavemente una tarea hacia la derecha para marcarla como completada al instante.\n\n¿ya no necesitas hacer algo? desliza hacia la izquierda y eliminala sin ningun menu. manten pulsada cualquier tarea para ver todas las opciones disponibles.</string>
   <string name="tutorial_title_4">modo focus</string>
   <string name="tutorial_desc_4">abre cualquier tarea y activa el "modo focus" para iniciar un temporizador pomodoro de 25 minutos que te ayuda a concentrarte en completarla sin distracciones.</string>
   <string name="tutorial_title_5">calendario y recordatorios</string>
-  <string name="tutorial_desc_5">visualiza todas tus tareas agrupadas mes a mes o por semanas en nuestro calendario de diseño premium.\n\ncrea recordatorios con fecha, hora y ubicación para recibir una notificación precisa justo cuando más lo necesitas.</string>
-  <string name="tutorial_title_6">personalización total</string>
-  <string name="tutorial_desc_6">adapta la aplicación a tu propio estilo eligiendo entre 6 temas visuales: claro, oscuro, multicolor claro, multicolor oscuro, pastel y neón.\n\nademás, elige la tipografía, el estilo de las casillas de verificación y el tamaño de la fuente que mejor se adapten a ti.</string>
-  <string name="tutorial_title_7">estadísticas y progreso</string>
-  <string name="tutorial_desc_7">lleva un registro exhaustivo de tu día a día: tareas completadas, vencidas, tasa de cumplimiento y actividad semanal en una gráfica visual.\n\nmantén tu racha diaria de tareas completadas, descubre tu mejor día productivo y usa la “matriz de eisenhower” para priorizar lo que de verdad importa.</string>
+  <string name="tutorial_desc_5">visualiza todas tus tareas agrupadas mes a mes o por semanas en nuestro calendario de diseno premium.\n\ncrea recordatorios con fecha, hora y ubicacion para recibir una notificacion precisa justo cuando mas lo necesitas.</string>
+  <string name="tutorial_title_6">personalizacion total</string>
+  <string name="tutorial_desc_6">adapta la aplicacion a tu propio estilo eligiendo entre 6 temas visuales: claro, oscuro, multicolor claro, multicolor oscuro, pastel y neon.\n\nademas, elige la tipografia, el estilo de las casillas de verificacion y el tamano de la fuente que mejor se adapten a ti.</string>
+  <string name="tutorial_title_7">estadisticas y progreso</string>
+  <string name="tutorial_desc_7">lleva un registro exhaustivo de tu dia a dia: tareas completadas, vencidas, tasa de cumplimiento y actividad semanal en una grafica visual.\n\nmanten tu racha diaria de tareas completadas, descubre tu mejor dia productivo y usa la “matriz de eisenhower” para priorizar lo que de verdad importa.</string>
   
   <string name="action_next">siguiente</string>
-  <string name="action_back">atrás</string>
+  <string name="action_back">atras</string>
   <string name="action_finish">empezar</string>
   <string name="action_skip">omitir</string>
   <string name="action_view_tutorial">ver tutorial</string>
@@ -206,7 +206,7 @@
 
   <!-- Settings dialogs (previously hardcoded) -->
   <string name="dialog_select_theme">seleccionar tema visual</string>
-  <string name="dialog_select_font">seleccionar tipografía</string>
+  <string name="dialog_select_font">seleccionar tipografia</string>
   <string name="dialog_select_checkbox_style">estilo de casillas</string>
   <string name="checkbox_square">cuadradas (material)</string>
   <string name="checkbox_circular">circulares (moderno)</string>
@@ -227,7 +227,7 @@
   <string name="focus_pause">pausar</string>
   <string name="focus_resume">continuar</string>
   <string name="focus_reset">reiniciar</string>
-  <string name="focus_session_done">¡sesión pomodoro completada!</string>
+  <string name="focus_session_done">¡sesion pomodoro completada!</string>
   <string name="attach_image">adjuntar imagen</string>
 
   <!-- Dependency chain dialog (previously hardcoded in XML) -->

@@ -24,5 +24,5 @@
     android:textSize="@dimen/text_size_body"
     android:textColor="?attr/colorOnSurface"
     android:alpha="0.8"
-    tools:text="Review code changes" />
+    tools:text="review code changes" />
 </LinearLayout>

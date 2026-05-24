@@ -12,8 +12,8 @@ import app.polar.R
 
 object NotificationHelper {
     const val CHANNEL_ID = "task_reminders"
-    const val CHANNEL_NAME = "Task Reminders"
-    const val CHANNEL_DESC = "Notifications for task deadlines"
+    const val CHANNEL_NAME = "task reminders"
+    const val CHANNEL_DESC = "notifications for task deadlines"
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -115,7 +115,7 @@ object NotificationHelper {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_check_box)
-            .setContentTitle("Reminder: ${reminder.title}")
+            .setContentTitle("recordatorio: ${reminder.title}")
             .setContentText(reminder.description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)

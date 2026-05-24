@@ -162,7 +162,7 @@
                         android:id="@+id/tvChainLocked"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bloqueada"
+                        android:text="bloqueada"
                         android:textSize="11sp"
                         android:textColor="?attr/colorOnSurface"
                         android:alpha="0.45"/>

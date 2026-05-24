@@ -86,7 +86,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    android:text="Ubicación (Opcional)"
+    android:text="ubicacion (opcional)"
     android:textSize="14sp"
     android:textStyle="bold"
     android:textColor="?attr/colorPrimary"/>
@@ -95,7 +95,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:hint="Nombre de la ubicación (Ej: Casa)"
+    android:hint="nombre de la ubicacion (ej: casa)"
     app:boxBackgroundColor="@android:color/transparent"
     style="@style/Widget.Material3.TextInputLayout.FilledBox">
 
@@ -118,7 +118,7 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
-      android:hint="Latitud"
+      android:hint="latitud"
       app:boxBackgroundColor="@android:color/transparent"
       style="@style/Widget.Material3.TextInputLayout.FilledBox">
 
@@ -137,7 +137,7 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="wrap_content"
-      android:hint="Longitud"
+      android:hint="longitud"
       app:boxBackgroundColor="@android:color/transparent"
       style="@style/Widget.Material3.TextInputLayout.FilledBox">
 

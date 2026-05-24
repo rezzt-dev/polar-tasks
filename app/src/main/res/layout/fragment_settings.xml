@@ -427,14 +427,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Importar CSV"
+                            android:text="importar csv"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?colorOnSurface" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cargar tareas desde archivo .csv"
+                            android:text="cargar tareas desde archivo .csv"
                             android:textSize="13sp"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>

@@ -40,6 +40,6 @@
         android:alpha="0.8"
         android:lineSpacingExtra="5dp"
         android:paddingHorizontal="16dp"
-        tools:text="la aplicación minimalista para organizar tus tareas y recordatorios de forma sencilla." />
+        tools:text="la aplicacion minimalista para organizar tus tareas y recordatorios de forma sencilla." />
 
 </LinearLayout>
