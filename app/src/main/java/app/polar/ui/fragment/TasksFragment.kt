@@ -120,12 +120,7 @@ class TasksFragment : Fragment() {
   }
 
   private fun updateSortIndicator(mode: SortMode) {
-      val isListMode = viewModel.selectedListId.value?.let { it > 0 } == true
-      if (mode == SortMode.UNMARK_FIRST && isListMode) {
-          binding.chipSortIndicator.visibility = View.VISIBLE
-      } else {
-          binding.chipSortIndicator.visibility = View.GONE
-      }
+      binding.chipSortIndicator.visibility = View.GONE
   }
   
   private fun updateGreeting() {
