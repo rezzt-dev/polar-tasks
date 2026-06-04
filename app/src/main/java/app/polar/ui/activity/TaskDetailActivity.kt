@@ -1,10 +1,10 @@
 package app.polar.ui.activity
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,17 +12,16 @@ import app.polar.R
 import app.polar.databinding.ActivityTaskDetailBinding
 import app.polar.ui.adapter.SubtaskAdapter
 import app.polar.ui.viewmodel.TaskViewModel
+import app.polar.util.DateUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
-
-import app.polar.ui.activity.BaseActivity
-
-import dagger.hilt.android.AndroidEntryPoint
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class TaskDetailActivity : BaseActivity() {
-  
+
   private lateinit var binding: ActivityTaskDetailBinding
   private val viewModel: TaskViewModel by viewModels()
   private lateinit var subtaskAdapter: SubtaskAdapter
@@ -32,7 +31,6 @@ class TaskDetailActivity : BaseActivity() {
       androidx.activity.result.contract.ActivityResultContracts.GetContent()
   ) { uri ->
       uri?.let {
-          // Take persistable permission so the URI stays valid across reboots
           contentResolver.takePersistableUriPermission(
               it,
               android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -42,103 +40,25 @@ class TaskDetailActivity : BaseActivity() {
           viewModel.updateTask(updatedTask)
       }
   }
-  
+
   companion object {
     const val EXTRA_TASK_ID = "task_id"
   }
-  
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     binding = ActivityTaskDetailBinding.inflate(layoutInflater)
     setContentView(binding.root)
-    
+
     val taskId = intent.getLongExtra(EXTRA_TASK_ID, -1L)
     if (taskId == -1L) {
       finish()
       return
     }
-    
+
     setupToolbar()
     setupSubtaskList()
-    setupAttachImage()
-    setupFocusMode()
     loadTaskData(taskId)
-  }
-
-  private var countDownTimer: android.os.CountDownTimer? = null
-  private var timeLeftInMillis: Long = 25 * 60 * 1000L
-  private var isTimerRunning: Boolean = false
-
-  private fun setupFocusMode() {
-      binding.btnStartFocus.setOnClickListener {
-          if (binding.containerFocusMode.visibility == android.view.View.VISIBLE) {
-              binding.containerFocusMode.visibility = android.view.View.GONE
-              binding.btnStartFocus.text = getString(R.string.focus_mode)
-          } else {
-              binding.containerFocusMode.visibility = android.view.View.VISIBLE
-              binding.btnStartFocus.text = getString(R.string.focus_mode_close)
-          }
-      }
-
-      binding.btnFocusPlayPause.setOnClickListener {
-          if (isTimerRunning) {
-              pauseTimer()
-          } else {
-              startTimer()
-          }
-      }
-
-      binding.btnFocusReset.setOnClickListener {
-          resetTimer()
-      }
-  }
-
-  private fun startTimer() {
-      countDownTimer = object : android.os.CountDownTimer(timeLeftInMillis, 1000) {
-          override fun onTick(millisUntilFinished: Long) {
-              timeLeftInMillis = millisUntilFinished
-              updateCountDownText()
-          }
-
-          override fun onFinish() {
-              isTimerRunning = false
-              binding.btnFocusPlayPause.text = getString(R.string.focus_start)
-              com.google.android.material.snackbar.Snackbar.make(
-                  binding.root,
-                  getString(R.string.focus_session_done),
-                  com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-              ).show()
-          }
-      }.start()
-
-      isTimerRunning = true
-      binding.btnFocusPlayPause.text = getString(R.string.focus_pause)
-  }
-
-  private fun pauseTimer() {
-      countDownTimer?.cancel()
-      isTimerRunning = false
-      binding.btnFocusPlayPause.text = getString(R.string.focus_resume)
-  }
-
-  private fun resetTimer() {
-      countDownTimer?.cancel()
-      isTimerRunning = false
-      timeLeftInMillis = 25 * 60 * 1000L
-      updateCountDownText()
-      binding.btnFocusPlayPause.text = getString(R.string.focus_start)
-  }
-
-  private fun updateCountDownText() {
-      val minutes = (timeLeftInMillis / 1000) / 60
-      val seconds = (timeLeftInMillis / 1000) % 60
-      binding.tvFocusTimer.text = String.format(java.util.Locale.getDefault(), "%02d:%02d", minutes, seconds)
-  }
-
-  private fun setupAttachImage() {
-      binding.btnAttachImage.setOnClickListener {
-          pickImageLauncher.launch("image/*")
-      }
   }
 
   private fun setupToolbar() {
@@ -147,57 +67,93 @@ class TaskDetailActivity : BaseActivity() {
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
     supportActionBar?.setDisplayShowTitleEnabled(false)
   }
-  
+
   private fun loadTaskData(taskId: Long) {
     viewModel.getTaskById(taskId).observe(this) { task ->
         if (task == null) return@observe
-        
-        // Title & Description
+
         currentTask = task
+
+        // Title
         binding.tvDetailTitle.text = task.title
-        binding.tvDetailDescription.text = task.description.ifEmpty { getString(R.string.no_tasks) } 
-        
+
+        // Description
+        if (task.description.isNotBlank()) {
+            binding.tvDetailDescription.text = task.description
+            binding.tvDetailDescription.visibility = View.VISIBLE
+        } else {
+            binding.tvDetailDescription.visibility = View.GONE
+        }
+
         // Checkbox / Completion
         binding.cbDetailCompleted.setOnCheckedChangeListener(null)
         binding.cbDetailCompleted.isChecked = task.completed
         binding.cbDetailCompleted.setOnCheckedChangeListener { _, _ ->
             viewModel.toggleTaskCompletion(task)
         }
-        
+
         // Tags
         if (!task.tags.isNullOrEmpty()) {
-            binding.tvDetailTags.text = task.tags.split(",").joinToString(" ") { "#${it.trim()}" }
+            binding.tvDetailTags.text = task.tags.split(",").joinToString("  ") { "#${it.trim()}" }
             binding.tvDetailTags.visibility = View.VISIBLE
         } else {
             binding.tvDetailTags.visibility = View.GONE
         }
-        
+
         // Creation Date
         val createFormat = SimpleDateFormat("d MMM, yyyy", Locale("es", "ES"))
-        binding.tvDetailDate.text = createFormat.format(Date(task.createdAt)) + if (task.timeEstimate > 0) " • ${task.timeEstimate} min" else ""
-        
-        // Due Date logic
+        binding.tvDetailDate.text = createFormat.format(Date(task.createdAt))
+
+        // Time Estimate Pill
+        if (task.timeEstimate > 0) {
+            binding.chipTimeEstimate.text = DateUtils.formatTimeEstimate(task.timeEstimate)
+            binding.chipTimeEstimate.visibility = View.VISIBLE
+        } else {
+            binding.chipTimeEstimate.visibility = View.GONE
+        }
+
+        // Priority Pill
+        if (task.priority in 1..3) {
+            val (priorityText, priorityColor) = when (task.priority) {
+                1 -> getString(R.string.priority_low) to Color.parseColor("#2196F3")
+                2 -> getString(R.string.priority_medium) to Color.parseColor("#FF9800")
+                3 -> getString(R.string.priority_high) to Color.parseColor("#F44336")
+                else -> getString(R.string.priority_none) to Color.parseColor("#9E9E9E")
+            }
+            binding.chipPriority.text = priorityText
+            binding.chipPriority.setTextColor(priorityColor)
+            binding.chipPriority.compoundDrawableTintList = android.content.res.ColorStateList.valueOf(priorityColor)
+            binding.chipPriority.visibility = View.VISIBLE
+        } else {
+            binding.chipPriority.visibility = View.GONE
+        }
+
+        binding.metaPillsContainer.visibility =
+            if (task.timeEstimate > 0 || task.priority in 1..3) View.VISIBLE else View.GONE
+
+        // Due Date Card
         if (task.dueDate != null) {
-            binding.containerDueDate.visibility = View.VISIBLE
+            binding.cardDueDate.visibility = View.VISIBLE
             val format = SimpleDateFormat("EEEE, d MMMM", Locale("es", "ES"))
-            
+
             val dateStr = when {
                 android.text.format.DateUtils.isToday(task.dueDate) -> getString(R.string.today)
                 android.text.format.DateUtils.isToday(task.dueDate - 86400000L) -> getString(R.string.tomorrow)
                 else -> format.format(Date(task.dueDate))
             }
             binding.tvDetailDueDate.text = dateStr.replaceFirstChar { it.uppercase() }
-            
+
             // Color if overdue
             if (!task.completed && task.dueDate < System.currentTimeMillis() && !android.text.format.DateUtils.isToday(task.dueDate)) {
-                binding.tvDetailDueDate.setTextColor(android.graphics.Color.parseColor("#B3261E"))
+                binding.tvDetailDueDate.setTextColor(Color.parseColor("#B3261E"))
             } else {
-                binding.tvDetailDueDate.setTextColor(getColor(android.R.color.tab_indicator_text)) 
+                val typedValue = android.util.TypedValue()
+                theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+                binding.tvDetailDueDate.setTextColor(typedValue.data)
             }
-            
+
             // Recurrence info
             if (task.recurrence != "NONE") {
-                binding.tvDetailRecurrence.visibility = View.VISIBLE
                 binding.tvDetailRecurrence.visibility = View.VISIBLE
                 val recText = when(task.recurrence) {
                     "DAILY" -> getString(R.string.recurrence_daily)
@@ -210,7 +166,7 @@ class TaskDetailActivity : BaseActivity() {
                 binding.tvDetailRecurrence.visibility = View.GONE
             }
         } else {
-            binding.containerDueDate.visibility = View.GONE
+            binding.cardDueDate.visibility = View.GONE
         }
 
         // Image attachment
@@ -220,17 +176,17 @@ class TaskDetailActivity : BaseActivity() {
         } else {
             binding.containerImage.visibility = View.GONE
         }
-        
+
         // List Name
         viewModel.getTaskListById(task.listId).observe(this) { taskList ->
             binding.tvDetailListName.text = taskList?.title ?: getString(R.string.no_list)
         }
     }
-    
+
     viewModel.getSubtasksForTask(taskId).observe(this) { subtasks ->
         subtaskAdapter.submitList(subtasks)
     }
-    
+
     binding.btnAddSubtask.setOnClickListener {
         showAddSubtaskDialog(taskId)
     }
@@ -248,7 +204,7 @@ class TaskDetailActivity : BaseActivity() {
         }
     }
   }
-  
+
   private fun showSubtaskOptionsDialog(subtask: app.polar.data.entity.Subtask) {
       app.polar.ui.dialog.SubtaskDetailBottomSheet(
           subtask = subtask,
@@ -257,26 +213,25 @@ class TaskDetailActivity : BaseActivity() {
           onDueDateSet = { dueDate ->
               viewModel.updateSubtask(subtask.copy(dueDate = dueDate))
               if (dueDate != null) {
-                  // Schedule alarm
                   app.polar.util.AlarmManagerHelper(this).scheduleSubtaskAlarm(subtask.id, dueDate)
               }
           }
       ).show(supportFragmentManager, "SubtaskDetail")
   }
-  
+
   private fun showAddSubtaskDialog(taskId: Long) {
       val dialogView = layoutInflater.inflate(R.layout.dialog_simple_input, null)
       val binding = app.polar.databinding.DialogSimpleInputBinding.bind(dialogView)
-      
+
       binding.tvDialogTitle.text = getString(R.string.add_subtask_title)
       binding.etInput.hint = getString(R.string.subtask_hint)
-      
+
       val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
           .setView(dialogView)
           .create()
-          
-      dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
-      
+
+      dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
+
       binding.btnCancel.setOnClickListener { dialog.dismiss() }
       binding.btnSave.setOnClickListener {
           val title = binding.etInput.text.toString().trim()
@@ -285,24 +240,24 @@ class TaskDetailActivity : BaseActivity() {
               dialog.dismiss()
           }
       }
-      
+
       dialog.show()
   }
-  
+
   private fun showRenameSubtaskDialog(subtask: app.polar.data.entity.Subtask) {
       val dialogView = layoutInflater.inflate(R.layout.dialog_simple_input, null)
       val binding = app.polar.databinding.DialogSimpleInputBinding.bind(dialogView)
-      
+
       binding.tvDialogTitle.text = getString(R.string.edit)
       binding.etInput.setText(subtask.title)
       binding.etInput.hint = getString(R.string.subtask_hint)
-      
+
       val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
           .setView(dialogView)
           .create()
-          
-      dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
-      
+
+      dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
+
       binding.btnCancel.setOnClickListener { dialog.dismiss() }
       binding.btnSave.setOnClickListener {
           val newTitle = binding.etInput.text.toString().trim()
@@ -311,10 +266,10 @@ class TaskDetailActivity : BaseActivity() {
               dialog.dismiss()
           }
       }
-      
+
       dialog.show()
   }
-  
+
   private fun setupSubtaskList() {
     subtaskAdapter = SubtaskAdapter(
       onCheckChanged = { subtask, _ -> viewModel.toggleSubtaskCompletion(subtask) },
@@ -334,6 +289,10 @@ class TaskDetailActivity : BaseActivity() {
     when (item.itemId) {
         android.R.id.home -> {
             finish()
+            return true
+        }
+        R.id.action_attach_image -> {
+            pickImageLauncher.launch("image/*")
             return true
         }
         R.id.action_export_image -> {
@@ -378,8 +337,8 @@ class TaskDetailActivity : BaseActivity() {
                 else -> getString(R.string.priority_none) to "#9E9E9E"
             }
             tvPriority.text = priorityText
-            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(priorityColor))
-            tvPriority.setTextColor(android.graphics.Color.WHITE)
+            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor(priorityColor))
+            tvPriority.setTextColor(Color.WHITE)
 
             if (subtasks.isNotEmpty()) {
                 containerSubtasks.visibility = android.view.View.VISIBLE
@@ -402,7 +361,7 @@ class TaskDetailActivity : BaseActivity() {
 
             if (task.dueDate != null) {
                 llDueDate.visibility = android.view.View.VISIBLE
-                tvDueDate.text = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
+                tvDueDate.text = DateUtils.formatSmartDate(task.dueDate)
             } else {
                 llDueDate.visibility = android.view.View.GONE
             }

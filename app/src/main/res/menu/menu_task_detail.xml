@@ -2,8 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
   <item
+    android:id="@+id/action_attach_image"
+    android:title="@string/attach_image"
+    android:icon="@drawable/ic_attach_file"
+    app:showAsAction="ifRoom" />
+  <item
     android:id="@+id/action_export_image"
-    android:title="compartir como imagen"
+    android:title="@string/share_task_as_image"
     android:icon="@drawable/ic_share"
-    app:showAsAction="always" />
+    app:showAsAction="ifRoom" />
 </menu>

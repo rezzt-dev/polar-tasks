@@ -48,6 +48,13 @@
   <string name="new_reminder">new reminder</string>
   <string name="edit_reminder">edit reminder</string>
   <string name="select_date_time">select date and time</string>
+  <string name="add_location">add location</string>
+  <string name="google_maps_link_hint">paste a google maps link</string>
+  <string name="extract_coordinates">extract</string>
+  <string name="view_on_map">view on map</string>
+  <string name="invalid_maps_link">could not extract coordinates from the link</string>
+  <string name="short_link_not_supported">short links cannot be processed offline. paste the full google maps link.</string>
+  <string name="view_location">view location</string>
   <string name="select_date">select date</string>
   <string name="select_time">select time</string>
   

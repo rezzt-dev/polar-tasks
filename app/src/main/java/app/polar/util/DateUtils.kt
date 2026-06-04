@@ -73,6 +73,16 @@ object DateUtils {
      * Formats a date smartly. If the time is exactly 00:00, it omits the time component.
      * Useful for due dates where only the day was specified.
      */
+    fun formatTimeEstimate(minutes: Int): String {
+        return if (minutes < 60) {
+            "${minutes} min"
+        } else {
+            val h = minutes / 60
+            val m = minutes % 60
+            if (m == 0) "${h}h" else "${h}h ${m}m"
+        }
+    }
+
     fun formatSmartDate(timeInMillis: Long): String {
         val cal = Calendar.getInstance()
         cal.timeInMillis = timeInMillis

@@ -20,7 +20,7 @@ class SmartParserTest {
     @Test
     fun testParse_DateRelativeToday() {
         val input = "Enviar correo hoy #trabajo"
-        val result = SmartParser.parse(input)
+        val result = SmartParser.parse(input, defaultHour = 0, defaultMinute = 0)
         
         assertEquals("Enviar correo", result.title)
         assertEquals(listOf("trabajo"), result.tags)
@@ -38,7 +38,7 @@ class SmartParserTest {
     fun testParse_DateRelativeTomorrow() {
         // "Mañana" should be +1 day
         val input = "Lavar coche mañana"
-        val result = SmartParser.parse(input)
+        val result = SmartParser.parse(input, defaultHour = 0, defaultMinute = 0)
         
         assertEquals("Lavar coche", result.title)
         

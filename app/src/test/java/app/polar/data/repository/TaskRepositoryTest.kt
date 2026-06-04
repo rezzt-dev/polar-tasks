@@ -18,6 +18,11 @@ class TaskRepositoryTest {
     private val taskDao = mockk<TaskDao>()
     private val taskListDao = mockk<app.polar.data.dao.TaskListDao>()
     private val subtaskDao = mockk<app.polar.data.dao.SubtaskDao>()
+
+    init {
+        every { taskListDao.getAllLists() } returns MutableLiveData()
+    }
+
     private val repository = TaskRepository(taskListDao, taskDao, subtaskDao)
 
     @Test

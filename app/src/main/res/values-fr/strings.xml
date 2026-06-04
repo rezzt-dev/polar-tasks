@@ -48,6 +48,13 @@
   <string name="new_reminder">nouveau rappel</string>
   <string name="edit_reminder">modifier le rappel</string>
   <string name="select_date_time">selectionner la date et l\'heure</string>
+  <string name="add_location">ajouter un lieu</string>
+  <string name="google_maps_link_hint">collez un lien google maps</string>
+  <string name="extract_coordinates">extraire</string>
+  <string name="view_on_map">voir sur la carte</string>
+  <string name="invalid_maps_link">impossible d\'extraire les coordonnees du lien</string>
+  <string name="short_link_not_supported">les liens courts ne peuvent pas etre traites hors ligne. collez le lien google maps complet.</string>
+  <string name="view_location">voir le lieu</string>
   <string name="select_date">selectionner la date</string>
   <string name="select_time">selectionner l\'heure</string>
   

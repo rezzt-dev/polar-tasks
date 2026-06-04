@@ -59,11 +59,22 @@ class ReminderAdapter(
             val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
             binding.tvReminderTime.text = dateFormat.format(java.util.Date(reminder.dateTime))
 
-            if (reminder.locationName != null && reminder.locationName.isNotEmpty()) {
+            val hasLocation = reminder.locationName != null && reminder.locationName.isNotEmpty()
+            if (hasLocation) {
                 binding.layoutLocation.visibility = android.view.View.VISIBLE
                 binding.tvReminderLocation.text = reminder.locationName
+                binding.layoutLocation.isClickable = reminder.latitude != null && reminder.longitude != null
+                binding.layoutLocation.isFocusable = reminder.latitude != null && reminder.longitude != null
+                if (binding.layoutLocation.isClickable) {
+                    binding.layoutLocation.setOnClickListener {
+                        openLocationInMaps(it.context, reminder.latitude!!, reminder.longitude!!, reminder.locationName)
+                    }
+                } else {
+                    binding.layoutLocation.setOnClickListener(null)
+                }
             } else {
                 binding.layoutLocation.visibility = android.view.View.GONE
+                binding.layoutLocation.setOnClickListener(null)
             }
 
             // Remove listener to avoid triggering loop
@@ -164,6 +175,22 @@ class ReminderAdapter(
             binding.root.setOnClickListener { onItemClick(reminder) }
             binding.root.setOnLongClickListener {
                 onItemLongClick(reminder, it)
+            }
+        }
+
+        private fun openLocationInMaps(context: android.content.Context, lat: Double, lng: Double, name: String?) {
+            val uri = if (!name.isNullOrBlank()) {
+                android.net.Uri.parse("geo:$lat,$lng?q=$lat,$lng($name)")
+            } else {
+                android.net.Uri.parse("geo:$lat,$lng?q=$lat,$lng")
+            }
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+            intent.setPackage("com.google.android.apps.maps")
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            } else {
+                val genericIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+                context.startActivity(genericIntent)
             }
         }
     }

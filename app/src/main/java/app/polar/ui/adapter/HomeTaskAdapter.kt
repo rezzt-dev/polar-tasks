@@ -147,7 +147,7 @@ class HomeTaskAdapter(
             if (task.dueDate != null) {
                 var dateStr = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
                 if (task.timeEstimate > 0) {
-                    dateStr += " • ${task.timeEstimate} min"
+                    dateStr += " • ${app.polar.util.DateUtils.formatTimeEstimate(task.timeEstimate)}"
                 }
                 tvDueDate.text = dateStr
                 tvDueDate.visibility = View.VISIBLE
@@ -161,7 +161,7 @@ class HomeTaskAdapter(
                         tvDueDate.setTextColor(colorOnSurface)
                 }
             } else if (task.timeEstimate > 0) {
-                tvDueDate.text = "${task.timeEstimate} min"
+                tvDueDate.text = app.polar.util.DateUtils.formatTimeEstimate(task.timeEstimate)
                 tvDueDate.visibility = View.VISIBLE
                 tvDueDate.setTextColor(colorOnSurface)
             } else {

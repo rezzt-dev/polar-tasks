@@ -364,7 +364,7 @@ class SettingsFragment : Fragment() {
 
     fun updateLabel() {
         val locale = sharedPrefs.getString("app_locale", "es") ?: "es"
-        val label = langEntries.entries.find { it.value == locale }?.key ?: "espanol"
+        val label = langEntries.entries.find { it.value == locale }?.key ?: "español"
         binding.tvLanguageValue.text = label
     }
     updateLabel()
