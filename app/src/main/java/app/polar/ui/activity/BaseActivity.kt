@@ -1,8 +1,12 @@
 package app.polar.ui.activity
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
+import app.polar.util.CustomThemeContextWrapper
 import app.polar.util.ThemeManager
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -26,14 +30,22 @@ abstract class BaseActivity : AppCompatActivity() {
         java.util.Locale.setDefault(locale)
         config.setLocale(locale)
         
-        val newContext = newBase.createConfigurationContext(config)
-        super.attachBaseContext(newContext)
+        val configContext = newBase.createConfigurationContext(config)
+        
+        // Para el tema personalizado envolvemos el contexto para interceptar
+        // la resolución dinámica de los recursos de color.
+        if (themeManager.loadTheme() == ThemeManager.THEME_CUSTOM) {
+            val colors = themeManager.loadCustomThemeColors()
+            super.attachBaseContext(CustomThemeContextWrapper(configContext, colors))
+        } else {
+            super.attachBaseContext(configContext)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         themeManager = ThemeManager(this)
         
-        // Apply multicolor theme if selected (must be before super.onCreate)
+        // Apply explicit theme if selected (must be before super.onCreate)
         val themeRes = themeManager.getThemeStyleRes()
         if (themeRes != 0) {
             setTheme(themeRes)
@@ -49,5 +61,43 @@ abstract class BaseActivity : AppCompatActivity() {
         }
         
         super.onCreate(savedInstanceState)
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Ajustar iconos de la status bar para el tema personalizado.
+        // Se hace en onResume porque el DecorView ya está disponible.
+        if (themeManager.loadTheme() == ThemeManager.THEME_CUSTOM) {
+            setLightStatusBar(themeManager.isLightTheme())
+        }
+    }
+    
+    private fun setLightStatusBar(light: Boolean) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val appearance = if (light) {
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                        WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                } else {
+                    0
+                }
+                window.insetsController?.setSystemBarsAppearance(
+                    appearance,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                        WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                )
+            } else {
+                val decorView = window.decorView
+                val flags = decorView.systemUiVisibility
+                decorView.systemUiVisibility = if (light) {
+                    flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                }
+            }
+        } catch (e: Exception) {
+            // Ignorar: el ajuste de iconos de status bar no es crítico.
+            e.printStackTrace()
+        }
     }
 }

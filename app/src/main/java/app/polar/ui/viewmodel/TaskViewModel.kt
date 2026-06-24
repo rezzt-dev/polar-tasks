@@ -77,6 +77,14 @@ class TaskViewModel @Inject constructor(
 
   fun clearError() { _errorMessage.value = null }
 
+  // Estado de expansión del apartado de tareas completadas en las listas.
+  private val _completedTasksExpanded = MutableStateFlow(false)
+  val completedTasksExpanded: StateFlow<Boolean> = _completedTasksExpanded.asStateFlow()
+
+  fun toggleCompletedTasksExpanded() {
+      _completedTasksExpanded.value = !_completedTasksExpanded.value
+  }
+
   private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
       try {
           block()
@@ -174,16 +182,11 @@ class TaskViewModel @Inject constructor(
                 
                 val filteredList = tasksToShow.filter { item ->
                     val task = item.task
-                    if (task.completed) return@filter false
-                    
                     var matches = true
-                    if (todayOnly) {
-                        if (task.dueDate == null) {
-                            matches = false
-                        } else {
-                            if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
-                        }
-                    }
+
+                    // Los filtros explícitos de pendientes/vencidas excluyen completadas.
+                    // El resto de filtros y la vista sin filtros permiten mostrar completadas
+                    // bajo el apartado colapsable correspondiente.
                     if (pendingOnly) {
                        if (task.completed) matches = false
                        if (item.completedSubtasks > 0) matches = false
@@ -197,6 +200,13 @@ class TaskViewModel @Inject constructor(
                             if (isToday || isFuture) matches = false
                         }
                         if (task.completed) matches = false
+                    }
+                    if (todayOnly) {
+                        if (task.dueDate == null) {
+                            matches = false
+                        } else {
+                            if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
+                        }
                     }
                     if (recurrentOnly) {
                         if (task.recurrence == "NONE") matches = false

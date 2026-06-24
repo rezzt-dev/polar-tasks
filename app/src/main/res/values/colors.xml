@@ -6,6 +6,16 @@
   <color name="color_error">#E53935</color> <!-- Stronger Red -->
 
   <!--
+    Semantic priority / status colors.
+    These are referenced through theme attributes, never used directly in
+    layouts or Canvas code, so the palette remains dynamic and theme-aware.
+  -->
+  <color name="priority_high">@color/color_error</color>
+  <color name="priority_medium">#FF9800</color>
+  <color name="priority_low">#2196F3</color>
+  <color name="date_overdue">@color/color_error</color>
+
+  <!--
      STRICT 5-COLOR PALETTE (High Contrast Minimalist)
      To ensure "checks" (checkboxes) and "colors" look better:
      ACCENT MUST CONTRAST WITH BACKGROUND.
@@ -129,9 +139,44 @@
   <color name="neon_surface_container">#151620</color>
   <color name="neon_surface_container_high">#1A1C29</color>
 
+  <!-- Success / Positive feedback -->
+  <color name="light_success">#43A047</color>
+  <color name="dark_success">#66BB6A</color>
+  <color name="multi_light_success">#4CAF50</color>
+  <color name="multi_dark_success">#66BB6A</color>
+  <color name="pastel_success">#81C784</color>
+  <color name="neon_success">#00E676</color>
+
   <!-- Semantics -->
   <color name="accent_primary">@color/light_c3_accent</color>
   <color name="accent_secondary">@color/light_c4_border</color>
   
   <color name="drawer_bg">#E6FFFFFF</color> <!-- 90% Opacity Surface -->
+
+  <!-- Custom Theme Stubs -->
+  <!-- Estos valores son sobrescritos en runtime por CustomThemeContextWrapper. -->
+  <color name="custom_background">#1A1A1A</color>
+  <color name="custom_surface">#1C1C1E</color>
+  <color name="custom_surface_variant">#1A1A1A</color>
+  <color name="custom_surface_container">#1C1C1E</color>
+  <color name="custom_surface_container_high">#2C2C2E</color>
+  <color name="custom_foreground">#FFFFFF</color>
+  <color name="custom_primary">#F5F7F9</color>
+  <color name="custom_on_primary">#000000</color>
+  <color name="custom_primary_container">#2C2C2E</color>
+  <color name="custom_on_primary_container">#F5F7F9</color>
+  <!-- Stubs secundarios neutros para que, si el Context no está envuelto por
+       PolarResources, el fallback no introduzca azules fuera de la paleta. -->
+  <color name="custom_secondary">#888D91</color>
+  <color name="custom_on_secondary">#000000</color>
+  <color name="custom_secondary_container">#2E2F2F</color>
+  <color name="custom_on_secondary_container">#ECECEC</color>
+  <color name="custom_outline">#2C2C2E</color>
+  <color name="custom_outline_variant">#1C1C1E</color>
+  <color name="custom_error">#EF5350</color>
+  <color name="custom_success">#66BB6A</color>
+  <color name="custom_task_background">@color/custom_surface</color>
+  <color name="custom_task_border">@color/custom_outline</color>
+  <color name="custom_main_border">@color/custom_outline</color>
+  <color name="custom_button_background">@color/custom_primary</color>
 </resources>

@@ -158,4 +158,6 @@ class TaskRepository @Inject constructor(
   suspend fun getCreatedTaskCountBetween(start: Long, end: Long): Int = taskDao.getCreatedTaskCountBetween(start, end)
   suspend fun getOverdueTaskCount(now: Long): Int = taskDao.getOverdueTaskCount(now)
   suspend fun getAllCompletedTasksSnapshot(): List<Task> = taskDao.getAllCompletedTasksSnapshot()
+  suspend fun getTaskCountByPriority(): List<app.polar.data.model.PriorityCount> = taskDao.getTaskCountByPriority()
+  suspend fun getTaskCountByList(): List<app.polar.data.model.ListTaskCount> = taskDao.getTaskCountByList()
 }

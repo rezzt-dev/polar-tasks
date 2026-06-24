@@ -70,7 +70,7 @@ class TaskDialog(
     binding.containerDate.setOnClickListener {
       val datePicker =
         com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
-          .setTitleText("select date")
+          .setTitleText(getString(R.string.select_date_title))
           .setSelection(
             selectedDate
               ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds()
@@ -109,12 +109,12 @@ class TaskDialog(
     
     binding.containerRecurrence.setOnClickListener {
       val popup = android.widget.PopupMenu(requireContext(), it)
-      popup.menu.add(0, 0, 0, "no se repite")
-      popup.menu.add(0, 1, 1, "diariamente")
-      popup.menu.add(0, 2, 2, "semanalmente")
-      popup.menu.add(0, 3, 3, "mensualmente")
-      popup.menu.add(0, 4, 4, "cada lunes y miercoles")
-      popup.menu.add(0, 5, 5, "primer dia del mes")
+      popup.menu.add(0, 0, 0, getString(R.string.recurrence_summary_none))
+      popup.menu.add(0, 1, 1, getString(R.string.recurrence_daily))
+      popup.menu.add(0, 2, 2, getString(R.string.recurrence_weekly))
+      popup.menu.add(0, 3, 3, getString(R.string.recurrence_monthly))
+      popup.menu.add(0, 4, 4, getString(R.string.recurrence_summary_mon_wed))
+      popup.menu.add(0, 5, 5, getString(R.string.recurrence_summary_first_day_month))
       
       popup.setOnMenuItemClickListener { item ->
         selectedRecurrence = when (item.itemId) {
@@ -134,10 +134,10 @@ class TaskDialog(
     
     binding.containerPriority.setOnClickListener {
       val popup = android.widget.PopupMenu(requireContext(), it)
-      popup.menu.add(0, 0, 0, "sin prioridad")
-      popup.menu.add(0, 1, 1, "prioridad baja")
-      popup.menu.add(0, 2, 2, "prioridad media")
-      popup.menu.add(0, 3, 3, "prioridad alta")
+      popup.menu.add(0, 0, 0, getString(R.string.priority_label_none))
+      popup.menu.add(0, 1, 1, getString(R.string.priority_label_low))
+      popup.menu.add(0, 2, 2, getString(R.string.priority_label_medium))
+      popup.menu.add(0, 3, 3, getString(R.string.priority_label_high))
       
       popup.setOnMenuItemClickListener { item ->
         selectedPriority = item.itemId
@@ -249,19 +249,19 @@ class TaskDialog(
       binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
       binding.tvDueDate.alpha = 1.0f
     } else {
-      binding.tvDueDate.text = "sin fecha de finalizacion"
+      binding.tvDueDate.text = getString(R.string.no_due_date)
       binding.tvDueDate.alpha = 0.6f
     }
   }
   
   private fun updateRecurrenceText() {
     val text = when (selectedRecurrence) {
-      "DAILY" -> "se repite diariamente"
-      "WEEKLY" -> "se repite semanalmente"
-      "MONTHLY" -> "se repite mensualmente"
-      "MON_WED" -> "cada lunes y miercoles"
-      "FIRST_DAY_MONTH" -> "primer dia del mes"
-      else -> "no se repite"
+      "DAILY" -> getString(R.string.recurrence_summary_daily)
+      "WEEKLY" -> getString(R.string.recurrence_summary_weekly)
+      "MONTHLY" -> getString(R.string.recurrence_summary_monthly)
+      "MON_WED" -> getString(R.string.recurrence_summary_mon_wed)
+      "FIRST_DAY_MONTH" -> getString(R.string.recurrence_summary_first_day_month)
+      else -> getString(R.string.recurrence_summary_none)
     }
     binding.tvRecurrence.text = text
     
@@ -274,38 +274,37 @@ class TaskDialog(
   
   private fun updatePriorityText() {
     val text = when (selectedPriority) {
-      3 -> "prioridad alta"
-      2 -> "prioridad media"
-      1 -> "prioridad baja"
-      else -> "sin prioridad"
+      3 -> getString(R.string.priority_label_high)
+      2 -> getString(R.string.priority_label_medium)
+      1 -> getString(R.string.priority_label_low)
+      else -> getString(R.string.priority_label_none)
     }
     binding.tvPriority.text = text
-    
-    val colorStr = when (selectedPriority) {
-      3 -> "#F44336" // Red
-      2 -> "#FF9800" // Orange
-      1 -> "#2196F3" // Blue
+
+    val priorityColorAttr = when (selectedPriority) {
+      3 -> R.attr.colorPriorityHigh
+      2 -> R.attr.colorPriorityMedium
+      1 -> R.attr.colorPriorityLow
       else -> null
     }
-    
-    if (colorStr != null) {
-      val color = android.graphics.Color.parseColor(colorStr)
+
+    if (priorityColorAttr != null) {
+      val color = resolveColorAttr(priorityColorAttr)
       binding.ivPriorityIcon.imageTintList = android.content.res.ColorStateList.valueOf(color)
       binding.tvPriority.setTextColor(color)
       binding.tvPriority.alpha = 1.0f
     } else {
-      val typedValue = android.util.TypedValue()
-      requireContext().theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
-      binding.ivPriorityIcon.imageTintList =
-        android.content.res.ColorStateList.valueOf(typedValue.data)
-      requireContext().theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnSurface,
-        typedValue,
-        true
-      )
-      binding.tvPriority.setTextColor(typedValue.data)
+      val primaryColor = resolveColorAttr(android.R.attr.colorPrimary)
+      binding.ivPriorityIcon.imageTintList = android.content.res.ColorStateList.valueOf(primaryColor)
+      binding.tvPriority.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurface))
       binding.tvPriority.alpha = 0.6f
     }
+  }
+
+  private fun resolveColorAttr(attr: Int): Int {
+    val typedValue = android.util.TypedValue()
+    requireContext().theme.resolveAttribute(attr, typedValue, true)
+    return typedValue.data
   }
   
   private fun setupSubtaskList() {

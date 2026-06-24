@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -10,592 +11,722 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="?colorOnSurface"
-            android:layout_marginBottom="24dp" />
+        android:paddingHorizontal="16dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="40dp">
 
         <!-- APARIENCIA -->
         <TextView
+            style="@style/SettingsSectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/appearance"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="?colorPrimary"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp" />
+            android:text="@string/appearance" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?colorSurfaceContainer"
+            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?colorSurfaceVariant"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:strokeColor="?colorOutlineVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Tema -->
+                <!-- Tema visual -->
                 <LinearLayout
                     android:id="@+id/btnThemeSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_theme"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_theme"
+                        app:tint="?colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/visual_theme"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/tvThemeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/loading"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?colorOnSurfaceVariant"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
+                </LinearLayout>
+
+                <View style="@style/SettingsDivider" />
+
+                <!-- Editar tema personalizado -->
+                <LinearLayout
+                    android:id="@+id/btnEditCustomTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_edit_color"
+                        app:tint="?colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/visual_theme"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:text="@string/custom_theme_edit"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                             android:textColor="?colorOnSurface" />
+
                         <TextView
-                            android:id="@+id/tvThemeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/loading"
-                            android:textSize="13sp"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/custom_theme_background"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
                 <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                    android:id="@+id/dividerEditCustomTheme"
+                    style="@style/SettingsDivider"
+                    android:visibility="gone" />
 
                 <!-- Tipografía -->
                 <LinearLayout
                     android:id="@+id/btnFontSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_text_format"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_font"
+                        app:tint="?colorOnSurfaceVariant" />
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/typography"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSurface" />
-                        <TextView
-                            android:id="@+id/tvFontValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/loading"
-                            android:textSize="13sp"
-                            android:textColor="?colorOnSurfaceVariant" />
-                    </LinearLayout>
+                        android:layout_weight="1"
+                        android:text="@string/typography"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/tvFontValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/loading"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?colorOnSurfaceVariant"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                <View style="@style/SettingsDivider" />
 
                 <!-- Estilo de casillas -->
                 <LinearLayout
                     android:id="@+id/btnCheckboxStyleSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:id="@+id/ivCheckboxIconPreview"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_check_box"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_checkbox"
+                        app:tint="?colorOnSurfaceVariant" />
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/checkbox_style"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSurface" />
-                        <TextView
-                            android:id="@+id/tvCheckboxValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/loading"
-                            android:textSize="13sp"
-                            android:textColor="?colorOnSurfaceVariant" />
-                    </LinearLayout>
+                        android:layout_weight="1"
+                        android:text="@string/checkbox_style"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/tvCheckboxValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/loading"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?colorOnSurfaceVariant"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
-                
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+
+                <View style="@style/SettingsDivider" />
 
                 <!-- Tamaño de fuente -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                    
+                    android:minHeight="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_text_size"
+                        app:tint="?colorOnSurfaceVariant" />
+
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_text_size"
-                            app:tint="?colorPrimary"
-                            android:layout_marginEnd="16dp" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="@string/font_size"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSurface" />
-                        <TextView
-                            android:id="@+id/tvFontSizeLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="14 sp"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="?colorPrimary" />
+                            android:text="@string/font_size"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:textColor="?colorOnSurface" />
+
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/sliderFontSize"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="-8dp"
+                            android:stepSize="1.0"
+                            android:value="14.0"
+                            android:valueFrom="8.0"
+                            android:valueTo="20.0" />
                     </LinearLayout>
-                    <com.google.android.material.slider.Slider
-                        android:id="@+id/sliderFontSize"
-                        android:layout_width="match_parent"
+
+                    <TextView
+                        android:id="@+id/tvFontSizeLabel"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="32dp"
-                        android:valueFrom="8.0"
-                        android:valueTo="20.0"
-                        android:stepSize="1.0"
-                        android:value="14.0" />
+                        android:layout_marginStart="12dp"
+                        android:text="14 sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                <View style="@style/SettingsDivider" />
 
                 <!-- Idioma -->
                 <LinearLayout
                     android:id="@+id/btnLanguageSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_sort"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_language"
+                        app:tint="?colorOnSurfaceVariant" />
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/language"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSurface" />
-                        <TextView
-                            android:id="@+id/tvLanguageValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/loading"
-                            android:textSize="13sp"
-                            android:textColor="?colorOnSurfaceVariant" />
-                    </LinearLayout>
-                </LinearLayout>
+                        android:layout_weight="1"
+                        android:text="@string/language"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:textColor="?colorOnSurface" />
 
+                    <TextView
+                        android:id="@+id/tvLanguageValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/loading"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?colorOnSurfaceVariant"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- DATOS Y COPIAS DE SEGURIDAD -->
         <TextView
+            style="@style/SettingsSectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/data_and_sync"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="?colorPrimary"
-            android:layout_marginTop="28dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp" />
+            android:text="@string/data_and_sync" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?colorSurfaceContainer"
+            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?colorSurfaceVariant"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:strokeColor="?colorOutlineVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <!-- Exportar -->
                 <LinearLayout
                     android:id="@+id/btnBackupExport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_share"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_backup_export"
+                        app:tint="?colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/export_local_backup"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                             android:textColor="?colorOnSurface" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="@string/export_local_backup_desc"
-                            android:textSize="13sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                <View style="@style/SettingsDivider" />
 
+                <!-- Restaurar -->
                 <LinearLayout
                     android:id="@+id/btnBackupImport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_sync"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_backup_import"
+                        app:tint="?colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/restore_data"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                             android:textColor="?colorOnSurface" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="@string/restore_data_desc"
-                            android:textSize="13sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                <View style="@style/SettingsDivider" />
 
+                <!-- Importar CSV -->
                 <LinearLayout
                     android:id="@+id/btnImportCsv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_list"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_csv"
+                        app:tint="?colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="importar csv"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:text="@string/import_csv"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                             android:textColor="?colorOnSurface" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="cargar tareas desde archivo .csv"
-                            android:textSize="13sp"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/import_csv_desc"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- SISTEMA -->
         <TextView
+            style="@style/SettingsSectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/system_label"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="?colorPrimary"
-            android:layout_marginTop="28dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp" />
+            android:text="@string/system_label" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?colorSurfaceContainer"
+            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?colorSurfaceVariant"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:strokeColor="?colorOutlineVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <!-- Notificaciones -->
                 <LinearLayout
                     android:id="@+id/btnNotificationSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_notifications"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_notifications"
+                        app:tint="?colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/notification_permissions"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                             android:textColor="?colorOnSurface" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="@string/notification_permissions_desc"
-                            android:textSize="13sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                <View style="@style/SettingsDivider" />
 
+                <!-- Hora notificación diaria -->
                 <LinearLayout
                     android:id="@+id/btnDailyNotificationTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_schedule"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_schedule"
+                        app:tint="?colorOnSurfaceVariant" />
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/tasks_notification"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?colorOnSurface" />
-                        <TextView
-                            android:id="@+id/tvDailyNotificationTime"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="07:30"
-                            android:textSize="13sp"
-                            android:textColor="?colorOnSurfaceVariant" />
-                    </LinearLayout>
+                        android:layout_weight="1"
+                        android:text="@string/tasks_notification"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/tvDailyNotificationTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="07:30"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="?colorOnSurfaceVariant"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="?colorSurfaceVariant" />
+                <View style="@style/SettingsDivider" />
 
+                <!-- Tutorial -->
                 <LinearLayout
                     android:id="@+id/btnViewTutorial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true">
-                    
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_star"
-                        app:tint="?colorPrimary"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings_tutorial"
+                        app:tint="?colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/initial_tutorial"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                             android:textColor="?colorOnSurface" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="@string/initial_tutorial_desc"
-                            android:textSize="13sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?colorOnSurfaceVariant" />
                     </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="?colorOnSurfaceVariant" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -603,14 +734,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="24dp"
-            android:text="@string/developed_by_full"
-            android:textSize="12sp"
-            android:textColor="?colorOnSurfaceVariant"
-            android:alpha="0.6"
+            android:layout_gravity="center_horizontal"
+            android:alpha="0.5"
             android:gravity="center"
-            android:layout_gravity="center_horizontal" />
-
+            android:text="@string/developed_by_full"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?colorOnSurfaceVariant" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

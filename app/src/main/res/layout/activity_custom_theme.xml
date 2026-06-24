@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="@string/custom_theme_title"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="32dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="8dp">
+
+            <!-- Header -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_theme_title"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                android:textColor="?colorOnBackground"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_theme_description"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?colorOnSurfaceVariant"
+                android:lineSpacingMultiplier="1.1"
+                android:layout_marginBottom="28dp" />
+
+            <!-- Base colors card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0.5dp"
+                app:strokeColor="?colorOutlineVariant"
+                app:cardBackgroundColor="?colorSurfaceContainer"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/custom_theme_base_colors"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                            android:textColor="?colorOnSurface" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switchDarkMode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="@string/custom_theme_dark_mode"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?colorOnSurfaceVariant" />
+                    </LinearLayout>
+
+                    <!-- Background color row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_marginEnd="16dp">
+
+                            <View
+                                android:id="@+id/previewBackground"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_color_preview" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_palette"
+                                app:tint="?attr/colorOnSurface"
+                                android:alpha="0.5" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/custom_theme_background"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                android:textColor="?colorOnSurfaceVariant"
+                                android:layout_marginBottom="2dp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tilBackgroundHex"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:hintEnabled="false"
+                                app:endIconMode="custom"
+                                app:endIconDrawable="@drawable/ic_edit_color"
+                                app:endIconTint="?colorPrimary"
+                                app:boxStrokeWidth="0dp"
+                                app:boxStrokeWidthFocused="0dp"
+                                app:boxBackgroundMode="filled"
+                                app:boxBackgroundColor="?colorSurfaceContainerHighest">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etBackgroundHex"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="0dp"
+                                    android:gravity="center_vertical"
+                                    android:inputType="textCapCharacters|textNoSuggestions"
+                                    android:maxLines="1"
+                                    android:text="@string/custom_theme_default_background"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textColor="?colorOnSurface"
+                                    android:fontFamily="monospace" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Foreground color row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_marginEnd="16dp">
+
+                            <View
+                                android:id="@+id/previewForeground"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_color_preview" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_palette"
+                                app:tint="?attr/colorOnSurface"
+                                android:alpha="0.5" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/custom_theme_foreground"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                android:textColor="?colorOnSurfaceVariant"
+                                android:layout_marginBottom="2dp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tilForegroundHex"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:hintEnabled="false"
+                                app:endIconMode="custom"
+                                app:endIconDrawable="@drawable/ic_edit_color"
+                                app:endIconTint="?colorPrimary"
+                                app:boxStrokeWidth="0dp"
+                                app:boxStrokeWidthFocused="0dp"
+                                app:boxBackgroundMode="filled"
+                                app:boxBackgroundColor="?colorSurfaceContainerHighest">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etForegroundHex"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="0dp"
+                                    android:gravity="center_vertical"
+                                    android:inputType="textCapCharacters|textNoSuggestions"
+                                    android:maxLines="1"
+                                    android:text="@string/custom_theme_default_foreground"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textColor="?colorOnSurface"
+                                    android:fontFamily="monospace" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Theme preview card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0.5dp"
+                app:strokeColor="?colorOutlineVariant"
+                app:cardBackgroundColor="?colorSurfaceContainer"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/custom_theme_preview"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?colorOnSurface"
+                        android:layout_marginBottom="16dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardThemePreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0.5dp"
+                        app:strokeColor="?colorOutline"
+                        app:cardBackgroundColor="?attr/colorSurface">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <!-- Mock task item -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="top">
+
+                                <CheckBox
+                                    android:id="@+id/previewCheckbox"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:layout_marginTop="2dp"
+                                    android:checked="false"
+                                    android:clickable="false"
+                                    android:focusable="false" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/custom_theme_preview_title"
+                                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                        android:textColor="?attr/colorOnSurface" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/custom_theme_preview_subtitle"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                                    <com.google.android.material.chip.Chip
+                                        android:id="@+id/previewChip"
+                                        style="@style/Widget.Material3.Chip.Assist"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="40dp"
+                                        android:layout_marginTop="12dp"
+                                        android:text="@string/custom_theme_preview_tag"
+                                        android:textColor="?attr/colorOnPrimaryContainer"
+                                        app:chipBackgroundColor="?attr/colorPrimaryContainer"
+                                        app:chipIcon="@drawable/ic_label"
+                                        app:chipIconTint="?attr/colorOnPrimaryContainer"
+                                        app:chipStrokeWidth="0dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="16dp"
+                                android:background="?attr/colorOutlineVariant" />
+
+                            <!-- Mock action row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/previewButton"
+                                    android:layout_width="0dp"
+                                    android:layout_height="52dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="@string/custom_theme_preview_button"
+                                    android:textColor="?attr/colorOnPrimary"
+                                    app:cornerRadius="14dp" />
+
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                    android:id="@+id/previewFab"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_add"
+                                    app:fabSize="mini"
+                                    app:tint="?attr/colorOnSecondaryContainer"
+                                    app:backgroundTint="?attr/colorSecondaryContainer" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Generated palette card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0.5dp"
+                app:strokeColor="?colorOutlineVariant"
+                app:cardBackgroundColor="?colorSurfaceContainer"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/custom_theme_generated_palette"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?colorOnSurface"
+                        android:layout_marginBottom="16dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvGeneratedColors"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        tools:spanCount="2"
+                        tools:listitem="@layout/item_generated_color_grid" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action buttons -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnApplyTheme"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/custom_theme_apply"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnResetTheme"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/custom_theme_reset"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -9,8 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.polar.R
+import app.polar.data.entity.Subtask
 import app.polar.databinding.ActivityTaskDetailBinding
 import app.polar.ui.adapter.SubtaskAdapter
+import app.polar.ui.dialog.TaskDialog
 import app.polar.ui.viewmodel.TaskViewModel
 import app.polar.util.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -114,11 +116,17 @@ class TaskDetailActivity : BaseActivity() {
 
         // Priority Pill
         if (task.priority in 1..3) {
-            val (priorityText, priorityColor) = when (task.priority) {
-                1 -> getString(R.string.priority_low) to Color.parseColor("#2196F3")
-                2 -> getString(R.string.priority_medium) to Color.parseColor("#FF9800")
-                3 -> getString(R.string.priority_high) to Color.parseColor("#F44336")
-                else -> getString(R.string.priority_none) to Color.parseColor("#9E9E9E")
+            val priorityText = when (task.priority) {
+                1 -> getString(R.string.priority_low)
+                2 -> getString(R.string.priority_medium)
+                3 -> getString(R.string.priority_high)
+                else -> getString(R.string.priority_none)
+            }
+            val priorityColor = when (task.priority) {
+                1 -> resolveColorAttr(R.attr.colorPriorityLow)
+                2 -> resolveColorAttr(R.attr.colorPriorityMedium)
+                3 -> resolveColorAttr(R.attr.colorPriorityHigh)
+                else -> resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
             }
             binding.chipPriority.text = priorityText
             binding.chipPriority.setTextColor(priorityColor)
@@ -145,11 +153,9 @@ class TaskDetailActivity : BaseActivity() {
 
             // Color if overdue
             if (!task.completed && task.dueDate < System.currentTimeMillis() && !android.text.format.DateUtils.isToday(task.dueDate)) {
-                binding.tvDetailDueDate.setTextColor(Color.parseColor("#B3261E"))
+                binding.tvDetailDueDate.setTextColor(resolveColorAttr(R.attr.colorDateOverdue))
             } else {
-                val typedValue = android.util.TypedValue()
-                theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                binding.tvDetailDueDate.setTextColor(typedValue.data)
+                binding.tvDetailDueDate.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurface))
             }
 
             // Recurrence info
@@ -295,6 +301,11 @@ class TaskDetailActivity : BaseActivity() {
             pickImageLauncher.launch("image/*")
             return true
         }
+        R.id.action_edit_task -> {
+            val task = currentTask ?: return true
+            showEditTaskDialog(task)
+            return true
+        }
         R.id.action_export_image -> {
             val task = currentTask ?: return true
             exportTaskAsImage(task)
@@ -302,6 +313,40 @@ class TaskDetailActivity : BaseActivity() {
         }
     }
     return super.onOptionsItemSelected(item)
+  }
+
+  private fun showEditTaskDialog(task: app.polar.data.entity.Task) {
+      val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
+      val observer = object : androidx.lifecycle.Observer<List<Subtask>> {
+          override fun onChanged(subtasks: List<Subtask>) {
+              subtasksLiveData.removeObserver(this)
+              TaskDialog(
+                  task = task,
+                  existingSubtasks = subtasks,
+                  onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate ->
+                      viewModel.updateTask(
+                          task.copy(
+                              title = title,
+                              description = description,
+                              tags = tags,
+                              dueDate = dueDate,
+                              recurrence = recurrence,
+                              priority = priority,
+                              timeEstimate = timeEstimate
+                          ),
+                          subtaskList
+                      )
+                  }
+              ).show(supportFragmentManager, "EditTaskDialog")
+          }
+      }
+      subtasksLiveData.observe(this, observer)
+  }
+
+  private fun resolveColorAttr(attr: Int): Int {
+      val typedValue = android.util.TypedValue()
+      theme.resolveAttribute(attr, typedValue, true)
+      return typedValue.data
   }
 
   private fun exportTaskAsImage(task: app.polar.data.entity.Task) {
@@ -330,15 +375,21 @@ class TaskDetailActivity : BaseActivity() {
                 tvDesc.visibility = android.view.View.GONE
             }
 
-            val (priorityText, priorityColor) = when (task.priority) {
-                1 -> getString(R.string.priority_low) to "#2196F3"
-                2 -> getString(R.string.priority_medium) to "#FF9800"
-                3 -> getString(R.string.priority_high) to "#F44336"
-                else -> getString(R.string.priority_none) to "#9E9E9E"
+            val priorityText = when (task.priority) {
+                1 -> getString(R.string.priority_low)
+                2 -> getString(R.string.priority_medium)
+                3 -> getString(R.string.priority_high)
+                else -> getString(R.string.priority_none)
+            }
+            val priorityColor = when (task.priority) {
+                1 -> resolveColorAttr(R.attr.colorPriorityLow)
+                2 -> resolveColorAttr(R.attr.colorPriorityMedium)
+                3 -> resolveColorAttr(R.attr.colorPriorityHigh)
+                else -> resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
             }
             tvPriority.text = priorityText
-            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor(priorityColor))
-            tvPriority.setTextColor(Color.WHITE)
+            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(priorityColor)
+            tvPriority.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnPrimary))
 
             if (subtasks.isNotEmpty()) {
                 containerSubtasks.visibility = android.view.View.VISIBLE

@@ -94,6 +94,7 @@
   <string name="theme_multicolor_dark">multicolor dark</string>
   <string name="theme_pastel">soft pastel</string>
   <string name="theme_neon">dark neon</string>
+  <string name="theme_custom">custom</string>
   <string name="font">font</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -132,6 +133,21 @@
   <string name="best_day">best day</string>
   <string name="current_streak">current streak</string>
   <string name="days">days</string>
+  <string name="stats_completion_subtitle">general progress</string>
+  <string name="stats_weekly_subtitle">completed in the last 7 days</string>
+  <string name="stats_trend_title">30-day trend</string>
+  <string name="stats_trend_subtitle">tasks completed per day</string>
+  <string name="stats_status_title">status overview</string>
+  <string name="stats_status_completed">completed</string>
+  <string name="stats_status_pending">pending</string>
+  <string name="stats_status_overdue">overdue</string>
+  <string name="stats_priority_title">distribution by priority</string>
+  <string name="stats_lists_title">performance by list</string>
+  <string name="stats_insight_more">you are on the rise! this week you completed %1$d tasks, %2$d%% more than last week.</string>
+  <string name="stats_insight_less">this week you completed %1$d tasks, %2$d%% less than last week.</string>
+  <string name="stats_insight_same">you are keeping the pace: you completed the same number of tasks as last week.</string>
+  <string name="stats_empty_title">no data yet</string>
+  <string name="stats_empty_subtitle">create your first task to start seeing useful statistics.</string>
   
   <!-- Messages -->
   <string name="task_moved_trash">task moved to trash</string>
@@ -139,6 +155,8 @@
   <string name="undo">undo</string>
   <string name="trash_emptied">trash emptied</string>
   <string name="empty_trash">empty trash</string>
+  <string name="confirm_empty_trash_title">empty trash?</string>
+  <string name="confirm_empty_trash_message">this will permanently delete all items. this action cannot be undone.</string>
   <string name="trash_clean">trash clean</string>
   <string name="no_deleted_items">no deleted items</string>
   <string name="deleted_items">deleted items</string>
@@ -203,4 +221,46 @@
   <string name="action_finish">start</string>
   <string name="action_skip">skip</string>
   <string name="action_view_tutorial">view tutorial</string>
+
+  <!-- Custom Theme -->
+  <string name="custom_theme_title">custom theme</string>
+  <string name="custom_theme_description">enter the base colors and polar will generate the rest of the palette automatically.</string>
+  <string name="custom_theme_base_colors">base colors</string>
+  <string name="custom_theme_background">background color</string>
+  <string name="custom_theme_foreground">foreground color</string>
+  <string name="custom_theme_hex_hint">#RRGGBB</string>
+  <string name="custom_theme_pick_color">pick color</string>
+  <string name="custom_theme_default_background">#1A1A1A</string>
+  <string name="custom_theme_default_foreground">#FFFFFF</string>
+  <string name="custom_theme_preview">preview</string>
+  <string name="custom_theme_preview_title">sample title</string>
+  <string name="custom_theme_preview_subtitle">sample subtitle</string>
+  <string name="custom_theme_preview_button">button</string>
+  <string name="custom_theme_preview_tag">personal</string>
+  <string name="custom_theme_generated_palette">generated palette</string>
+  <string name="custom_theme_apply">apply theme</string>
+  <string name="custom_theme_applied">theme applied</string>
+  <string name="custom_theme_reset">reset</string>
+  <string name="custom_theme_edit">edit custom theme</string>
+  <string name="custom_theme_invalid_color">one of the entered colors is invalid</string>
+  <string name="custom_theme_hue">hue</string>
+  <string name="custom_theme_saturation">saturation</string>
+  <string name="custom_theme_lightness">lightness</string>
+  <string name="color_background">background</string>
+  <string name="color_surface">surface</string>
+  <string name="color_surface_variant">surface variant</string>
+  <string name="color_surface_container">surface container</string>
+  <string name="color_primary">primary</string>
+  <string name="color_primary_container">primary container</string>
+  <string name="color_secondary">secondary</string>
+  <string name="color_secondary_container">secondary container</string>
+  <string name="color_foreground">foreground</string>
+  <string name="color_outline">outline</string>
+  <string name="color_error">error</string>
+  <string name="color_success">success</string>
+
+  <!-- CSV Import -->
+  <string name="import_csv">import csv</string>
+  <string name="import_csv_desc">load tasks from .csv file</string>
+
 </resources>

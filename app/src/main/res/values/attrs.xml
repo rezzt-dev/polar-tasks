@@ -5,4 +5,15 @@
   <attr name="taskBorder" format="color" />
   <attr name="mainBorder" format="color" />
   <attr name="buttonBackground" format="color" />
+
+  <!-- Semantic feedback colors -->
+  <attr name="colorSuccess" format="color" />
+  <attr name="colorOnSuccess" format="color" />
+  <attr name="colorError" format="color" />
+
+  <!-- Priority / status semantic colors -->
+  <attr name="colorPriorityHigh" format="color" />
+  <attr name="colorPriorityMedium" format="color" />
+  <attr name="colorPriorityLow" format="color" />
+  <attr name="colorDateOverdue" format="color" />
 </resources>

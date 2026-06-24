@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk-res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -14,8 +16,7 @@
         android:layout_height="20dp"
         android:src="@drawable/ic_list"
         android:contentDescription="@string/select_icon"
-        android:alpha="0.7"
-        android:tint="?attr/colorOnSurface"/>
+        app:tint="?attr/colorOnSurfaceVariant"/>
 
     <TextView
         android:id="@+id/tvListTitle"
@@ -27,15 +28,14 @@
         android:textColor="?attr/colorOnSurface"
         android:maxLines="1"
         android:ellipsize="end" />
-        
+
     <TextView
         android:id="@+id/tvCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_size_caption"
-        android:textColor="?attr/colorOnSurface"
-        android:alpha="0.5"
-        android:visibility="gone" 
-        tools:text="3" xmlns:tools="http://schemas.android.com/tools"/>
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        tools:text="3" />
 
 </LinearLayout>

@@ -118,4 +118,26 @@ interface TaskDao {
     ORDER BY completed ASC, priority DESC, createdAt DESC, title ASC
   """)
   fun getTasksUnmarkFirst(): kotlinx.coroutines.flow.Flow<List<Task>>
+
+  @Query("""
+    SELECT priority, COUNT(*) as count
+    FROM tasks
+    WHERE isDeleted = 0
+    GROUP BY priority
+    ORDER BY priority DESC
+  """)
+  suspend fun getTaskCountByPriority(): List<app.polar.data.model.PriorityCount>
+
+  @Query("""
+    SELECT
+      task_lists.id as listId,
+      task_lists.title as title,
+      COUNT(tasks.id) as total,
+      COUNT(CASE WHEN tasks.completed = 1 THEN tasks.id END) as completed
+    FROM task_lists
+    LEFT JOIN tasks ON task_lists.id = tasks.listId AND tasks.isDeleted = 0
+    GROUP BY task_lists.id
+    ORDER BY total DESC
+  """)
+  suspend fun getTaskCountByList(): List<app.polar.data.model.ListTaskCount>
 }

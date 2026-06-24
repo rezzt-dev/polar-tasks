@@ -7,6 +7,11 @@
     android:icon="@drawable/ic_attach_file"
     app:showAsAction="ifRoom" />
   <item
+    android:id="@+id/action_edit_task"
+    android:title="@string/edit"
+    android:icon="@drawable/ic_edit"
+    app:showAsAction="ifRoom" />
+  <item
     android:id="@+id/action_export_image"
     android:title="@string/share_task_as_image"
     android:icon="@drawable/ic_share"

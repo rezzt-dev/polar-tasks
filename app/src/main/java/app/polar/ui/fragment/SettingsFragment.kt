@@ -19,6 +19,7 @@ class SettingsFragment : Fragment() {
   private var _binding: FragmentSettingsBinding? = null
   private val binding get() = _binding!!
   private lateinit var themeManager: ThemeManager
+  private var lastAppliedTheme: String = ""
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -32,6 +33,7 @@ class SettingsFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     themeManager = ThemeManager(requireContext())
+    lastAppliedTheme = themeManager.loadTheme()
 
     setupThemeSelection()
     setupFontSelection()
@@ -49,7 +51,8 @@ class SettingsFragment : Fragment() {
       getString(R.string.theme_multicolor_light) to ThemeManager.THEME_MULTICOLOR_LIGHT,
       getString(R.string.theme_multicolor_dark) to ThemeManager.THEME_MULTICOLOR_DARK,
       getString(R.string.theme_pastel) to ThemeManager.THEME_PASTEL,
-      getString(R.string.theme_neon) to ThemeManager.THEME_NEON
+      getString(R.string.theme_neon) to ThemeManager.THEME_NEON,
+      getString(R.string.theme_custom) to ThemeManager.THEME_CUSTOM
     )
     val themeLabels = themeEntries.keys.toTypedArray()
     val themeValues = themeEntries.values.toList()
@@ -58,8 +61,16 @@ class SettingsFragment : Fragment() {
         val currentTheme = themeManager.loadTheme()
         val currentLabel = themeEntries.entries.find { it.value == currentTheme }?.key ?: themeLabels[1]
         binding.tvThemeValue.text = currentLabel
+        
+        val isCustom = currentTheme == ThemeManager.THEME_CUSTOM
+        binding.btnEditCustomTheme.visibility = if (isCustom) View.VISIBLE else View.GONE
+        binding.dividerEditCustomTheme.visibility = if (isCustom) View.VISIBLE else View.GONE
     }
     updateLabel()
+
+    binding.btnEditCustomTheme.setOnClickListener {
+        openCustomThemeActivity()
+    }
 
     binding.btnThemeSettings.setOnClickListener {
       val currentTheme = themeManager.loadTheme()
@@ -70,8 +81,12 @@ class SettingsFragment : Fragment() {
         .setSingleChoiceItems(themeLabels, checkedItem) { dialog, which ->
             val selectedTheme = themeValues[which]
             if (currentTheme != selectedTheme) {
-                themeManager.saveTheme(selectedTheme)
-                requireActivity().recreate()
+                if (selectedTheme == ThemeManager.THEME_CUSTOM) {
+                    openCustomThemeActivity()
+                } else {
+                    themeManager.saveTheme(selectedTheme)
+                    requireActivity().recreate()
+                }
             }
             dialog.dismiss()
         }
@@ -133,9 +148,9 @@ class SettingsFragment : Fragment() {
         
         // Actualizar el icono de previsualización en el menú
         if (currentStyle == ThemeManager.CHECKBOX_CIRCULAR) {
-            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_check_circle)
+            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_settings_checkbox_circular)
         } else {
-            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_check_box)
+            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_settings_checkbox)
         }
     }
     updateLabel()
@@ -348,6 +363,11 @@ class SettingsFragment : Fragment() {
       }
     }
 
+  private fun openCustomThemeActivity() {
+    val intent = Intent(requireContext(), app.polar.ui.activity.CustomThemeActivity::class.java)
+    startActivity(intent)
+  }
+
   private fun setupLanguageSelection() {
     val sharedPrefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
     val currentLocale = sharedPrefs.getString("app_locale", "es") ?: "es"
@@ -384,6 +404,18 @@ class SettingsFragment : Fragment() {
         }
         .setNegativeButton(getString(R.string.cancel), null)
         .show()
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    // Si el tema cambió mientras el fragmento no estaba visible (por ejemplo,
+    // desde CustomThemeActivity), recrear la activity para aplicarlo en caliente
+    // sin que el usuario tenga que cerrar y volver a abrir la app.
+    val currentTheme = themeManager.loadTheme()
+    if (currentTheme != lastAppliedTheme) {
+      lastAppliedTheme = currentTheme
+      requireActivity().recreate()
     }
   }
 
