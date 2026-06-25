@@ -52,7 +52,7 @@ class SettingsFragment : Fragment() {
       getString(R.string.theme_multicolor_dark) to ThemeManager.THEME_MULTICOLOR_DARK,
       getString(R.string.theme_pastel) to ThemeManager.THEME_PASTEL,
       getString(R.string.theme_neon) to ThemeManager.THEME_NEON,
-      getString(R.string.theme_custom) to ThemeManager.THEME_CUSTOM
+      getString(R.string.theme_onyx) to ThemeManager.THEME_ONYX
     )
     val themeLabels = themeEntries.keys.toTypedArray()
     val themeValues = themeEntries.values.toList()
@@ -61,16 +61,8 @@ class SettingsFragment : Fragment() {
         val currentTheme = themeManager.loadTheme()
         val currentLabel = themeEntries.entries.find { it.value == currentTheme }?.key ?: themeLabels[1]
         binding.tvThemeValue.text = currentLabel
-        
-        val isCustom = currentTheme == ThemeManager.THEME_CUSTOM
-        binding.btnEditCustomTheme.visibility = if (isCustom) View.VISIBLE else View.GONE
-        binding.dividerEditCustomTheme.visibility = if (isCustom) View.VISIBLE else View.GONE
     }
     updateLabel()
-
-    binding.btnEditCustomTheme.setOnClickListener {
-        openCustomThemeActivity()
-    }
 
     binding.btnThemeSettings.setOnClickListener {
       val currentTheme = themeManager.loadTheme()
@@ -81,12 +73,8 @@ class SettingsFragment : Fragment() {
         .setSingleChoiceItems(themeLabels, checkedItem) { dialog, which ->
             val selectedTheme = themeValues[which]
             if (currentTheme != selectedTheme) {
-                if (selectedTheme == ThemeManager.THEME_CUSTOM) {
-                    openCustomThemeActivity()
-                } else {
-                    themeManager.saveTheme(selectedTheme)
-                    requireActivity().recreate()
-                }
+                themeManager.saveTheme(selectedTheme)
+                requireActivity().recreate()
             }
             dialog.dismiss()
         }
@@ -363,11 +351,6 @@ class SettingsFragment : Fragment() {
       }
     }
 
-  private fun openCustomThemeActivity() {
-    val intent = Intent(requireContext(), app.polar.ui.activity.CustomThemeActivity::class.java)
-    startActivity(intent)
-  }
-
   private fun setupLanguageSelection() {
     val sharedPrefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
     val currentLocale = sharedPrefs.getString("app_locale", "es") ?: "es"
@@ -409,9 +392,9 @@ class SettingsFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    // Si el tema cambió mientras el fragmento no estaba visible (por ejemplo,
-    // desde CustomThemeActivity), recrear la activity para aplicarlo en caliente
-    // sin que el usuario tenga que cerrar y volver a abrir la app.
+    // Si el tema cambió mientras el fragmento no estaba visible, recrear la
+    // activity para aplicarlo en caliente sin que el usuario tenga que cerrar y
+    // volver a abrir la app.
     val currentTheme = themeManager.loadTheme()
     if (currentTheme != lastAppliedTheme) {
       lastAppliedTheme = currentTheme

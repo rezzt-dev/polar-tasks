@@ -89,65 +89,6 @@
 
                 <View style="@style/SettingsDivider" />
 
-                <!-- Editar tema personalizado -->
-                <LinearLayout
-                    android:id="@+id/btnEditCustomTheme"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="56dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="12dp"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="16dp"
-                        android:importantForAccessibility="no"
-                        android:src="@drawable/ic_edit_color"
-                        app:tint="?colorOnSurfaceVariant" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/custom_theme_edit"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                            android:textColor="?colorOnSurface" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/custom_theme_background"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                            android:textColor="?colorOnSurfaceVariant" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="8dp"
-                        android:importantForAccessibility="no"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="?colorOnSurfaceVariant" />
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/dividerEditCustomTheme"
-                    style="@style/SettingsDivider"
-                    android:visibility="gone" />
-
                 <!-- Tipografía -->
                 <LinearLayout
                     android:id="@+id/btnFontSettings"

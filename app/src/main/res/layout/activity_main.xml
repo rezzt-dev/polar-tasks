@@ -263,7 +263,7 @@
           android:layout_width="20dp"
           android:layout_height="20dp"
           android:src="@drawable/ic_delete" 
-          app:tint="#D32F2F"
+          app:tint="?attr/colorError"
           android:alpha="0.9"/>
 
         <TextView
@@ -273,7 +273,7 @@
           android:layout_marginStart="16dp"
           android:text="papelera"
           android:textSize="14sp"
-          android:textColor="#D32F2F"
+          android:textColor="?attr/colorError"
           android:textStyle="bold"/>
       </LinearLayout>
 

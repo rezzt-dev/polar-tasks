@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
-import app.polar.util.CustomThemeContextWrapper
 import app.polar.util.ThemeManager
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -31,15 +30,7 @@ abstract class BaseActivity : AppCompatActivity() {
         config.setLocale(locale)
         
         val configContext = newBase.createConfigurationContext(config)
-        
-        // Para el tema personalizado envolvemos el contexto para interceptar
-        // la resolución dinámica de los recursos de color.
-        if (themeManager.loadTheme() == ThemeManager.THEME_CUSTOM) {
-            val colors = themeManager.loadCustomThemeColors()
-            super.attachBaseContext(CustomThemeContextWrapper(configContext, colors))
-        } else {
-            super.attachBaseContext(configContext)
-        }
+        super.attachBaseContext(configContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,15 +52,16 @@ abstract class BaseActivity : AppCompatActivity() {
         }
         
         super.onCreate(savedInstanceState)
+
+        // Ajustar iconos de status/navigation bar tan pronto como la ventana esté
+        // disponible, para evitar parpadeos al arrancar.
+        setLightStatusBar(themeManager.isLightTheme())
     }
     
     override fun onResume() {
         super.onResume()
-        // Ajustar iconos de la status bar para el tema personalizado.
-        // Se hace en onResume porque el DecorView ya está disponible.
-        if (themeManager.loadTheme() == ThemeManager.THEME_CUSTOM) {
-            setLightStatusBar(themeManager.isLightTheme())
-        }
+        // Re-aplicar por si el modo noche cambió mientras la activity estaba pausada.
+        setLightStatusBar(themeManager.isLightTheme())
     }
     
     private fun setLightStatusBar(light: Boolean) {

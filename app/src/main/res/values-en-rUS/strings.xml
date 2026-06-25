@@ -94,7 +94,7 @@
   <string name="theme_multicolor_dark">multicolor dark</string>
   <string name="theme_pastel">soft pastel</string>
   <string name="theme_neon">dark neon</string>
-  <string name="theme_custom">custom</string>
+  <string name="theme_onyx">onyx</string>
   <string name="font">font</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -212,7 +212,7 @@
   <string name="tutorial_title_5">calendar and notifications</string>
   <string name="tutorial_desc_5">visualize all your routines grouped month by month or by weeks in our premium-designed calendar.\n\nreceive accurate notifications just on time so you never miss a meeting, delivery or important detail again.</string>
   <string name="tutorial_title_6">total personalization</string>
-  <string name="tutorial_desc_6">adapt the app to your own style with our 4 visual modes: dark, light, multicolor dark and multicolor light.\n\nplus, you can pick the typography that suits you best from a curated selection of professional fonts.</string>
+  <string name="tutorial_desc_6">adapt the app to your own style with our 6 visual themes: light, dark, multicolor light, multicolor dark, soft pastel, dark neon and onyx.\n\nplus, you can pick the typography, checkbox style and font size that suit you best.</string>
   <string name="tutorial_title_7">statistics and progress</string>
   <string name="tutorial_desc_7">keep an exhaustive log of your day to day, viewing completed, overdue tasks and your best productive day.\n\nmaintain long streaks of completion to outdo yourself and achieve everything you set out to do with polar\'s data.</string>
   
@@ -221,43 +221,6 @@
   <string name="action_finish">start</string>
   <string name="action_skip">skip</string>
   <string name="action_view_tutorial">view tutorial</string>
-
-  <!-- Custom Theme -->
-  <string name="custom_theme_title">custom theme</string>
-  <string name="custom_theme_description">enter the base colors and polar will generate the rest of the palette automatically.</string>
-  <string name="custom_theme_base_colors">base colors</string>
-  <string name="custom_theme_background">background color</string>
-  <string name="custom_theme_foreground">foreground color</string>
-  <string name="custom_theme_hex_hint">#RRGGBB</string>
-  <string name="custom_theme_pick_color">pick color</string>
-  <string name="custom_theme_default_background">#1A1A1A</string>
-  <string name="custom_theme_default_foreground">#FFFFFF</string>
-  <string name="custom_theme_preview">preview</string>
-  <string name="custom_theme_preview_title">sample title</string>
-  <string name="custom_theme_preview_subtitle">sample subtitle</string>
-  <string name="custom_theme_preview_button">button</string>
-  <string name="custom_theme_preview_tag">personal</string>
-  <string name="custom_theme_generated_palette">generated palette</string>
-  <string name="custom_theme_apply">apply theme</string>
-  <string name="custom_theme_applied">theme applied</string>
-  <string name="custom_theme_reset">reset</string>
-  <string name="custom_theme_edit">edit custom theme</string>
-  <string name="custom_theme_invalid_color">one of the entered colors is invalid</string>
-  <string name="custom_theme_hue">hue</string>
-  <string name="custom_theme_saturation">saturation</string>
-  <string name="custom_theme_lightness">lightness</string>
-  <string name="color_background">background</string>
-  <string name="color_surface">surface</string>
-  <string name="color_surface_variant">surface variant</string>
-  <string name="color_surface_container">surface container</string>
-  <string name="color_primary">primary</string>
-  <string name="color_primary_container">primary container</string>
-  <string name="color_secondary">secondary</string>
-  <string name="color_secondary_container">secondary container</string>
-  <string name="color_foreground">foreground</string>
-  <string name="color_outline">outline</string>
-  <string name="color_error">error</string>
-  <string name="color_success">success</string>
 
   <!-- CSV Import -->
   <string name="import_csv">import csv</string>

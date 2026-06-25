@@ -139,6 +139,29 @@
   <color name="neon_surface_container">#151620</color>
   <color name="neon_surface_container_high">#1A1C29</color>
 
+  <!-- Onyx Dark Theme (Deep & Minimal) -->
+  <color name="onyx_background">#101010</color>             <!-- Base background -->
+  <color name="onyx_surface">#161616</color>                <!-- Elevated cards -->
+  <color name="onyx_surface_variant">#101010</color>        <!-- Same as background -->
+  <color name="onyx_surface_container">#1C1C1C</color>      <!-- Containers -->
+  <color name="onyx_surface_container_high">#242424</color> <!-- Highlighted containers -->
+  <color name="onyx_primary">#ECECEC</color>                <!-- Base foreground -->
+  <color name="onyx_on_primary">#101010</color>             <!-- Text on primary -->
+  <color name="onyx_primary_container">#2A2A2A</color>      <!-- Tonal button/container -->
+  <color name="onyx_on_primary_container">#ECECEC</color>   <!-- Text on container -->
+  <color name="onyx_secondary">#8C8C8C</color>              <!-- Muted accent -->
+  <color name="onyx_on_secondary">#101010</color>           <!-- Text on secondary -->
+  <color name="onyx_secondary_container">#202020</color>    <!-- Secondary tonal -->
+  <color name="onyx_on_secondary_container">#ECECEC</color> <!-- Text on secondary container -->
+  <color name="onyx_foreground">#ECECEC</color>             <!-- Primary text -->
+  <color name="onyx_on_surface_variant">#B3B3B3</color>     <!-- Secondary/muted text -->
+  <color name="onyx_border">#2A2A2A</color>                 <!-- Subtle borders -->
+  <color name="onyx_outline_variant">#1C1C1C</color>        <!-- Even subtler borders -->
+  <color name="onyx_error">#CF6679</color>                  <!-- Material dark red -->
+  <color name="onyx_on_error">#101010</color>               <!-- Text on error -->
+  <color name="onyx_success">#66BB6A</color>                <!-- Success green -->
+  <color name="onyx_on_success">#101010</color>             <!-- Text on success -->
+
   <!-- Success / Positive feedback -->
   <color name="light_success">#43A047</color>
   <color name="dark_success">#66BB6A</color>
@@ -152,31 +175,4 @@
   <color name="accent_secondary">@color/light_c4_border</color>
   
   <color name="drawer_bg">#E6FFFFFF</color> <!-- 90% Opacity Surface -->
-
-  <!-- Custom Theme Stubs -->
-  <!-- Estos valores son sobrescritos en runtime por CustomThemeContextWrapper. -->
-  <color name="custom_background">#1A1A1A</color>
-  <color name="custom_surface">#1C1C1E</color>
-  <color name="custom_surface_variant">#1A1A1A</color>
-  <color name="custom_surface_container">#1C1C1E</color>
-  <color name="custom_surface_container_high">#2C2C2E</color>
-  <color name="custom_foreground">#FFFFFF</color>
-  <color name="custom_primary">#F5F7F9</color>
-  <color name="custom_on_primary">#000000</color>
-  <color name="custom_primary_container">#2C2C2E</color>
-  <color name="custom_on_primary_container">#F5F7F9</color>
-  <!-- Stubs secundarios neutros para que, si el Context no está envuelto por
-       PolarResources, el fallback no introduzca azules fuera de la paleta. -->
-  <color name="custom_secondary">#888D91</color>
-  <color name="custom_on_secondary">#000000</color>
-  <color name="custom_secondary_container">#2E2F2F</color>
-  <color name="custom_on_secondary_container">#ECECEC</color>
-  <color name="custom_outline">#2C2C2E</color>
-  <color name="custom_outline_variant">#1C1C1E</color>
-  <color name="custom_error">#EF5350</color>
-  <color name="custom_success">#66BB6A</color>
-  <color name="custom_task_background">@color/custom_surface</color>
-  <color name="custom_task_border">@color/custom_outline</color>
-  <color name="custom_main_border">@color/custom_outline</color>
-  <color name="custom_button_background">@color/custom_primary</color>
 </resources>

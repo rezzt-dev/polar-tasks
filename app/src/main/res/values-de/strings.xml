@@ -94,7 +94,7 @@
   <string name="theme_multicolor_dark">mehrfarbig dunkel</string>
   <string name="theme_pastel">weiches pastell</string>
   <string name="theme_neon">dunkles neon</string>
-  <string name="theme_custom">benutzerdefiniert</string>
+  <string name="theme_onyx">onyx</string>
   <string name="font">schriftart</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -212,7 +212,7 @@
   <string name="tutorial_title_5">kalender und benachrichtigungen</string>
   <string name="tutorial_desc_5">visualisieren sie alle ihre routinen monat fur monat oder wochenweise in unserem kalender im premium-design.\n\nerhalten sie prazise benachrichtigungen punktlich, damit sie nie wieder ein meeting, eine lieferung oder ein wichtiges detail verpassen.</string>
   <string name="tutorial_title_6">totale personalisierung</string>
-  <string name="tutorial_desc_6">passen sie die app mit unseren 4 visuellen modi an ihren eigenen stil an: dunkel, hell, mehrfarbig dunkel und mehrfarbig hell.\n\nzudem konnen sie aus einer sorgfaltigen auswahl professioneller schriftarten diejenige auswahlen, die am besten zu ihnen passt.</string>
+  <string name="tutorial_desc_6">passen sie die app mit unseren 6 visuellen themen an ihren eigenen stil an: hell, dunkel, mehrfarbig hell, mehrfarbig dunkel, weiches pastell, dunkles neon und onyx.\n\nzudem konnen sie schriftart, kontrollkastchen-stil und schriftgrosse nach ihren wunschen wahlen.</string>
   <string name="tutorial_title_7">statistiken und fortschritt</string>
   <string name="tutorial_desc_7">fuhren sie ein umfassendes protokoll ihres alltags und sehen sie abgeschlossene, uberfallige aufgaben und ihren produktivsten tag.\n\nhalten sie lange abschlussstrahnen aufrecht, um sich selbst zu ubertreffen und mit den daten von polar alles zu erreichen, was sie sich vornehmen.</string>
   
@@ -221,43 +221,6 @@
   <string name="action_finish">starten</string>
   <string name="action_skip">uberspringen</string>
   <string name="action_view_tutorial">tutorial ansehen</string>
-
-  <!-- Custom Theme -->
-  <string name="custom_theme_title">benutzerdefiniertes thema</string>
-  <string name="custom_theme_description">geben sie die basisfarben ein und polar generiert den rest der palette automatisch.</string>
-  <string name="custom_theme_base_colors">basisfarben</string>
-  <string name="custom_theme_background">hintergrundfarbe</string>
-  <string name="custom_theme_foreground">vordergrundfarbe</string>
-  <string name="custom_theme_hex_hint">#RRGGBB</string>
-  <string name="custom_theme_pick_color">farbe auswahlen</string>
-  <string name="custom_theme_default_background">#1A1A1A</string>
-  <string name="custom_theme_default_foreground">#FFFFFF</string>
-  <string name="custom_theme_preview">vorschau</string>
-  <string name="custom_theme_preview_title">beispieltitel</string>
-  <string name="custom_theme_preview_subtitle">beispieluntertitel</string>
-  <string name="custom_theme_preview_button">schaltflache</string>
-  <string name="custom_theme_preview_tag">personlich</string>
-  <string name="custom_theme_generated_palette">generierte palette</string>
-  <string name="custom_theme_apply">thema anwenden</string>
-  <string name="custom_theme_applied">thema angewendet</string>
-  <string name="custom_theme_reset">zurucksetzen</string>
-  <string name="custom_theme_edit">benutzerdefiniertes thema bearbeiten</string>
-  <string name="custom_theme_invalid_color">eine der eingegebenen farben ist ungultig</string>
-  <string name="custom_theme_hue">farbton</string>
-  <string name="custom_theme_saturation">sattigung</string>
-  <string name="custom_theme_lightness">helligkeit</string>
-  <string name="color_background">hintergrund</string>
-  <string name="color_surface">oberflache</string>
-  <string name="color_surface_variant">oberflachenvariante</string>
-  <string name="color_surface_container">oberflachencontainer</string>
-  <string name="color_primary">primar</string>
-  <string name="color_primary_container">primarcontainer</string>
-  <string name="color_secondary">sekundar</string>
-  <string name="color_secondary_container">sekundarcontainer</string>
-  <string name="color_foreground">vordergrund</string>
-  <string name="color_outline">kontur</string>
-  <string name="color_error">fehler</string>
-  <string name="color_success">erfolg</string>
 
   <!-- CSV Import -->
   <string name="import_csv">csv importieren</string>

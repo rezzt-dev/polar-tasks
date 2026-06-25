@@ -41,10 +41,6 @@
     <activity
       android:name=".ui.activity.TutorialActivity"
       android:exported="false" />
-    <activity
-      android:name=".ui.activity.CustomThemeActivity"
-      android:exported="false"
-      android:parentActivityName=".MainActivity" />
       
     <receiver android:name=".receiver.AlarmReceiver" />
     <receiver android:name=".receiver.BootReceiver" android:exported="false">

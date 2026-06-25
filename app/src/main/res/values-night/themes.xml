@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <style name="Theme.Polar" parent="Theme.Material3.DayNight.NoActionBar">
+  <style name="Theme.Polar" parent="Theme.Material3.Dark.NoActionBar">
     <!-- 3. Accent -->
     <item name="colorPrimary">@color/dark_c3_accent</item>
     <item name="colorOnPrimary">@color/black</item>
@@ -34,9 +34,9 @@
     <item name="colorOutlineVariant">@color/dark_c4_border</item>
     
     <!-- STATUS BAR FIX: Matches background -->
-    <item name="android:statusBarColor">@color/dark_c1_background</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">false</item>
-    <item name="android:navigationBarColor">@color/dark_c1_background</item>
     <item name="android:windowLightNavigationBar">false</item>
     
     <item name="android:fontFamily">@font/poppins</item>
@@ -46,11 +46,6 @@
     <item name="taskBorder">@color/dark_c4_border</item>
     <item name="mainBorder">@color/dark_c4_border</item>
     <item name="buttonBackground">@color/dark_c3_accent</item>
-
-    <item name="android:statusBarColor">@android:color/transparent</item>
-    <item name="android:navigationBarColor">@android:color/transparent</item>
-    <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar">false</item>
   </style>
 
 </resources>

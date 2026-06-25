@@ -12,6 +12,7 @@ Actualmente, Polar cuenta con un amplio surtido para personalizar cada pantalla:
 2.  **Multicolor Light y Dark:** Temáticas dinámicas con colores vibrantes que le inyectan gran energía a la interfaz, diferenciándose de las clásicas combinaciones negro/blanco con grises.
 3.  **Pastel Soft:** Una opción estética mucho más delicada, suave y calmada, genial para no saturar los sentidos.
 4.  **Neon Dark:** Una opción futurista, vibrante e intensa para un look moderno de alto impacto visual.
+5.  **Ónix:** Un tema oscuro profundo basado en un fondo casi negro (`#101010`) y un primer plano gris muy claro (`#ECECEC`). Ideal para pantallas OLED y para quienes prefieren un contraste elegante y minimalista sin distracciones de color.
 
 Toda la aplicación cambiará de paleta dinámicamente y la mantendrá en tus futuros reinicios.
 

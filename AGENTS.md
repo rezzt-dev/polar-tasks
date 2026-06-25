@@ -88,9 +88,6 @@ app/src/main/java/app/polar/
     ├── AlarmManagerHelper.kt       # Programación/cancelación de alarmas exactas
     ├── NotificationHelper.kt       # Canales y notificaciones
     ├── ThemeManager.kt             # Temas dinámicos, fuentes y localización
-    ├── CustomThemeGenerator.kt     # Genera paleta Material3 desde bg + fg
-    ├── CustomThemeContextWrapper.kt# Contexto temático para colores dinámicos
-    ├── PolarResources.kt           # Intercepta recursos de color del tema custom
     ├── DateUtils.kt                # Helpers de fecha/calendario
     ├── DragDropHelper.kt           # Soporte drag-and-drop en RecyclerViews
     └── TaskSwipeHelper.kt          # Swipe bidireccional reutilizable para RecyclerViews
@@ -144,8 +141,7 @@ Se usa **View Binding** en toda la UI. Está habilitado en `build.gradle.kts` (`
 ### 4.4 BaseActivity
 
 Todas las Activities heredan de `BaseActivity`, que gestiona:
-- Aplicación de tema dinámico (multicolor, oscuro, pastel, **custom**) antes de `super.onCreate()`.
-- Envoltorio de contexto con `CustomThemeContextWrapper` para el tema personalizado.
+- Aplicación de tema dinámico (multicolor, oscuro, pastel, etc.) antes de `super.onCreate()`.
 - Overlay de fuentes personalizadas.
 - Overlay de estilos de checkbox.
 - Configuración de locale (idioma) vía `attachBaseContext()`.
@@ -160,7 +156,7 @@ android:background="?attr/colorSurface"
 android:textColor="?attr/colorOnSurface"
 ```
 
-El `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idioma. Además, permite guardar y cargar los colores base del **tema personalizado** (`THEME_CUSTOM`).
+El `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idioma.
 
 ---
 
@@ -307,8 +303,7 @@ La suite de tests unitarios es pequeña pero representativa:
 - **Al modificar Room:** Siempre actualiza la versión de la base de datos y considera una migración manual.
 - **Al crear nuevos ViewModels:** Usa `@HiltViewModel`, inyección por constructor, y el patrón `safeLaunch`.
 - **Al crear nuevas Activities:** Extiende `BaseActivity` y anota con `@AndroidEntryPoint`.
-- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados. Si añades colores al tema personalizado, define también su recurso "stub" en `colors.xml` (`custom_*`) y regístralo en `PolarResources`.
-- **Tema personalizado:** No derive los colores de prioridad. La paleta se genera desde background + foreground en `CustomThemeGenerator`; los colores se aplican en runtime mediante `CustomThemeContextWrapper` + `PolarResources`.
-- **Colores semánticos dinámicos:** Se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). Todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de UI.
+- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados.
+- **Colores semánticos dinámicos:** Se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorError`, `colorOnError`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). Todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de UI.
 - **Swipe en listas:** Usa `TaskSwipeHelper` para gestos bidireccionales en RecyclerViews (tareas y listas). Soporta configuración de colores/iconos por dirección y drag opcional. Los íconos de swipe se tinen con `colorOnSuccess` / `colorOnError` para respetar la paleta activa.
 - **View Binding obligatorio:** `HomeTaskAdapter` y `TaskListAdapter` usan View Binding; no usar `findViewById` en nuevos adapters.

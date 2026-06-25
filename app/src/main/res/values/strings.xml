@@ -113,7 +113,7 @@
   <string name="theme_multicolor_dark">multicolor oscuro</string>
   <string name="theme_pastel">pastel suave</string>
   <string name="theme_neon">neon oscuro</string>
-  <string name="theme_custom">personalizado</string>
+  <string name="theme_onyx">ónix</string>
   <string name="font">fuente</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -234,7 +234,7 @@
   <string name="tutorial_title_5">calendario y recordatorios</string>
   <string name="tutorial_desc_5">visualiza todas tus tareas agrupadas mes a mes o por semanas en nuestro calendario de diseño premium.\n\ncrea recordatorios con fecha, hora y ubicacion para recibir una notificacion precisa justo cuando mas lo necesitas.</string>
   <string name="tutorial_title_6">personalizacion total</string>
-  <string name="tutorial_desc_6">adapta la aplicacion a tu propio estilo eligiendo entre 6 temas visuales: claro, oscuro, multicolor claro, multicolor oscuro, pastel y neon.\n\nademas, elige la tipografia, el estilo de las casillas de verificacion y el tamaño de la fuente que mejor se adapten a ti.</string>
+  <string name="tutorial_desc_6">adapta la aplicacion a tu propio estilo eligiendo entre 6 temas visuales: claro, oscuro, multicolor claro, multicolor oscuro, pastel, neon y onix.\n\nademas, elige la tipografia, el estilo de las casillas de verificacion y el tamaño de la fuente que mejor se adapten a ti.</string>
   <string name="tutorial_title_7">estadisticas y progreso</string>
   <string name="tutorial_desc_7">lleva un registro exhaustivo de tu dia a dia: tareas completadas, vencidas, tasa de cumplimiento y actividad semanal en una grafica visual.\n\nmanten tu racha diaria de tareas completadas, descubre tu mejor dia productivo y usa la “matriz de eisenhower” para priorizar lo que de verdad importa.</string>
   
@@ -271,44 +271,5 @@
   <!-- Dependency chain dialog (previously hardcoded in XML) -->
   <string name="dependency_chain_label">cadena de dependencias</string>
   <string name="dependency_chain_desc">las tareas se desbloquean en orden</string>
-
-  <!-- Custom Theme -->
-  <string name="custom_theme_title">tema personalizado</string>
-  <string name="custom_theme_description">introduce los colores base y polar generara el resto de la paleta automaticamente.</string>
-  <string name="custom_theme_base_colors">colores base</string>
-  <string name="custom_theme_background">color de fondo</string>
-  <string name="custom_theme_foreground">color de primer plano</string>
-  <string name="custom_theme_hex_hint">#RRGGBB</string>
-  <string name="custom_theme_pick_color">elegir color</string>
-  <string name="custom_theme_default_background">#1A1A1A</string>
-  <string name="custom_theme_default_foreground">#FFFFFF</string>
-  <string name="custom_theme_preview">vista previa</string>
-  <string name="custom_theme_preview_title">titulo de ejemplo</string>
-  <string name="custom_theme_preview_subtitle">subtitulo de ejemplo</string>
-  <string name="custom_theme_preview_button">boton</string>
-  <string name="custom_theme_preview_tag">personal</string>
-  <string name="custom_theme_generated_palette">paleta generada</string>
-  <string name="custom_theme_apply">aplicar tema</string>
-  <string name="custom_theme_applied">tema aplicado</string>
-  <string name="custom_theme_reset">restablecer</string>
-  <string name="custom_theme_edit">editar tema personalizado</string>
-  <string name="custom_theme_dark_mode">modo oscuro</string>
-  <string name="custom_theme_light_mode">modo claro</string>
-  <string name="custom_theme_invalid_color">uno de los colores introducidos no es valido</string>
-  <string name="custom_theme_hue">matiz</string>
-  <string name="custom_theme_saturation">saturacion</string>
-  <string name="custom_theme_lightness">luminosidad</string>
-  <string name="color_background">fondo</string>
-  <string name="color_surface">superficie</string>
-  <string name="color_surface_variant">variante de superficie</string>
-  <string name="color_surface_container">contenedor de superficie</string>
-  <string name="color_primary">primario</string>
-  <string name="color_primary_container">contenedor primario</string>
-  <string name="color_secondary">secundario</string>
-  <string name="color_secondary_container">contenedor secundario</string>
-  <string name="color_foreground">primer plano</string>
-  <string name="color_outline">contorno</string>
-  <string name="color_error">error</string>
-  <string name="color_success">exito</string>
 
 </resources>

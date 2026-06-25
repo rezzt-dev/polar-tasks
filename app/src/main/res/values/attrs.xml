@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- Custom theme attributes -->
+  <!-- Theme attributes -->
   <attr name="taskBackground" format="color" />
   <attr name="taskBorder" format="color" />
   <attr name="mainBorder" format="color" />
@@ -10,6 +10,10 @@
   <attr name="colorSuccess" format="color" />
   <attr name="colorOnSuccess" format="color" />
   <attr name="colorError" format="color" />
+  <attr name="colorOnError" format="color" />
+
+  <!-- Surface/text variants explicitly controlled by Polar themes -->
+  <attr name="colorOnSurfaceVariant" format="color" />
 
   <!-- Priority / status semantic colors -->
   <attr name="colorPriorityHigh" format="color" />

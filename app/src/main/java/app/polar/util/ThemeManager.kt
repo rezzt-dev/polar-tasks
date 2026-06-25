@@ -2,7 +2,6 @@ package app.polar.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatDelegate
 import app.polar.R
 
@@ -21,12 +20,8 @@ class ThemeManager(private val context: Context) {
     const val THEME_MULTICOLOR_DARK = "multicolor_dark"
     const val THEME_PASTEL = "pastel"
     const val THEME_NEON = "neon"
+    const val THEME_ONYX = "onyx"
     const val THEME_SYSTEM = "system"
-    const val THEME_CUSTOM = "custom"
-    
-    private const val KEY_CUSTOM_BACKGROUND = "custom_background"
-    private const val KEY_CUSTOM_FOREGROUND = "custom_foreground"
-    private const val KEY_CUSTOM_IS_DARK_MODE = "custom_is_dark_mode"
     
     const val FONT_POPPINS = "poppins"
     const val FONT_COMFORTAA = "comfortaa"
@@ -60,7 +55,9 @@ class ThemeManager(private val context: Context) {
   }
   
   fun loadTheme(): String {
-    return prefs.getString(KEY_THEME, THEME_DARK) ?: THEME_DARK
+    val saved = prefs.getString(KEY_THEME, THEME_DARK) ?: THEME_DARK
+    // Migracion: el tema personalizado ya no existe; se fuerza al tema oscuro.
+    return if (saved == "custom") THEME_DARK else saved
   }
   
   fun loadFont(): String {
@@ -100,63 +97,15 @@ class ThemeManager(private val context: Context) {
           THEME_MULTICOLOR_DARK -> R.style.Theme_Polar_MulticolorDark
           THEME_PASTEL -> R.style.Theme_Polar_Pastel
           THEME_NEON -> R.style.Theme_Polar_Neon
-          THEME_CUSTOM -> R.style.Theme_Polar_Custom
+          THEME_ONYX -> R.style.Theme_Polar_Onyx
           else -> 0 // Default light/dark handled by DayNight
       }
-  }
-  
-  fun saveCustomThemeColors(backgroundHex: String, foregroundHex: String, isDarkMode: Boolean) {
-    prefs.edit()
-      .putString(KEY_CUSTOM_BACKGROUND, backgroundHex)
-      .putString(KEY_CUSTOM_FOREGROUND, foregroundHex)
-      .putBoolean(KEY_CUSTOM_IS_DARK_MODE, isDarkMode)
-      .apply()
-  }
-  
-  fun loadCustomBackground(): String {
-    return prefs.getString(KEY_CUSTOM_BACKGROUND, CustomThemeColors.DEFAULT_BACKGROUND)
-      ?: CustomThemeColors.DEFAULT_BACKGROUND
-  }
-  
-  fun loadCustomForeground(): String {
-    return prefs.getString(KEY_CUSTOM_FOREGROUND, CustomThemeColors.DEFAULT_FOREGROUND)
-      ?: CustomThemeColors.DEFAULT_FOREGROUND
-  }
-  
-  fun loadCustomThemeColors(): CustomThemeColors {
-    val background = loadCustomBackground()
-    val foreground = loadCustomForeground()
-    val isDarkMode = loadCustomIsDarkMode()
-    return CustomThemeGenerator.generate(background, foreground, isDarkMode)
-  }
-
-  fun saveCustomIsDarkMode(isDarkMode: Boolean) {
-    prefs.edit().putBoolean(KEY_CUSTOM_IS_DARK_MODE, isDarkMode).apply()
-  }
-
-  fun loadCustomIsDarkMode(): Boolean {
-    // Fallback: si no existe la preferencia, inferir del fondo guardado para no
-    // romper los temas creados antes de este cambio.
-    if (!prefs.contains(KEY_CUSTOM_IS_DARK_MODE)) {
-      val bg = CustomThemeGenerator.parseHex(loadCustomBackground()) ?: Color.BLACK
-      return CustomThemeGenerator.relativeLuminance(bg) < 0.5
-    }
-    return prefs.getBoolean(KEY_CUSTOM_IS_DARK_MODE, true)
-  }
-  
-  fun hasCustomThemeColors(): Boolean {
-    return prefs.contains(KEY_CUSTOM_BACKGROUND) && prefs.contains(KEY_CUSTOM_FOREGROUND)
   }
   
   fun applyTheme(theme: String) {
     when (theme) {
       THEME_LIGHT, THEME_MULTICOLOR_LIGHT, THEME_PASTEL -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-      THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-      THEME_CUSTOM -> {
-        val colors = loadCustomThemeColors()
-        val mode = if (colors.isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        AppCompatDelegate.setDefaultNightMode(mode)
-      }
+      THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON, THEME_ONYX -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
   }
@@ -173,7 +122,6 @@ class ThemeManager(private val context: Context) {
 
   fun isLightTheme(): Boolean {
     val currentTheme = loadTheme()
-    if (currentTheme == THEME_CUSTOM) return !loadCustomThemeColors().isDark
     return currentTheme == THEME_LIGHT || currentTheme == THEME_MULTICOLOR_LIGHT || currentTheme == THEME_PASTEL ||
         (currentTheme == THEME_SYSTEM && !isSystemInDarkMode())
   }

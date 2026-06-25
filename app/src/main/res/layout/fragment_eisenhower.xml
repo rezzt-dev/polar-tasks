@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -43,8 +43,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#FFCDD2"
-            app:cardBackgroundColor="#FFF1F0">
+            app:strokeColor="?attr/colorError"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,14 +58,14 @@
                     android:text="🔥 q1: urgente"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#C62828" />
+                    android:textColor="?attr/colorError" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="hacer de inmediato"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
@@ -91,8 +91,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#FFE082"
-            app:cardBackgroundColor="#FFF8E1">
+            app:strokeColor="?attr/colorPriorityMedium"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -106,14 +106,14 @@
                     android:text="📅 q2: planificar"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#E65100" />
+                    android:textColor="?attr/colorPriorityMedium" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="programar para despues"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
@@ -139,8 +139,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#C5CAE9"
-            app:cardBackgroundColor="#E8EAF6">
+            app:strokeColor="?attr/colorPriorityLow"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -154,14 +154,14 @@
                     android:text="🤝 q3: delegar"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#283593" />
+                    android:textColor="?attr/colorPriorityLow" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="pedir ayuda a otros"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
@@ -187,8 +187,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#CFD8DC"
-            app:cardBackgroundColor="#F5F5F5">
+            app:strokeColor="?attr/colorOnSurfaceVariant"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -202,14 +202,14 @@
                     android:text="🗑️ q4: eliminar"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#37474F" />
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="no hacer por ahora"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
