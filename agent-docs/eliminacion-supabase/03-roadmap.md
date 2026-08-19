@@ -28,17 +28,23 @@
 
 ---
 
-## Fase 0 — Preparación
+## Fase 0 — Preparación ✅ (completada 2026-08-19)
 
 **Objetivo:** punto de partida seguro y decisiones cerradas.
 
-- [ ] Commit de `agent-docs/eliminacion-supabase/` (hoy untracked) para no perder estos documentos.
-- [ ] `git checkout -b version-1.6-offline version-1.6`.
-- [ ] Releer `02-decisiones-y-estrategia.md` y confirmar D1–D8 (especial: ¿existe la app
+- [x] Commit de `agent-docs/eliminacion-supabase/` (hoy untracked) para no perder estos documentos.
+      → commit `5f65ef0` en `version-1.6-offline`.
+- [x] `git checkout -b version-1.6-offline version-1.6`.
+- [x] Releer `02-decisiones-y-estrategia.md` y confirmar D1–D8 (especial: ¿existe la app
       compañera? ¿algún dispositivo tiene build 1.6 instalada? ¿DB-2 o DB-3?).
-- [ ] En cada dispositivo con build 1.6: **exportar backup** desde la app (Ajustes → backup) como
+      → **Confirmadas 2026-08-19:** D2 = **DB-2** (migración 17→18); **no existe app compañera**
+      (D5: el proyecto Supabase se borrará en la fase final); **ningún dispositivo tiene build 1.6**
+      (sin riesgo de downgrade; DB-2 se mantiene como red de seguridad).
+- [x] En cada dispositivo con build 1.6: **exportar backup** desde la app (Ajustes → backup) como
       red de seguridad adicional, aunque la migración 17→18 conserve datos.
-- [ ] `./gradlew :app:assembleDebug` verde sobre `version-1.6` antes de tocar nada (baseline).
+      → **N/A:** confirmado que no hay dispositivos con build 1.6.
+- [x] `./gradlew :app:assembleDebug` verde sobre `version-1.6` antes de tocar nada (baseline).
+      → `BUILD SUCCESSFUL in 22s` sobre `version-1.6-offline` (= tip de `version-1.6` + commit de docs).
 
 **Salida:** rama lista, baseline compilando, datos de dispositivos a salvo.
 
