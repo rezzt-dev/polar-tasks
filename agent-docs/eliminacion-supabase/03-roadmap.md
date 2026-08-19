@@ -156,6 +156,6 @@ Device File Explorer / `adb shell dumpsys jobscheduler`).
 - Commit final: `git rm -r agent-docs/supabase-sync agent-docs/analisis-implementacion-supabase-sync.md`
   (D6) + actualización de `AGENTS.md` (Room v18).
 - Teardown del servidor (D5) **solo tras** el merge y la validación en dispositivos.
-- Merge a `main` (o la rama que gobierne releases) y decisión sobre `version-offline`.
+- Merge a `version-offline` (rama que gobierna releases — confirmado 2026-08-19; **no** a `main`).
 
 **Salida:** proyecto 100% offline, verificado, mergeado.

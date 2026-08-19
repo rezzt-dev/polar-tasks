@@ -45,7 +45,8 @@ git checkout -b version-1.6-offline version-1.6
 ### Recomendación
 
 **Estrategia A.** Nombre de rama sugerido: `version-1.6-offline`. Al validarse (doc 06), se mergea
-a `main` y `version-offline` puede quedar como referencia histórica o apuntarse al resultado.
+a **`version-offline`** (rama que gobierna las releases — confirmado por el propietario el
+2026-08-19; **no** se mergea a `main`).
 El trabajo se ejecuta sobre la copia de trabajo de la nueva rama — los documentos de
 `agent-docs/eliminacion-supabase/` deben commitearse en ella primero para no perderse al cambiar
 de rama (hoy están untracked en el working tree de `version-offline`).

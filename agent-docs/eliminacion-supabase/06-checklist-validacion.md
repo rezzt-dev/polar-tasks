@@ -130,6 +130,6 @@ Todos deben ser ciertos a la vez:
 - [ ] Borrar `SUPABASE_URL`/`SUPABASE_ANON_KEY` de `local.properties` en cada máquina de desarrollo.
 - [ ] Tras confirmar que la app compañera no lo usa (D5): borrar el proyecto en el dashboard de
       Supabase. Si se usa, documentar la dependencia y no borrar.
-- [ ] Decidir el destino de `version-offline` (referencia histórica o apuntar al resultado) y de
-      `version-1.6` (retirarla si la offline la sustituye).
-- [ ] Opcional: tag `v1.6.1-offline` sobre el merge a `main` para marcar el punto "100% offline".
+- [ ] El merge destino es `version-offline` (confirmado 2026-08-19). Decidir el destino de
+      `version-1.6` (retirarla si la offline la sustituye) y de `version-1.6-offline` tras el merge.
+- [ ] Opcional: tag `v1.6.1-offline` sobre el merge a `version-offline` para marcar el punto "100% offline".
