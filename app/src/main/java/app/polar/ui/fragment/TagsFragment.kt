@@ -67,7 +67,7 @@ class TagsFragment : Fragment() {
         val tvTitle = view.findViewById<TextView>(R.id.tvSheetTagTitle)
         val rvTasks = view.findViewById<RecyclerView>(R.id.rvSheetTasks)
 
-        tvTitle.text = "Tareas con etiqueta #$tag"
+        tvTitle.text = "tareas con etiqueta #$tag"
 
         val taskAdapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

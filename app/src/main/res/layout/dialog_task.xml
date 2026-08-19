@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:orientation="vertical"
@@ -35,12 +36,12 @@
       android:layout_height="wrap_content"
       android:orientation="vertical">
 
+      <!-- Title -->
       <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_title_hint"
-        app:boxBackgroundColor="@android:color/transparent"
-        style="@style/Widget.Material3.TextInputLayout.FilledBox">
+        style="@style/Widget.Polar.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
           android:id="@+id/etTaskTitle"
@@ -52,13 +53,13 @@
           android:maxLines="1" />
       </com.google.android.material.textfield.TextInputLayout>
 
+      <!-- Description -->
       <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/task_description_hint"
-        app:boxBackgroundColor="@android:color/transparent"
-        style="@style/Widget.Material3.TextInputLayout.FilledBox">
+        style="@style/Widget.Polar.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
           android:id="@+id/etTaskDescription"
@@ -72,14 +73,14 @@
 
       <!-- Date Picker Row -->
       <LinearLayout
+        android:id="@+id/containerDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:clickable="true"
-        android:focusable="true"
-        android:id="@+id/containerDate">
+        android:focusable="true">
 
         <ImageView
            android:layout_width="24dp"
@@ -92,21 +93,21 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="12dp"
-          android:text="Sin fecha de finalización"
           android:textSize="16sp"
-          android:textColor="?attr/colorOnSurface"/>
+          android:textColor="?attr/colorOnSurface"
+          tools:text="@string/no_due_date" />
       </LinearLayout>
 
       <!-- Recurrence Picker Row -->
       <LinearLayout
+        android:id="@+id/containerRecurrence"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:clickable="true"
-        android:focusable="true"
-        android:id="@+id/containerRecurrence">
+        android:focusable="true">
 
         <ImageView
            android:layout_width="24dp"
@@ -119,21 +120,21 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="12dp"
-          android:text="No se repite"
           android:textSize="16sp"
-          android:textColor="?attr/colorOnSurface"/>
+          android:textColor="?attr/colorOnSurface"
+          tools:text="@string/recurrence_summary_none" />
       </LinearLayout>
 
       <!-- Priority Picker Row -->
       <LinearLayout
+        android:id="@+id/containerPriority"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:clickable="true"
-        android:focusable="true"
-        android:id="@+id/containerPriority">
+        android:focusable="true">
 
         <ImageView
            android:id="@+id/ivPriorityIcon"
@@ -147,9 +148,9 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="12dp"
-          android:text="Sin prioridad"
           android:textSize="16sp"
-          android:textColor="?attr/colorOnSurface"/>
+          android:textColor="?attr/colorOnSurface"
+          tools:text="@string/priority_label_none" />
       </LinearLayout>
 
       <!-- Time Estimate Input Row -->
@@ -170,9 +171,8 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginStart="8dp"
-          android:hint="Estimación de tiempo (minutos)"
-          app:boxBackgroundColor="@android:color/transparent"
-          style="@style/Widget.Material3.TextInputLayout.FilledBox">
+          android:hint="@string/time_estimate_hint"
+          style="@style/Widget.Polar.TextInputLayout.OutlinedBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etTimeEstimate"
@@ -203,8 +203,7 @@
           android:layout_weight="1"
           android:layout_marginStart="8dp"
           android:hint="@string/tags_hint"
-          app:boxBackgroundColor="@android:color/transparent"
-          style="@style/Widget.Material3.TextInputLayout.FilledBox">
+          style="@style/Widget.Polar.TextInputLayout.OutlinedBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etTag"
@@ -258,8 +257,7 @@
           android:layout_weight="1"
           android:layout_marginStart="8dp"
           android:hint="@string/subtask_hint"
-          app:boxBackgroundColor="@android:color/transparent"
-          style="@style/Widget.Material3.TextInputLayout.FilledBox">
+          style="@style/Widget.Polar.TextInputLayout.OutlinedBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSubtaskTitle"

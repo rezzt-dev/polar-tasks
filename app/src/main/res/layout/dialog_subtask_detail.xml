@@ -25,7 +25,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"
-        android:text="Subtask content"
+        android:text="subtask content"
         android:lineSpacingMultiplier="1.4"
         android:layout_marginBottom="32dp" />
 
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:text="Sin recordatorio"
+            android:text="sin recordatorio"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurface"/>
     </LinearLayout>
@@ -68,7 +68,7 @@
             android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete"
+            android:text="delete"
             style="@style/Widget.Material3.Button.TextButton"
             android:textColor="?attr/colorError"
             android:layout_marginEnd="8dp"/>
@@ -77,14 +77,14 @@
             android:id="@+id/btnEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit"
+            android:text="edit"
             style="@style/Widget.Material3.Button.TextButton"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Done"
+            android:text="done"
             style="@style/Widget.Material3.Button.TonalButton"
             app:cornerRadius="12dp" />
 

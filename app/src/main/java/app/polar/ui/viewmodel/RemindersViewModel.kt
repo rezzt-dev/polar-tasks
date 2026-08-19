@@ -4,9 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import app.polar.R
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Reminder
 import app.polar.data.repository.ReminderRepository
+import app.polar.data.sync.SyncManager
+import app.polar.data.sync.touched
 import app.polar.receiver.AlarmReceiver
 import kotlinx.coroutines.launch
 
@@ -25,7 +28,8 @@ import kotlinx.coroutines.flow.flowOf
 class RemindersViewModel @Inject constructor(
     application: Application,
     private val repository: ReminderRepository,
-    private val alarmHelper: app.polar.util.AlarmManagerHelper
+    private val alarmHelper: app.polar.util.AlarmManagerHelper,
+    private val syncManager: SyncManager
 ) : AndroidViewModel(application) {
 
     val allReminders: StateFlow<List<Reminder>> = repository.allRemindersFlow
@@ -71,6 +75,7 @@ class RemindersViewModel @Inject constructor(
     private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
         try {
             block()
+            app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
         } catch (e: Exception) {
             e.printStackTrace()
             _errorMessage.value = "Error: ${e.message}"
@@ -103,7 +108,7 @@ class RemindersViewModel @Inject constructor(
     }
 
     fun update(reminder: Reminder) = safeLaunch {
-        repository.update(reminder)
+        repository.update(reminder.touched())
         if (!reminder.isCompleted) {
             alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
         } else {
@@ -112,24 +117,47 @@ class RemindersViewModel @Inject constructor(
     }
 
     fun moveToTrash(reminder: Reminder) = safeLaunch {
-        repository.softDelete(reminder.id)
+        repository.softDelete(reminder)
         alarmHelper.cancelReminderAlarm(reminder.id)
     }
 
     fun restoreFromTrash(reminder: Reminder) = safeLaunch {
-        repository.restore(reminder.id)
+        repository.restore(reminder)
         if (!reminder.isCompleted) {
             alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
         }
     }
     
-    fun emptyTrash() = safeLaunch {
-        repository.emptyTrash()
+    // Forces a sync attempt first so as many trashed reminders as possible have their tombstone
+    // confirmed on the server before the local purge runs (see repository.emptyTrash /
+    // ReminderDao.emptyTrash for why the purge itself refuses dirty rows).
+    fun emptyTrash() = viewModelScope.launch {
+        try {
+            runCatching { syncManager.sync() }
+            val stillInTrash = repository.emptyTrash()
+            if (stillInTrash > 0) {
+                _errorMessage.value = getApplication<Application>().getString(R.string.trash_purge_pending_sync_count, stillInTrash)
+            }
+            app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _errorMessage.value = "Error: ${e.message}"
+        }
     }
-    
-    fun permanentDelete(reminder: Reminder) = safeLaunch {
-        repository.permanentDelete(reminder.id)
-        alarmHelper.cancelReminderAlarm(reminder.id)
+
+    fun permanentDelete(reminder: Reminder) = viewModelScope.launch {
+        try {
+            runCatching { syncManager.sync() }
+            val purged = repository.permanentDelete(reminder.id)
+            alarmHelper.cancelReminderAlarm(reminder.id)
+            if (!purged) {
+                _errorMessage.value = getApplication<Application>().getString(R.string.trash_item_purge_pending_sync)
+            }
+            app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _errorMessage.value = "Error: ${e.message}"
+        }
     }
 
     fun getDeletedReminders(): LiveData<List<Reminder>> {

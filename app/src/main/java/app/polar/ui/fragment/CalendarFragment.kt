@@ -212,7 +212,7 @@ class CalendarFragment : Fragment() {
         
         // Update "Tasks for [Date]" title
         val format = java.text.SimpleDateFormat("EEEE, d MMMM", Locale.getDefault())
-        val dateString = format.format(java.util.Date(selectedDate)).replaceFirstChar { it.uppercase() }
+        val dateString = format.format(java.util.Date(selectedDate))
         // We can just set it to the date
         binding.tvSelectedDateTasks.text = dateString
     }
@@ -220,7 +220,7 @@ class CalendarFragment : Fragment() {
     private fun updateCalendar() {
         // Update Title (Spanish/Locale respected)
         val dateFormat = java.text.SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-        binding.tvMonthYear.text = dateFormat.format(currentCalendar.time).replaceFirstChar { it.uppercase() }
+        binding.tvMonthYear.text = dateFormat.format(currentCalendar.time)
 
         // Generate Days
         daysList = generateMonthDays(currentCalendar)

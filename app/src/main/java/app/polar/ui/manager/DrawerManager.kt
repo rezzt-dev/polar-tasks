@@ -12,10 +12,13 @@ import app.polar.ui.adapter.TaskListAdapter
 import app.polar.ui.viewmodel.RemindersViewModel
 import app.polar.ui.viewmodel.TaskListViewModel
 import app.polar.ui.viewmodel.TaskViewModel
-import app.polar.util.DragDropHelper
-import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.appcompat.R as AppCompatR
+import app.polar.util.TaskSwipeHelper
+import com.google.android.material.R as MaterialR
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import android.widget.PopupMenu
+import androidx.core.graphics.ColorUtils
 
 class DrawerManager(
     private val activity: AppCompatActivity,
@@ -48,14 +51,22 @@ class DrawerManager(
     }
 
     private fun setupDrawerBlur() {
-        binding.drawerLayout.setScrimColor(android.graphics.Color.parseColor("#99000000"))
+        val mainContent = binding.root.findViewById<android.view.View>(R.id.mainContent)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            val mainContent = binding.root.findViewById<android.view.View>(R.id.mainContent)
+            // On Android 12+ the area behind the drawer becomes a see-through blur of the
+            // activity content instead of the usual dim scrim.
+            binding.drawerLayout.setScrimColor(android.graphics.Color.TRANSPARENT)
             binding.drawerLayout.addDrawerListener(object : androidx.drawerlayout.widget.DrawerLayout.DrawerListener {
                 override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-                    if (slideOffset > 0) {
-                        val radius = slideOffset * 20f + 1f
-                        mainContent.setRenderEffect(android.graphics.RenderEffect.createBlurEffect(radius, radius, android.graphics.Shader.TileMode.CLAMP))
+                    if (slideOffset > 0f) {
+                        val radius = (slideOffset * MAX_BLUR_RADIUS).coerceAtLeast(MIN_BLUR_RADIUS)
+                        mainContent.setRenderEffect(
+                            android.graphics.RenderEffect.createBlurEffect(
+                                radius,
+                                radius,
+                                android.graphics.Shader.TileMode.CLAMP
+                            )
+                        )
                     } else {
                         mainContent.setRenderEffect(null)
                     }
@@ -69,6 +80,10 @@ class DrawerManager(
                 }
                 override fun onDrawerStateChanged(newState: Int) {}
             })
+        } else {
+            // Fallback for older versions: a subtle theme-aware dim.
+            val scrimBase = resolveThemeColor(MaterialR.attr.colorOnSurface)
+            binding.drawerLayout.setScrimColor(ColorUtils.setAlphaComponent(scrimBase, FALLBACK_SCRIM_ALPHA))
         }
     }
 
@@ -90,29 +105,50 @@ class DrawerManager(
             adapter = taskListAdapter
         }
 
-        val dragDropHelper = DragDropHelper(
-            onItemMove = { from, to -> taskListAdapter.onItemMove(from, to) },
-            onMoveFinished = {
-                val taskLists = taskListAdapter.currentList.mapIndexed { index, taskList ->
-                    taskList.copy(orderIndex = index)
+        val swipeHelper = TaskSwipeHelper(
+            rightSwipeConfig = TaskSwipeHelper.SwipeConfig(
+                backgroundColorAttr = AppCompatR.attr.colorPrimary,
+                iconRes = R.drawable.ic_edit,
+                iconTintAttr = MaterialR.attr.colorOnPrimary
+            ),
+            leftSwipeConfig = TaskSwipeHelper.SwipeConfig(
+                backgroundColorAttr = R.attr.colorError,
+                iconRes = R.drawable.ic_trash
+            ),
+            getDragFlagsForHolder = {
+                androidx.recyclerview.widget.ItemTouchHelper.UP or androidx.recyclerview.widget.ItemTouchHelper.DOWN
+            },
+            getSwipeFlagsForHolder = {
+                androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT
+            },
+            onMoveCallback = { from, to ->
+                taskListAdapter.onItemMove(from, to)
+                true
+            },
+            onSwipedRight = { position ->
+                val taskList = taskListAdapter.currentList.getOrNull(position)
+                if (taskList != null) {
+                    onNavigate(NavigationEvent.EditList(taskList))
+                    // Postpone the UI update to avoid IllegalStateException while RecyclerView
+                    // is still processing the swipe animation.
+                    rvTaskLists.post { taskListAdapter.notifyItemChanged(position) }
+                }
+            },
+            onSwipedLeft = { position ->
+                val taskList = taskListAdapter.currentList.getOrNull(position)
+                if (taskList != null) {
+                    showDeleteListConfirmation(taskList, position)
+                }
+            },
+            onClearViewCallback = { _, _ ->
+                val taskLists = taskListAdapter.currentList.mapIndexed { index, list ->
+                    list.copy(orderIndex = index)
                 }
                 taskViewModel.updateTaskListsOrder(taskLists)
             },
-            onSwiped = { position, direction ->
-                val taskList = taskListAdapter.currentList[position]
-                if (direction == ItemTouchHelper.START) {
-                    taskListViewModel.deleteTaskList(taskList)
-                    Snackbar.make(binding.drawerLayout, activity.getString(R.string.list_deleted), Snackbar.LENGTH_SHORT).show()
-                    // If current list was deleted, navigation handling is needed in MainActivity via callback usually?
-                    // Currently we don't know the current list ID here easily without tracking it.
-                    // For now, simple delete. MainActivity observes onDelete logic if implemented, or we rely on ViewModel logic.
-                } else {
-                    onNavigate(NavigationEvent.EditList(taskList))
-                    taskListAdapter.notifyItemChanged(position)
-                }
-            }
+            swipeThreshold = 0.25f
         )
-        ItemTouchHelper(dragDropHelper).attachToRecyclerView(rvTaskLists)
+        androidx.recyclerview.widget.ItemTouchHelper(swipeHelper).attachToRecyclerView(rvTaskLists)
     }
 
     private fun setupStaticItems() {
@@ -149,6 +185,24 @@ class DrawerManager(
             onNavigate(NavigationEvent.Trash)
             closeDrawer()
         }
+    }
+
+    private fun showDeleteListConfirmation(taskList: TaskList, position: Int) {
+        val rvTaskLists = binding.root.findViewById<RecyclerView>(R.id.rvTaskLists)
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.delete_list)
+            .setMessage(R.string.confirm_delete)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                taskListViewModel.deleteTaskList(taskList)
+                Snackbar.make(binding.drawerLayout, activity.getString(R.string.list_deleted), Snackbar.LENGTH_SHORT).show()
+            }
+            .setNegativeButton(R.string.cancel) { _, _ ->
+                rvTaskLists.post { taskListAdapter.notifyItemChanged(position) }
+            }
+            .setOnCancelListener {
+                rvTaskLists.post { taskListAdapter.notifyItemChanged(position) }
+            }
+            .show()
     }
 
     private fun observeData() {
@@ -201,4 +255,16 @@ class DrawerManager(
     }
     
     fun isDrawerOpen(): Boolean = binding.drawerLayout.isDrawerOpen(GravityCompat.START)
+
+    private fun resolveThemeColor(attr: Int): Int {
+        val typedValue = android.util.TypedValue()
+        activity.theme.resolveAttribute(attr, typedValue, true)
+        return typedValue.data
+    }
+
+    companion object {
+        private const val MAX_BLUR_RADIUS = 24f
+        private const val MIN_BLUR_RADIUS = 1f
+        private const val FALLBACK_SCRIM_ALPHA = 100
+    }
 }

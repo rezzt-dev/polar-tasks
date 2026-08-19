@@ -3,6 +3,8 @@ package app.polar.data.repository
 import androidx.lifecycle.LiveData
 import app.polar.data.dao.ReminderDao
 import app.polar.data.entity.Reminder
+import app.polar.data.sync.touchedDeleted
+import app.polar.data.sync.touchedRestored
 
 import javax.inject.Inject
 
@@ -26,29 +28,31 @@ class ReminderRepository @Inject constructor(private val reminderDao: ReminderDa
         reminderDao.update(reminder)
     }
 
-    suspend fun delete(reminder: Reminder) {
-        reminderDao.delete(reminder)
-    }
-
     suspend fun getReminderById(id: Long): Reminder? {
         return reminderDao.getReminderById(id)
     }
 
     // Trash operations
-    suspend fun softDelete(id: Long) {
-        reminderDao.softDelete(id)
+    suspend fun softDelete(reminder: Reminder) {
+        reminderDao.update(reminder.touchedDeleted())
     }
 
-    suspend fun restore(id: Long) {
-        reminderDao.restore(id)
+    suspend fun restore(reminder: Reminder) {
+        reminderDao.update(reminder.touchedRestored())
     }
 
-    suspend fun permanentDelete(id: Long) {
-        reminderDao.permanentDelete(id)
+    // Returns whether the row was actually purged; false if its tombstone hasn't reached
+    // Supabase yet (see ReminderDao.permanentDelete and
+    // agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 3.1).
+    suspend fun permanentDelete(id: Long): Boolean {
+        return reminderDao.permanentDelete(id) > 0
     }
 
-    suspend fun emptyTrash() {
+    // Returns how many trashed reminders are still stuck after the purge attempt (unsynced
+    // tombstone) so the caller can warn the user instead of silently leaving them in the trash.
+    suspend fun emptyTrash(): Int {
         reminderDao.emptyTrash()
+        return reminderDao.getTrashCount()
     }
 
     fun getDeletedReminders(): LiveData<List<Reminder>> {

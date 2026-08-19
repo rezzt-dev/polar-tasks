@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.polar.R
 import app.polar.data.entity.Task
+import app.polar.databinding.ItemCompletedHeaderBinding
 import app.polar.databinding.ItemTaskBinding
 import app.polar.ui.viewmodel.TaskViewModel
 import com.google.android.material.R as MaterialR
@@ -18,23 +19,20 @@ class TaskAdapter(
     private val viewModel: TaskViewModel,
     private val onCheckChanged: (Task, Boolean, android.view.View) -> Unit,
     private val onItemLongClick: (Task) -> Boolean,
-    private val onItemClick: (Task) -> Unit = {}
+    private val onItemClick: (Task) -> Unit = {},
+    private val onCompletedHeaderClick: () -> Unit = {}
 ) : ListAdapter<TaskListItem, RecyclerView.ViewHolder>(TaskListItemDiffCallback()) {
 
     companion object {
         private const val VIEW_TYPE_HEADER = 0
-        private const val VIEW_TYPE_ITEM = 1
-
-        // Pre-computed once — Color.parseColor is not free, avoid calling it on every bind()
-        private val COLOR_PRIORITY_HIGH   = android.graphics.Color.parseColor("#F44336")
-        private val COLOR_PRIORITY_MEDIUM = android.graphics.Color.parseColor("#FF9800")
-        private val COLOR_PRIORITY_LOW    = android.graphics.Color.parseColor("#2196F3")
-        private val COLOR_DATE_OVERDUE    = android.graphics.Color.parseColor("#B3261E")
+        private const val VIEW_TYPE_COMPLETED_HEADER = 1
+        private const val VIEW_TYPE_ITEM = 2
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is TaskListItem.Header -> VIEW_TYPE_HEADER
+            is TaskListItem.CompletedHeader -> VIEW_TYPE_COMPLETED_HEADER
             is TaskListItem.Item -> VIEW_TYPE_ITEM
         }
     }
@@ -44,6 +42,12 @@ class TaskAdapter(
             VIEW_TYPE_HEADER -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.item_header, parent, false)
                 HeaderViewHolder(view)
+            }
+            VIEW_TYPE_COMPLETED_HEADER -> {
+                val binding = ItemCompletedHeaderBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+                CompletedHeaderViewHolder(binding, onCompletedHeaderClick)
             }
             VIEW_TYPE_ITEM -> {
                 val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -56,6 +60,7 @@ class TaskAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is TaskListItem.Header -> (holder as HeaderViewHolder).bind(item.title)
+            is TaskListItem.CompletedHeader -> (holder as CompletedHeaderViewHolder).bind(item.count, item.expanded)
             is TaskListItem.Item -> (holder as TaskViewHolder).bind(
                 task = item.task,
                 isBlocked = item.isBlocked,
@@ -77,6 +82,39 @@ class TaskAdapter(
         private val textView: TextView = itemView as TextView
         fun bind(title: String) {
             textView.text = title
+        }
+    }
+
+    class CompletedHeaderViewHolder(
+        private val binding: ItemCompletedHeaderBinding,
+        private val onClick: () -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        private var currentExpanded = false
+
+        init {
+            binding.root.setOnClickListener { onClick() }
+            // Ensure the arrow starts in the collapsed position
+            binding.ivCompletedHeaderArrow.rotation = 0f
+        }
+
+        fun bind(count: Int, expanded: Boolean) {
+            binding.tvCompletedHeaderTitle.text = binding.root.context.getString(
+                R.string.completed_tasks_header,
+                count
+            )
+
+            if (expanded != currentExpanded) {
+                val targetRotation = if (expanded) 180f else 0f
+                binding.ivCompletedHeaderArrow.animate()
+                    .rotation(targetRotation)
+                    .setDuration(200)
+                    .setInterpolator(android.view.animation.DecelerateInterpolator())
+                    .start()
+                currentExpanded = expanded
+            } else {
+                binding.ivCompletedHeaderArrow.rotation = if (expanded) 180f else 0f
+            }
         }
     }
 
@@ -102,6 +140,10 @@ class TaskAdapter(
         private val colorPrimary: Int
         private val colorOnSurface: Int
         private val colorSurfaceVariant: Int
+        private val colorPriorityHigh: Int
+        private val colorPriorityMedium: Int
+        private val colorPriorityLow: Int
+        private val colorDateOverdue: Int
 
         init {
             binding.recyclerSubtasks.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(binding.root.context)
@@ -109,12 +151,17 @@ class TaskAdapter(
             binding.recyclerSubtasks.itemAnimator = null
 
             val ctx = binding.root.context
-            ctx.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
-            colorPrimary = typedValue.data
-            ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-            colorOnSurface = typedValue.data
-            ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
-            colorSurfaceVariant = typedValue.data
+            fun resolve(attr: Int): Int {
+                ctx.theme.resolveAttribute(attr, typedValue, true)
+                return typedValue.data
+            }
+            colorPrimary = resolve(android.R.attr.colorPrimary)
+            colorOnSurface = resolve(com.google.android.material.R.attr.colorOnSurface)
+            colorSurfaceVariant = resolve(com.google.android.material.R.attr.colorSurfaceVariant)
+            colorPriorityHigh = resolve(app.polar.R.attr.colorPriorityHigh)
+            colorPriorityMedium = resolve(app.polar.R.attr.colorPriorityMedium)
+            colorPriorityLow = resolve(app.polar.R.attr.colorPriorityLow)
+            colorDateOverdue = resolve(app.polar.R.attr.colorDateOverdue)
         }
 
         fun bind(task: Task, isBlocked: Boolean = false, isChainMode: Boolean = false, isFirst: Boolean = false, isLast: Boolean = false) {
@@ -188,11 +235,11 @@ class TaskAdapter(
             binding.cbTaskComplete.setOnCheckedChangeListener(null)
             binding.cbTaskComplete.isChecked = task.completed
 
-            // Priority tinting — uses pre-computed color constants (no parseColor on hot path)
+            // Priority tinting — resolved from theme attributes, no hardcoded hex values
             val priorityColor = when (task.priority) {
-                3 -> COLOR_PRIORITY_HIGH
-                2 -> COLOR_PRIORITY_MEDIUM
-                1 -> COLOR_PRIORITY_LOW
+                3 -> colorPriorityHigh
+                2 -> colorPriorityMedium
+                1 -> colorPriorityLow
                 else -> colorOnSurface
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
@@ -224,7 +271,7 @@ class TaskAdapter(
 
                 when {
                     !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) ->
-                        binding.tvTaskDate.setTextColor(COLOR_DATE_OVERDUE)
+                        binding.tvTaskDate.setTextColor(colorDateOverdue)
                     app.polar.util.DateUtils.isToday(task.dueDate) ->
                         binding.tvTaskDate.setTextColor(colorPrimary)
                     else ->
@@ -255,13 +302,18 @@ class TaskAdapter(
                 }
             }
 
-            // Click listeners
+            // Click listeners: las tareas completadas siguen siendo editables mediante
+            // clic largo, clic en la fila o el botón de menú de tres puntos.
             if (!isBlocked) {
                 binding.root.setOnLongClickListener { onItemLongClick(task) }
                 binding.root.setOnClickListener { onItemClick(task) }
+                binding.btnTaskOverflow.setOnClickListener { onItemLongClick(task) }
+                binding.btnTaskOverflow.visibility = android.view.View.VISIBLE
             } else {
                 binding.root.setOnLongClickListener(null)
                 binding.root.setOnClickListener(null)
+                binding.btnTaskOverflow.setOnClickListener(null)
+                binding.btnTaskOverflow.visibility = android.view.View.GONE
             }
         }
         
@@ -283,6 +335,7 @@ class TaskAdapter(
         
         // Block dragging headers or dropping onto headers
         if (itemFrom is TaskListItem.Header || itemTo is TaskListItem.Header) return false
+        if (itemFrom is TaskListItem.CompletedHeader || itemTo is TaskListItem.CompletedHeader) return false
         
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
@@ -307,12 +360,15 @@ class TaskListItemDiffCallback : DiffUtil.ItemCallback<TaskListItem>() {
         // appear "stuck" until the user navigates away. By treating a completed-state change
         // as a different item, DiffUtil does a REMOVE+ADD which destroys and recreates the
         // ViewHolder, naturally clearing all animation state.
-        return if (oldItem is TaskListItem.Item && newItem is TaskListItem.Item) {
-            oldItem.task.id == newItem.task.id && oldItem.task.completed == newItem.task.completed
-        } else if (oldItem is TaskListItem.Header && newItem is TaskListItem.Header) {
-            oldItem.title == newItem.title
-        } else {
-            false
+        return when {
+            oldItem is TaskListItem.Item && newItem is TaskListItem.Item -> {
+                oldItem.task.id == newItem.task.id && oldItem.task.completed == newItem.task.completed
+            }
+            oldItem is TaskListItem.Header && newItem is TaskListItem.Header -> {
+                oldItem.title == newItem.title
+            }
+            oldItem is TaskListItem.CompletedHeader && newItem is TaskListItem.CompletedHeader -> true
+            else -> false
         }
     }
 

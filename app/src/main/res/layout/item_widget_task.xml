@@ -22,6 +22,6 @@
         android:textColor="#1F1F1F"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="Task Title"/>
+        android:text="task title"/>
 
 </LinearLayout>

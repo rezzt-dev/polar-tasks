@@ -43,7 +43,7 @@
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:text="Task Title"
+                android:text="task title"
                 android:layout_marginBottom="4dp"/>
 
             <TextView
@@ -54,7 +54,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:maxLines="3"
                 android:ellipsize="end"
-                android:text="This is a detailed description of the task that might span multiple lines."
+                android:text="this is a detailed description of the task that might span multiple lines."
                 android:layout_marginBottom="8dp"
                 android:visibility="gone"/>
 
@@ -74,7 +74,7 @@
                     android:backgroundTint="?attr/colorSurfaceContainerHigh"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="4dp"
-                    android:text="Today"
+                    android:text="today"
                     android:layout_marginEnd="8dp"
                     android:visibility="gone"/>
 

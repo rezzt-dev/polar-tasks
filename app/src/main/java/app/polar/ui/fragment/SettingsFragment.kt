@@ -8,17 +8,30 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import app.polar.R
 import app.polar.databinding.FragmentSettingsBinding
+import app.polar.ui.activity.AuthActivity
 import app.polar.util.ThemeManager
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
   private var _binding: FragmentSettingsBinding? = null
   private val binding get() = _binding!!
   private lateinit var themeManager: ThemeManager
+  private var lastAppliedTheme: String = ""
+
+  @Inject lateinit var supabaseClient: SupabaseClient
+  @Inject lateinit var syncManager: app.polar.data.sync.SyncManager
+  @Inject lateinit var syncPrefs: app.polar.data.sync.SyncPrefs
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -32,7 +45,10 @@ class SettingsFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     themeManager = ThemeManager(requireContext())
+    lastAppliedTheme = themeManager.loadTheme()
 
+    setupAccountSettings()
+    setupSyncStatus()
     setupThemeSelection()
     setupFontSelection()
     setupCheckboxStyle()
@@ -40,6 +56,170 @@ class SettingsFragment : Fragment() {
     setupNotificationSettings()
     setupBackupSettings()
     setupLanguageSelection()
+    observeAccountStatus()
+    observeSyncStatus()
+  }
+
+  // Reacts to sign-in/sign-out/session expiration as they happen instead of only re-reading the
+  // status when this fragment happens to resume (agent-docs/analisis-implementacion-supabase-
+  // sync.md, hallazgo 4.11).
+  private fun observeAccountStatus() {
+    viewLifecycleOwner.lifecycleScope.launch {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        supabaseClient.auth.sessionStatus.collect {
+          updateAccountStatus()
+        }
+      }
+    }
+  }
+
+  private fun updateAccountStatus() {
+    val email = supabaseClient.auth.currentUserOrNull()?.email
+    binding.tvAccountStatus.text = if (email != null) {
+      getString(R.string.account_signed_in_as, email)
+    } else {
+      getString(R.string.account_not_signed_in)
+    }
+  }
+
+  private fun setupAccountSettings() {
+    updateAccountStatus()
+    binding.btnAccount.setOnClickListener {
+      startActivity(Intent(requireContext(), AuthActivity::class.java))
+    }
+    binding.btnCloudFullOverwrite.setOnClickListener {
+      onCloudFullOverwriteClicked()
+    }
+  }
+
+  private fun onCloudFullOverwriteClicked() {
+    if (supabaseClient.auth.currentUserOrNull() == null) {
+      Snackbar.make(binding.root, getString(R.string.cloud_full_overwrite_requires_sign_in), Snackbar.LENGTH_SHORT).show()
+      return
+    }
+    MaterialAlertDialogBuilder(requireContext())
+      .setIcon(R.drawable.ic_stat_error)
+      .setTitle(getString(R.string.cloud_full_overwrite_warning_title))
+      .setMessage(getString(R.string.cloud_full_overwrite_warning_message))
+      .setPositiveButton(getString(R.string.cloud_full_overwrite_confirm)) { dialog, _ ->
+        dialog.dismiss()
+        performCloudFullOverwrite()
+      }
+      .setNegativeButton(getString(R.string.cancel), null)
+      .show()
+  }
+
+  private fun performCloudFullOverwrite() {
+    val progressSnackbar = Snackbar.make(binding.root, getString(R.string.cloud_full_overwrite_in_progress), Snackbar.LENGTH_INDEFINITE)
+    progressSnackbar.show()
+    viewLifecycleOwner.lifecycleScope.launch {
+      val result = syncManager.pushAllOverwrite()
+      progressSnackbar.dismiss()
+      if (result.isSuccess) {
+        Snackbar.make(binding.root, getString(R.string.cloud_full_overwrite_success), Snackbar.LENGTH_LONG).show()
+      } else {
+        val detail = result.exceptionOrNull()?.message
+        val message = if (detail.isNullOrBlank()) {
+          getString(R.string.cloud_full_overwrite_error)
+        } else {
+          getString(R.string.cloud_full_overwrite_error) + ": " + detail
+        }
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+      }
+    }
+  }
+
+  // Non-destructive "sincronizar ahora" + last-sync status row (hallazgo 4.9), and the dismiss
+  // action for the lost-conflicts warning (hallazgo 4.3).
+  private fun setupSyncStatus() {
+    binding.btnSyncNow.setOnClickListener { onSyncNowClicked() }
+    binding.btnDismissSyncConflictWarning.setOnClickListener {
+      syncPrefs.lostConflictsCount = 0
+    }
+    binding.btnCloudFullDownload.setOnClickListener { onCloudFullDownloadClicked() }
+  }
+
+  private fun onSyncNowClicked() {
+    if (supabaseClient.auth.currentUserOrNull() == null) {
+      Snackbar.make(binding.root, getString(R.string.sync_requires_sign_in), Snackbar.LENGTH_SHORT).show()
+      return
+    }
+    Snackbar.make(binding.root, getString(R.string.sync_status_syncing), Snackbar.LENGTH_SHORT).show()
+    app.polar.worker.SyncWorker.triggerImmediateSync(requireContext())
+  }
+
+  // Reacts to SyncPrefs writes — from this fragment's own "sincronizar ahora" tap or from the
+  // background SyncWorker finishing a cycle — the same reactive pattern already used for
+  // supabaseClient.auth.sessionStatus in observeAccountStatus() (hallazgo 4.11), instead of only
+  // refreshing on a fixed schedule.
+  private fun observeSyncStatus() {
+    viewLifecycleOwner.lifecycleScope.launch {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        syncPrefs.changes().collect {
+          updateSyncStatus()
+        }
+      }
+    }
+  }
+
+  private fun updateSyncStatus() {
+    val error = syncPrefs.lastSyncError
+    val lastSuccess = syncPrefs.lastSyncSuccessAt
+    binding.tvSyncStatus.text = when {
+      error != null -> getString(R.string.sync_status_error, error)
+      lastSuccess == 0L -> getString(R.string.sync_status_never)
+      else -> {
+        val relative = android.text.format.DateUtils.getRelativeTimeSpanString(
+          lastSuccess,
+          System.currentTimeMillis(),
+          android.text.format.DateUtils.MINUTE_IN_MILLIS
+        )
+        getString(R.string.sync_status_last_success, relative)
+      }
+    }
+
+    val lostConflicts = syncPrefs.lostConflictsCount
+    binding.layoutSyncConflictWarning.visibility = if (lostConflicts > 0) View.VISIBLE else View.GONE
+    if (lostConflicts > 0) {
+      binding.tvSyncConflictWarning.text = getString(R.string.sync_conflicts_lost_message, lostConflicts)
+    }
+  }
+
+  private fun onCloudFullDownloadClicked() {
+    if (supabaseClient.auth.currentUserOrNull() == null) {
+      Snackbar.make(binding.root, getString(R.string.cloud_full_download_requires_sign_in), Snackbar.LENGTH_SHORT).show()
+      return
+    }
+    MaterialAlertDialogBuilder(requireContext())
+      .setIcon(R.drawable.ic_stat_error)
+      .setTitle(getString(R.string.cloud_full_download_warning_title))
+      .setMessage(getString(R.string.cloud_full_download_warning_message))
+      .setPositiveButton(getString(R.string.cloud_full_download_confirm)) { dialog, _ ->
+        dialog.dismiss()
+        performCloudFullDownload()
+      }
+      .setNegativeButton(getString(R.string.cancel), null)
+      .show()
+  }
+
+  private fun performCloudFullDownload() {
+    val progressSnackbar = Snackbar.make(binding.root, getString(R.string.cloud_full_download_in_progress), Snackbar.LENGTH_INDEFINITE)
+    progressSnackbar.show()
+    viewLifecycleOwner.lifecycleScope.launch {
+      val result = syncManager.pullAllOverwrite()
+      progressSnackbar.dismiss()
+      if (result.isSuccess) {
+        Snackbar.make(binding.root, getString(R.string.cloud_full_download_success), Snackbar.LENGTH_LONG).show()
+      } else {
+        val detail = result.exceptionOrNull()?.message
+        val message = if (detail.isNullOrBlank()) {
+          getString(R.string.cloud_full_download_error)
+        } else {
+          getString(R.string.cloud_full_download_error) + ": " + detail
+        }
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+      }
+    }
   }
 
   private fun setupThemeSelection() {
@@ -49,7 +229,8 @@ class SettingsFragment : Fragment() {
       getString(R.string.theme_multicolor_light) to ThemeManager.THEME_MULTICOLOR_LIGHT,
       getString(R.string.theme_multicolor_dark) to ThemeManager.THEME_MULTICOLOR_DARK,
       getString(R.string.theme_pastel) to ThemeManager.THEME_PASTEL,
-      getString(R.string.theme_neon) to ThemeManager.THEME_NEON
+      getString(R.string.theme_neon) to ThemeManager.THEME_NEON,
+      getString(R.string.theme_onyx) to ThemeManager.THEME_ONYX
     )
     val themeLabels = themeEntries.keys.toTypedArray()
     val themeValues = themeEntries.values.toList()
@@ -133,9 +314,9 @@ class SettingsFragment : Fragment() {
         
         // Actualizar el icono de previsualización en el menú
         if (currentStyle == ThemeManager.CHECKBOX_CIRCULAR) {
-            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_check_circle)
+            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_settings_checkbox_circular)
         } else {
-            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_check_box)
+            binding.ivCheckboxIconPreview.setImageResource(R.drawable.ic_settings_checkbox)
         }
     }
     updateLabel()
@@ -353,18 +534,18 @@ class SettingsFragment : Fragment() {
     val currentLocale = sharedPrefs.getString("app_locale", "es") ?: "es"
 
     val langEntries = linkedMapOf(
-      "Castellano" to "es",
-      "English (UK)" to "en-rGB",
-      "English (US)" to "en-rUS",
-      "Deutsch" to "de",
-      "Français" to "fr"
+      "castellano" to "es",
+      "english (uk)" to "en-rGB",
+      "english (us)" to "en-rUS",
+      "deutsch" to "de",
+      "francais" to "fr"
     )
     val langLabels = langEntries.keys.toTypedArray()
     val langValues = langEntries.values.toList()
 
     fun updateLabel() {
         val locale = sharedPrefs.getString("app_locale", "es") ?: "es"
-        val label = langEntries.entries.find { it.value == locale }?.key ?: "Español"
+        val label = langEntries.entries.find { it.value == locale }?.key ?: "español"
         binding.tvLanguageValue.text = label
     }
     updateLabel()
@@ -384,6 +565,18 @@ class SettingsFragment : Fragment() {
         }
         .setNegativeButton(getString(R.string.cancel), null)
         .show()
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    // Si el tema cambió mientras el fragmento no estaba visible, recrear la
+    // activity para aplicarlo en caliente sin que el usuario tenga que cerrar y
+    // volver a abrir la app.
+    val currentTheme = themeManager.loadTheme()
+    if (currentTheme != lastAppliedTheme) {
+      lastAppliedTheme = currentTheme
+      requireActivity().recreate()
     }
   }
 

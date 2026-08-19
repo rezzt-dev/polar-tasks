@@ -12,7 +12,14 @@
     <item name="colorSecondaryContainer">@color/light_c4_border</item> <!-- Gray for Tonal Button -->
     <item name="colorOnSecondaryContainer">@color/light_c5_foreground</item> <!-- Dark Text -->
     <item name="colorError">@color/color_error</item>
-    
+    <item name="colorSuccess">@color/light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
     <!-- 1. Background -->
     <item name="android:colorBackground">@color/light_c1_background</item>
     <item name="colorOnBackground">@color/light_c5_foreground</item>
@@ -58,7 +65,14 @@
     <item name="colorSecondaryContainer">@color/multi_light_secondary_container</item>
     <item name="colorOnSecondaryContainer">@color/multi_light_on_secondary_container</item>
     <item name="colorError">@color/color_error</item>
-    
+    <item name="colorSuccess">@color/multi_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
     <item name="android:colorBackground">@color/multi_light_background</item>
     <item name="colorOnBackground">@color/multi_light_foreground</item>
     
@@ -97,7 +111,14 @@
     <item name="colorSecondaryContainer">@color/multi_dark_secondary_container</item>
     <item name="colorOnSecondaryContainer">@color/multi_dark_on_secondary_container</item>
     <item name="colorError">@color/color_error</item>
-    
+    <item name="colorSuccess">@color/multi_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
     <item name="android:colorBackground">@color/multi_dark_background</item>
     <item name="colorOnBackground">@color/multi_dark_foreground</item>
     
@@ -136,7 +157,14 @@
     <item name="colorSecondaryContainer">@color/pastel_secondary_container</item>
     <item name="colorOnSecondaryContainer">@color/pastel_on_secondary_container</item>
     <item name="colorError">@color/pastel_error</item>
-    
+    <item name="colorSuccess">@color/pastel_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
     <item name="android:colorBackground">@color/pastel_background</item>
     <item name="colorOnBackground">@color/pastel_foreground</item>
     
@@ -175,7 +203,14 @@
     <item name="colorSecondaryContainer">@color/neon_secondary_container</item>
     <item name="colorOnSecondaryContainer">@color/neon_on_secondary_container</item>
     <item name="colorError">@color/neon_error</item>
-    
+    <item name="colorSuccess">@color/neon_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
     <item name="android:colorBackground">@color/neon_background</item>
     <item name="colorOnBackground">@color/neon_foreground</item>
     
@@ -200,6 +235,54 @@
     <item name="taskBorder">@color/neon_border</item>
     <item name="mainBorder">@color/neon_border</item>
     <item name="buttonBackground">@color/neon_primary</item>
+  </style>
+
+  <!-- Onyx Dark Theme -->
+  <style name="Theme.Polar.Onyx" parent="Theme.Material3.Dark.NoActionBar">
+    <item name="colorPrimary">@color/onyx_primary</item>
+    <item name="colorOnPrimary">@color/onyx_on_primary</item>
+    <item name="colorPrimaryContainer">@color/onyx_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/onyx_on_primary_container</item>
+
+    <item name="colorSecondary">@color/onyx_secondary</item>
+    <item name="colorOnSecondary">@color/onyx_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/onyx_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/onyx_on_secondary_container</item>
+    <item name="colorError">@color/onyx_error</item>
+    <item name="colorOnError">@color/onyx_on_error</item>
+    <item name="colorSuccess">@color/onyx_success</item>
+    <item name="colorOnSuccess">@color/onyx_on_success</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
+    <item name="android:colorBackground">@color/onyx_background</item>
+    <item name="colorOnBackground">@color/onyx_foreground</item>
+
+    <item name="colorSurface">@color/onyx_surface</item>
+    <item name="colorOnSurface">@color/onyx_foreground</item>
+    <item name="colorSurfaceVariant">@color/onyx_surface_variant</item>
+    <item name="colorOnSurfaceVariant">@color/onyx_on_surface_variant</item>
+
+    <item name="colorSurfaceContainer">@color/onyx_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/onyx_surface_container_high</item>
+    <item name="colorOutline">@color/onyx_border</item>
+    <item name="colorOutlineVariant">@color/onyx_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:windowLightNavigationBar">false</item>
+
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+
+    <item name="taskBackground">@color/onyx_surface</item>
+    <item name="taskBorder">@color/onyx_border</item>
+    <item name="mainBorder">@color/onyx_border</item>
+    <item name="buttonBackground">@color/onyx_primary</item>
   </style>
   
   <!-- iOS-style button -->
@@ -264,5 +347,17 @@
   
   <style name="Widget.Polar.Checkbox.Circular" parent="Widget.Material3.CompoundButton.CheckBox">
     <item name="buttonCompat">@drawable/sel_checkbox_circular</item>
+  </style>
+
+  <!-- Material 3 Outlined TextInputLayout with generous 12dp corners -->
+  <style name="Widget.Polar.TextInputLayout.OutlinedBox" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+    <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Polar.TextInputLayout</item>
+    <item name="boxStrokeColor">?attr/colorOutline</item>
+    <item name="hintTextColor">?attr/colorOnSurfaceVariant</item>
+  </style>
+
+  <style name="ShapeAppearance.Polar.TextInputLayout" parent="ShapeAppearance.Material3.Corner.Small">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">12dp</item>
   </style>
 </resources>

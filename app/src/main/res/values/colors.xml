@@ -6,6 +6,16 @@
   <color name="color_error">#E53935</color> <!-- Stronger Red -->
 
   <!--
+    Semantic priority / status colors.
+    These are referenced through theme attributes, never used directly in
+    layouts or Canvas code, so the palette remains dynamic and theme-aware.
+  -->
+  <color name="priority_high">@color/color_error</color>
+  <color name="priority_medium">#FF9800</color>
+  <color name="priority_low">#2196F3</color>
+  <color name="date_overdue">@color/color_error</color>
+
+  <!--
      STRICT 5-COLOR PALETTE (High Contrast Minimalist)
      To ensure "checks" (checkboxes) and "colors" look better:
      ACCENT MUST CONTRAST WITH BACKGROUND.
@@ -128,6 +138,37 @@
   <color name="neon_border">#202438</color>                 <!-- Deep cool grey border -->
   <color name="neon_surface_container">#151620</color>
   <color name="neon_surface_container_high">#1A1C29</color>
+
+  <!-- Onyx Dark Theme (Deep & Minimal) -->
+  <color name="onyx_background">#101010</color>             <!-- Base background -->
+  <color name="onyx_surface">#161616</color>                <!-- Elevated cards -->
+  <color name="onyx_surface_variant">#101010</color>        <!-- Same as background -->
+  <color name="onyx_surface_container">#1C1C1C</color>      <!-- Containers -->
+  <color name="onyx_surface_container_high">#242424</color> <!-- Highlighted containers -->
+  <color name="onyx_primary">#ECECEC</color>                <!-- Base foreground -->
+  <color name="onyx_on_primary">#101010</color>             <!-- Text on primary -->
+  <color name="onyx_primary_container">#2A2A2A</color>      <!-- Tonal button/container -->
+  <color name="onyx_on_primary_container">#ECECEC</color>   <!-- Text on container -->
+  <color name="onyx_secondary">#8C8C8C</color>              <!-- Muted accent -->
+  <color name="onyx_on_secondary">#101010</color>           <!-- Text on secondary -->
+  <color name="onyx_secondary_container">#202020</color>    <!-- Secondary tonal -->
+  <color name="onyx_on_secondary_container">#ECECEC</color> <!-- Text on secondary container -->
+  <color name="onyx_foreground">#ECECEC</color>             <!-- Primary text -->
+  <color name="onyx_on_surface_variant">#B3B3B3</color>     <!-- Secondary/muted text -->
+  <color name="onyx_border">#2A2A2A</color>                 <!-- Subtle borders -->
+  <color name="onyx_outline_variant">#1C1C1C</color>        <!-- Even subtler borders -->
+  <color name="onyx_error">#CF6679</color>                  <!-- Material dark red -->
+  <color name="onyx_on_error">#101010</color>               <!-- Text on error -->
+  <color name="onyx_success">#66BB6A</color>                <!-- Success green -->
+  <color name="onyx_on_success">#101010</color>             <!-- Text on success -->
+
+  <!-- Success / Positive feedback -->
+  <color name="light_success">#43A047</color>
+  <color name="dark_success">#66BB6A</color>
+  <color name="multi_light_success">#4CAF50</color>
+  <color name="multi_dark_success">#66BB6A</color>
+  <color name="pastel_success">#81C784</color>
+  <color name="neon_success">#00E676</color>
 
   <!-- Semantics -->
   <color name="accent_primary">@color/light_c3_accent</color>

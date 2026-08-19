@@ -56,21 +56,21 @@ class SubtaskDetailBottomSheet(
             binding.tvSubtaskDueDate.text = app.polar.util.DateUtils.formatTaskDate(requireContext(), subtask.dueDate)
             binding.tvSubtaskDueDate.alpha = 1.0f
         } else {
-            binding.tvSubtaskDueDate.text = "Sin recordatorio"
+            binding.tvSubtaskDueDate.text = "sin recordatorio"
             binding.tvSubtaskDueDate.alpha = 0.6f
         }
     }
 
     private fun showDateTimePicker() {
         val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Seleccionar fecha")
+            .setTitleText("seleccionar fecha")
             .setSelection(subtask.dueDate ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
             .build()
             
         datePicker.addOnPositiveButtonClickListener { dateSelection ->
             val timePicker = com.google.android.material.timepicker.MaterialTimePicker.Builder()
                 .setTimeFormat(com.google.android.material.timepicker.TimeFormat.CLOCK_24H)
-                .setTitleText("Seleccionar hora")
+                .setTitleText("seleccionar hora")
                 .build()
                 
             timePicker.addOnPositiveButtonClickListener {

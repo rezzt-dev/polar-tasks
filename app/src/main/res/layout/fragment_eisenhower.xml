@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Matriz de Eisenhower"
+        android:text="matriz de eisenhower"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="?colorOnSurface"
@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Organiza tus tareas según su prioridad y urgencia"
+        android:text="organiza tus tareas segun su prioridad y urgencia"
         android:textSize="13sp"
         android:textColor="?colorOnSurfaceVariant"
         android:layout_marginBottom="16dp" />
@@ -43,8 +43,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#FFCDD2"
-            app:cardBackgroundColor="#FFF1F0">
+            app:strokeColor="?attr/colorError"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,17 +55,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🔥 Q1: Urgente"
+                    android:text="🔥 q1: urgente"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#C62828" />
+                    android:textColor="?attr/colorError" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hacer de inmediato"
+                    android:text="hacer de inmediato"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
@@ -91,8 +91,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#FFE082"
-            app:cardBackgroundColor="#FFF8E1">
+            app:strokeColor="?attr/colorPriorityMedium"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -103,17 +103,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="📅 Q2: Planificar"
+                    android:text="📅 q2: planificar"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#E65100" />
+                    android:textColor="?attr/colorPriorityMedium" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Programar para después"
+                    android:text="programar para despues"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
@@ -139,8 +139,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#C5CAE9"
-            app:cardBackgroundColor="#E8EAF6">
+            app:strokeColor="?attr/colorPriorityLow"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -151,17 +151,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🤝 Q3: Delegar"
+                    android:text="🤝 q3: delegar"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#283593" />
+                    android:textColor="?attr/colorPriorityLow" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pedir ayuda a otros"
+                    android:text="pedir ayuda a otros"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView
@@ -187,8 +187,8 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="#CFD8DC"
-            app:cardBackgroundColor="#F5F5F5">
+            app:strokeColor="?attr/colorOnSurfaceVariant"
+            app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -199,17 +199,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🗑️ Q4: Eliminar"
+                    android:text="🗑️ q4: eliminar"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    android:textColor="#37474F" />
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No hacer por ahora"
+                    android:text="no hacer por ahora"
                     android:textSize="11sp"
-                    android:textColor="#555555"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp"/>
 
                 <ScrollView

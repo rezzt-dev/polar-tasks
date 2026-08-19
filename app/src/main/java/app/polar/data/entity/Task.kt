@@ -3,6 +3,7 @@ package app.polar.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -14,7 +15,8 @@ import androidx.room.PrimaryKey
       childColumns = ["listId"],
       onDelete = ForeignKey.CASCADE
     )
-  ]
+  ],
+  indices = [Index(value = ["uuid"], unique = true)]
 )
 data class Task(
   @PrimaryKey(autoGenerate = true)
@@ -31,5 +33,10 @@ data class Task(
   @ColumnInfo(name = "isDeleted") val isDeleted: Boolean = false,
   @ColumnInfo(name = "priority") val priority: Int = 0, // 0: None, 1: Low, 2: Medium, 3: High
   @ColumnInfo(name = "imageUri") val imageUri: String? = null,
-  @ColumnInfo(name = "timeEstimate") val timeEstimate: Int = 0
+  @ColumnInfo(name = "timeEstimate") val timeEstimate: Int = 0,
+  val uuid: String = java.util.UUID.randomUUID().toString(),
+  val updatedAt: Long = System.currentTimeMillis(),
+  val deletedAt: Long? = null,
+  val dirty: Boolean = true,
+  val imagePath: String? = null
 )

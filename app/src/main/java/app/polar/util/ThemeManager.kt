@@ -20,6 +20,7 @@ class ThemeManager(private val context: Context) {
     const val THEME_MULTICOLOR_DARK = "multicolor_dark"
     const val THEME_PASTEL = "pastel"
     const val THEME_NEON = "neon"
+    const val THEME_ONYX = "onyx"
     const val THEME_SYSTEM = "system"
     
     const val FONT_POPPINS = "poppins"
@@ -54,7 +55,9 @@ class ThemeManager(private val context: Context) {
   }
   
   fun loadTheme(): String {
-    return prefs.getString(KEY_THEME, THEME_DARK) ?: THEME_DARK
+    val saved = prefs.getString(KEY_THEME, THEME_DARK) ?: THEME_DARK
+    // Migracion: el tema personalizado ya no existe; se fuerza al tema oscuro.
+    return if (saved == "custom") THEME_DARK else saved
   }
   
   fun loadFont(): String {
@@ -94,6 +97,7 @@ class ThemeManager(private val context: Context) {
           THEME_MULTICOLOR_DARK -> R.style.Theme_Polar_MulticolorDark
           THEME_PASTEL -> R.style.Theme_Polar_Pastel
           THEME_NEON -> R.style.Theme_Polar_Neon
+          THEME_ONYX -> R.style.Theme_Polar_Onyx
           else -> 0 // Default light/dark handled by DayNight
       }
   }
@@ -101,7 +105,7 @@ class ThemeManager(private val context: Context) {
   fun applyTheme(theme: String) {
     when (theme) {
       THEME_LIGHT, THEME_MULTICOLOR_LIGHT, THEME_PASTEL -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-      THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON, THEME_ONYX -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
       THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
   }

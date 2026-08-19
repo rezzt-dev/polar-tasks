@@ -17,6 +17,7 @@ import app.polar.ui.adapter.TrashAdapter
 import app.polar.ui.viewmodel.TaskViewModel
 import com.google.android.material.snackbar.Snackbar
 import app.polar.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,9 +51,16 @@ class TrashFragment : Fragment() {
         observeDeletedItems()
         
         binding.btnEmptyTrash.setOnClickListener {
-            taskViewModel.emptyTrash()
-            remindersViewModel.emptyTrash()
-            Snackbar.make(binding.root, getString(R.string.trash_emptied), Snackbar.LENGTH_SHORT).show()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.confirm_empty_trash_title)
+                .setMessage(R.string.confirm_empty_trash_message)
+                .setPositiveButton(R.string.delete) { _, _ ->
+                    taskViewModel.emptyTrash()
+                    remindersViewModel.emptyTrash()
+                    Snackbar.make(binding.root, getString(R.string.trash_emptied), Snackbar.LENGTH_SHORT).show()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
         }
     }
 

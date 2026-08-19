@@ -61,7 +61,7 @@ class RemindersFragment : Fragment() {
         )
         binding.recyclerReminders.layoutManager = LinearLayoutManager(context)
         binding.recyclerReminders.adapter = adapter
-        binding.recyclerReminders.itemAnimator = null // Instant updates sin parpadeos
+        // itemAnimator removed to test if ItemTouchHelper needs it for recovery
         
         // Setup swipe gestures
         setupSwipeGestures()
@@ -70,7 +70,7 @@ class RemindersFragment : Fragment() {
     private fun setupSwipeGestures() {
         val swipeCallback = object : ItemTouchHelper.SimpleCallback(
             0, // No drag
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // Swipe left and right
+            ItemTouchHelper.LEFT // Only swipe left for delete; right swipe is handled by item touch listener
         ) {
             override fun onMove(
                 recyclerView: androidx.recyclerview.widget.RecyclerView,
@@ -80,11 +80,11 @@ class RemindersFragment : Fragment() {
             
             override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
-                // Only reset translationX; let bind() control alpha based on completion state
-                viewHolder.itemView.animate()
-                    .translationX(0f)
-                    .setDuration(150)
-                    .start()
+                // Cancel any pending swipe animation and reset translation so the ViewHolder
+                // returns to its proper position. We do NOT touch alpha here because bind()
+                // will set the correct value (0.5f for completed, 1.0f for active).
+                viewHolder.itemView.animate().cancel()
+                viewHolder.itemView.translationX = 0f
             }
             
             override fun onSwiped(
@@ -94,7 +94,7 @@ class RemindersFragment : Fragment() {
                 val position = viewHolder.bindingAdapterPosition
                 if (position == androidx.recyclerview.widget.RecyclerView.NO_POSITION) return
                 
-                val reminder = adapter.currentList[position]
+                val reminder = adapter.getItem(position)
                 
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
@@ -107,28 +107,6 @@ class RemindersFragment : Fragment() {
                         ).setAction(getString(app.polar.R.string.undo)) {
                             viewModel.restoreFromTrash(reminder)
                         }.show()
-                    }
-                    ItemTouchHelper.RIGHT -> {
-                        // Swipe right: Toggle completion with visual feedback
-                        // Scale pulse animation for tactile completion feedback
-                        viewHolder.itemView.animate()
-                            .scaleX(0.95f)
-                            .scaleY(0.95f)
-                            .setDuration(150)
-                            .withEndAction {
-                                viewHolder.itemView.animate()
-                                    .scaleX(1f)
-                                    .scaleY(1f)
-                                    .setDuration(150)
-                                    .start()
-                            }
-                            .start()
-
-                        // Prevent ItemTouchHelper from removing the card from the list
-                        adapter.notifyItemChanged(position)
-
-                        // Toggle completion state in database
-                        viewModel.toggleCompletion(reminder)
                     }
                 }
             }
@@ -188,13 +166,13 @@ class RemindersFragment : Fragment() {
     }
     
     private fun updateUI(reminders: List<app.polar.data.entity.Reminder>) {
+        adapter.submitList(reminders)
         if (reminders.isEmpty()) {
             binding.emptyState.visibility = View.VISIBLE
             binding.recyclerReminders.visibility = View.GONE
         } else {
             binding.emptyState.visibility = View.GONE
             binding.recyclerReminders.visibility = View.VISIBLE
-            adapter.submitList(reminders)
         }
     }
 

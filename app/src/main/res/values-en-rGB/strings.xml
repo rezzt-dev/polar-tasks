@@ -48,6 +48,13 @@
   <string name="new_reminder">new reminder</string>
   <string name="edit_reminder">edit reminder</string>
   <string name="select_date_time">select date and time</string>
+  <string name="add_location">add location</string>
+  <string name="google_maps_link_hint">paste a google maps link</string>
+  <string name="extract_coordinates">extract</string>
+  <string name="view_on_map">view on map</string>
+  <string name="invalid_maps_link">could not extract coordinates from the link</string>
+  <string name="short_link_not_supported">short links cannot be processed offline. paste the full google maps link.</string>
+  <string name="view_location">view location</string>
   <string name="select_date">select date</string>
   <string name="select_time">select time</string>
   
@@ -87,6 +94,7 @@
   <string name="theme_multicolor_dark">multicolour dark</string>
   <string name="theme_pastel">soft pastel</string>
   <string name="theme_neon">dark neon</string>
+  <string name="theme_onyx">onyx</string>
   <string name="font">font</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -125,6 +133,21 @@
   <string name="best_day">best day</string>
   <string name="current_streak">current streak</string>
   <string name="days">days</string>
+  <string name="stats_completion_subtitle">general progress</string>
+  <string name="stats_weekly_subtitle">completed in the last 7 days</string>
+  <string name="stats_trend_title">30-day trend</string>
+  <string name="stats_trend_subtitle">tasks completed per day</string>
+  <string name="stats_status_title">status overview</string>
+  <string name="stats_status_completed">completed</string>
+  <string name="stats_status_pending">pending</string>
+  <string name="stats_status_overdue">overdue</string>
+  <string name="stats_priority_title">distribution by priority</string>
+  <string name="stats_lists_title">performance by list</string>
+  <string name="stats_insight_more">you are on the rise! this week you completed %1$d tasks, %2$d%% more than last week.</string>
+  <string name="stats_insight_less">this week you completed %1$d tasks, %2$d%% less than last week.</string>
+  <string name="stats_insight_same">you are keeping the pace: you completed the same number of tasks as last week.</string>
+  <string name="stats_empty_title">no data yet</string>
+  <string name="stats_empty_subtitle">create your first task to start seeing useful statistics.</string>
   
   <!-- Messages -->
   <string name="task_moved_trash">task moved to recycle bin</string>
@@ -132,25 +155,91 @@
   <string name="undo">undo</string>
   <string name="trash_emptied">recycle bin emptied</string>
   <string name="empty_trash">empty bin</string>
+  <string name="confirm_empty_trash_title">empty bin?</string>
+  <string name="confirm_empty_trash_message">this will permanently delete all items. this action cannot be undone.</string>
   <string name="trash_clean">bin clean</string>
   <string name="no_deleted_items">no deleted items</string>
   <string name="deleted_items">deleted items</string>
   <string name="item_restored">item restored</string>
   <string name="permanently_deleted">permanently deleted</string>
+  <string name="trash_item_purge_pending_sync">could not be permanently deleted: still waiting to sync with the cloud</string>
+  <string name="trash_purge_pending_sync_count">%d items could not be permanently deleted because they have not synced yet</string>
   <string name="error_saving_backup">error saving backup</string>
   <string name="backup_saved">backup saved successfully</string>
   <string name="backup_restored">backup restored. restarting...</string>
   <string name="error_restoring_backup">error restoring backup</string>
-  
-  <string name="recurrence_daily">Daily</string>
-  <string name="recurrence_weekly">Weekly</string>
-  <string name="recurrence_monthly">Monthly</string>
-  <string name="no_list">No list</string>
+
+  <!-- Account and cloud sync -->
+  <string name="account_and_cloud_sync">account and cloud sync</string>
+  <string name="account_row_title">account</string>
+  <string name="account_signed_in_as">signed in as %1$s</string>
+  <string name="account_not_signed_in">not signed in</string>
+  <string name="auth_title">sign in</string>
+  <string name="auth_subtitle">sign in to sync your tasks and reminders across devices</string>
+  <string name="auth_email_hint">email address</string>
+  <string name="auth_password_hint">password</string>
+  <string name="auth_sign_in">sign in</string>
+  <string name="auth_sign_out">sign out</string>
+  <string name="auth_error_empty_fields">enter your email and password</string>
+  <string name="auth_signed_in_ok">signed in successfully</string>
+  <string name="auth_session_expired">your session has expired or been revoked, please sign in again</string>
+
+  <string name="auth_forgot_password">forgotten your password?</string>
+  <string name="auth_reset_password_title">reset password</string>
+  <string name="auth_reset_password_message">we\'ll send you an email with a link to reset your password</string>
+  <string name="auth_reset_password_send">send link</string>
+  <string name="auth_reset_password_sent_ok">if an account exists with that email, you\'ll receive a password reset link</string>
+  <string name="auth_reset_password_error_empty_email">enter your email address</string>
+
+  <string name="auth_merge_dialog_title">what do you want to do with your local data?</string>
+  <string name="auth_merge_dialog_message">this device already has tasks, lists or reminders saved, and this account also has data in the cloud. choose how to continue:</string>
+  <string name="auth_merge_dialog_upload">upload my local data</string>
+  <string name="auth_merge_dialog_discard">discard local data and use only the cloud</string>
+  <string name="auth_merge_discard_warning_title">⚠️ this will delete this device\'s data</string>
+  <string name="auth_merge_discard_warning_message">all tasks, lists, subtasks and reminders on this device will be permanently deleted and replaced with whatever is in the cloud.\n\nthis action cannot be undone. do you want to continue?</string>
+  <string name="auth_merge_discard_confirm">yes, discard</string>
+  <string name="auth_merge_discard_success">local data discarded, cloud data loaded</string>
+  <string name="auth_merge_discard_error">error discarding local data</string>
+
+  <string name="cloud_full_overwrite_title">upload full copy to the cloud</string>
+  <string name="cloud_full_overwrite_desc">overwrites all your cloud data with this device\'s data</string>
+  <string name="cloud_full_overwrite_warning_title">⚠️ this action will overwrite the cloud</string>
+  <string name="cloud_full_overwrite_warning_message">all data from this device will be uploaded to the cloud, replacing whatever is stored there. any change made from another device or app that hasn\'t been synced here will be lost.\n\nthis action cannot be undone. do you want to continue?</string>
+  <string name="cloud_full_overwrite_confirm">yes, overwrite</string>
+  <string name="cloud_full_overwrite_in_progress">uploading full copy…</string>
+  <string name="cloud_full_overwrite_success">data uploaded and cloud overwritten successfully</string>
+  <string name="cloud_full_overwrite_error">error uploading full copy</string>
+  <string name="cloud_full_overwrite_requires_sign_in">sign in first to upload a copy to the cloud</string>
+
+  <string name="sync_status_row_title">sync now</string>
+  <string name="sync_status_never">never synced yet</string>
+  <string name="sync_status_last_success">last successful sync: %1$s</string>
+  <string name="sync_status_error">sync is failing: %1$s</string>
+  <string name="sync_status_syncing">syncing…</string>
+  <string name="sync_requires_sign_in">sign in first to be able to sync</string>
+
+  <string name="sync_conflicts_lost_message">%1$d changes were overwritten by more recent edits on another device</string>
+  <string name="sync_conflicts_dismiss">dismiss</string>
+
+  <string name="cloud_full_download_title">download everything and overwrite this device</string>
+  <string name="cloud_full_download_desc">overwrites all data on this device with what is in the cloud</string>
+  <string name="cloud_full_download_warning_title">⚠️ this will overwrite this device</string>
+  <string name="cloud_full_download_warning_message">every task, list, subtask and reminder on this device will be deleted and replaced with what is in the cloud. any change made here that hasn\'t synced yet will be lost.\n\nthis action cannot be undone. do you want to continue?</string>
+  <string name="cloud_full_download_confirm">yes, download and overwrite</string>
+  <string name="cloud_full_download_in_progress">downloading full copy…</string>
+  <string name="cloud_full_download_success">data downloaded and device overwritten successfully</string>
+  <string name="cloud_full_download_error">error downloading the full copy</string>
+  <string name="cloud_full_download_requires_sign_in">sign in first to be able to download a copy from the cloud</string>
+
+  <string name="recurrence_daily">daily</string>
+  <string name="recurrence_weekly">weekly</string>
+  <string name="recurrence_monthly">monthly</string>
+  <string name="no_list">no list</string>
   <string name="add_subtask_title">add subtask</string>
-  <string name="priority_low">Low</string>
-  <string name="priority_medium">Medium</string>
-  <string name="priority_high">High</string>
-  <string name="priority_none">No priority</string>
+  <string name="priority_low">low</string>
+  <string name="priority_medium">medium</string>
+  <string name="priority_high">high</string>
+  <string name="priority_none">no priority</string>
 
   <string name="font_system">system</string>
   
@@ -163,12 +252,12 @@
   <string name="language">language</string>
   <string name="data_and_sync">data &amp; synchronisation</string>
   <string name="export_local_backup">export local backup</string>
-  <string name="export_local_backup_desc">generate a JSON file with your data</string>
+  <string name="export_local_backup_desc">generate a json file with your data</string>
   <string name="restore_data">restore data</string>
   <string name="restore_data_desc">recover from a backup file</string>
   <string name="system_label">system</string>
   <string name="notification_permissions">notification permissions</string>
-  <string name="notification_permissions_desc">Android notification settings</string>
+  <string name="notification_permissions_desc">android notification settings</string>
   <string name="tasks_notification">tasks notification</string>
   <string name="daily_at">daily at %s</string>
   <string name="initial_tutorial">initial tutorial</string>
@@ -181,13 +270,13 @@
   <string name="tutorial_title_2">task management</string>
   <string name="tutorial_desc_2">group your responsibilities by creating dedicated lists for work, home or special projects, and organise everything with tags.\n\nbreak down big goals by adding unlimited subtasks and see your progress in a completely visual and satisfying way.</string>
   <string name="tutorial_title_3">smart creation</string>
-  <string name="tutorial_desc_3">write completely naturally: "buy bread at 5pm on Tuesday" or "meeting tomorrow morning".\n\nour powerful smart engine will detect and extract the date and time automatically, scheduling the task for you.</string>
+  <string name="tutorial_desc_3">write completely naturally: "buy bread at 5pm on tuesday" or "meeting tomorrow morning".\n\nour powerful smart engine will detect and extract the date and time automatically, scheduling the task for you.</string>
   <string name="tutorial_title_4">quick actions</string>
   <string name="tutorial_desc_4">smoothly swipe a task to the right on the list to immediately mark it as completed.\n\nmade a mistake or no longer need to do something? swipe left to delete it without opening any menus.</string>
   <string name="tutorial_title_5">calendar and notifications</string>
   <string name="tutorial_desc_5">visualise all your routines grouped month by month or by weeks in our premium-designed calendar.\n\nreceive accurate notifications just on time so you never miss a meeting, delivery or important detail again.</string>
   <string name="tutorial_title_6">total personalisation</string>
-  <string name="tutorial_desc_6">adapt the app to your own style with our 4 visual modes: dark, light, multicolour dark and multicolour light.\n\nplus, you can pick the typography that suits you best from a curated selection of professional fonts.</string>
+  <string name="tutorial_desc_6">adapt the app to your own style with our 6 visual themes: light, dark, multicolour light, multicolour dark, soft pastel, dark neon and onyx.\n\nplus, you can pick the typography, checkbox style and font size that suit you best.</string>
   <string name="tutorial_title_7">statistics and progress</string>
   <string name="tutorial_desc_7">keep an exhaustive log of your day to day, viewing completed, overdue tasks and your best productive day.\n\nmaintain long streaks of completion to outdo yourself and achieve everything you set out to do with polar\'s data.</string>
   
@@ -196,4 +285,9 @@
   <string name="action_finish">start</string>
   <string name="action_skip">skip</string>
   <string name="action_view_tutorial">view tutorial</string>
+
+  <!-- CSV Import -->
+  <string name="import_csv">import csv</string>
+  <string name="import_csv_desc">load tasks from .csv file</string>
+
 </resources>

@@ -12,8 +12,8 @@ import app.polar.R
 
 object NotificationHelper {
     const val CHANNEL_ID = "task_reminders"
-    const val CHANNEL_NAME = "Task Reminders"
-    const val CHANNEL_DESC = "Notifications for task deadlines"
+    const val CHANNEL_NAME = "task reminders"
+    const val CHANNEL_DESC = "notifications for task deadlines"
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -115,11 +115,29 @@ object NotificationHelper {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_check_box)
-            .setContentTitle("Reminder: ${reminder.title}")
+            .setContentTitle("recordatorio: ${reminder.title}")
             .setContentText(reminder.description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+
+        // Add "View Location" action if coordinates are available
+        if (reminder.latitude != null && reminder.longitude != null) {
+            val locationUri = if (!reminder.locationName.isNullOrBlank()) {
+                android.net.Uri.parse("geo:${reminder.latitude},${reminder.longitude}?q=${reminder.latitude},${reminder.longitude}(${reminder.locationName})")
+            } else {
+                android.net.Uri.parse("geo:${reminder.latitude},${reminder.longitude}?q=${reminder.latitude},${reminder.longitude}")
+            }
+            val locationIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, locationUri)
+            locationIntent.setPackage("com.google.android.apps.maps")
+            val locationPendingIntent = android.app.PendingIntent.getActivity(
+                context,
+                (reminder.id + 1000000).toInt() * 10 + 2,
+                locationIntent,
+                android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.addAction(R.drawable.ic_location_notification, context.getString(R.string.view_location), locationPendingIntent)
+        }
 
         if (isDndActive(context)) {
             builder.setSilent(true)

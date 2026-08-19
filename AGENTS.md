@@ -89,12 +89,13 @@ app/src/main/java/app/polar/
     ├── NotificationHelper.kt       # Canales y notificaciones
     ├── ThemeManager.kt             # Temas dinámicos, fuentes y localización
     ├── DateUtils.kt                # Helpers de fecha/calendario
-    └── DragDropHelper.kt           # Soporte drag-and-drop en RecyclerViews
+    ├── DragDropHelper.kt           # Soporte drag-and-drop en RecyclerViews
+    └── TaskSwipeHelper.kt          # Swipe bidireccional reutilizable para RecyclerViews
 ```
 
 ### Recursos (`app/src/main/res/`)
 
-- `layout/` — ~34 archivos XML de layouts (Activities, Fragments, Items, Dialogs).
+- `layout/` — ~35 archivos XML de layouts (Activities, Fragments, Items, Dialogs).
 - `menu/` — Menús de Toolbar/ActionBar.
 - `drawable/` — ~61 recursos gráficos, vectores y formas.
 - `values/` — Strings (es, en-rGB, fr), colores, temas, dimensiones, atributos personalizados.
@@ -140,7 +141,7 @@ Se usa **View Binding** en toda la UI. Está habilitado en `build.gradle.kts` (`
 ### 4.4 BaseActivity
 
 Todas las Activities heredan de `BaseActivity`, que gestiona:
-- Aplicación de tema dinámico (multicolor, oscuro, pastel) antes de `super.onCreate()`.
+- Aplicación de tema dinámico (multicolor, oscuro, pastel, etc.) antes de `super.onCreate()`.
 - Overlay de fuentes personalizadas.
 - Overlay de estilos de checkbox.
 - Configuración de locale (idioma) vía `attachBaseContext()`.
@@ -303,3 +304,6 @@ La suite de tests unitarios es pequeña pero representativa:
 - **Al crear nuevos ViewModels:** Usa `@HiltViewModel`, inyección por constructor, y el patrón `safeLaunch`.
 - **Al crear nuevas Activities:** Extiende `BaseActivity` y anota con `@AndroidEntryPoint`.
 - **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados.
+- **Colores semánticos dinámicos:** Se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorError`, `colorOnError`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). Todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de UI.
+- **Swipe en listas:** Usa `TaskSwipeHelper` para gestos bidireccionales en RecyclerViews (tareas y listas). Soporta configuración de colores/iconos por dirección y drag opcional. Los íconos de swipe se tinen con `colorOnSuccess` / `colorOnError` para respetar la paleta activa.
+- **View Binding obligatorio:** `HomeTaskAdapter` y `TaskListAdapter` usan View Binding; no usar `findViewById` en nuevos adapters.

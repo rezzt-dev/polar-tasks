@@ -63,6 +63,9 @@ class MainActivity : BaseActivity() {
       if (intent.getBooleanExtra("NAVIGATE_TO_REMINDERS", false)) {
           openReminders()
       } else {
+          currentListId = -1L
+          taskViewModel.loadAllTasks()
+          binding.toolbar.title = getString(R.string.home)
           supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, TasksFragment())
             .commit()
@@ -73,12 +76,20 @@ class MainActivity : BaseActivity() {
         override fun handleOnBackPressed() {
             if (drawerManager.isDrawerOpen()) {
                 drawerManager.closeDrawer()
-            } else {
-                if (isEnabled) {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
-                    isEnabled = true
-                }
+                return
+            }
+
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is app.polar.ui.fragment.StatsFragment ||
+                currentFragment is app.polar.ui.fragment.SettingsFragment) {
+                navigateToHome()
+                return
+            }
+
+            if (isEnabled) {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
             }
         }
     })
@@ -226,6 +237,16 @@ class MainActivity : BaseActivity() {
           .commit()
   }
   
+  private fun navigateToHome() {
+      currentListId = -1L
+      taskViewModel.loadAllTasks()
+      binding.toolbar.title = getString(R.string.home)
+      binding.fabAddTask.hide()
+      supportFragmentManager.beginTransaction()
+          .replace(R.id.fragmentContainer, TasksFragment())
+          .commit()
+  }
+  
   private fun setupFab() {
     binding.fabAddTask.setOnClickListener {
       if (currentListId == -2L) {
@@ -320,10 +341,9 @@ class MainActivity : BaseActivity() {
         binding.fabAddTask.hide()
         currentListId = null
         binding.toolbar.title = getString(R.string.statistics)
-        
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, app.polar.ui.fragment.StatsFragment())
-            .addToBackStack(null)
             .commit()
         true
       }
@@ -331,10 +351,9 @@ class MainActivity : BaseActivity() {
         binding.fabAddTask.hide()
         currentListId = null
         binding.toolbar.title = getString(R.string.settings)
-        
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, app.polar.ui.fragment.SettingsFragment())
-            .addToBackStack(null)
             .commit()
         true
       }

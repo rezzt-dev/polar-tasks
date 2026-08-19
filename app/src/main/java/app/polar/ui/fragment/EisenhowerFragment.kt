@@ -71,7 +71,7 @@ class EisenhowerFragment : Fragment() {
             setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     taskViewModel.setTaskCompletion(task, true)
-                    Snackbar.make(binding.root, "Tarea completada", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, "tarea completada", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }

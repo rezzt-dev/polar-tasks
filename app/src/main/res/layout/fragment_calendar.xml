@@ -31,7 +31,7 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnBackground"
-                android:text="January 2026"/>
+                android:text="january 2026"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPrevMonth"
@@ -69,13 +69,13 @@
             android:orientation="horizontal"
             android:paddingBottom="12dp">
             
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/mon_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/tue_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/wed_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/thu_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/fri_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/sat_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/sun_short" android:textAllCaps="true" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/mon_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/tue_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/wed_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/thu_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/fri_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/sat_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/sun_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
         </LinearLayout>
 
         <!-- Calendar Grid -->
@@ -121,7 +121,7 @@
                 android:id="@+id/tvTasksHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tareas"
+                android:text="tareas"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -158,7 +158,7 @@
                 android:id="@+id/tvRemindersHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Recordatorios"
+                android:text="recordatorios"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -180,7 +180,7 @@
                     android:id="@+id/tvNoReminders"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No hay recordatorios"
+                    android:text="no hay recordatorios"
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:visibility="gone"

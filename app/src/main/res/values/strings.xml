@@ -21,15 +21,15 @@
   <!-- Calendar Weeks -->
   <string name="mon_short">lun</string>
   <string name="tue_short">mar</string>
-  <string name="wed_short">mié</string>
+  <string name="wed_short">mie</string>
   <string name="thu_short">jue</string>
   <string name="fri_short">vie</string>
-  <string name="sat_short">sáb</string>
+  <string name="sat_short">sab</string>
   <string name="sun_short">dom</string>
   
   <!-- Calendar UI -->
   <string name="tasks_for_selected_date">tareas</string>
-  <string name="no_tasks_for_date">no hay tareas para este día</string>
+  <string name="no_tasks_for_date">no hay tareas para este dia</string>
   <string name="today">hoy</string>
   <string name="tomorrow">mañana</string>
   
@@ -43,13 +43,36 @@
   <string name="add_first_task">agrega tu primera tarea</string>
   <string name="no_search_results">no se encontraron tareas</string>
   <string name="try_different_search">intenta con otros terminos</string>
-  
+  <string name="task_blocked">bloqueada</string>
+  <string name="no_due_date">sin fecha de finalizacion</string>
+  <string name="select_date_title">seleccionar fecha</string>
+  <string name="recurrence_summary_none">no se repite</string>
+  <string name="recurrence_summary_daily">se repite diariamente</string>
+  <string name="recurrence_summary_weekly">se repite semanalmente</string>
+  <string name="recurrence_summary_monthly">se repite mensualmente</string>
+  <string name="recurrence_summary_mon_wed">cada lunes y miercoles</string>
+  <string name="recurrence_summary_first_day_month">primer dia del mes</string>
+  <string name="priority_label_none">sin prioridad</string>
+  <string name="priority_label_low">prioridad baja</string>
+  <string name="priority_label_medium">prioridad media</string>
+  <string name="priority_label_high">prioridad alta</string>
+  <string name="time_estimate_hint">estimacion de tiempo (minutos)</string>
+  <string name="color_accent_label">color de acento</string>
+  <string name="hex_label">hex</string>
+
   <!-- Reminders -->
   <string name="new_reminder">nuevo recordatorio</string>
   <string name="edit_reminder">editar recordatorio</string>
   <string name="select_date_time">seleccionar fecha y hora</string>
   <string name="select_date">seleccionar fecha</string>
   <string name="select_time">seleccionar hora</string>
+  <string name="add_location">añadir ubicacion</string>
+  <string name="google_maps_link_hint">pega un link de google maps</string>
+  <string name="extract_coordinates">extraer</string>
+  <string name="view_on_map">ver en mapa</string>
+  <string name="invalid_maps_link">no se pudieron extraer las coordenadas del link</string>
+  <string name="short_link_not_supported">los links cortos no se pueden procesar sin conexion. pega el link largo de google maps.</string>
+  <string name="view_location">ver ubicacion</string>
   
   <!-- Subtasks -->
   <string name="add_subtask">agregar subtarea</string>
@@ -89,7 +112,8 @@
   <string name="theme_multicolor_light">multicolor claro</string>
   <string name="theme_multicolor_dark">multicolor oscuro</string>
   <string name="theme_pastel">pastel suave</string>
-  <string name="theme_neon">neón oscuro</string>
+  <string name="theme_neon">neon oscuro</string>
+  <string name="theme_onyx">ónix</string>
   <string name="font">fuente</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
@@ -107,12 +131,12 @@
   <string name="list_deleted">lista eliminada</string>
   
   <!-- Greetings -->
-  <string name="good_morning">buenos días</string>
+  <string name="good_morning">buenos dias</string>
   <string name="good_afternoon">buenas tardes</string>
   <string name="good_night">buenas noches</string>
 
   <!-- Statistics -->
-  <string name="statistics">estadísticas</string>
+  <string name="statistics">estadisticas</string>
   <string name="total_tasks">total de tareas</string>
   <string name="completed_tasks">completadas</string>
   <string name="pending_tasks">pendientes</string>
@@ -125,26 +149,110 @@
   <string name="tasks_completed_month">tareas completadas este mes</string>
   <string name="tasks_created_week">tareas creadas esta semana</string>
   <string name="tasks_created_month">tareas creadas este mes</string>
-  <string name="best_day">mejor día</string>
+  <string name="best_day">mejor dia</string>
   <string name="current_streak">racha actual</string>
-  <string name="days">días</string>
+  <string name="days">dias</string>
+  <string name="stats_completion_subtitle">progreso general</string>
+  <string name="stats_weekly_subtitle">completadas en los ultimos 7 dias</string>
+  <string name="stats_trend_title">tendencia de 30 dias</string>
+  <string name="stats_trend_subtitle">tareas completadas por dia</string>
+  <string name="stats_status_title">resumen de estado</string>
+  <string name="stats_status_completed">completadas</string>
+  <string name="stats_status_pending">pendientes</string>
+  <string name="stats_status_overdue">vencidas</string>
+  <string name="stats_priority_title">distribucion por prioridad</string>
+  <string name="stats_lists_title">rendimiento por lista</string>
+  <string name="stats_insight_more">¡vas en aumento! esta semana completaste %1$d tareas, un %2$d%% mas que la semana pasada.</string>
+  <string name="stats_insight_less">esta semana completaste %1$d tareas, un %2$d%% menos que la semana pasada.</string>
+  <string name="stats_insight_same">mantienes el ritmo: completaste el mismo numero de tareas que la semana pasada.</string>
+  <string name="stats_empty_title">aun no hay datos</string>
+  <string name="stats_empty_subtitle">crea tu primera tarea para empezar a ver estadisticas utiles.</string>
   
+  <!-- Completed tasks collapsible section -->
+  <string name="completed_tasks_header">tareas realizadas (%d)</string>
+
   <!-- Messages -->
   <string name="task_moved_trash">tarea movida a la papelera</string>
   <string name="reminder_moved_trash">recordatorio movido a la papelera</string>
   <string name="undo">deshacer</string>
   <string name="trash_emptied">papelera vaciada</string>
   <string name="empty_trash">vaciar papelera</string>
+  <string name="confirm_empty_trash_title">¿vaciar papelera?</string>
+  <string name="confirm_empty_trash_message">esta accion eliminara permanentemente todos los elementos. no se puede deshacer.</string>
   <string name="trash_clean">papelera limpia</string>
   <string name="no_deleted_items">no hay elementos eliminados</string>
   <string name="deleted_items">elementos eliminados</string>
   <string name="item_restored">elemento restaurado</string>
   <string name="permanently_deleted">eliminado permanentemente</string>
+  <string name="trash_item_purge_pending_sync">no se pudo eliminar definitivamente: falta sincronizar con la nube</string>
+  <string name="trash_purge_pending_sync_count">%d elementos no se pudieron eliminar definitivamente por falta de sincronizacion</string>
   <string name="error_saving_backup">error al guardar backup</string>
   <string name="backup_saved">backup guardado correctamente</string>
   <string name="backup_restored">backup restaurado. reiniciando...</string>
   <string name="error_restoring_backup">error al restaurar backup</string>
-  
+
+  <!-- Sincronización en la nube (Supabase) -->
+  <string name="account_and_cloud_sync">cuenta y sincronización en la nube</string>
+  <string name="account_row_title">cuenta</string>
+  <string name="account_signed_in_as">sesión iniciada como %1$s</string>
+  <string name="account_not_signed_in">no has iniciado sesión</string>
+  <string name="auth_title">iniciar sesión</string>
+  <string name="auth_subtitle">inicia sesión para sincronizar tus tareas y recordatorios entre dispositivos</string>
+  <string name="auth_email_hint">correo electrónico</string>
+  <string name="auth_password_hint">contraseña</string>
+  <string name="auth_sign_in">iniciar sesión</string>
+  <string name="auth_sign_out">cerrar sesión</string>
+  <string name="auth_error_empty_fields">introduce correo y contraseña</string>
+  <string name="auth_signed_in_ok">sesión iniciada correctamente</string>
+  <string name="auth_session_expired">tu sesión ha caducado o ha sido revocada, vuelve a iniciar sesión</string>
+
+  <string name="auth_forgot_password">¿olvidaste tu contraseña?</string>
+  <string name="auth_reset_password_title">recuperar contraseña</string>
+  <string name="auth_reset_password_message">te enviaremos un correo con un enlace para restablecer tu contraseña</string>
+  <string name="auth_reset_password_send">enviar enlace</string>
+  <string name="auth_reset_password_sent_ok">si existe una cuenta con ese correo, recibirás un enlace para restablecer la contraseña</string>
+  <string name="auth_reset_password_error_empty_email">introduce tu correo electrónico</string>
+
+  <string name="auth_merge_dialog_title">¿qué quieres hacer con tus datos locales?</string>
+  <string name="auth_merge_dialog_message">este dispositivo ya tiene tareas, listas o recordatorios guardados, y esta cuenta también tiene datos en la nube. elige cómo continuar:</string>
+  <string name="auth_merge_dialog_upload">subir mis datos locales</string>
+  <string name="auth_merge_dialog_discard">descartar datos locales y usar solo la nube</string>
+  <string name="auth_merge_discard_warning_title">⚠️ esto borrará los datos de este dispositivo</string>
+  <string name="auth_merge_discard_warning_message">se eliminarán permanentemente todas las tareas, listas, subtareas y recordatorios de este dispositivo, y se sustituirán por los que haya en la nube.\n\nesta acción no se puede deshacer. ¿quieres continuar?</string>
+  <string name="auth_merge_discard_confirm">sí, descartar</string>
+  <string name="auth_merge_discard_success">datos locales descartados, se han cargado los datos de la nube</string>
+  <string name="auth_merge_discard_error">error al descartar los datos locales</string>
+
+  <string name="cloud_full_overwrite_title">subir copia completa a la nube</string>
+  <string name="cloud_full_overwrite_desc">sobrescribe todos tus datos en la nube con los de este dispositivo</string>
+  <string name="cloud_full_overwrite_warning_title">⚠️ esta acción sobrescribirá la nube</string>
+  <string name="cloud_full_overwrite_warning_message">se subirán todos los datos de este dispositivo a la nube, reemplazando lo que haya guardado allí. cualquier cambio hecho desde otro dispositivo u otra app que no se haya sincronizado aquí se perderá.\n\nesta acción no se puede deshacer. ¿quieres continuar?</string>
+  <string name="cloud_full_overwrite_confirm">sí, sobrescribir</string>
+  <string name="cloud_full_overwrite_in_progress">subiendo copia completa…</string>
+  <string name="cloud_full_overwrite_success">datos subidos y nube sobrescrita correctamente</string>
+  <string name="cloud_full_overwrite_error">error al subir la copia completa</string>
+  <string name="cloud_full_overwrite_requires_sign_in">inicia sesión primero para poder subir una copia a la nube</string>
+
+  <string name="sync_status_row_title">sincronizar ahora</string>
+  <string name="sync_status_never">aún no se ha sincronizado nunca</string>
+  <string name="sync_status_last_success">última sincronización correcta: %1$s</string>
+  <string name="sync_status_error">la sincronización está fallando: %1$s</string>
+  <string name="sync_status_syncing">sincronizando…</string>
+  <string name="sync_requires_sign_in">inicia sesión primero para poder sincronizar</string>
+
+  <string name="sync_conflicts_lost_message">%1$d cambios se sobrescribieron por ediciones más recientes en otro dispositivo</string>
+  <string name="sync_conflicts_dismiss">descartar</string>
+
+  <string name="cloud_full_download_title">descargar todo y sobrescribir este dispositivo</string>
+  <string name="cloud_full_download_desc">sobrescribe todos los datos de este dispositivo con los que haya en la nube</string>
+  <string name="cloud_full_download_warning_title">⚠️ esta acción sobrescribirá este dispositivo</string>
+  <string name="cloud_full_download_warning_message">se eliminarán todas las tareas, listas, subtareas y recordatorios de este dispositivo, y se sustituirán por los que haya en la nube. cualquier cambio hecho aquí que no se haya sincronizado todavía se perderá.\n\nesta acción no se puede deshacer. ¿quieres continuar?</string>
+  <string name="cloud_full_download_confirm">sí, descargar y sobrescribir</string>
+  <string name="cloud_full_download_in_progress">descargando copia completa…</string>
+  <string name="cloud_full_download_success">datos descargados y dispositivo sobrescrito correctamente</string>
+  <string name="cloud_full_download_error">error al descargar la copia completa</string>
+  <string name="cloud_full_download_requires_sign_in">inicia sesión primero para poder descargar una copia de la nube</string>
+
   <string name="recurrence_daily">diario</string>
   <string name="recurrence_weekly">semanal</string>
   <string name="recurrence_monthly">mensual</string>
@@ -160,42 +268,42 @@
   <!-- Settings Screen -->
   <string name="visual_theme">tema visual</string>
   <string name="loading">cargando...</string>
-  <string name="typography">tipografía</string>
+  <string name="typography">tipografia</string>
   <string name="checkbox_style">estilo de casillas</string>
   <string name="font_size">tamaño de fuente</string>
   <string name="language">idioma</string>
-  <string name="data_and_sync">datos y sincronización</string>
+  <string name="data_and_sync">datos y sincronizacion</string>
   <string name="export_local_backup">exportar copia local</string>
-  <string name="export_local_backup_desc">genera un archivo JSON con tus datos</string>
+  <string name="export_local_backup_desc">genera un archivo json con tus datos</string>
   <string name="restore_data">restaurar datos</string>
   <string name="restore_data_desc">recuperar desde archivo de copia de seguridad</string>
   <string name="system_label">sistema</string>
   <string name="notification_permissions">permisos de notificaciones</string>
-  <string name="notification_permissions_desc">ajustes de notificaciones en Android</string>
-  <string name="tasks_notification">notificación de tareas</string>
+  <string name="notification_permissions_desc">ajustes de notificaciones en android</string>
+  <string name="tasks_notification">notificacion de tareas</string>
   <string name="daily_at">diariamente a las %s</string>
   <string name="initial_tutorial">tutorial inicial</string>
-  <string name="initial_tutorial_desc">revisar guía de uso de la aplicación</string>
+  <string name="initial_tutorial_desc">revisar guia de uso de la aplicacion</string>
   <string name="developed_by_full">polar tasks v1.5\ndesarrollado por rezzt.dev</string>
   
   <!-- Tutorial -->
   <string name="tutorial_title_1">bienvenido a polar.</string>
-  <string name="tutorial_desc_1">la aplicación minimalista diseñada meticulosamente para organizar tus tareas y recordatorios de la forma más elegante posible.\n\ndescubre cómo potenciar tu productividad diaria manteniendo siempre el control, sin distracciones y con un rendimiento excepcional.</string>
-  <string name="tutorial_title_2">gestión de tareas</string>
+  <string name="tutorial_desc_1">la aplicacion minimalista diseñada meticulosamente para organizar tus tareas y recordatorios de la forma mas elegante posible.\n\ndescubre como potenciar tu productividad diaria manteniendo siempre el control, sin distracciones y con un rendimiento excepcional.</string>
+  <string name="tutorial_title_2">gestion de tareas</string>
   <string name="tutorial_desc_2">agrupa tus responsabilidades creando listas dedicadas para el trabajo, hogar o proyectos especiales, y organiza todo con etiquetas.\n\ndivide los grandes objetivos añadiendo subtareas ilimitadas y observa tu progreso de una forma completamente visual y satisfactoria.</string>
-  <string name="tutorial_title_3">acciones rápidas</string>
-  <string name="tutorial_desc_3">desliza suavemente una tarea hacia la derecha para marcarla como completada al instante.\n\n¿ya no necesitas hacer algo? desliza hacia la izquierda y elimínala sin ningún menú. mantén pulsada cualquier tarea para ver todas las opciones disponibles.</string>
-  <string name="tutorial_title_4">modo focus</string>
-  <string name="tutorial_desc_4">abre cualquier tarea y activa el "modo focus" para iniciar un temporizador pomodoro de 25 minutos que te ayuda a concentrarte en completarla sin distracciones.</string>
+  <string name="tutorial_title_3">acciones rapidas</string>
+  <string name="tutorial_desc_3">desliza suavemente una tarea hacia la derecha para marcarla como completada al instante.\n\n¿ya no necesitas hacer algo? desliza hacia la izquierda y eliminala sin ningun menu. manten pulsada cualquier tarea para ver todas las opciones disponibles.</string>
+  <string name="tutorial_title_4">gestion de imagenes</string>
+  <string name="tutorial_desc_4">adjunta imagenes a tus tareas para tener una referencia visual rapida. la imagen se mostrara como cabecera en el detalle de la tarea para una experiencia mas clara y organizada.</string>
   <string name="tutorial_title_5">calendario y recordatorios</string>
-  <string name="tutorial_desc_5">visualiza todas tus tareas agrupadas mes a mes o por semanas en nuestro calendario de diseño premium.\n\ncrea recordatorios con fecha, hora y ubicación para recibir una notificación precisa justo cuando más lo necesitas.</string>
-  <string name="tutorial_title_6">personalización total</string>
-  <string name="tutorial_desc_6">adapta la aplicación a tu propio estilo eligiendo entre 6 temas visuales: claro, oscuro, multicolor claro, multicolor oscuro, pastel y neón.\n\nademás, elige la tipografía, el estilo de las casillas de verificación y el tamaño de la fuente que mejor se adapten a ti.</string>
-  <string name="tutorial_title_7">estadísticas y progreso</string>
-  <string name="tutorial_desc_7">lleva un registro exhaustivo de tu día a día: tareas completadas, vencidas, tasa de cumplimiento y actividad semanal en una gráfica visual.\n\nmantén tu racha diaria de tareas completadas, descubre tu mejor día productivo y usa la “matriz de eisenhower” para priorizar lo que de verdad importa.</string>
+  <string name="tutorial_desc_5">visualiza todas tus tareas agrupadas mes a mes o por semanas en nuestro calendario de diseño premium.\n\ncrea recordatorios con fecha, hora y ubicacion para recibir una notificacion precisa justo cuando mas lo necesitas.</string>
+  <string name="tutorial_title_6">personalizacion total</string>
+  <string name="tutorial_desc_6">adapta la aplicacion a tu propio estilo eligiendo entre 6 temas visuales: claro, oscuro, multicolor claro, multicolor oscuro, pastel, neon y onix.\n\nademas, elige la tipografia, el estilo de las casillas de verificacion y el tamaño de la fuente que mejor se adapten a ti.</string>
+  <string name="tutorial_title_7">estadisticas y progreso</string>
+  <string name="tutorial_desc_7">lleva un registro exhaustivo de tu dia a dia: tareas completadas, vencidas, tasa de cumplimiento y actividad semanal en una grafica visual.\n\nmanten tu racha diaria de tareas completadas, descubre tu mejor dia productivo y usa la “matriz de eisenhower” para priorizar lo que de verdad importa.</string>
   
   <string name="action_next">siguiente</string>
-  <string name="action_back">atrás</string>
+  <string name="action_back">atras</string>
   <string name="action_finish">empezar</string>
   <string name="action_skip">omitir</string>
   <string name="action_view_tutorial">ver tutorial</string>
@@ -206,13 +314,15 @@
 
   <!-- Settings dialogs (previously hardcoded) -->
   <string name="dialog_select_theme">seleccionar tema visual</string>
-  <string name="dialog_select_font">seleccionar tipografía</string>
+  <string name="dialog_select_font">seleccionar tipografia</string>
   <string name="dialog_select_checkbox_style">estilo de casillas</string>
   <string name="checkbox_square">cuadradas (material)</string>
   <string name="checkbox_circular">circulares (moderno)</string>
   <string name="dialog_select_language">seleccionar idioma</string>
 
   <!-- CSV Import (previously hardcoded) -->
+  <string name="import_csv">importar csv</string>
+  <string name="import_csv_desc">cargar tareas desde archivo .csv</string>
   <string name="imported_tasks_list_name">tareas importadas</string>
   <string name="tasks_imported_ok">tareas importadas correctamente</string>
   <string name="error_importing_csv">error al importar el archivo csv</string>
@@ -220,14 +330,6 @@
   <!-- Share task -->
   <string name="share_task_as_image">compartir tarea como imagen</string>
 
-  <!-- Focus Mode (previously hardcoded) -->
-  <string name="focus_mode">modo focus</string>
-  <string name="focus_mode_close">cerrar modo focus</string>
-  <string name="focus_start">empezar</string>
-  <string name="focus_pause">pausar</string>
-  <string name="focus_resume">continuar</string>
-  <string name="focus_reset">reiniciar</string>
-  <string name="focus_session_done">¡sesión pomodoro completada!</string>
   <string name="attach_image">adjuntar imagen</string>
 
   <!-- Dependency chain dialog (previously hardcoded in XML) -->
