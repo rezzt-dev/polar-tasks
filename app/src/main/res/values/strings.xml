@@ -184,11 +184,75 @@
   <string name="deleted_items">elementos eliminados</string>
   <string name="item_restored">elemento restaurado</string>
   <string name="permanently_deleted">eliminado permanentemente</string>
+  <string name="trash_item_purge_pending_sync">no se pudo eliminar definitivamente: falta sincronizar con la nube</string>
+  <string name="trash_purge_pending_sync_count">%d elementos no se pudieron eliminar definitivamente por falta de sincronizacion</string>
   <string name="error_saving_backup">error al guardar backup</string>
   <string name="backup_saved">backup guardado correctamente</string>
   <string name="backup_restored">backup restaurado. reiniciando...</string>
   <string name="error_restoring_backup">error al restaurar backup</string>
-  
+
+  <!-- Sincronización en la nube (Supabase) -->
+  <string name="account_and_cloud_sync">cuenta y sincronización en la nube</string>
+  <string name="account_row_title">cuenta</string>
+  <string name="account_signed_in_as">sesión iniciada como %1$s</string>
+  <string name="account_not_signed_in">no has iniciado sesión</string>
+  <string name="auth_title">iniciar sesión</string>
+  <string name="auth_subtitle">inicia sesión para sincronizar tus tareas y recordatorios entre dispositivos</string>
+  <string name="auth_email_hint">correo electrónico</string>
+  <string name="auth_password_hint">contraseña</string>
+  <string name="auth_sign_in">iniciar sesión</string>
+  <string name="auth_sign_out">cerrar sesión</string>
+  <string name="auth_error_empty_fields">introduce correo y contraseña</string>
+  <string name="auth_signed_in_ok">sesión iniciada correctamente</string>
+  <string name="auth_session_expired">tu sesión ha caducado o ha sido revocada, vuelve a iniciar sesión</string>
+
+  <string name="auth_forgot_password">¿olvidaste tu contraseña?</string>
+  <string name="auth_reset_password_title">recuperar contraseña</string>
+  <string name="auth_reset_password_message">te enviaremos un correo con un enlace para restablecer tu contraseña</string>
+  <string name="auth_reset_password_send">enviar enlace</string>
+  <string name="auth_reset_password_sent_ok">si existe una cuenta con ese correo, recibirás un enlace para restablecer la contraseña</string>
+  <string name="auth_reset_password_error_empty_email">introduce tu correo electrónico</string>
+
+  <string name="auth_merge_dialog_title">¿qué quieres hacer con tus datos locales?</string>
+  <string name="auth_merge_dialog_message">este dispositivo ya tiene tareas, listas o recordatorios guardados, y esta cuenta también tiene datos en la nube. elige cómo continuar:</string>
+  <string name="auth_merge_dialog_upload">subir mis datos locales</string>
+  <string name="auth_merge_dialog_discard">descartar datos locales y usar solo la nube</string>
+  <string name="auth_merge_discard_warning_title">⚠️ esto borrará los datos de este dispositivo</string>
+  <string name="auth_merge_discard_warning_message">se eliminarán permanentemente todas las tareas, listas, subtareas y recordatorios de este dispositivo, y se sustituirán por los que haya en la nube.\n\nesta acción no se puede deshacer. ¿quieres continuar?</string>
+  <string name="auth_merge_discard_confirm">sí, descartar</string>
+  <string name="auth_merge_discard_success">datos locales descartados, se han cargado los datos de la nube</string>
+  <string name="auth_merge_discard_error">error al descartar los datos locales</string>
+
+  <string name="cloud_full_overwrite_title">subir copia completa a la nube</string>
+  <string name="cloud_full_overwrite_desc">sobrescribe todos tus datos en la nube con los de este dispositivo</string>
+  <string name="cloud_full_overwrite_warning_title">⚠️ esta acción sobrescribirá la nube</string>
+  <string name="cloud_full_overwrite_warning_message">se subirán todos los datos de este dispositivo a la nube, reemplazando lo que haya guardado allí. cualquier cambio hecho desde otro dispositivo u otra app que no se haya sincronizado aquí se perderá.\n\nesta acción no se puede deshacer. ¿quieres continuar?</string>
+  <string name="cloud_full_overwrite_confirm">sí, sobrescribir</string>
+  <string name="cloud_full_overwrite_in_progress">subiendo copia completa…</string>
+  <string name="cloud_full_overwrite_success">datos subidos y nube sobrescrita correctamente</string>
+  <string name="cloud_full_overwrite_error">error al subir la copia completa</string>
+  <string name="cloud_full_overwrite_requires_sign_in">inicia sesión primero para poder subir una copia a la nube</string>
+
+  <string name="sync_status_row_title">sincronizar ahora</string>
+  <string name="sync_status_never">aún no se ha sincronizado nunca</string>
+  <string name="sync_status_last_success">última sincronización correcta: %1$s</string>
+  <string name="sync_status_error">la sincronización está fallando: %1$s</string>
+  <string name="sync_status_syncing">sincronizando…</string>
+  <string name="sync_requires_sign_in">inicia sesión primero para poder sincronizar</string>
+
+  <string name="sync_conflicts_lost_message">%1$d cambios se sobrescribieron por ediciones más recientes en otro dispositivo</string>
+  <string name="sync_conflicts_dismiss">descartar</string>
+
+  <string name="cloud_full_download_title">descargar todo y sobrescribir este dispositivo</string>
+  <string name="cloud_full_download_desc">sobrescribe todos los datos de este dispositivo con los que haya en la nube</string>
+  <string name="cloud_full_download_warning_title">⚠️ esta acción sobrescribirá este dispositivo</string>
+  <string name="cloud_full_download_warning_message">se eliminarán todas las tareas, listas, subtareas y recordatorios de este dispositivo, y se sustituirán por los que haya en la nube. cualquier cambio hecho aquí que no se haya sincronizado todavía se perderá.\n\nesta acción no se puede deshacer. ¿quieres continuar?</string>
+  <string name="cloud_full_download_confirm">sí, descargar y sobrescribir</string>
+  <string name="cloud_full_download_in_progress">descargando copia completa…</string>
+  <string name="cloud_full_download_success">datos descargados y dispositivo sobrescrito correctamente</string>
+  <string name="cloud_full_download_error">error al descargar la copia completa</string>
+  <string name="cloud_full_download_requires_sign_in">inicia sesión primero para poder descargar una copia de la nube</string>
+
   <string name="recurrence_daily">diario</string>
   <string name="recurrence_weekly">semanal</string>
   <string name="recurrence_monthly">mensual</string>

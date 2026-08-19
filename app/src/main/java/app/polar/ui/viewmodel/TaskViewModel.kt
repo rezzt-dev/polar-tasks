@@ -7,11 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
+import app.polar.R
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
+import app.polar.data.sync.TaskImageStorage
+import app.polar.data.sync.touched
+import app.polar.data.sync.touchedDeleted
+import app.polar.data.sync.touchedRestored
 import app.polar.domain.usecase.GetFilteredTasksUseCase
 import app.polar.domain.model.SortMode
 import kotlinx.coroutines.launch
@@ -33,7 +38,9 @@ class TaskViewModel @Inject constructor(
     application: Application,
     internal val repository: TaskRepository,
     private val alarmHelper: app.polar.util.AlarmManagerHelper,
-    private val getFilteredTasksUseCase: GetFilteredTasksUseCase
+    private val taskImageStorage: TaskImageStorage,
+    private val getFilteredTasksUseCase: GetFilteredTasksUseCase,
+    private val syncManager: app.polar.data.sync.SyncManager
 ) : AndroidViewModel(application) {
 
 
@@ -88,6 +95,7 @@ class TaskViewModel @Inject constructor(
   private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
       try {
           block()
+          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
           _errorMessage.value = "Error: ${e.message}"
@@ -291,11 +299,11 @@ class TaskViewModel @Inject constructor(
       timeEstimate = timeEstimate
     )
     val taskId = repository.insertTask(task)
-    
+
     // Insert subtasks
-    subtasks.forEach { subtask ->
+    subtasks.forEachIndexed { index, subtask ->
         // Ensure they are linked to the new task
-        repository.insertSubtask(subtask.copy(id = 0, taskId = taskId))
+        repository.insertSubtask(subtask.copy(id = 0, taskId = taskId, orderIndex = index).touched())
     }
     
     // Schedule alarm
@@ -317,17 +325,12 @@ class TaskViewModel @Inject constructor(
   }
   
   fun updateTask(task: Task, subtasks: List<Subtask>? = null) = safeLaunch {
-    repository.updateTask(task)
-    
+    repository.updateTask(task.touched())
+
     if (subtasks != null) {
-        repository.deleteAllSubtasksForTask(task.id)
-        subtasks.forEach { subtask ->
-             // Re-insert subtask maintaining state (title, completed)
-             // Reset ID for auto-generation
-             repository.insertSubtask(subtask.copy(id = 0, taskId = task.id))
-        }
+        repository.replaceSubtasksForTask(task.id, subtasks)
     }
-    
+
     if (task.dueDate != null) {
         alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
     } else {
@@ -338,10 +341,31 @@ class TaskViewModel @Inject constructor(
   fun updateTaskWithSubtasks(task: Task, newSubtasks: List<Subtask>) = safeLaunch {
       updateTask(task, newSubtasks)
   }
+
+  // Shows the picked image instantly from the local content:// URI, then uploads it to Supabase
+  // Storage in the background and records the resulting bucket path (image_path) so the other
+  // app/device can resolve and download it too (doc 06, punto 8).
+  fun attachImage(task: Task, localUri: android.net.Uri) = safeLaunch {
+    val withLocalPreview = task.copy(imageUri = localUri.toString()).touched()
+    repository.updateTask(withLocalPreview)
+    val path = taskImageStorage.upload(task.uuid, localUri)
+    if (path != null) {
+        repository.updateTask(withLocalPreview.copy(imagePath = path).touched())
+    }
+  }
+
+  // Downloads the task's Storage image on demand (e.g. opening its detail screen) and caches it
+  // locally so subsequent views are instant/offline, without marking the row dirty.
+  suspend fun downloadAndCacheTaskImage(task: Task): android.net.Uri? {
+    val imagePath = task.imagePath ?: return null
+    val cached = taskImageStorage.downloadToCache(imagePath) ?: return null
+    repository.cacheTaskImageUri(task.id, cached.toString())
+    return cached
+  }
   
   fun setTaskCompletion(task: Task, isCompleted: Boolean) = safeLaunch {
     if (task.completed == isCompleted) return@safeLaunch
-    repository.updateTask(task.copy(completed = isCompleted))
+    repository.updateTask(task.copy(completed = isCompleted).touched())
     
     // Sync subtasks
     if (isCompleted) {
@@ -363,7 +387,7 @@ class TaskViewModel @Inject constructor(
 
   fun toggleTaskCompletion(task: Task) = safeLaunch {
     val newCompletedState = !task.completed
-    repository.updateTask(task.copy(completed = newCompletedState))
+    repository.updateTask(task.copy(completed = newCompletedState).touched())
     
     // Sync subtasks
     if (newCompletedState) {
@@ -388,48 +412,46 @@ class TaskViewModel @Inject constructor(
     }
   }
   
-  fun deleteTask(task: Task) = safeLaunch {
-    repository.deleteTask(task)
-  }
-  
   fun insertSubtask(taskId: Long, title: String) = safeLaunch {
     val subtask = Subtask(taskId = taskId, title = title)
     repository.insertSubtask(subtask)
   }
-  
+
   fun toggleSubtaskCompletion(subtask: Subtask) = safeLaunch {
-    repository.updateSubtask(subtask.copy(completed = !subtask.completed))
+    repository.updateSubtask(subtask.copy(completed = !subtask.completed).touched())
   }
-  
+
   fun deleteSubtask(subtask: Subtask) = safeLaunch {
-    repository.deleteSubtask(subtask)
+    // Tombstone, not a physical delete: subtasks have no local trash, but a hard delete would
+    // never propagate as a removal to Supabase/the other app.
+    repository.updateSubtask(subtask.touchedDeleted())
   }
 
 
 
   fun renameSubtask(subtask: Subtask, newTitle: String) = safeLaunch {
-    repository.updateSubtask(subtask.copy(title = newTitle))
+    repository.updateSubtask(subtask.copy(title = newTitle).touched())
   }
 
   fun updateSubtask(subtask: Subtask) = safeLaunch {
-    repository.updateSubtask(subtask)
+    repository.updateSubtask(subtask.touched())
   }
 
   fun updateTasksOrder(tasks: List<Task>) = safeLaunch {
-    repository.updateTasks(tasks)
+    repository.updateTasks(tasks.map { it.touched() })
   }
 
   fun updateTaskListsOrder(taskLists: List<app.polar.data.entity.TaskList>) = safeLaunch {
-    repository.updateTaskLists(taskLists)
+    repository.updateTaskLists(taskLists.map { it.touched() })
   }
-  
+
   fun updateTaskGroupsOrder(groups: List<app.polar.data.model.TaskGroup>) = safeLaunch {
       val allLists = repository.getTaskListsSnapshot()
       val groupsMap = groups.mapIndexed { index, g -> g.listId to index }.toMap()
-      
+
       val updatedLists = allLists.mapNotNull { list ->
           if (groupsMap.containsKey(list.id)) {
-              list.copy(homeOrderIndex = groupsMap[list.id]!!)
+              list.copy(homeOrderIndex = groupsMap[list.id]!!).touched()
           } else {
               null
           }
@@ -470,7 +492,7 @@ class TaskViewModel @Inject constructor(
 
   // Trash Logic
   fun moveToTrash(task: Task) = safeLaunch {
-      repository.softDeleteTask(task.id)
+      repository.softDeleteTask(task)
       // Cancel alarm if set
       if (task.dueDate != null) {
           alarmHelper.cancelTaskAlarm(task.id)
@@ -478,19 +500,43 @@ class TaskViewModel @Inject constructor(
   }
 
   fun restoreFromTrash(task: Task) = safeLaunch {
-      repository.restoreTask(task.id)
+      repository.restoreTask(task)
       // Reschedule alarm if needed?
       if (task.dueDate != null && !task.completed) {
           alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
       }
   }
 
-  fun permanentDelete(task: Task) = safeLaunch {
-      repository.permanentDeleteTask(task.id)
+  // Forces a sync attempt first so as many trashed rows as possible have their tombstone
+  // confirmed on the server before the local purge runs (see repository.permanentDeleteTask /
+  // TaskDao.permanentDelete for why the purge itself refuses dirty rows). If sync fails (e.g.
+  // offline), the purge still runs but will simply purge nothing for this row.
+  fun permanentDelete(task: Task) = viewModelScope.launch {
+      try {
+          runCatching { syncManager.sync() }
+          val purged = repository.permanentDeleteTask(task.id)
+          if (!purged) {
+              _errorMessage.value = getApplication<Application>().getString(R.string.trash_item_purge_pending_sync)
+          }
+          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
+      } catch (e: Exception) {
+          e.printStackTrace()
+          _errorMessage.value = "Error: ${e.message}"
+      }
   }
 
-  fun emptyTrash() = safeLaunch {
-      repository.emptyTrash()
+  fun emptyTrash() = viewModelScope.launch {
+      try {
+          runCatching { syncManager.sync() }
+          val stillInTrash = repository.emptyTrash()
+          if (stillInTrash > 0) {
+              _errorMessage.value = getApplication<Application>().getString(R.string.trash_purge_pending_sync_count, stillInTrash)
+          }
+          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
+      } catch (e: Exception) {
+          e.printStackTrace()
+          _errorMessage.value = "Error: ${e.message}"
+      }
   }
 
   fun getDeletedTasks(): LiveData<List<Task>> {

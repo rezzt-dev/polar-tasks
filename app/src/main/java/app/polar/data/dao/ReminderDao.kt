@@ -27,23 +27,29 @@ interface ReminderDao {
     @Update
     suspend fun update(reminder: Reminder)
 
-    @Delete
-    suspend fun delete(reminder: Reminder)
+    @Update
+    suspend fun updateAll(reminders: List<Reminder>)
 
     @Query("DELETE FROM reminders")
     suspend fun deleteAll()
 
-    @Query("UPDATE reminders SET isDeleted = 1 WHERE id = :id")
-    suspend fun softDelete(id: Long)
+    // Physical delete only proceeds once the tombstone already made it to Supabase (dirty = 0) —
+    // otherwise it disappears locally without the server ever finding out, and the next pull
+    // resurrects it (agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 3.1).
+    @Query("DELETE FROM reminders WHERE isDeleted = 1 AND dirty = 0")
+    suspend fun emptyTrash(): Int
 
-    @Query("UPDATE reminders SET isDeleted = 0 WHERE id = :id")
-    suspend fun restore(id: Long)
+    @Query("DELETE FROM reminders WHERE id = :id AND dirty = 0")
+    suspend fun permanentDelete(id: Long): Int
 
-    @Query("DELETE FROM reminders WHERE isDeleted = 1")
-    suspend fun emptyTrash()
-    
-    @Query("DELETE FROM reminders WHERE id = :id")
-    suspend fun permanentDelete(id: Long)
+    @Query("SELECT COUNT(*) FROM reminders WHERE isDeleted = 1")
+    suspend fun getTrashCount(): Int
+
+    // Trashed reminders whose tombstone already made it to Supabase — candidates to check against
+    // the server for a physical purge (see SyncManager.purgeTombstonesMissingRemote,
+    // agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 4.5).
+    @Query("SELECT * FROM reminders WHERE isDeleted = 1 AND dirty = 0")
+    suspend fun getConfirmedTrashedRemindersSnapshot(): List<Reminder>
 
     @Query("SELECT * FROM reminders WHERE isDeleted = 1 ORDER BY dateTime DESC")
     fun getDeletedReminders(): LiveData<List<Reminder>>
@@ -53,6 +59,12 @@ interface ReminderDao {
 
     @Query("SELECT * FROM reminders WHERE id = :id")
     suspend fun getReminderById(id: Long): Reminder?
+
+    @Query("SELECT * FROM reminders WHERE dirty = 1")
+    suspend fun getDirtyReminders(): List<Reminder>
+
+    @Query("SELECT * FROM reminders WHERE uuid = :uuid LIMIT 1")
+    suspend fun getByUuid(uuid: String): Reminder?
     
     @Query("SELECT * FROM reminders")
     suspend fun getAllRemindersSnapshot(): List<Reminder>

@@ -162,11 +162,75 @@
   <string name="deleted_items">geloschte elemente</string>
   <string name="item_restored">element wiederhergestellt</string>
   <string name="permanently_deleted">dauerhaft geloscht</string>
+  <string name="trash_item_purge_pending_sync">konnte nicht endgultig geloscht werden: synchronisierung mit der cloud steht noch aus</string>
+  <string name="trash_purge_pending_sync_count">%d elemente konnten nicht endgultig geloscht werden, da sie noch nicht synchronisiert sind</string>
   <string name="error_saving_backup">fehler beim speichern des backups</string>
   <string name="backup_saved">backup erfolgreich gespeichert</string>
   <string name="backup_restored">backup wiederhergestellt. neustart...</string>
   <string name="error_restoring_backup">fehler beim wiederherstellen des backups</string>
-  
+
+  <!-- Konto und cloud-synchronisierung -->
+  <string name="account_and_cloud_sync">konto und cloud-synchronisierung</string>
+  <string name="account_row_title">konto</string>
+  <string name="account_signed_in_as">angemeldet als %1$s</string>
+  <string name="account_not_signed_in">nicht angemeldet</string>
+  <string name="auth_title">anmelden</string>
+  <string name="auth_subtitle">melden sie sich an, um ihre aufgaben und erinnerungen gerateubergreifend zu synchronisieren</string>
+  <string name="auth_email_hint">e-mail-adresse</string>
+  <string name="auth_password_hint">passwort</string>
+  <string name="auth_sign_in">anmelden</string>
+  <string name="auth_sign_out">abmelden</string>
+  <string name="auth_error_empty_fields">geben sie e-mail und passwort ein</string>
+  <string name="auth_signed_in_ok">erfolgreich angemeldet</string>
+  <string name="auth_session_expired">ihre sitzung ist abgelaufen oder wurde widerrufen, melden sie sich erneut an</string>
+
+  <string name="auth_forgot_password">passwort vergessen?</string>
+  <string name="auth_reset_password_title">passwort zurucksetzen</string>
+  <string name="auth_reset_password_message">wir senden ihnen eine e-mail mit einem link zum zurucksetzen ihres passworts</string>
+  <string name="auth_reset_password_send">link senden</string>
+  <string name="auth_reset_password_sent_ok">falls ein konto mit dieser e-mail existiert, erhalten sie einen link zum zurucksetzen des passworts</string>
+  <string name="auth_reset_password_error_empty_email">geben sie ihre e-mail-adresse ein</string>
+
+  <string name="auth_merge_dialog_title">was mochten sie mit ihren lokalen daten tun?</string>
+  <string name="auth_merge_dialog_message">auf diesem gerat sind bereits aufgaben, listen oder erinnerungen gespeichert, und dieses konto hat ebenfalls daten in der cloud. wahlen sie, wie sie fortfahren mochten:</string>
+  <string name="auth_merge_dialog_upload">meine lokalen daten hochladen</string>
+  <string name="auth_merge_dialog_discard">lokale daten verwerfen und nur die cloud verwenden</string>
+  <string name="auth_merge_discard_warning_title">⚠️ dies loscht die daten dieses gerats</string>
+  <string name="auth_merge_discard_warning_message">alle aufgaben, listen, unteraufgaben und erinnerungen auf diesem gerat werden dauerhaft geloscht und durch die daten aus der cloud ersetzt.\n\ndiese aktion kann nicht ruckgangig gemacht werden. mochten sie fortfahren?</string>
+  <string name="auth_merge_discard_confirm">ja, verwerfen</string>
+  <string name="auth_merge_discard_success">lokale daten verworfen, cloud-daten geladen</string>
+  <string name="auth_merge_discard_error">fehler beim verwerfen der lokalen daten</string>
+
+  <string name="cloud_full_overwrite_title">vollstandige kopie in die cloud hochladen</string>
+  <string name="cloud_full_overwrite_desc">uberschreibt alle ihre cloud-daten mit denen dieses gerats</string>
+  <string name="cloud_full_overwrite_warning_title">⚠️ diese aktion uberschreibt die cloud</string>
+  <string name="cloud_full_overwrite_warning_message">alle daten dieses gerats werden in die cloud hochgeladen und ersetzen, was dort gespeichert ist. anderungen von einem anderen gerat oder einer anderen app, die hier noch nicht synchronisiert wurden, gehen verloren.\n\ndiese aktion kann nicht ruckgangig gemacht werden. mochten sie fortfahren?</string>
+  <string name="cloud_full_overwrite_confirm">ja, uberschreiben</string>
+  <string name="cloud_full_overwrite_in_progress">vollstandige kopie wird hochgeladen…</string>
+  <string name="cloud_full_overwrite_success">daten hochgeladen und cloud erfolgreich uberschrieben</string>
+  <string name="cloud_full_overwrite_error">fehler beim hochladen der vollstandigen kopie</string>
+  <string name="cloud_full_overwrite_requires_sign_in">melden sie sich zuerst an, um eine kopie in die cloud hochzuladen</string>
+
+  <string name="sync_status_row_title">jetzt synchronisieren</string>
+  <string name="sync_status_never">noch nie synchronisiert</string>
+  <string name="sync_status_last_success">letzte erfolgreiche synchronisierung: %1$s</string>
+  <string name="sync_status_error">die synchronisierung schlägt fehl: %1$s</string>
+  <string name="sync_status_syncing">wird synchronisiert…</string>
+  <string name="sync_requires_sign_in">melden sie sich zuerst an, um synchronisieren zu können</string>
+
+  <string name="sync_conflicts_lost_message">%1$d änderungen wurden durch neuere bearbeitungen auf einem anderen gerät überschrieben</string>
+  <string name="sync_conflicts_dismiss">verwerfen</string>
+
+  <string name="cloud_full_download_title">alles herunterladen und dieses gerät überschreiben</string>
+  <string name="cloud_full_download_desc">überschreibt alle daten auf diesem gerät mit den daten aus der cloud</string>
+  <string name="cloud_full_download_warning_title">⚠️ diese aktion überschreibt dieses gerät</string>
+  <string name="cloud_full_download_warning_message">alle aufgaben, listen, unteraufgaben und erinnerungen auf diesem gerät werden gelöscht und durch die daten aus der cloud ersetzt. alle hier vorgenommenen änderungen, die noch nicht synchronisiert wurden, gehen verloren.\n\ndiese aktion kann nicht rückgängig gemacht werden. möchten sie fortfahren?</string>
+  <string name="cloud_full_download_confirm">ja, herunterladen und überschreiben</string>
+  <string name="cloud_full_download_in_progress">vollständige kopie wird heruntergeladen…</string>
+  <string name="cloud_full_download_success">daten heruntergeladen und gerät erfolgreich überschrieben</string>
+  <string name="cloud_full_download_error">fehler beim herunterladen der vollständigen kopie</string>
+  <string name="cloud_full_download_requires_sign_in">melden sie sich zuerst an, um eine kopie aus der cloud herunterladen zu können</string>
+
   <string name="recurrence_daily">taglich</string>
   <string name="recurrence_weekly">wochentlich</string>
   <string name="recurrence_monthly">monatlich</string>

@@ -162,11 +162,75 @@
   <string name="deleted_items">elements supprimes</string>
   <string name="item_restored">element restaure</string>
   <string name="permanently_deleted">supprime definitivement</string>
+  <string name="trash_item_purge_pending_sync">suppression definitive impossible : synchronisation avec le cloud en attente</string>
+  <string name="trash_purge_pending_sync_count">%d elements n\'ont pas pu etre supprimes definitivement car ils ne sont pas encore synchronises</string>
   <string name="error_saving_backup">erreur lors de l\'enregistrement de la sauvegarde</string>
   <string name="backup_saved">sauvegarde enregistree avec succes</string>
   <string name="backup_restored">sauvegarde restauree. redemarrage...</string>
   <string name="error_restoring_backup">erreur lors de la restauration de la sauvegarde</string>
-  
+
+  <!-- Compte et synchronisation cloud -->
+  <string name="account_and_cloud_sync">compte et synchronisation cloud</string>
+  <string name="account_row_title">compte</string>
+  <string name="account_signed_in_as">connecte en tant que %1$s</string>
+  <string name="account_not_signed_in">non connecte</string>
+  <string name="auth_title">connexion</string>
+  <string name="auth_subtitle">connectez-vous pour synchroniser vos taches et rappels entre appareils</string>
+  <string name="auth_email_hint">adresse e-mail</string>
+  <string name="auth_password_hint">mot de passe</string>
+  <string name="auth_sign_in">se connecter</string>
+  <string name="auth_sign_out">se deconnecter</string>
+  <string name="auth_error_empty_fields">entrez votre e-mail et votre mot de passe</string>
+  <string name="auth_signed_in_ok">connexion reussie</string>
+  <string name="auth_session_expired">votre session a expire ou a ete revoquee, reconnectez-vous</string>
+
+  <string name="auth_forgot_password">mot de passe oublie ?</string>
+  <string name="auth_reset_password_title">reinitialiser le mot de passe</string>
+  <string name="auth_reset_password_message">nous vous enverrons un e-mail avec un lien pour reinitialiser votre mot de passe</string>
+  <string name="auth_reset_password_send">envoyer le lien</string>
+  <string name="auth_reset_password_sent_ok">si un compte existe avec cet e-mail, vous recevrez un lien de reinitialisation du mot de passe</string>
+  <string name="auth_reset_password_error_empty_email">entrez votre adresse e-mail</string>
+
+  <string name="auth_merge_dialog_title">que souhaitez-vous faire de vos donnees locales ?</string>
+  <string name="auth_merge_dialog_message">cet appareil contient deja des taches, listes ou rappels enregistres, et ce compte possede egalement des donnees dans le cloud. choisissez comment continuer :</string>
+  <string name="auth_merge_dialog_upload">envoyer mes donnees locales</string>
+  <string name="auth_merge_dialog_discard">supprimer les donnees locales et utiliser uniquement le cloud</string>
+  <string name="auth_merge_discard_warning_title">⚠️ ceci supprimera les donnees de cet appareil</string>
+  <string name="auth_merge_discard_warning_message">toutes les taches, listes, sous-taches et rappels de cet appareil seront definitivement supprimes et remplaces par ceux du cloud.\n\ncette action est irreversible. voulez-vous continuer ?</string>
+  <string name="auth_merge_discard_confirm">oui, supprimer</string>
+  <string name="auth_merge_discard_success">donnees locales supprimees, donnees du cloud chargees</string>
+  <string name="auth_merge_discard_error">erreur lors de la suppression des donnees locales</string>
+
+  <string name="cloud_full_overwrite_title">envoyer une copie complete vers le cloud</string>
+  <string name="cloud_full_overwrite_desc">remplace toutes vos donnees dans le cloud par celles de cet appareil</string>
+  <string name="cloud_full_overwrite_warning_title">⚠️ cette action va ecraser le cloud</string>
+  <string name="cloud_full_overwrite_warning_message">toutes les donnees de cet appareil seront envoyees vers le cloud, remplacant ce qui y est enregistre. tout changement effectue depuis un autre appareil ou une autre application non synchronise ici sera perdu.\n\ncette action est irreversible. voulez-vous continuer ?</string>
+  <string name="cloud_full_overwrite_confirm">oui, ecraser</string>
+  <string name="cloud_full_overwrite_in_progress">envoi de la copie complete…</string>
+  <string name="cloud_full_overwrite_success">donnees envoyees et cloud remplace avec succes</string>
+  <string name="cloud_full_overwrite_error">erreur lors de l\'envoi de la copie complete</string>
+  <string name="cloud_full_overwrite_requires_sign_in">connectez-vous d\'abord pour envoyer une copie vers le cloud</string>
+
+  <string name="sync_status_row_title">synchroniser maintenant</string>
+  <string name="sync_status_never">jamais synchronisé</string>
+  <string name="sync_status_last_success">dernière synchronisation réussie : %1$s</string>
+  <string name="sync_status_error">la synchronisation échoue : %1$s</string>
+  <string name="sync_status_syncing">synchronisation…</string>
+  <string name="sync_requires_sign_in">connectez-vous d\'abord pour pouvoir synchroniser</string>
+
+  <string name="sync_conflicts_lost_message">%1$d modifications ont été écrasées par des modifications plus récentes sur un autre appareil</string>
+  <string name="sync_conflicts_dismiss">ignorer</string>
+
+  <string name="cloud_full_download_title">tout télécharger et écraser cet appareil</string>
+  <string name="cloud_full_download_desc">remplace toutes les données de cet appareil par celles du cloud</string>
+  <string name="cloud_full_download_warning_title">⚠️ cette action écrasera cet appareil</string>
+  <string name="cloud_full_download_warning_message">toutes les tâches, listes, sous-tâches et rappels de cet appareil seront supprimés et remplacés par ceux du cloud. toute modification effectuée ici qui n\'a pas encore été synchronisée sera perdue.\n\ncette action est irréversible. voulez-vous continuer ?</string>
+  <string name="cloud_full_download_confirm">oui, télécharger et écraser</string>
+  <string name="cloud_full_download_in_progress">téléchargement de la copie complète…</string>
+  <string name="cloud_full_download_success">données téléchargées et appareil écrasé avec succès</string>
+  <string name="cloud_full_download_error">erreur lors du téléchargement de la copie complète</string>
+  <string name="cloud_full_download_requires_sign_in">connectez-vous d\'abord pour pouvoir télécharger une copie depuis le cloud</string>
+
   <string name="recurrence_daily">quotidien</string>
   <string name="recurrence_weekly">hebdomadaire</string>
   <string name="recurrence_monthly">mensuel</string>
