@@ -397,14 +397,29 @@ git add app/schemas/app.polar.data.AppDatabase/18.json
 
 ---
 
-## Fase 5 — Limpieza de estado residual y versionado
+## Fase 5 — Limpieza de estado residual y versionado ✅
 
-### 5.1 Verificación previa en dispositivo (con una build 1.6 instalada)
+### 5.1 Nombre del fichero de sesión del SDK — resuelto por análisis de fuentes
 
-Device File Explorer → `/data/data/app.polar/shared_prefs/` → identificar el fichero donde
-supabase-kt persistió la sesión (nombre gestionado por el SDK; candidatos: ficheros con
-"supabase"/"settings"/"session" en el nombre). Anotar el nombre real y usarlo abajo. Si no se
-identifica, se acepta como residuo inerte (riesgo R5, doc 05).
+En vez de depender de un dispositivo con build 1.6 instalada (ninguno disponible, doc 03 Fase 0),
+se determinó el nombre leyendo los fuentes de las dependencias en la caché de Gradle:
+`SettingsSessionManager` de `auth-kt` usa `createDefaultSettings()` →
+`com.russhwolf.settings.Settings()` sin argumentos; en Android (`multiplatform-settings-no-arg`,
+`NoArg.kt`) esa función es:
+
+```kotlin
+public actual fun Settings(): Settings {
+    val preferencesName = "${appContext.packageName}_preferences"
+    val delegate = appContext.getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
+    return SharedPreferencesSettings(delegate)
+}
+```
+
+Con `packageName = "app.polar"`, el fichero es determinista: **`app.polar_preferences`**. Se
+confirmó con `git grep -rn "getSharedPreferences" -- app/src/main/java/app/polar` que ningún
+código propio usa ese nombre (usan `app_prefs`, `polar_prefs`, `task_prefs`), así que
+`deleteSharedPreferences("app.polar_preferences")` no arrastra ninguna preferencia propia de la
+app.
 
 ### 5.2 Bloque de limpieza en `PolarApplication.kt`
 
@@ -418,20 +433,23 @@ override fun onCreate() {
 /**
  * Limpieza única de restos de la sincronización Supabase en dispositivos que ejecutaron
  * una build 1.6: trabajos de WorkManager cuya clase ya no existe, preferencias de sync,
- * sesión persistida del SDK y caché de imágenes de Storage.
+ * sesión persistida del SDK (fichero "<packageName>_preferences", el nombre que usa por
+ * defecto `Settings()` de multiplatform-settings en Android) y caché de imágenes de Storage.
  * Ver agent-docs/eliminacion-supabase/ (Fase 5).
  */
 private fun runSyncLeftoverCleanup() {
   val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
   if (prefs.getBoolean("sync_cleanup_done", false)) return
+
   androidx.work.WorkManager.getInstance(this).apply {
     cancelUniqueWork("SyncWorkerPeriodic")
     cancelUniqueWork("SyncWorkerOneTime")
     cancelUniqueWork("SyncWorkerFrequent")
   }
   deleteSharedPreferences("sync_prefs")
-  // deleteSharedPreferences("<nombre_real_sesion_supabase>")  // del paso 5.1, si aplica
+  deleteSharedPreferences("${packageName}_preferences")
   java.io.File(cacheDir, "task_images").deleteRecursively()
+
   prefs.edit().putBoolean("sync_cleanup_done", true).apply()
 }
 ```
@@ -448,7 +466,7 @@ versionName = "1.6.1-offline"
 
 ---
 
-## Fase 6 — Build, manifest y recursos
+## Fase 6 — Build, manifest y recursos ✅
 
 ### 6.1 `gradle/libs.versions.toml` (CLASE 2)
 
@@ -522,7 +540,7 @@ git grep -n "auth_\|cloud_full\|sync_status\|account_" -- app/src/main/res   # s
 
 ---
 
-## Fase 7 — Adaptación de tests
+## Fase 7 — Adaptación de tests ⚠️ (adaptación + validación automatizada completas; ver 03-roadmap.md para lo pendiente manual)
 
 ### 7.1 `TaskViewModelTest.kt` (CLASE 3)
 
@@ -560,7 +578,7 @@ git grep -n "auth_\|cloud_full\|sync_status\|account_" -- app/src/main/res   # s
 
 ---
 
-## Commit final de limpieza documental (tras checklist verde, doc 06)
+## Commit final de limpieza documental (tras checklist verde, doc 06) ✅
 
 ```bash
 git rm -r agent-docs/supabase-sync agent-docs/analisis-implementacion-supabase-sync.md
@@ -568,5 +586,10 @@ git rm -r agent-docs/supabase-sync agent-docs/analisis-implementacion-supabase-s
 # Estos docs (agent-docs/eliminacion-supabase/) se conservan como registro de la decisión.
 ```
 
-Y fuera del repo (solo tras validar en dispositivos): teardown del servidor según doc 02 §D5 y
-borrado de `SUPABASE_URL`/`SUPABASE_ANON_KEY` de `local.properties`.
+Ejecutado 2026-08-20 — `agent-docs/supabase-sync/` (11 ficheros) y
+`agent-docs/analisis-implementacion-supabase-sync.md` eliminados de la rama; `AGENTS.md` ya estaba
+actualizado desde la Fase 6/7 (v18, migraciones 6→18, tests nuevos documentados).
+
+Y fuera del repo (solo tras validar en dispositivos **físicos** reales — lo hecho en esta sesión
+fue en emuladores API 24 y API 37, no en un dispositivo con datos de producción): teardown del
+servidor según doc 02 §D5 y borrado de `SUPABASE_URL`/`SUPABASE_ANON_KEY` de `local.properties`.

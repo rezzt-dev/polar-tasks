@@ -1,13 +1,9 @@
 package app.polar.data.entity
 
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "reminders",
-    indices = [Index(value = ["uuid"], unique = true)]
-)
+@Entity(tableName = "reminders")
 data class Reminder(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
@@ -19,10 +15,5 @@ data class Reminder(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val radius: Float? = null,
-    val locationName: String? = null,
-    val uuid: String = java.util.UUID.randomUUID().toString(),
-    val updatedAt: Long = System.currentTimeMillis(),
-    val deletedAt: Long? = null,
-    val dirty: Boolean = true
+    val locationName: String? = null
 )
-

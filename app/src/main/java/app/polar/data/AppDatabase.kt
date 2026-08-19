@@ -15,7 +15,7 @@ import app.polar.data.entity.Reminder
 
 @Database(
   entities = [TaskList::class, Task::class, Subtask::class, Reminder::class],
-  version = 17,
+  version = 18,
   exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -184,6 +184,142 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
+    // Drops the cloud-sync bookkeeping columns (uuid/updatedAt/deletedAt/dirty, +tasks.imagePath)
+    // added by MIGRATION_14_15/16_17 — see agent-docs/eliminacion-supabase/ (Fase 4). Pattern:
+    // dump children to FK-less temp tables and drop them first (unblocks the parents), then
+    // recreate every table hijo→padre without the sync columns. This doesn't rely on
+    // `PRAGMA foreign_keys = OFF` (a no-op inside the transaction Room already runs migrations
+    // in): at every point no referenced table is dropped while it still has live children, since
+    // those children were already dumped to temporaries and removed beforehand.
+    val MIGRATION_17_18 = object : androidx.room.migration.Migration(17, 18) {
+        override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+            // ── 1. Volcar hijos a temporales sin FK y eliminarlos (desbloquea a los padres) ──
+            database.execSQL(
+                """
+                CREATE TABLE temp_subtasks AS
+                SELECT id, taskId, title, completed, dueDate, orderIndex, createdAt FROM subtasks
+                """.trimIndent()
+            )
+            database.execSQL("DROP TABLE subtasks")
+
+            database.execSQL(
+                """
+                CREATE TABLE temp_tasks AS
+                SELECT id, listId, title, description, completed, tags, createdAt, dueDate,
+                       orderIndex, recurrence, isDeleted, priority, imageUri, timeEstimate FROM tasks
+                """.trimIndent()
+            )
+            database.execSQL("DROP TABLE tasks")
+
+            // ── 2. Recrear task_lists (padre de tasks) sin columnas sync ──
+            database.execSQL(
+                """
+                CREATE TABLE task_lists_new (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                  title TEXT NOT NULL,
+                  icon TEXT NOT NULL,
+                  createdAt INTEGER NOT NULL,
+                  orderIndex INTEGER NOT NULL,
+                  homeOrderIndex INTEGER NOT NULL,
+                  isDependencyChain INTEGER NOT NULL,
+                  color TEXT NOT NULL
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                INSERT INTO task_lists_new (id, title, icon, createdAt, orderIndex, homeOrderIndex, isDependencyChain, color)
+                SELECT id, title, icon, createdAt, orderIndex, homeOrderIndex, isDependencyChain, color FROM task_lists
+                """.trimIndent()
+            )
+            database.execSQL("DROP TABLE task_lists")
+            database.execSQL("ALTER TABLE task_lists_new RENAME TO task_lists")
+
+            // ── 3. Recrear tasks con su FK a task_lists ──
+            database.execSQL(
+                """
+                CREATE TABLE tasks (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                  listId INTEGER NOT NULL,
+                  title TEXT NOT NULL,
+                  description TEXT NOT NULL,
+                  completed INTEGER NOT NULL,
+                  tags TEXT NOT NULL,
+                  createdAt INTEGER NOT NULL,
+                  dueDate INTEGER,
+                  orderIndex INTEGER NOT NULL,
+                  recurrence TEXT NOT NULL,
+                  isDeleted INTEGER NOT NULL,
+                  priority INTEGER NOT NULL,
+                  imageUri TEXT,
+                  timeEstimate INTEGER NOT NULL,
+                  FOREIGN KEY(listId) REFERENCES task_lists(id) ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent()
+            )
+            database.execSQL("INSERT INTO tasks SELECT * FROM temp_tasks")
+            database.execSQL("DROP TABLE temp_tasks")
+
+            // ── 4. Recrear subtasks con su FK a tasks ──
+            database.execSQL(
+                """
+                CREATE TABLE subtasks (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                  taskId INTEGER NOT NULL,
+                  title TEXT NOT NULL,
+                  completed INTEGER NOT NULL,
+                  dueDate INTEGER,
+                  orderIndex INTEGER NOT NULL,
+                  createdAt INTEGER NOT NULL,
+                  FOREIGN KEY(taskId) REFERENCES tasks(id) ON UPDATE NO ACTION ON DELETE CASCADE
+                )
+                """.trimIndent()
+            )
+            database.execSQL("INSERT INTO subtasks SELECT * FROM temp_subtasks")
+            database.execSQL("DROP TABLE temp_subtasks")
+
+            // ── 5. Recrear reminders (independiente) ──
+            database.execSQL(
+                """
+                CREATE TABLE reminders_new (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                  title TEXT NOT NULL,
+                  description TEXT NOT NULL,
+                  dateTime INTEGER NOT NULL,
+                  isCompleted INTEGER NOT NULL,
+                  createdAt INTEGER NOT NULL,
+                  isDeleted INTEGER NOT NULL,
+                  latitude REAL,
+                  longitude REAL,
+                  radius REAL,
+                  locationName TEXT
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                INSERT INTO reminders_new (id, title, description, dateTime, isCompleted, createdAt, isDeleted,
+                                           latitude, longitude, radius, locationName)
+                SELECT id, title, description, dateTime, isCompleted, createdAt, isDeleted,
+                       latitude, longitude, radius, locationName FROM reminders
+                """.trimIndent()
+            )
+            database.execSQL("DROP TABLE reminders")
+            database.execSQL("ALTER TABLE reminders_new RENAME TO reminders")
+
+            // ── 6. Verificación de integridad referencial antes de commitear ──
+            // execSQL("PRAGMA foreign_key_check") no lanza ante violaciones (devuelve filas y
+            // execSQL las ignora): hay que consultar el resultado y fallar explícitamente.
+            database.query("PRAGMA foreign_key_check").use { cursor ->
+                if (cursor.count > 0) {
+                    throw IllegalStateException(
+                        "MIGRATION_17_18: ${cursor.count} violaciones de FK tras recrear tablas"
+                    )
+                }
+            }
+        }
+    }
+
     @Volatile
     private var INSTANCE: AppDatabase? = null
     
@@ -194,7 +330,7 @@ abstract class AppDatabase : RoomDatabase() {
           AppDatabase::class.java,
           "polar_database"
         )
-        .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
+        .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18)
         .fallbackToDestructiveMigration()
         // WAL allows concurrent reads + writes without blocking the UI thread
         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)

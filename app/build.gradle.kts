@@ -1,17 +1,8 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   id("kotlin-kapt")
   alias(libs.plugins.hilt.android)
-  alias(libs.plugins.kotlin.serialization)
-}
-
-val localProperties = Properties().apply {
-  val file = rootProject.file("local.properties")
-  if (file.exists()) load(FileInputStream(file))
 }
 
 android {
@@ -24,13 +15,10 @@ android {
     applicationId = "app.polar"
     minSdk = 24
     targetSdk = 36
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = 2
+    versionName = "1.6.1-offline"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-    buildConfigField("String", "SUPABASE_URL", "\"${localProperties.getProperty("SUPABASE_URL", "")}\"")
-    buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
 
     javaCompileOptions {
       annotationProcessorOptions {
@@ -61,7 +49,6 @@ android {
   }
   buildFeatures {
     viewBinding = true
-    buildConfig = true
   }
 
   sourceSets {
@@ -102,23 +89,10 @@ dependencies {
   // WorkManager
   implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-  // Supabase (cloud sync) — see agent-docs/supabase-sync/06-plan-implementacion-android.md
-  implementation(platform(libs.supabase.bom))
-  implementation("io.github.jan-tennert.supabase:postgrest-kt")
-  implementation("io.github.jan-tennert.supabase:auth-kt")
-  implementation("io.github.jan-tennert.supabase:realtime-kt")
-  implementation("io.github.jan-tennert.supabase:storage-kt")
-  implementation(libs.ktor.client.android)
-  implementation(libs.kotlinx.serialization.json)
-
   testImplementation(libs.junit)
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
   testImplementation("io.mockk:mockk:1.13.10")
   testImplementation("androidx.arch.core:core-testing:2.2.0")
-  // Fakes the SupabaseClient's HTTP layer for SyncManager/AuthViewModel tests (Fase 7.1/7.3):
-  // Postgrest/Auth run for real against a MockEngine instead of a real network call, so the
-  // request/response shape (query params, Prefer headers, upsert bodies) is exercised faithfully.
-  testImplementation("io.ktor:ktor-client-mock:3.0.0")
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
   // MigrationTestHelper for the MIGRATION_14_15 instrumented test (Fase 7.2) — needs a real SQLite

@@ -48,7 +48,7 @@ app/src/main/java/app/polar/
 ├── PolarApplication.kt             # Application con @HiltAndroidApp
 │
 ├── data/                           # Capa de Datos (Data Layer)
-│   ├── AppDatabase.kt              # Room Database (v14) con migraciones manuales
+│   ├── AppDatabase.kt              # Room Database (v18) con migraciones manuales
 │   ├── dao/                        # Data Access Objects (Room)
 │   ├── entity/                     # Entidades (@Entity): Task, TaskList, Subtask, Reminder
 │   ├── model/                      # Modelos de dominio/datos auxiliares (TaskGroup, TaskWithList)
@@ -181,7 +181,7 @@ El `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idi
 
 ### Migraciones
 
-`AppDatabase` define migraciones manuales de la 6→7 hasta la 13→14. La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
+`AppDatabase` define migraciones manuales de la 6→7 hasta la 17→18. La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
 
 > Si alteras el esquema, **aumenta la versión** y proporciona una `Migration` explícita. No confíes únicamente en `fallbackToDestructiveMigration`.
 
@@ -247,7 +247,8 @@ Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXA
 La suite de tests unitarios es pequeña pero representativa:
 
 - `TaskViewModelTest` — Verifica que el ViewModel delega correctamente al UseCase y al Repository, y que la programación/cancelación de alarmas ocurre en los estados esperados.
-- `TaskRepositoryTest` — Verifica que el Repository expone flujos de DAO y traduce operaciones CRUD.
+- `TaskRepositoryTest` — Verifica que el Repository expone flujos de DAO, traduce operaciones CRUD y el diff de `replaceSubtasksForTask` (insert/update/delete físico).
+- `ReminderRepositoryTest` — Verifica que el Repository delega en el DAO las operaciones de papelera (soft-delete, restore, purga física).
 - `SmartParserTest` — Tests del parser NLP para extracción de fechas/tiempos de texto natural.
 - `MainDispatcherRule` — Regla de JUnit para reemplazar el dispatcher principal en tests de corrutinas.
 
@@ -256,6 +257,9 @@ La suite de tests unitarios es pequeña pero representativa:
 ### Tests Instrumentados (`app/src/androidTest/`)
 
 - `ExampleInstrumentedTest` — Test básico de contexto de la app.
+- `MigrationTest` — Cubre la cadena completa de migraciones de Room (6→18) contra bases de datos
+  pre-pobladas, incluyendo la 17→18 que retira los campos de sincronización (`uuid`, `updatedAt`,
+  `deletedAt`, `dirty`, `imagePath`) y verifica `PRAGMA foreign_key_check` sin violaciones.
 
 ### Convenciones para nuevos tests
 

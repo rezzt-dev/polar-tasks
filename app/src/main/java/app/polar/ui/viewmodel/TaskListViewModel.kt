@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import app.polar.data.AppDatabase
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
-import app.polar.data.sync.touched
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +34,6 @@ class TaskListViewModel @Inject constructor(
   private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
       try {
           block()
-          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
           _errorMessage.value = "Error: ${e.message}"
@@ -52,7 +50,7 @@ class TaskListViewModel @Inject constructor(
   }
   
   fun updateTaskList(taskList: TaskList) = safeLaunch {
-    repository.updateTaskList(taskList.touched())
+    repository.updateTaskList(taskList)
   }
   
   fun deleteTaskList(taskList: TaskList) = safeLaunch {

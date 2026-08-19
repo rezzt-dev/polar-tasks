@@ -162,75 +162,11 @@
   <string name="deleted_items">deleted items</string>
   <string name="item_restored">item restored</string>
   <string name="permanently_deleted">permanently deleted</string>
-  <string name="trash_item_purge_pending_sync">could not be permanently deleted: still waiting to sync with the cloud</string>
-  <string name="trash_purge_pending_sync_count">%d items could not be permanently deleted because they have not synced yet</string>
   <string name="error_saving_backup">error saving backup</string>
   <string name="backup_saved">backup saved successfully</string>
   <string name="backup_restored">backup restored. restarting...</string>
   <string name="error_restoring_backup">error restoring backup</string>
-
-  <!-- Account and cloud sync -->
-  <string name="account_and_cloud_sync">account and cloud sync</string>
-  <string name="account_row_title">account</string>
-  <string name="account_signed_in_as">signed in as %1$s</string>
-  <string name="account_not_signed_in">not signed in</string>
-  <string name="auth_title">sign in</string>
-  <string name="auth_subtitle">sign in to sync your tasks and reminders across devices</string>
-  <string name="auth_email_hint">email address</string>
-  <string name="auth_password_hint">password</string>
-  <string name="auth_sign_in">sign in</string>
-  <string name="auth_sign_out">sign out</string>
-  <string name="auth_error_empty_fields">enter your email and password</string>
-  <string name="auth_signed_in_ok">signed in successfully</string>
-  <string name="auth_session_expired">your session has expired or been revoked, please sign in again</string>
-
-  <string name="auth_forgot_password">forgotten your password?</string>
-  <string name="auth_reset_password_title">reset password</string>
-  <string name="auth_reset_password_message">we\'ll send you an email with a link to reset your password</string>
-  <string name="auth_reset_password_send">send link</string>
-  <string name="auth_reset_password_sent_ok">if an account exists with that email, you\'ll receive a password reset link</string>
-  <string name="auth_reset_password_error_empty_email">enter your email address</string>
-
-  <string name="auth_merge_dialog_title">what do you want to do with your local data?</string>
-  <string name="auth_merge_dialog_message">this device already has tasks, lists or reminders saved, and this account also has data in the cloud. choose how to continue:</string>
-  <string name="auth_merge_dialog_upload">upload my local data</string>
-  <string name="auth_merge_dialog_discard">discard local data and use only the cloud</string>
-  <string name="auth_merge_discard_warning_title">⚠️ this will delete this device\'s data</string>
-  <string name="auth_merge_discard_warning_message">all tasks, lists, subtasks and reminders on this device will be permanently deleted and replaced with whatever is in the cloud.\n\nthis action cannot be undone. do you want to continue?</string>
-  <string name="auth_merge_discard_confirm">yes, discard</string>
-  <string name="auth_merge_discard_success">local data discarded, cloud data loaded</string>
-  <string name="auth_merge_discard_error">error discarding local data</string>
-
-  <string name="cloud_full_overwrite_title">upload full copy to the cloud</string>
-  <string name="cloud_full_overwrite_desc">overwrites all your cloud data with this device\'s data</string>
-  <string name="cloud_full_overwrite_warning_title">⚠️ this action will overwrite the cloud</string>
-  <string name="cloud_full_overwrite_warning_message">all data from this device will be uploaded to the cloud, replacing whatever is stored there. any change made from another device or app that hasn\'t been synced here will be lost.\n\nthis action cannot be undone. do you want to continue?</string>
-  <string name="cloud_full_overwrite_confirm">yes, overwrite</string>
-  <string name="cloud_full_overwrite_in_progress">uploading full copy…</string>
-  <string name="cloud_full_overwrite_success">data uploaded and cloud overwritten successfully</string>
-  <string name="cloud_full_overwrite_error">error uploading full copy</string>
-  <string name="cloud_full_overwrite_requires_sign_in">sign in first to upload a copy to the cloud</string>
-
-  <string name="sync_status_row_title">sync now</string>
-  <string name="sync_status_never">never synced yet</string>
-  <string name="sync_status_last_success">last successful sync: %1$s</string>
-  <string name="sync_status_error">sync is failing: %1$s</string>
-  <string name="sync_status_syncing">syncing…</string>
-  <string name="sync_requires_sign_in">sign in first to be able to sync</string>
-
-  <string name="sync_conflicts_lost_message">%1$d changes were overwritten by more recent edits on another device</string>
-  <string name="sync_conflicts_dismiss">dismiss</string>
-
-  <string name="cloud_full_download_title">download everything and overwrite this device</string>
-  <string name="cloud_full_download_desc">overwrites all data on this device with what is in the cloud</string>
-  <string name="cloud_full_download_warning_title">⚠️ this will overwrite this device</string>
-  <string name="cloud_full_download_warning_message">every task, list, subtask and reminder on this device will be deleted and replaced with what is in the cloud. any change made here that hasn\'t synced yet will be lost.\n\nthis action cannot be undone. do you want to continue?</string>
-  <string name="cloud_full_download_confirm">yes, download and overwrite</string>
-  <string name="cloud_full_download_in_progress">downloading full copy…</string>
-  <string name="cloud_full_download_success">data downloaded and device overwritten successfully</string>
-  <string name="cloud_full_download_error">error downloading the full copy</string>
-  <string name="cloud_full_download_requires_sign_in">sign in first to be able to download a copy from the cloud</string>
-
+  
   <string name="recurrence_daily">daily</string>
   <string name="recurrence_weekly">weekly</string>
   <string name="recurrence_monthly">monthly</string>

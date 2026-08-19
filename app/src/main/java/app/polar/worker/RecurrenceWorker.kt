@@ -5,7 +5,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Task
-import app.polar.data.sync.touched
 import app.polar.receiver.AlarmReceiver
 import android.content.Intent
 import android.app.PendingIntent
@@ -58,18 +57,28 @@ class RecurrenceWorker(
                 
                 // If the next occurrence has arrived (or we are present in it)
                 if (nextDueDate <= now) {
-                    // Reset the task. Touched so the sync layer picks up this system-driven
-                    // change (see agent-docs/supabase-sync/04-estrategia-sincronizacion.md,
-                    // "Flujo de escritura local" — RecurrenceWorker must mark dirty/updatedAt
-                    // just like a user-initiated edit).
+                    // Reset the task
                     val updatedTask = task.copy(
                         completed = false,
                         dueDate = nextDueDate
-                    ).touched()
+                        // Keep creation date or update? Keep original creation date logic usually.
+                    )
                     taskDao.update(updatedTask)
-
-                    subtaskDao.resetSubtasksForTask(task.id, updatedTask.updatedAt)
-
+                    
+                    // Reset subtasks
+                    // We need to get subtasks for this task
+                    // We don't have a direct snapshot method for subtasks of a task in DAO that is synchronous easily available without opening another accessed method?
+                    // Let's assume we can query.
+                    // Actually TaskViewModel uses `repository.getSubtasksForTask(taskId)` which returns LiveData.
+                    // We need a suspend function in DAO: `getSubtasksForTaskSnapshot`.
+                    // We'll add it to SubtaskDao if missing.
+                    // If not simple, we can't reset subtasks easily without DAO update.
+                    // Let's assume we update DAO or just skip if too complex for now, BUT user asked for it.
+                    // "la tarea se desmarque por completo, tanto ella como las subtareas"
+                    
+                    // I will execute raw query via Room or add method? adding method is cleaner.
+                    subtaskDao.resetSubtasksForTask(task.id)
+                    
                     // Schedule alarm for the NEW due date
                     alarmHelper.scheduleTaskAlarm(task.id, nextDueDate)
                 }

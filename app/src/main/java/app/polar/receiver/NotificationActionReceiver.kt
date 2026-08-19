@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import app.polar.data.AppDatabase
-import app.polar.data.sync.touched
 import app.polar.util.NotificationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +34,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
                     if (action == ACTION_COMPLETE) {
                         val task = db.taskDao().getTaskById(taskId)
                         if (task != null) {
-                            db.taskDao().update(task.copy(completed = true).touched())
+                            db.taskDao().update(task.copy(completed = true))
                             // Cancel notification
                             NotificationManagerCompat.from(context).cancel(notificationId)
                             // Maybe reschedule if recurring? Logic is in ViewModel mainly but we might duplicate or invoke VM...
@@ -47,13 +46,9 @@ class NotificationActionReceiver : BroadcastReceiver() {
                         calendar.add(Calendar.HOUR_OF_DAY, 1)
                         val snoozeTime = calendar.timeInMillis
 
-                        // Persist the new due date so it marks dirty/updatedAt like any other
-                        // mutation and reaches Supabase — otherwise a snooze from a notification
-                        // never leaves this device (agent-docs/analisis-implementacion-supabase-
-                        // sync.md, hallazgo 4.4).
                         val task = db.taskDao().getTaskById(taskId)
                         if (task != null) {
-                            db.taskDao().update(task.copy(dueDate = snoozeTime).touched())
+                            db.taskDao().update(task.copy(dueDate = snoozeTime))
                         }
 
                         // Reschedule alarm
@@ -62,7 +57,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
                         // Cancel current notification
                         NotificationManagerCompat.from(context).cancel(notificationId)
                     }
-                    app.polar.worker.SyncWorker.triggerImmediateSync(context)
                 } finally {
                     goAsync.finish()
                 }

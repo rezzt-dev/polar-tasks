@@ -2,20 +2,18 @@ package app.polar.data.repository
 
 import androidx.lifecycle.MutableLiveData
 import app.polar.data.dao.ReminderDao
+import app.polar.data.entity.Reminder
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Test
 
-// See agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 3.1: purging a trashed
-// reminder used to be an unconditional physical delete, so it could vanish locally before its
-// tombstone reached Supabase and reappear on the next pull. ReminderDao.emptyTrash()/
-// permanentDelete() now only purge rows with dirty = 0; these tests cover how the repository
-// surfaces that outcome to callers.
+// Offline trash semantics: emptyTrash()/permanentDelete() are unconditional physical deletes
+// (no dirty-row guard, see agent-docs/eliminacion-supabase/). These tests cover that the
+// repository is a thin delegation layer over the dao for trash operations.
 class ReminderRepositoryTest {
 
     private val reminderDao = mockk<ReminderDao>()
@@ -31,35 +29,40 @@ class ReminderRepositoryTest {
     private val repository = ReminderRepository(reminderDao)
 
     @Test
-    fun `permanentDelete returns true when the dao actually purged the row`() = runTest {
-        coEvery { reminderDao.permanentDelete(1L) } returns 1
+    fun `softDelete marks the reminder as deleted via dao update`() = runTest {
+        val reminder = Reminder(id = 1, title = "Delete me", dateTime = 1000L)
+        coEvery { reminderDao.update(any()) } returns Unit
 
-        assertEquals(true, repository.permanentDelete(1L))
+        repository.softDelete(reminder)
+
+        coVerify { reminderDao.update(match { it.id == 1L && it.isDeleted }) }
     }
 
     @Test
-    fun `permanentDelete returns false when the dao refuses to purge an unsynced row`() = runTest {
-        coEvery { reminderDao.permanentDelete(1L) } returns 0
+    fun `restore marks the reminder as not deleted via dao update`() = runTest {
+        val reminder = Reminder(id = 1, title = "Restore me", dateTime = 1000L, isDeleted = true)
+        coEvery { reminderDao.update(any()) } returns Unit
 
-        assertEquals(false, repository.permanentDelete(1L))
+        repository.restore(reminder)
+
+        coVerify { reminderDao.update(match { it.id == 1L && !it.isDeleted }) }
     }
 
     @Test
-    fun `emptyTrash reports how many trashed reminders are still stuck after the purge attempt`() = runTest {
-        coEvery { reminderDao.emptyTrash() } returns 2
-        coEvery { reminderDao.getTrashCount() } returns 1
+    fun `permanentDelete delegates to dao physical delete`() = runTest {
+        coEvery { reminderDao.permanentDelete(1L) } returns Unit
 
-        val stillInTrash = repository.emptyTrash()
+        repository.permanentDelete(1L)
 
-        assertEquals(1, stillInTrash)
+        coVerify { reminderDao.permanentDelete(1L) }
+    }
+
+    @Test
+    fun `emptyTrash delegates to dao physical purge of every deleted row`() = runTest {
+        coEvery { reminderDao.emptyTrash() } returns Unit
+
+        repository.emptyTrash()
+
         coVerify { reminderDao.emptyTrash() }
-    }
-
-    @Test
-    fun `emptyTrash reports zero remaining when everything purged`() = runTest {
-        coEvery { reminderDao.emptyTrash() } returns 2
-        coEvery { reminderDao.getTrashCount() } returns 0
-
-        assertEquals(0, repository.emptyTrash())
     }
 }
