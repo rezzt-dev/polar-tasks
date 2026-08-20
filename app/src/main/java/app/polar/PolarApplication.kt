@@ -52,22 +52,18 @@ class PolarApplication : Application() {
       this, app.polar.di.SyncEntryPoint::class.java
     )
 
-    // Fixes the "opening Polar shows stale data" gap (agent-docs/
-    // analisis-implementacion-supabase-sync.md, hallazgo 2): without this, a pull only ever
-    // happened as a side effect of the user editing something locally, or once one of the
-    // background timers (3/15 min) happened to fire. ProcessLifecycleOwner.onStart() covers both
-    // cold start and resuming from the recents list (unlike Application.onCreate(), which only
-    // runs once per process), so every time the app comes to the foreground with a session
-    // active it kicks off an immediate pull. triggerImmediateSync() uses REPLACE, so rapid
-    // foreground/background flapping just collapses into the latest request instead of queuing
-    // sync storms. appInForeground also drives the Realtime subscription below.
+    // Feeds the combine() below, which is the single place that decides when to fire an
+    // immediate sync (see its comment) — every foreground transition changes the (authenticated,
+    // foreground) pair it collects on, so a plain onStart()/onStop() toggle here is enough;
+    // triggering a sync directly from onStart() too (an earlier version of this code did) raced
+    // the combine flow's own trigger on cold start, since both fire around the same moment once
+    // the session finishes restoring — enqueueUniqueWork's REPLACE policy would then cancel and
+    // restart an already-running sync worker, roughly doubling how long the user actually waited
+    // to see fresh data after opening the app.
     val appInForeground = MutableStateFlow(false)
     ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
       override fun onStart(owner: LifecycleOwner) {
         appInForeground.value = true
-        if (entryPoint.getSupabaseClient().auth.currentUserOrNull() != null) {
-          app.polar.worker.SyncWorker.triggerImmediateSync(this@PolarApplication)
-        }
       }
 
       override fun onStop(owner: LifecycleOwner) {
@@ -96,6 +92,13 @@ class PolarApplication : Application() {
         .distinctUntilChanged()
         .collect { (authenticated, foreground) ->
           if (authenticated) {
+            // Sole trigger for an immediate sync (see the appInForeground observer above for why
+            // it's not also fired from onStart() directly): fires once per genuine transition
+            // into "authenticated" — cold start once the async Supabase session restore
+            // completes, a fresh login, a token-refresh recovery — and also every time the app
+            // comes back to the foreground while already authenticated, since a foreground toggle
+            // changes the (authenticated, foreground) pair this collector runs on.
+            app.polar.worker.SyncWorker.triggerImmediateSync(this@PolarApplication)
             app.polar.worker.SyncWorker.scheduleFrequentSync(this@PolarApplication)
           } else {
             app.polar.worker.SyncWorker.cancelFrequentSync(this@PolarApplication)

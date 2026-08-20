@@ -17,14 +17,18 @@ import app.polar.ui.adapter.TagAdapter
 class TaskDialog(
   private val task: Task? = null,
   private val existingSubtasks: List<Subtask> = emptyList(),
-  private val onSave: (String, String, String, List<Subtask>, Long?, String, Int, Int) -> Unit
+  private val onSave: (String, String, String, List<Subtask>, Long?, String, Int, Int, Set<Long>) -> Unit
 ) : DialogFragment() {
-  
+
   private var _binding: DialogTaskBinding? = null
   private val binding get() = _binding!!
-  
+
   // lista mutable para gestionar las subtareas directamente
   private val subtaskList = mutableListOf<Subtask>()
+  // ids de subtareas existentes cuyo checkbox se tocó en esta sesión del diálogo — existingSubtasks
+  // es una foto tomada al abrir el diálogo, así que solo estos ids deben pisar el valor de
+  // `completed` que haya en la base de datos al guardar (ver TaskRepository.replaceSubtasksForTask).
+  private val touchedCompletedIds = mutableSetOf<Long>()
   private val tagList = mutableListOf<String>()
   private var selectedDate: Long? = null
   private var isDateExplicitlySet: Boolean = false
@@ -208,7 +212,8 @@ class TaskDialog(
           finalDate,
           finalRecurrence,
           selectedPriority,
-          timeEstimate
+          timeEstimate,
+          touchedCompletedIds.toSet()
         )
         dismiss()
       } else if (rawTitle.trim().isNotEmpty()) {
@@ -220,7 +225,8 @@ class TaskDialog(
           finalDate,
           finalRecurrence,
           selectedPriority,
-          timeEstimate
+          timeEstimate,
+          touchedCompletedIds.toSet()
         )
         dismiss()
       }
@@ -313,6 +319,7 @@ class TaskDialog(
         val index = subtaskList.indexOf(subtask)
         if (index != -1) {
           subtaskList[index] = subtask.copy(completed = isChecked)
+          if (subtask.id != 0L) touchedCompletedIds.add(subtask.id)
         }
       },
       onDelete = { subtask ->

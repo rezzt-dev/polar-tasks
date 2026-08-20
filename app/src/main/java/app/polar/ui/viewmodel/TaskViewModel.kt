@@ -324,11 +324,11 @@ class TaskViewModel @Inject constructor(
     return repository.getAllTasks()
   }
   
-  fun updateTask(task: Task, subtasks: List<Subtask>? = null) = safeLaunch {
+  fun updateTask(task: Task, subtasks: List<Subtask>? = null, touchedCompletedSubtaskIds: Set<Long> = emptySet()) = safeLaunch {
     repository.updateTask(task.touched())
 
     if (subtasks != null) {
-        repository.replaceSubtasksForTask(task.id, subtasks)
+        repository.replaceSubtasksForTask(task.id, subtasks, touchedCompletedSubtaskIds)
     }
 
     if (task.dueDate != null) {

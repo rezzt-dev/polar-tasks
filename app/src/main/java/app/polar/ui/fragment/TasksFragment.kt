@@ -768,19 +768,20 @@ class TasksFragment : Fragment() {
             TaskDialog(
                 task = task,
                 existingSubtasks = t,
-                onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate ->
+                onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate, touchedCompletedIds ->
                   // Delegate logic to ViewModel
                   viewModel.updateTask(
                       task.copy(
-                          title = title, 
-                          description = description, 
+                          title = title,
+                          description = description,
                           tags = tags,
                           dueDate = dueDate,
                           recurrence = recurrence,
                           priority = priority,
                           timeEstimate = timeEstimate
                       ),
-                      subtaskList
+                      subtaskList,
+                      touchedCompletedIds
                   )
                 }
             ).show(parentFragmentManager, "EditTaskDialog")

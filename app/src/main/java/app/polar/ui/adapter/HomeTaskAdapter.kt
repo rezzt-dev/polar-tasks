@@ -286,7 +286,11 @@ class HomeTaskAdapter(
         }
 
         fun resetVisuals() {
-            itemView.animate().cancel()
+            // No itemView.animate().cancel() here — see TaskAdapter.TaskViewHolder.resetVisuals()
+            // for why: this RecyclerView shares TaskItemAnimator with TaskAdapter, and cancelling
+            // its in-flight ADD animation from inside bind() crashes with "Tmp detached view
+            // should be removed from RecyclerView before it can be recycled". The property resets
+            // below are enough to clear stale swipe state.
             itemView.alpha = 1.0f
             itemView.translationX = 0f
             itemView.translationY = 0f
