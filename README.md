@@ -9,8 +9,8 @@
 
 <br>
 
-<a href="https://opensource.org/licenses/MIT">
-  <img src="https://img.shields.io/badge/license-mit-yellow.svg" />
+<a href="./LICENSE">
+  <img src="https://img.shields.io/badge/license-non--commercial-orange.svg" />
 </a>
 <a href="https://kotlinlang.org">
   <img src="https://img.shields.io/badge/kotlin-1.9+-7F52FF?logo=kotlin&logoColor=white" />
@@ -150,7 +150,7 @@ how to contribute:
 
 ---
 ## License
-this project is licensed under the mit license. see the license file for full details.
+this project is licensed under a custom non-commercial license. personal, educational and evaluation use is allowed; commercial use requires prior written permission from the author. see the [license](./LICENSE) file for full details.
 
 ---
 ## Author
