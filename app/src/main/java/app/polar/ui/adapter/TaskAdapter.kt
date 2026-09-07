@@ -244,12 +244,9 @@ class TaskAdapter(
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
-            if (task.priority in 1..3) {
-                binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
-                binding.viewPriorityStripe.setBackgroundColor(priorityColor)
-            } else {
-                binding.viewPriorityStripe.visibility = android.view.View.GONE
-            }
+            // Sin prioridad la franja no desaparece: adopta el color de texto del tema activo
+            binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
+            binding.viewPriorityStripe.setBackgroundColor(priorityColor)
             
             if (task.completed) {
                 binding.tvTaskTitle.paintFlags = binding.tvTaskTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
