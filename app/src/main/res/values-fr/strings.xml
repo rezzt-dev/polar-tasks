@@ -292,21 +292,21 @@
 
 
     <!-- Settings navigation -->
-    <string name="settings_intro">Personnalisez Polar</string>
-    <string name="settings_intro_desc">Tout ce dont vous avez besoin, par catégorie.</string>
-    <string name="settings_back">Retour aux paramètres</string>
-    <string name="settings_appearance_desc">Thème, police, taille du texte et langue.</string>
-    <string name="settings_notifications">Notifications</string>
-    <string name="settings_notifications_desc">Autorisations et horaire du résumé quotidien.</string>
-    <string name="settings_account_desc">Compte, état de synchronisation et options du cloud.</string>
-    <string name="settings_data">Données et sauvegardes</string>
-    <string name="settings_data_desc">Exportez, restaurez ou importez vos tâches.</string>
-    <string name="settings_help">Aide</string>
-    <string name="settings_help_desc">Découvrez comment profiter de Polar.</string>
-    <string name="settings_advanced">Options avancées</string>
-    <string name="settings_advanced_desc">Remplacez les données du cloud ou de cet appareil. Ces actions écrasent les informations.</string>
-    <string name="settings_appearance">Apparence</string>
-    <string name="settings_account">Compte et synchronisation</string>
+    <string name="settings_intro">personnalisez polar</string>
+    <string name="settings_intro_desc">tout ce dont vous avez besoin, par catégorie.</string>
+    <string name="settings_back">retour aux paramètres</string>
+    <string name="settings_appearance_desc">thème, police, taille du texte et langue.</string>
+    <string name="settings_notifications">notifications</string>
+    <string name="settings_notifications_desc">autorisations et horaire du résumé quotidien.</string>
+    <string name="settings_account_desc">compte, état de synchronisation et options du cloud.</string>
+    <string name="settings_data">données et sauvegardes</string>
+    <string name="settings_data_desc">exportez, restaurez ou importez vos tâches.</string>
+    <string name="settings_help">aide</string>
+    <string name="settings_help_desc">découvrez comment profiter de polar.</string>
+    <string name="settings_advanced">options avancées</string>
+    <string name="settings_advanced_desc">remplacez les données du cloud ou de cet appareil. ces actions écrasent les informations.</string>
+    <string name="settings_appearance">apparence</string>
+    <string name="settings_account">compte et synchronisation</string>
 
   <!-- Task details, sorting and settings -->
   <string name="task_blocked">bloquée</string>
@@ -330,23 +330,23 @@
   <string name="sort_unmark_first">non terminées en premier</string>
   <string name="completed_tasks_header">tâches terminées (%d)</string>
   <string name="all_tags">toutes les étiquettes</string>
-  <string name="eisenhower_matrix">matrice d’Eisenhower</string>
+  <string name="eisenhower_matrix">matrice d’eisenhower</string>
   <string name="dialog_select_theme">sélectionner un thème</string>
   <string name="dialog_select_font">sélectionner une police</string>
   <string name="dialog_select_checkbox_style">style des cases à cocher</string>
-  <string name="checkbox_square">carrées (Material)</string>
+  <string name="checkbox_square">carrées (material)</string>
   <string name="checkbox_circular">rondes (moderne)</string>
   <string name="dialog_select_language">sélectionner une langue</string>
   <string name="imported_tasks_list_name">tâches importées</string>
   <string name="tasks_imported_ok">tâches importées avec succès</string>
-  <string name="error_importing_csv">erreur lors de l’importation du fichier CSV</string>
+  <string name="error_importing_csv">erreur lors de l’importation du fichier csv</string>
   <string name="share_task_as_image">partager la tâche sous forme d’image</string>
   <string name="attach_image">joindre une image</string>
   <string name="dependency_chain_label">chaîne de dépendances</string>
   <string name="dependency_chain_desc">les tâches se débloquent dans l’ordre</string>
 
     <!-- Agenda de recordatorios -->
-    <string name="reminders_heading">Un esprit plus léger</string>
+    <string name="reminders_heading">un esprit plus léger</string>
     <string name="reminders_summary">%1$s · %2$s</string>
     <string name="reminders_next">à venir · %1$s · %2$s</string>
     <string name="reminders_filter_all">tous</string>
@@ -362,12 +362,12 @@
     <string name="reminder_options">options du rappel</string>
     <string name="reminder_options_named">options : %1$s</string>
     <string name="reminder_no_maps">aucune application de cartes disponible</string>
-    <string name="reminders_empty_title">Place à ce qui compte</string>
-    <string name="reminders_empty_description">Appuyez sur + pour créer votre premier rappel. Nous vous préviendrons au bon moment.</string>
-    <string name="reminders_empty_completed">Vos réussites seront ici</string>
-    <string name="reminders_empty_completed_description">Marquez un rappel comme terminé pour le retrouver ici.</string>
-    <string name="reminders_empty_pending">Tout est à jour</string>
-    <string name="reminders_empty_pending_description">Vous n’avez aucun rappel en attente. Profitez de ce moment de calme.</string>
+    <string name="reminders_empty_title">place à ce qui compte</string>
+    <string name="reminders_empty_description">appuyez sur + pour créer votre premier rappel. nous vous préviendrons au bon moment.</string>
+    <string name="reminders_empty_completed">vos réussites seront ici</string>
+    <string name="reminders_empty_completed_description">marquez un rappel comme terminé pour le retrouver ici.</string>
+    <string name="reminders_empty_pending">tout est à jour</string>
+    <string name="reminders_empty_pending_description">vous n’avez aucun rappel en attente. profitez de ce moment de calme.</string>
     <string name="reminder_completed">terminé</string>
     <plurals name="reminders_pending_count">
         <item quantity="one">%d en attente</item>

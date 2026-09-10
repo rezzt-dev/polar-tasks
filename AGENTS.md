@@ -158,6 +158,20 @@ android:textColor="?attr/colorOnSurface"
 
 El `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idioma.
 
+### 4.6 Textos de Interfaz (siempre en minúsculas)
+
+Toda la interfaz de Polar se escribe **en minúsculas**, en **todos los idiomas**
+(incluido alemán, donde los sustantivos normalmente se capitalizan, y nombres
+propios como `polar`, `material` o `eisenhower`).
+
+- Aplica a los recursos de `app/src/main/res/values*/strings.xml`, incluidos los
+  bloques `<plurals>`, y a cualquier texto hardcodeado en layouts o código.
+- **No** aplica a datos introducidos por el usuario (títulos de tareas, notas,
+  etiquetas, ubicaciones, etc.) ni a los especificadores de formato (`%1$s`,
+  `%d`, `\n`).
+- Al añadir una funcionalidad nueva o traducir strings, replica esta convención
+  en `values/`, `values-en-rGB/`, `values-en-rUS/`, `values-de/` y `values-fr/`.
+
 ---
 
 ## 5. Base de Datos (Room)
@@ -429,6 +443,10 @@ flujo:
 - **Al redactar cualquier commit:** aplica las reglas de la sección "Redacción de commits" (10) antes de proponer título o descripción. <!-- formato centralizado para que el historial quede limpio y profesional, más cómodo de leer para usuarios y desarrolladores. -->
 - **Al registrar cambios en `changelog.md`:** sigue el formato de la sección "Formato de las secciones de `changelog.md`" (10): minúsculas sin acentos, títulos en mayúsculas sin acentos, contenido bilingüe (castellano e inglés).
 - **Al modificar `AGENTS.md`:** replica el cambio equivalente en `CLAUDE.md` (y viceversa) para que ambos ficheros no diverjan.
+- **Textos de interfaz en minúsculas:** todos los strings de UI (recursos
+  `strings.xml` en cualquier `values-*`, `plurals` y textos hardcodeados) van en
+  minúsculas y en todos los idiomas. No aplica a datos del usuario ni a
+  especificadores de formato. Ver sección 4.6.
 - **No asumas Compose:** La UI es 100% XML + View Binding.
 - **No asumas Navigation Component:** La navegación es manual con `FragmentManager`.
 - **No asumes KSP:** Usa `kapt` para procesadores de anotaciones.

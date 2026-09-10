@@ -31,12 +31,14 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - crear `claude.md` con el contexto de trabajo para claude code y enlace a `agents.md`.
 - anadir a `agents.md` y `claude.md` la seccion de redaccion de commits, replica de `.docs/commit-guidelines.md`.
 - anadir a `agents.md` y `claude.md` la seccion con el formato de las entradas de `changelog.md`.
+- documentar en `agents.md` (seccion 4.6) y `claude.md` la regla de que toda la interfaz se escribe en minusculas y en todos los idiomas.
 
 #### CORREGIDO
 
 - corregir los errores de lint al completar las traducciones, aplicar tintes compatibles en recordatorios y aislar los atributos de navegacion de api 27 en temas especificos.
 
 - permitir eliminar permanentemente y vaciar la papelera sin cuenta vinculada: el guardia de sincronizacion (`dirty = 0`) dejaba los elementos atascados con el aviso `still waiting to sync with the cloud` cuando la app es puramente local; ahora, si no hay sesion, se purga directamente con `forcePermanentDelete` / `forceEmptyTrash`.
+- pasar a minusculas todos los textos de interfaz de recordatorios y ajustes (navegacion de ajustes, detalle de tarea, dialogos y agenda de recordatorios) en `values`, `values-en-rGB`, `values-en-rUS`, `values-de` y `values-fr` para respetar la convencion de minusculas de toda la app.
 
 #### NUEVO
 
@@ -58,12 +60,14 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - create `claude.md` with the working context for claude code and a link to `agents.md`.
 - add the commit writing section to `agents.md` and `claude.md`, mirroring `.docs/commit-guidelines.md`.
 - add the section describing the format of `changelog.md` entries to `agents.md` and `claude.md`.
+- document in `agents.md` (section 4.6) and `claude.md` the rule that the whole interface is written in lowercase in every language.
 
 #### FIXED
 
 - fix lint errors by completing translations, applying compatible reminder icon tints and isolating api 27 navigation attributes in version-specific themes.
 
 - allow permanently deleting and emptying the trash without a linked account: the sync guard (`dirty = 0`) left items stuck with the `still waiting to sync with the cloud` warning when the app is purely local; now, if there is no session, the purge runs directly via `forcePermanentDelete` / `forceEmptyTrash`.
+- lowercase every reminders and settings interface string (settings navigation, task detail, dialogs and reminders agenda) in `values`, `values-en-rGB`, `values-en-rUS`, `values-de` and `values-fr` to follow the app-wide lowercase convention.
 
 #### ADDED
 

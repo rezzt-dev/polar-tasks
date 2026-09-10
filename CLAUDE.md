@@ -148,6 +148,14 @@ flujo:
 ## Notas rápidas
 
 - **Idioma para explicaciones técnicas:** Español.
+- **Interfaz siempre en minúsculas:** todos los textos de UI de la aplicación
+  van **en minúsculas y en todos los idiomas** (incluido alemán, y nombres
+  propios como `polar`, `material` o `eisenhower`). Aplica a los recursos de
+  `res/values*/strings.xml` (incluidos `plurals`) y a cualquier texto
+  hardcodeado en layouts o código. **No** aplica a datos introducidos por el
+  usuario (títulos de tareas, notas, etiquetas, etc.) ni a los especificadores
+  de formato (`%1$s`, `%d`). Al añadir una funcionalidad o traducir strings,
+  replica esta convención en todos los `values-*`.
 - **UI:** 100% XML + View Binding (no Compose, no Navigation Component).
 - **Procesador de anotaciones:** `kapt` (no KSP).
 - **Room:** al alterar el esquema, sube la versión y añade `Migration` manual.
