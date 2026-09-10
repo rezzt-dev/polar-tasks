@@ -46,8 +46,12 @@ class ReminderAdapter(
             onItemClick: (Reminder) -> Unit,
             onItemLongClick: (Reminder, android.view.View) -> Boolean
         ) {
-            // Reset any stale visual state from previous swipe/animation
-            binding.root.animate().cancel()
+            // Reset any stale visual state from previous swipe/animation. No
+            // binding.root.animate().cancel() here — see TaskAdapter.TaskViewHolder.resetVisuals()
+            // for why: RecyclerView's default ItemAnimator plays an ADD animation on this exact
+            // view via the same ViewPropertyAnimator when a reminder is freshly inserted, and
+            // cancelling it mid-flight from bind() crashes with "Tmp detached view should be
+            // removed from RecyclerView before it can be recycled".
             binding.root.translationX = 0f
             binding.root.translationY = 0f
             binding.root.alpha = 1.0f

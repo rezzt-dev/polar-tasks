@@ -132,7 +132,19 @@ class TaskRepository @Inject constructor(
   // reinserting it, so an edit that doesn't touch a given subtask never generates a spurious
   // tombstone + insert pair for it once sync is active (see agent-docs/supabase-sync/
   // 06-plan-implementacion-android.md, punto 3 "Refactor obligatorio").
-  suspend fun replaceSubtasksForTask(taskId: Long, newSubtasks: List<Subtask>) {
+  //
+  // `newSubtasks` is a snapshot the edit dialog took when it opened, held in memory for as long
+  // as the dialog stays open — a remote sync/Realtime change to `completed` that lands while the
+  // dialog is still open would otherwise be invisible to that snapshot, and saving would silently
+  // overwrite the fresh DB value back to the stale one. `touchedCompletedIds` scopes the
+  // `completed` diff to only the subtasks the user actually flipped the checkbox on *in this
+  // dialog session*; every other existing subtask keeps whatever `completed` is currently in the
+  // DB (`current`, fetched fresh above) regardless of what the stale snapshot says.
+  suspend fun replaceSubtasksForTask(
+    taskId: Long,
+    newSubtasks: List<Subtask>,
+    touchedCompletedIds: Set<Long> = emptySet()
+  ) {
     val existing = subtaskDao.getSubtasksForTaskDirect(taskId)
     val existingById = existing.associateBy { it.id }
     val incomingIds = newSubtasks.filter { it.id != 0L }.map { it.id }.toSet()
@@ -143,20 +155,23 @@ class TaskRepository @Inject constructor(
       val current = existingById[incoming.id]
       if (current == null) {
         subtaskDao.insert(incoming.copy(id = 0, taskId = taskId, orderIndex = index).touched())
-      } else if (
-        current.title != incoming.title ||
-        current.completed != incoming.completed ||
-        current.dueDate != incoming.dueDate ||
-        current.orderIndex != index
-      ) {
-        subtaskDao.update(
-          current.copy(
-            title = incoming.title,
-            completed = incoming.completed,
-            dueDate = incoming.dueDate,
-            orderIndex = index
-          ).touched()
-        )
+      } else {
+        val completed = if (incoming.id in touchedCompletedIds) incoming.completed else current.completed
+        if (
+          current.title != incoming.title ||
+          current.completed != completed ||
+          current.dueDate != incoming.dueDate ||
+          current.orderIndex != index
+        ) {
+          subtaskDao.update(
+            current.copy(
+              title = incoming.title,
+              completed = completed,
+              dueDate = incoming.dueDate,
+              orderIndex = index
+            ).touched()
+          )
+        }
       }
     }
   }

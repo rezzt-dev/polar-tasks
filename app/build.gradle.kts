@@ -108,7 +108,12 @@ dependencies {
   implementation("io.github.jan-tennert.supabase:auth-kt")
   implementation("io.github.jan-tennert.supabase:realtime-kt")
   implementation("io.github.jan-tennert.supabase:storage-kt")
-  implementation(libs.ktor.client.android)
+  // OkHttp, not the Android engine: ktor-client-android is built on HttpURLConnection, which has
+  // no WebSocket support at all, so Realtime's channel.subscribe() could never actually open a
+  // socket — every attempt failed immediately with "Engine doesn't support WebSocketCapability"
+  // and silently retried forever, which is why Realtime updates never arrived after the very
+  // first sync (the ordinary Postgrest push/pull is plain HTTP and worked fine either way).
+  implementation(libs.ktor.client.okhttp)
   implementation(libs.kotlinx.serialization.json)
 
   testImplementation(libs.junit)

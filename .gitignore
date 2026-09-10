@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/agent-docs/
+.docs/

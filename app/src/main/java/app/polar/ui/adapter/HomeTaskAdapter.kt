@@ -231,12 +231,9 @@ class HomeTaskAdapter(
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
-            if (task.priority in 1..3) {
-                binding.viewPriorityStripe.visibility = View.VISIBLE
-                binding.viewPriorityStripe.setBackgroundColor(priorityColor)
-            } else {
-                binding.viewPriorityStripe.visibility = View.GONE
-            }
+            // Sin prioridad la franja no desaparece: adopta el color de texto del tema activo
+            binding.viewPriorityStripe.visibility = View.VISIBLE
+            binding.viewPriorityStripe.setBackgroundColor(priorityColor)
 
             updateVisuals(task.completed)
 
@@ -286,7 +283,11 @@ class HomeTaskAdapter(
         }
 
         fun resetVisuals() {
-            itemView.animate().cancel()
+            // No itemView.animate().cancel() here — see TaskAdapter.TaskViewHolder.resetVisuals()
+            // for why: this RecyclerView shares TaskItemAnimator with TaskAdapter, and cancelling
+            // its in-flight ADD animation from inside bind() crashes with "Tmp detached view
+            // should be removed from RecyclerView before it can be recycled". The property resets
+            // below are enough to clear stale swipe state.
             itemView.alpha = 1.0f
             itemView.translationX = 0f
             itemView.translationY = 0f

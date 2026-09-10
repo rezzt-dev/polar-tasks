@@ -244,12 +244,9 @@ class TaskAdapter(
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
-            if (task.priority in 1..3) {
-                binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
-                binding.viewPriorityStripe.setBackgroundColor(priorityColor)
-            } else {
-                binding.viewPriorityStripe.visibility = android.view.View.GONE
-            }
+            // Sin prioridad la franja no desaparece: adopta el color de texto del tema activo
+            binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
+            binding.viewPriorityStripe.setBackgroundColor(priorityColor)
             
             if (task.completed) {
                 binding.tvTaskTitle.paintFlags = binding.tvTaskTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
@@ -318,7 +315,16 @@ class TaskAdapter(
         }
         
         fun resetVisuals() {
-             itemView.animate().cancel()
+             // No itemView.animate().cancel() here: the RecyclerView's own TaskItemAnimator
+             // (DefaultItemAnimator) plays its ADD animation for a freshly inserted row using
+             // that exact same ViewPropertyAnimator, and bind() calling resetVisuals() while
+             // that animation is still running (e.g. right after creating a new task) cancels
+             // it mid-flight. ValueAnimator.cancel() dispatches its end listener synchronously,
+             // which re-enters the RecyclerView's own animation-finished bookkeeping for a view
+             // holder that's still mid-bind and crashes with "Tmp detached view should be
+             // removed from RecyclerView before it can be recycled". The property resets below
+             // are enough to clear stale swipe state (alpha/translation/scale), which is all
+             // this was ever meant to fix — none of it goes through ViewPropertyAnimator.
              itemView.alpha = 1.0f
              itemView.translationX = 0f
              itemView.translationY = 0f

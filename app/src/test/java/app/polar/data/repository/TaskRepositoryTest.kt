@@ -210,6 +210,38 @@ class TaskRepositoryTest {
         coVerify { subtaskDao.update(match { it.id == 1L && it.orderIndex == 1 && it.dirty }) }
     }
 
+    @Test
+    fun `replaceSubtasksForTask ignores a stale completed value for a subtask outside touchedCompletedIds`() = runTest {
+        // Simulates a remote sync landing while the edit dialog is open: the dialog's in-memory
+        // snapshot still says completed = false, but the DB (fetched fresh here) already has
+        // completed = true from the other write. Without touchedCompletedIds this used to blindly
+        // overwrite the DB back to false.
+        val existing = Subtask(id = 5, taskId = 1L, title = "Original", completed = true, orderIndex = 0)
+        coEvery { subtaskDao.getSubtasksForTaskDirect(1L) } returns listOf(existing)
+
+        repository.replaceSubtasksForTask(1L, listOf(existing.copy(completed = false)))
+
+        coVerify(exactly = 0) { subtaskDao.update(any()) }
+    }
+
+    @Test
+    fun `replaceSubtasksForTask applies completed only for ids in touchedCompletedIds`() = runTest {
+        val stale = Subtask(id = 5, taskId = 1L, title = "Stale snapshot", completed = true, orderIndex = 0)
+        val touched = Subtask(id = 6, taskId = 1L, title = "Checked by user", completed = true, orderIndex = 1)
+        coEvery { subtaskDao.getSubtasksForTaskDirect(1L) } returns listOf(stale, touched)
+        coEvery { subtaskDao.update(any()) } returns Unit
+
+        repository.replaceSubtasksForTask(
+            1L,
+            // Both snapshots say completed = false; only id 6 was actually checked in the dialog.
+            listOf(stale.copy(completed = false), touched.copy(completed = false)),
+            touchedCompletedIds = setOf(6L)
+        )
+
+        coVerify(exactly = 0) { subtaskDao.update(match { it.id == 5L }) }
+        coVerify { subtaskDao.update(match { it.id == 6L && !it.completed && it.dirty }) }
+    }
+
     // A real "edit a task's subtask list" save mixes all three operations in one call — this is
     // the shape the UI actually produces, not just each operation in isolation like the tests
     // above (doc 06 punto 10 / agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 6 /

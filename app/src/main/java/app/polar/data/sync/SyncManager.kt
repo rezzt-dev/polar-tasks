@@ -28,6 +28,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -457,10 +459,23 @@ class SyncManager @Inject constructor(
         // still be picked up by the *next* sync rather than being skipped by a cursor that raced
         // past it.
         val pullStartedAt = System.currentTimeMillis()
-        pullTaskLists(userId, since)
-        pullTasks(userId, since)
-        pullSubtasks(userId, since)
-        pullReminders(userId, since)
+        // The 4 tables' fetches are independent GETs — firing them concurrently instead of one
+        // after another turns ~4 sequential network round trips into ~1 (bounded by the slowest
+        // of the four), which is most of where the "opening the app takes 15-20s to catch up"
+        // latency was coming from. Applying the results still happens sequentially afterwards, in
+        // the same dependency order as before (lists -> tasks -> subtasks -> reminders), since
+        // applyTaskDto/applySubtaskDto need their parent row already in Room.
+        coroutineScope {
+            val remoteTaskLists = async { fetchTaskLists(userId, since) }
+            val remoteTasks = async { fetchTasks(userId, since) }
+            val remoteSubtasks = async { fetchSubtasks(userId, since) }
+            val remoteReminders = async { fetchReminders(userId, since) }
+
+            remoteTaskLists.await().forEach { applyTaskListDto(it) }
+            remoteTasks.await().forEach { applyTaskDto(it) }
+            remoteSubtasks.await().forEach { applySubtaskDto(it) }
+            remoteReminders.await().forEach { applyReminderDto(it) }
+        }
         purgeTombstonesMissingRemote(userId)
         syncPrefs.lastSyncAt = nextSyncCursor(pullStartedAt)
     }
@@ -475,75 +490,67 @@ class SyncManager @Inject constructor(
     // the whole table.
     private suspend fun purgeTombstonesMissingRemote(userId: String) {
         val confirmedTasks = taskDao.getConfirmedTrashedTasksSnapshot()
-        if (confirmedTasks.isNotEmpty()) {
-            val remoteIds = supabaseClient.from("tasks").select {
-                filter {
-                    eq("user_id", userId)
-                    isIn("id", confirmedTasks.map { it.uuid })
-                }
-            }.decodeList<TaskDto>().map { it.id }.toSet()
-            confirmedTasks.filter { it.uuid !in remoteIds }.forEach { taskDao.permanentDelete(it.id) }
-        }
-
         val confirmedReminders = reminderDao.getConfirmedTrashedRemindersSnapshot()
-        if (confirmedReminders.isNotEmpty()) {
-            val remoteIds = supabaseClient.from("reminders").select {
-                filter {
-                    eq("user_id", userId)
-                    isIn("id", confirmedReminders.map { it.uuid })
-                }
-            }.decodeList<ReminderDto>().map { it.id }.toSet()
-            confirmedReminders.filter { it.uuid !in remoteIds }.forEach { reminderDao.permanentDelete(it.id) }
+        if (confirmedTasks.isEmpty() && confirmedReminders.isEmpty()) return
+
+        coroutineScope {
+            val remoteTaskIds = async {
+                if (confirmedTasks.isEmpty()) emptySet() else supabaseClient.from("tasks").select {
+                    filter {
+                        eq("user_id", userId)
+                        isIn("id", confirmedTasks.map { it.uuid })
+                    }
+                }.decodeList<TaskDto>().map { it.id }.toSet()
+            }
+            val remoteReminderIds = async {
+                if (confirmedReminders.isEmpty()) emptySet() else supabaseClient.from("reminders").select {
+                    filter {
+                        eq("user_id", userId)
+                        isIn("id", confirmedReminders.map { it.uuid })
+                    }
+                }.decodeList<ReminderDto>().map { it.id }.toSet()
+            }
+
+            confirmedTasks.filter { it.uuid !in remoteTaskIds.await() }.forEach { taskDao.permanentDelete(it.id) }
+            confirmedReminders.filter { it.uuid !in remoteReminderIds.await() }.forEach { reminderDao.permanentDelete(it.id) }
         }
     }
 
-    private suspend fun pullTaskLists(userId: String, since: Long) {
-        val remote = supabaseClient.from("task_lists").select {
+    private suspend fun fetchTaskLists(userId: String, since: Long): List<TaskListDto> =
+        supabaseClient.from("task_lists").select {
             filter {
                 eq("user_id", userId)
                 gt("updated_at", since)
             }
             order("updated_at", Order.ASCENDING)
-        }.decodeList<TaskListDto>()
+        }.decodeList()
 
-        remote.forEach { applyTaskListDto(it) }
-    }
-
-    private suspend fun pullTasks(userId: String, since: Long) {
-        val remote = supabaseClient.from("tasks").select {
+    private suspend fun fetchTasks(userId: String, since: Long): List<TaskDto> =
+        supabaseClient.from("tasks").select {
             filter {
                 eq("user_id", userId)
                 gt("updated_at", since)
             }
             order("updated_at", Order.ASCENDING)
-        }.decodeList<TaskDto>()
+        }.decodeList()
 
-        remote.forEach { applyTaskDto(it) }
-    }
-
-    private suspend fun pullSubtasks(userId: String, since: Long) {
-        val remote = supabaseClient.from("subtasks").select {
+    private suspend fun fetchSubtasks(userId: String, since: Long): List<SubtaskDto> =
+        supabaseClient.from("subtasks").select {
             filter {
                 eq("user_id", userId)
                 gt("updated_at", since)
             }
             order("updated_at", Order.ASCENDING)
-        }.decodeList<SubtaskDto>()
+        }.decodeList()
 
-        remote.forEach { applySubtaskDto(it) }
-    }
-
-    private suspend fun pullReminders(userId: String, since: Long) {
-        val remote = supabaseClient.from("reminders").select {
+    private suspend fun fetchReminders(userId: String, since: Long): List<ReminderDto> =
+        supabaseClient.from("reminders").select {
             filter {
                 eq("user_id", userId)
                 gt("updated_at", since)
             }
             order("updated_at", Order.ASCENDING)
-        }.decodeList<ReminderDto>()
-
-        remote.forEach { applyReminderDto(it) }
-    }
+        }.decodeList()
 
     // Applies a single remote row with the client-side half of LWW (resolvePullAction) and
     // reschedules its alarm if needed. Shared by pull() (looping over an incremental batch) and
