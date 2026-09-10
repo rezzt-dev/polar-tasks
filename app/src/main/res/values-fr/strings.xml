@@ -290,4 +290,21 @@
   <string name="import_csv">importer csv</string>
   <string name="import_csv_desc">charger des taches depuis un fichier .csv</string>
 
+
+    <!-- Settings navigation -->
+    <string name="settings_intro">Personnalisez Polar</string>
+    <string name="settings_intro_desc">Tout ce dont vous avez besoin, par catégorie.</string>
+    <string name="settings_back">Retour aux paramètres</string>
+    <string name="settings_appearance_desc">Thème, police, taille du texte et langue.</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_desc">Autorisations et horaire du résumé quotidien.</string>
+    <string name="settings_account_desc">Compte, état de synchronisation et options du cloud.</string>
+    <string name="settings_data">Données et sauvegardes</string>
+    <string name="settings_data_desc">Exportez, restaurez ou importez vos tâches.</string>
+    <string name="settings_help">Aide</string>
+    <string name="settings_help_desc">Découvrez comment profiter de Polar.</string>
+    <string name="settings_advanced">Options avancées</string>
+    <string name="settings_advanced_desc">Remplacez les données du cloud ou de cet appareil. Ces actions écrasent les informations.</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_account">Compte et synchronisation</string>
 </resources>

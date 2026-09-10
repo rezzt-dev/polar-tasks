@@ -80,6 +80,9 @@ class MainActivity : BaseActivity() {
             }
 
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is app.polar.ui.fragment.SettingsFragment && currentFragment.navigateBack()) {
+                return
+            }
             if (currentFragment is app.polar.ui.fragment.StatsFragment ||
                 currentFragment is app.polar.ui.fragment.SettingsFragment) {
                 navigateToHome()

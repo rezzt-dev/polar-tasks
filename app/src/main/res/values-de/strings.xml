@@ -290,4 +290,21 @@
   <string name="import_csv">csv importieren</string>
   <string name="import_csv_desc">aufgaben aus .csv-datei laden</string>
 
+
+    <!-- Settings navigation -->
+    <string name="settings_intro">Polar personalisieren</string>
+    <string name="settings_intro_desc">Alles übersichtlich nach Kategorien geordnet.</string>
+    <string name="settings_back">Zurück zu Einstellungen</string>
+    <string name="settings_appearance_desc">Design, Schriftart, Textgröße und Sprache.</string>
+    <string name="settings_notifications">Benachrichtigungen</string>
+    <string name="settings_notifications_desc">Berechtigungen und Zeit der täglichen Übersicht.</string>
+    <string name="settings_account_desc">Konto, Synchronisierungsstatus und Cloud-Optionen.</string>
+    <string name="settings_data">Daten und Sicherungen</string>
+    <string name="settings_data_desc">Aufgaben exportieren, wiederherstellen oder importieren.</string>
+    <string name="settings_help">Hilfe</string>
+    <string name="settings_help_desc">Entdecke die Möglichkeiten von Polar.</string>
+    <string name="settings_advanced">Erweiterte Optionen</string>
+    <string name="settings_advanced_desc">Cloud- oder Gerätedaten ersetzen. Diese Aktionen überschreiben Informationen.</string>
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_account">Konto und Synchronisierung</string>
 </resources>

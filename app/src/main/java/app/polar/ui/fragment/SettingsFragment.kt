@@ -28,6 +28,73 @@ class SettingsFragment : Fragment() {
   private val binding get() = _binding!!
   private lateinit var themeManager: ThemeManager
   private var lastAppliedTheme: String = ""
+  private var currentSection = "overview"
+  private var overviewScrollY = 0
+
+  private data class SettingsSection(val view: View, val title: Int, val description: Int)
+
+  private fun sections() = mapOf(
+    "appearance" to SettingsSection(binding.settingsAppearance, R.string.settings_appearance, R.string.settings_appearance_desc),
+    "notifications" to SettingsSection(binding.settingsNotifications, R.string.settings_notifications, R.string.settings_notifications_desc),
+    "account" to SettingsSection(binding.settingsAccount, R.string.settings_account, R.string.settings_account_desc),
+    "data" to SettingsSection(binding.settingsData, R.string.settings_data, R.string.settings_data_desc),
+    "help" to SettingsSection(binding.settingsHelp, R.string.settings_help, R.string.settings_help_desc),
+    "advanced" to SettingsSection(binding.settingsAdvanced, R.string.settings_advanced, R.string.settings_advanced_desc)
+  )
+
+  private fun setupNavigation(savedInstanceState: Bundle?) {
+    overviewScrollY = savedInstanceState?.getInt("settings_overview_scroll") ?: overviewScrollY
+    mapOf(
+      binding.btnCategoryAppearance to "appearance",
+      binding.btnCategoryNotifications to "notifications",
+      binding.btnCategoryAccount to "account",
+      binding.btnCategoryData to "data",
+      binding.btnCategoryHelp to "help",
+      binding.btnCategoryAdvanced to "advanced"
+    ).forEach { (button, section) ->
+      button.setOnClickListener {
+        if (currentSection == "overview") overviewScrollY = binding.settingsScroll.scrollY
+        showSection(section)
+      }
+    }
+    binding.btnSettingsBack.setOnClickListener { navigateBack() }
+    showSection(savedInstanceState?.getString("settings_section") ?: currentSection, false)
+  }
+
+  private fun showSection(section: String, resetScroll: Boolean = true) {
+    val sections = sections()
+    currentSection = section.takeIf { it in sections } ?: "overview"
+    val selected = sections[currentSection]
+    sections.forEach { (key, value) ->
+      value.view.visibility = if (key == currentSection) View.VISIBLE else View.GONE
+    }
+    binding.settingsOverview.visibility = if (selected == null) View.VISIBLE else View.GONE
+    binding.btnSettingsBack.visibility = if (selected == null) View.GONE else View.VISIBLE
+    binding.btnSettingsBack.setText(if (currentSection == "advanced") R.string.settings_account else R.string.settings_back)
+    binding.tvSettingsTitle.setText(selected?.title ?: R.string.settings_intro)
+    binding.tvSettingsDescription.setText(selected?.description ?: R.string.settings_intro_desc)
+    androidx.core.view.ViewCompat.setAccessibilityPaneTitle(binding.root, binding.tvSettingsTitle.text)
+    if (resetScroll) {
+      binding.settingsScroll.post {
+        _binding?.let { currentBinding ->
+          currentBinding.settingsScroll.scrollTo(0, if (currentSection == "overview") overviewScrollY else 0)
+        }
+      }
+    }
+  }
+
+  /** Returns to the parent category before MainActivity leaves settings. */
+  fun navigateBack(): Boolean {
+    if (currentSection == "overview") return false
+    showSection(if (currentSection == "advanced") "account" else "overview")
+    return true
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putString("settings_section", currentSection)
+    outState.putInt("settings_overview_scroll", overviewScrollY)
+  }
 
   @Inject lateinit var supabaseClient: SupabaseClient
   @Inject lateinit var syncManager: app.polar.data.sync.SyncManager
@@ -47,6 +114,8 @@ class SettingsFragment : Fragment() {
     themeManager = ThemeManager(requireContext())
     lastAppliedTheme = themeManager.loadTheme()
 
+    androidx.core.view.ViewCompat.setAccessibilityHeading(binding.tvSettingsTitle, true)
+    setupNavigation(savedInstanceState)
     setupAccountSettings()
     setupSyncStatus()
     setupThemeSelection()

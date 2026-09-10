@@ -20,6 +20,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### CAMBIOS
 
+- organizar los ajustes en categorias con vistas dedicadas, navegacion de vuelta, opciones avanzadas de nube separadas y valores legibles bajo cada preferencia.
+
 - dar feedback visual al deslizar elementos de la papelera reutilizando `TaskSwipeHelper`: fondo de color e icono al restablecer a la lista (derecha) o eliminar permanentemente (izquierda), igual que el swipe de la lista de tareas.
 - anadir una barra lateral izquierda con extremos redondos (`bg_trash_stripe`) y el color de foreground del tema (`colorOnSurface`) a las tarjetas de la papelera en `item_trash.xml` para distinguirlas mejor.
 - anadir `.docs/` al fichero `.gitignore` para que git no rastree documentacion local del proyecto.
@@ -40,6 +42,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 ### ENGLISH
 
 #### CHANGED
+
+- organize settings into categories with dedicated views, back navigation, separate advanced cloud options and readable values below each preference.
 
 - give visual feedback when swiping trash items by reusing `TaskSwipeHelper`: colored background and icon when restoring to the list (right) or deleting permanently (left), matching the task list swipe.
 - add a left side bar with rounded ends (`bg_trash_stripe`) using the theme foreground color (`colorOnSurface`) to the trash cards in `item_trash.xml` so they are easier to tell apart.

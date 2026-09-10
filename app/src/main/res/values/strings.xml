@@ -336,4 +336,21 @@
   <string name="dependency_chain_label">cadena de dependencias</string>
   <string name="dependency_chain_desc">las tareas se desbloquean en orden</string>
 
+
+    <!-- Settings navigation -->
+    <string name="settings_intro">Personaliza Polar</string>
+    <string name="settings_intro_desc">Todo lo que necesitas, organizado por categorías.</string>
+    <string name="settings_back">Volver a ajustes</string>
+    <string name="settings_appearance_desc">Tema, tipografía, tamaño del texto e idioma.</string>
+    <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_notifications_desc">Permisos y horario del resumen diario.</string>
+    <string name="settings_account_desc">Sesión, estado de sincronización y opciones de la nube.</string>
+    <string name="settings_data">Datos y copias de seguridad</string>
+    <string name="settings_data_desc">Exporta, restaura o importa tus tareas.</string>
+    <string name="settings_help">Ayuda</string>
+    <string name="settings_help_desc">Descubre cómo aprovechar Polar.</string>
+    <string name="settings_advanced">Opciones avanzadas</string>
+    <string name="settings_advanced_desc">Sustituye los datos de la nube o de este dispositivo. Estas acciones sobrescriben información.</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_account">Cuenta y sincronización</string>
 </resources>
