@@ -62,4 +62,21 @@ class ReminderRepositoryTest {
 
         assertEquals(0, repository.emptyTrash())
     }
+
+    @Test
+    fun `permanentDelete with force bypasses the sync guard`() = runTest {
+        coEvery { reminderDao.forcePermanentDelete(1L) } returns 1
+
+        assertEquals(true, repository.permanentDelete(1L, force = true))
+        coVerify { reminderDao.forcePermanentDelete(1L) }
+    }
+
+    @Test
+    fun `emptyTrash with force bypasses the sync guard`() = runTest {
+        coEvery { reminderDao.forceEmptyTrash() } returns 2
+        coEvery { reminderDao.getTrashCount() } returns 0
+
+        assertEquals(0, repository.emptyTrash(force = true))
+        coVerify { reminderDao.forceEmptyTrash() }
+    }
 }

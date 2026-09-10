@@ -125,6 +125,7 @@ class TaskViewModelTest {
     fun `emptyTrash surfaces an error when items remain stuck after the purge`() = runTest {
         setupViewModel()
         coEvery { syncManager.sync() } returns Result.success(Unit)
+        every { syncManager.isSignedIn() } returns true
         coEvery { repository.emptyTrash() } returns 2
 
         viewModel.emptyTrash()
@@ -133,15 +134,45 @@ class TaskViewModelTest {
     }
 
     @Test
+    fun `emptyTrash force-purges without an error when no account is linked`() = runTest {
+        setupViewModel()
+        coEvery { syncManager.sync() } returns Result.success(Unit)
+        every { syncManager.isSignedIn() } returns false
+        coEvery { repository.emptyTrash() } returns 2
+        coEvery { repository.emptyTrash(force = true) } returns 0
+
+        viewModel.emptyTrash()
+
+        coVerify { repository.emptyTrash(force = true) }
+        assertEquals(null, viewModel.errorMessage.value)
+    }
+
+    @Test
     fun `permanentDelete surfaces an error when the row could not be purged`() = runTest {
         setupViewModel()
         val task = Task(id = 1, listId = 1L, title = "Stuck in trash")
         coEvery { syncManager.sync() } returns Result.success(Unit)
+        every { syncManager.isSignedIn() } returns true
         coEvery { repository.permanentDeleteTask(1L) } returns false
 
         viewModel.permanentDelete(task)
 
         assertEquals(true, viewModel.errorMessage.value != null)
+    }
+
+    @Test
+    fun `permanentDelete force-purges without an error when no account is linked`() = runTest {
+        setupViewModel()
+        val task = Task(id = 1, listId = 1L, title = "Stuck in trash")
+        coEvery { syncManager.sync() } returns Result.success(Unit)
+        every { syncManager.isSignedIn() } returns false
+        coEvery { repository.permanentDeleteTask(1L) } returns false
+        coEvery { repository.permanentDeleteTask(1L, force = true) } returns true
+
+        viewModel.permanentDelete(task)
+
+        coVerify { repository.permanentDeleteTask(1L, force = true) }
+        assertEquals(null, viewModel.errorMessage.value)
     }
 
     @Test

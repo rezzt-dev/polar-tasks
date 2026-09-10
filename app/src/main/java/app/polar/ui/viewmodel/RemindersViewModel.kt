@@ -134,7 +134,10 @@ class RemindersViewModel @Inject constructor(
     fun emptyTrash() = viewModelScope.launch {
         try {
             runCatching { syncManager.sync() }
-            val stillInTrash = repository.emptyTrash()
+            var stillInTrash = repository.emptyTrash()
+            if (stillInTrash > 0 && !syncManager.isSignedIn()) {
+                stillInTrash = repository.emptyTrash(force = true)
+            }
             if (stillInTrash > 0) {
                 _errorMessage.value = getApplication<Application>().getString(R.string.trash_purge_pending_sync_count, stillInTrash)
             }
@@ -148,7 +151,12 @@ class RemindersViewModel @Inject constructor(
     fun permanentDelete(reminder: Reminder) = viewModelScope.launch {
         try {
             runCatching { syncManager.sync() }
-            val purged = repository.permanentDelete(reminder.id)
+            var purged = repository.permanentDelete(reminder.id)
+            // Sin cuenta vinculada no hay tombstone que confirmar en ningun servidor: el
+            // guardia de sincronizacion dejaria el recordatorio atascado para siempre.
+            if (!purged && !syncManager.isSignedIn()) {
+                purged = repository.permanentDelete(reminder.id, force = true)
+            }
             alarmHelper.cancelReminderAlarm(reminder.id)
             if (!purged) {
                 _errorMessage.value = getApplication<Application>().getString(R.string.trash_item_purge_pending_sync)

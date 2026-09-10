@@ -10,11 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import app.polar.data.entity.Task
 import app.polar.databinding.FragmentTrashBinding
 import app.polar.ui.adapter.TrashAdapter
 import app.polar.ui.viewmodel.TaskViewModel
+import app.polar.util.TaskSwipeHelper
 import com.google.android.material.snackbar.Snackbar
 import app.polar.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -68,41 +68,47 @@ class TrashFragment : Fragment() {
         trashAdapter = TrashAdapter { item ->
             // Click
         }
-        
+
         binding.recyclerTrash.layoutManager = LinearLayoutManager(context)
         binding.recyclerTrash.adapter = trashAdapter
-        
-        // Swipe Logic
-        val swipeCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean = false
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
-                val item = trashAdapter.currentList[position]
-                
-                if (direction == ItemTouchHelper.RIGHT) {
-                    // Restore
-                    when (item) {
-                        is app.polar.ui.adapter.TrashItem.DeletedTask -> taskViewModel.restoreFromTrash(item.task)
-                        is app.polar.ui.adapter.TrashItem.DeletedReminder -> remindersViewModel.restoreFromTrash(item.reminder)
-                    }
-                    Snackbar.make(binding.root, getString(R.string.item_restored), Snackbar.LENGTH_SHORT).show()
-                } else {
-                    // Permanent Delete
-                    when (item) {
-                        is app.polar.ui.adapter.TrashItem.DeletedTask -> taskViewModel.permanentDelete(item.task)
-                        is app.polar.ui.adapter.TrashItem.DeletedReminder -> remindersViewModel.permanentDelete(item.reminder)
-                    }
-                     Snackbar.make(binding.root, getString(R.string.permanently_deleted), Snackbar.LENGTH_SHORT).show()
-                }
+        // Swipe con feedback visual reutilizando TaskSwipeHelper (mismo aspecto que
+        // el swipe de la lista de tareas): fondo de color + icono mientras se desliza.
+        // Derecha -> restablecer a la lista. Izquierda -> eliminar permanentemente.
+        val swipeHelper = TaskSwipeHelper(
+            rightSwipeConfig = TaskSwipeHelper.SwipeConfig(
+                backgroundColorAttr = R.attr.colorSuccess,
+                iconRes = R.drawable.ic_arrow_back,
+                iconTintAttr = R.attr.colorOnSuccess
+            ),
+            leftSwipeConfig = TaskSwipeHelper.SwipeConfig(
+                backgroundColorAttr = R.attr.colorError,
+                iconRes = R.drawable.ic_trash,
+                iconTintAttr = R.attr.colorOnError
+            ),
+            onSwipedRight = { position -> handleTrashSwipe(position, restore = true) },
+            onSwipedLeft = { position -> handleTrashSwipe(position, restore = false) }
+        )
+
+        ItemTouchHelper(swipeHelper).attachToRecyclerView(binding.recyclerTrash)
+    }
+
+    private fun handleTrashSwipe(position: Int, restore: Boolean) {
+        val item = trashAdapter.currentList.getOrNull(position) ?: return
+
+        if (restore) {
+            when (item) {
+                is app.polar.ui.adapter.TrashItem.DeletedTask -> taskViewModel.restoreFromTrash(item.task)
+                is app.polar.ui.adapter.TrashItem.DeletedReminder -> remindersViewModel.restoreFromTrash(item.reminder)
             }
+            Snackbar.make(binding.root, getString(R.string.item_restored), Snackbar.LENGTH_SHORT).show()
+        } else {
+            when (item) {
+                is app.polar.ui.adapter.TrashItem.DeletedTask -> taskViewModel.permanentDelete(item.task)
+                is app.polar.ui.adapter.TrashItem.DeletedReminder -> remindersViewModel.permanentDelete(item.reminder)
+            }
+            Snackbar.make(binding.root, getString(R.string.permanently_deleted), Snackbar.LENGTH_SHORT).show()
         }
-        
-        ItemTouchHelper(swipeCallback).attachToRecyclerView(binding.recyclerTrash)
     }
 
     private fun observeDeletedItems() {

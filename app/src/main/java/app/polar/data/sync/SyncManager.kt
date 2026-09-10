@@ -69,6 +69,14 @@ class SyncManager @Inject constructor(
     private var realtimeChannel: RealtimeChannel? = null
     private var realtimeJob: Job? = null
 
+    /**
+     * Indica si hay una cuenta vinculada (sesion de Supabase activa). Cuando es `false`
+     * la sincronizacion no hace nada: la app es puramente local y las operaciones que
+     * dependen de que un tombstone llegue al servidor (purga de papelera) deben poder
+     * completarse sin esperar a ninguna nube.
+     */
+    fun isSignedIn(): Boolean = supabaseClient.auth.currentUserOrNull() != null
+
     suspend fun sync(): Result<Unit> {
         val userId = supabaseClient.auth.currentUserOrNull()?.id ?: return Result.success(Unit)
         return try {

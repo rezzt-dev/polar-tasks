@@ -63,6 +63,12 @@ interface TaskDao {
   """)
   suspend fun permanentDelete(taskId: Long): Int
 
+  // Purga fisica sin el guardia de sincronizacion (dirty). Solo debe usarse cuando NO hay
+  // cuenta vinculada: sin servidor al que notificar el tombstone, el guardia dejaria la
+  // tarea atascada en la papelera para siempre. El CASCADE de Room limpia sus subtareas.
+  @Query("DELETE FROM tasks WHERE id = :taskId")
+  suspend fun forcePermanentDelete(taskId: Long): Int
+
   @Query("""
     DELETE FROM tasks
     WHERE isDeleted = 1
@@ -70,6 +76,10 @@ interface TaskDao {
       AND NOT EXISTS (SELECT 1 FROM subtasks WHERE subtasks.taskId = tasks.id AND subtasks.dirty = 1)
   """)
   suspend fun emptyTrash(): Int
+
+  // Vacia la papelera sin el guardia de sincronizacion (dirty). Ver forcePermanentDelete.
+  @Query("DELETE FROM tasks WHERE isDeleted = 1")
+  suspend fun forceEmptyTrash(): Int
 
   @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 1")
   suspend fun getTrashCount(): Int

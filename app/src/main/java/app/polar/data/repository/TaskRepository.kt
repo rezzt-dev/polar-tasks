@@ -203,15 +203,19 @@ class TaskRepository @Inject constructor(
 
   // Returns whether the row was actually purged. It can come back false if the tombstone (or one
   // of its subtasks') hasn't reached Supabase yet — see TaskDao.permanentDelete.
-  suspend fun permanentDeleteTask(taskId: Long): Boolean {
-      return taskDao.permanentDelete(taskId) > 0
+  suspend fun permanentDeleteTask(taskId: Long, force: Boolean = false): Boolean {
+      return if (force) {
+          taskDao.forcePermanentDelete(taskId) > 0
+      } else {
+          taskDao.permanentDelete(taskId) > 0
+      }
   }
 
   // Returns how many trashed tasks are still stuck after the purge attempt (unsynced tombstone,
   // or an unsynced subtask blocking the cascade) so the caller can warn the user instead of
   // silently leaving them in the trash forever.
-  suspend fun emptyTrash(): Int {
-      taskDao.emptyTrash()
+  suspend fun emptyTrash(force: Boolean = false): Int {
+      if (force) taskDao.forceEmptyTrash() else taskDao.emptyTrash()
       return taskDao.getTrashCount()
   }
 

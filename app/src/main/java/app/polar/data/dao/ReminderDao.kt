@@ -42,6 +42,15 @@ interface ReminderDao {
     @Query("DELETE FROM reminders WHERE id = :id AND dirty = 0")
     suspend fun permanentDelete(id: Long): Int
 
+    // Purga fisica sin el guardia de sincronizacion (dirty). Solo debe usarse cuando NO hay
+    // cuenta vinculada: sin servidor al que notificar el tombstone, el guardia dejaria el
+    // recordatorio atascado en la papelera para siempre.
+    @Query("DELETE FROM reminders WHERE id = :id")
+    suspend fun forcePermanentDelete(id: Long): Int
+
+    @Query("DELETE FROM reminders WHERE isDeleted = 1")
+    suspend fun forceEmptyTrash(): Int
+
     @Query("SELECT COUNT(*) FROM reminders WHERE isDeleted = 1")
     suspend fun getTrashCount(): Int
 

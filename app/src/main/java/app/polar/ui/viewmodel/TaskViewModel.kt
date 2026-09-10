@@ -514,7 +514,13 @@ class TaskViewModel @Inject constructor(
   fun permanentDelete(task: Task) = viewModelScope.launch {
       try {
           runCatching { syncManager.sync() }
-          val purged = repository.permanentDeleteTask(task.id)
+          var purged = repository.permanentDeleteTask(task.id)
+          // Sin cuenta vinculada no hay tombstone que confirmar en ningun servidor: el
+          // guardia de sincronizacion dejaria la tarea atascada para siempre. Purgamos
+          // directamente para que borrar funcione con o sin cuenta.
+          if (!purged && !syncManager.isSignedIn()) {
+              purged = repository.permanentDeleteTask(task.id, force = true)
+          }
           if (!purged) {
               _errorMessage.value = getApplication<Application>().getString(R.string.trash_item_purge_pending_sync)
           }
@@ -528,7 +534,10 @@ class TaskViewModel @Inject constructor(
   fun emptyTrash() = viewModelScope.launch {
       try {
           runCatching { syncManager.sync() }
-          val stillInTrash = repository.emptyTrash()
+          var stillInTrash = repository.emptyTrash()
+          if (stillInTrash > 0 && !syncManager.isSignedIn()) {
+              stillInTrash = repository.emptyTrash(force = true)
+          }
           if (stillInTrash > 0) {
               _errorMessage.value = getApplication<Application>().getString(R.string.trash_purge_pending_sync_count, stillInTrash)
           }

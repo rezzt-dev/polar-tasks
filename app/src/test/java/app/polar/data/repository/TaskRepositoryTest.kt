@@ -139,6 +139,25 @@ class TaskRepositoryTest {
         coVerify { taskDao.emptyTrash() }
     }
 
+    // Without a linked account there is no server to confirm the tombstone against, so the purge
+    // must skip the dirty guard entirely (see SyncManager.isSignedIn).
+    @Test
+    fun `permanentDeleteTask with force bypasses the sync guard`() = runTest {
+        coEvery { taskDao.forcePermanentDelete(1L) } returns 1
+
+        assertEquals(true, repository.permanentDeleteTask(1L, force = true))
+        coVerify { taskDao.forcePermanentDelete(1L) }
+    }
+
+    @Test
+    fun `emptyTrash with force bypasses the sync guard`() = runTest {
+        coEvery { taskDao.forceEmptyTrash() } returns 3
+        coEvery { taskDao.getTrashCount() } returns 0
+
+        assertEquals(0, repository.emptyTrash(force = true))
+        coVerify { taskDao.forceEmptyTrash() }
+    }
+
     // --- replaceSubtasksForTask: diff-based replace, see doc 06 punto 3 ---
 
     @Test

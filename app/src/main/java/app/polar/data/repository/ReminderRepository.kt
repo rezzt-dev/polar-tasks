@@ -44,14 +44,18 @@ class ReminderRepository @Inject constructor(private val reminderDao: ReminderDa
     // Returns whether the row was actually purged; false if its tombstone hasn't reached
     // Supabase yet (see ReminderDao.permanentDelete and
     // agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 3.1).
-    suspend fun permanentDelete(id: Long): Boolean {
-        return reminderDao.permanentDelete(id) > 0
+    suspend fun permanentDelete(id: Long, force: Boolean = false): Boolean {
+        return if (force) {
+            reminderDao.forcePermanentDelete(id) > 0
+        } else {
+            reminderDao.permanentDelete(id) > 0
+        }
     }
 
     // Returns how many trashed reminders are still stuck after the purge attempt (unsynced
     // tombstone) so the caller can warn the user instead of silently leaving them in the trash.
-    suspend fun emptyTrash(): Int {
-        reminderDao.emptyTrash()
+    suspend fun emptyTrash(force: Boolean = false): Int {
+        if (force) reminderDao.forceEmptyTrash() else reminderDao.emptyTrash()
         return reminderDao.getTrashCount()
     }
 
