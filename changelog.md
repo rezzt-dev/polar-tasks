@@ -32,6 +32,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### CORREGIDO
 
+- corregir los errores de lint al completar las traducciones, aplicar tintes compatibles en recordatorios y aislar los atributos de navegacion de api 27 en temas especificos.
+
 - permitir eliminar permanentemente y vaciar la papelera sin cuenta vinculada: el guardia de sincronizacion (`dirty = 0`) dejaba los elementos atascados con el aviso `still waiting to sync with the cloud` cuando la app es puramente local; ahora, si no hay sesion, se purga directamente con `forcePermanentDelete` / `forceEmptyTrash`.
 
 #### NUEVO
@@ -54,6 +56,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - add the section describing the format of `changelog.md` entries to `agents.md` and `claude.md`.
 
 #### FIXED
+
+- fix lint errors by completing translations, applying compatible reminder icon tints and isolating api 27 navigation attributes in version-specific themes.
 
 - allow permanently deleting and emptying the trash without a linked account: the sync guard (`dirty = 0`) left items stuck with the `still waiting to sync with the cloud` warning when the app is purely local; now, if there is no session, the purge runs directly via `forcePermanentDelete` / `forceEmptyTrash`.
 

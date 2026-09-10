@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Light theme -->
-  <style name="Base.Theme.Polar" parent="Theme.Material3.Light.NoActionBar">
+  <style name="Base.Theme.Polar" parent="Platform.Theme.Polar.Light">
     <!-- 3. Accent -->
     <item name="colorPrimary">@color/light_c3_accent</item>
     <item name="colorOnPrimary">@color/white</item>
@@ -38,7 +38,6 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">true</item>
-    <item name="android:windowLightNavigationBar">true</item>
     
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>
@@ -54,7 +53,7 @@
   <!-- Theme.Polar.Dark moved to values-night/themes.xml for proper DayNight support -->
 
   <!-- Multicolor Light Theme -->
-  <style name="Theme.Polar.MulticolorLight" parent="Theme.Material3.Light.NoActionBar">
+  <style name="Theme.Polar.MulticolorLight" parent="Platform.Theme.Polar.Light">
     <item name="colorPrimary">@color/multi_light_primary</item>
     <item name="colorOnPrimary">@color/multi_light_on_primary</item>
     <item name="colorPrimaryContainer">@color/multi_light_primary_container</item>
@@ -88,7 +87,6 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">true</item>
-    <item name="android:windowLightNavigationBar">true</item>
     
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>
@@ -100,7 +98,7 @@
   </style>
 
   <!-- Multicolor Dark Theme -->
-  <style name="Theme.Polar.MulticolorDark" parent="Theme.Material3.Dark.NoActionBar">
+  <style name="Theme.Polar.MulticolorDark" parent="Platform.Theme.Polar.Dark">
     <item name="colorPrimary">@color/multi_dark_primary</item>
     <item name="colorOnPrimary">@color/multi_dark_on_primary</item>
     <item name="colorPrimaryContainer">@color/multi_dark_primary_container</item>
@@ -134,7 +132,6 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar">false</item>
     
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>
@@ -146,7 +143,7 @@
   </style>
 
   <!-- Pastel Suave Theme -->
-  <style name="Theme.Polar.Pastel" parent="Theme.Material3.Light.NoActionBar">
+  <style name="Theme.Polar.Pastel" parent="Platform.Theme.Polar.Light">
     <item name="colorPrimary">@color/pastel_primary</item>
     <item name="colorOnPrimary">@color/pastel_on_primary</item>
     <item name="colorPrimaryContainer">@color/pastel_primary_container</item>
@@ -180,7 +177,6 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">true</item>
-    <item name="android:windowLightNavigationBar">true</item>
     
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>
@@ -192,7 +188,7 @@
   </style>
 
   <!-- Neon Dark Theme -->
-  <style name="Theme.Polar.Neon" parent="Theme.Material3.Dark.NoActionBar">
+  <style name="Theme.Polar.Neon" parent="Platform.Theme.Polar.Dark">
     <item name="colorPrimary">@color/neon_primary</item>
     <item name="colorOnPrimary">@color/neon_on_primary</item>
     <item name="colorPrimaryContainer">@color/neon_primary_container</item>
@@ -226,7 +222,6 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar">false</item>
     
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>
@@ -238,7 +233,7 @@
   </style>
 
   <!-- Onyx Dark Theme -->
-  <style name="Theme.Polar.Onyx" parent="Theme.Material3.Dark.NoActionBar">
+  <style name="Theme.Polar.Onyx" parent="Platform.Theme.Polar.Dark">
     <item name="colorPrimary">@color/onyx_primary</item>
     <item name="colorOnPrimary">@color/onyx_on_primary</item>
     <item name="colorPrimaryContainer">@color/onyx_primary_container</item>
@@ -274,7 +269,6 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar">false</item>
 
     <item name="android:fontFamily">@font/poppins</item>
     <item name="fontFamily">@font/poppins</item>

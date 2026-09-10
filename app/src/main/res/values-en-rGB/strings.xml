@@ -307,4 +307,41 @@
     <string name="settings_advanced_desc">Replace cloud or device data. These actions overwrite information.</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_account">Account and sync</string>
+
+  <!-- Task details, sorting and settings -->
+  <string name="task_blocked">blocked</string>
+  <string name="no_due_date">no due date</string>
+  <string name="select_date_title">select date</string>
+  <string name="recurrence_summary_none">does not repeat</string>
+  <string name="recurrence_summary_daily">repeats daily</string>
+  <string name="recurrence_summary_weekly">repeats weekly</string>
+  <string name="recurrence_summary_monthly">repeats monthly</string>
+  <string name="recurrence_summary_mon_wed">every Monday and Wednesday</string>
+  <string name="recurrence_summary_first_day_month">first day of the month</string>
+  <string name="priority_label_none">no priority</string>
+  <string name="priority_label_low">low priority</string>
+  <string name="priority_label_medium">medium priority</string>
+  <string name="priority_label_high">high priority</string>
+  <string name="time_estimate_hint">time estimate (minutes)</string>
+  <string name="color_accent_label">accent colour</string>
+  <string name="hex_label">hex</string>
+  <string name="sort_by">sort by</string>
+  <string name="sort_default">default</string>
+  <string name="sort_unmark_first">incomplete first</string>
+  <string name="completed_tasks_header">completed tasks (%d)</string>
+  <string name="all_tags">all tags</string>
+  <string name="eisenhower_matrix">Eisenhower matrix</string>
+  <string name="dialog_select_theme">select theme</string>
+  <string name="dialog_select_font">select font</string>
+  <string name="dialog_select_checkbox_style">checkbox style</string>
+  <string name="checkbox_square">square (Material)</string>
+  <string name="checkbox_circular">circular (modern)</string>
+  <string name="dialog_select_language">select language</string>
+  <string name="imported_tasks_list_name">imported tasks</string>
+  <string name="tasks_imported_ok">tasks imported successfully</string>
+  <string name="error_importing_csv">error importing the CSV file</string>
+  <string name="share_task_as_image">share task as an image</string>
+  <string name="attach_image">attach image</string>
+  <string name="dependency_chain_label">dependency chain</string>
+  <string name="dependency_chain_desc">tasks unlock in order</string>
 </resources>

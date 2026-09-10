@@ -307,4 +307,41 @@
     <string name="settings_advanced_desc">Cloud- oder Gerätedaten ersetzen. Diese Aktionen überschreiben Informationen.</string>
     <string name="settings_appearance">Darstellung</string>
     <string name="settings_account">Konto und Synchronisierung</string>
+
+  <!-- Task details, sorting and settings -->
+  <string name="task_blocked">blockiert</string>
+  <string name="no_due_date">kein Fälligkeitsdatum</string>
+  <string name="select_date_title">Datum auswählen</string>
+  <string name="recurrence_summary_none">keine Wiederholung</string>
+  <string name="recurrence_summary_daily">täglich wiederholen</string>
+  <string name="recurrence_summary_weekly">wöchentlich wiederholen</string>
+  <string name="recurrence_summary_monthly">monatlich wiederholen</string>
+  <string name="recurrence_summary_mon_wed">jeden Montag und Mittwoch</string>
+  <string name="recurrence_summary_first_day_month">erster Tag des Monats</string>
+  <string name="priority_label_none">keine Priorität</string>
+  <string name="priority_label_low">niedrige Priorität</string>
+  <string name="priority_label_medium">mittlere Priorität</string>
+  <string name="priority_label_high">hohe Priorität</string>
+  <string name="time_estimate_hint">geschätzte Dauer (Minuten)</string>
+  <string name="color_accent_label">Akzentfarbe</string>
+  <string name="hex_label">hex</string>
+  <string name="sort_by">sortieren nach</string>
+  <string name="sort_default">Standard</string>
+  <string name="sort_unmark_first">unerledigte zuerst</string>
+  <string name="completed_tasks_header">erledigte Aufgaben (%d)</string>
+  <string name="all_tags">alle Tags</string>
+  <string name="eisenhower_matrix">Eisenhower-Matrix</string>
+  <string name="dialog_select_theme">Design auswählen</string>
+  <string name="dialog_select_font">Schriftart auswählen</string>
+  <string name="dialog_select_checkbox_style">Stil der Kontrollkästchen</string>
+  <string name="checkbox_square">quadratisch (Material)</string>
+  <string name="checkbox_circular">rund (modern)</string>
+  <string name="dialog_select_language">Sprache auswählen</string>
+  <string name="imported_tasks_list_name">importierte Aufgaben</string>
+  <string name="tasks_imported_ok">Aufgaben erfolgreich importiert</string>
+  <string name="error_importing_csv">Fehler beim Importieren der CSV-Datei</string>
+  <string name="share_task_as_image">Aufgabe als Bild teilen</string>
+  <string name="attach_image">Bild anhängen</string>
+  <string name="dependency_chain_label">Abhängigkeitskette</string>
+  <string name="dependency_chain_desc">Aufgaben werden der Reihe nach freigeschaltet</string>
 </resources>

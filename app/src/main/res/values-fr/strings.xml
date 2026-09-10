@@ -307,4 +307,41 @@
     <string name="settings_advanced_desc">Remplacez les données du cloud ou de cet appareil. Ces actions écrasent les informations.</string>
     <string name="settings_appearance">Apparence</string>
     <string name="settings_account">Compte et synchronisation</string>
+
+  <!-- Task details, sorting and settings -->
+  <string name="task_blocked">bloquée</string>
+  <string name="no_due_date">aucune date de fin</string>
+  <string name="select_date_title">sélectionner une date</string>
+  <string name="recurrence_summary_none">ne se répète pas</string>
+  <string name="recurrence_summary_daily">se répète chaque jour</string>
+  <string name="recurrence_summary_weekly">se répète chaque semaine</string>
+  <string name="recurrence_summary_monthly">se répète chaque mois</string>
+  <string name="recurrence_summary_mon_wed">chaque lundi et mercredi</string>
+  <string name="recurrence_summary_first_day_month">premier jour du mois</string>
+  <string name="priority_label_none">sans priorité</string>
+  <string name="priority_label_low">priorité basse</string>
+  <string name="priority_label_medium">priorité moyenne</string>
+  <string name="priority_label_high">priorité haute</string>
+  <string name="time_estimate_hint">durée estimée (minutes)</string>
+  <string name="color_accent_label">couleur d’accentuation</string>
+  <string name="hex_label">hex</string>
+  <string name="sort_by">trier par</string>
+  <string name="sort_default">par défaut</string>
+  <string name="sort_unmark_first">non terminées en premier</string>
+  <string name="completed_tasks_header">tâches terminées (%d)</string>
+  <string name="all_tags">toutes les étiquettes</string>
+  <string name="eisenhower_matrix">matrice d’Eisenhower</string>
+  <string name="dialog_select_theme">sélectionner un thème</string>
+  <string name="dialog_select_font">sélectionner une police</string>
+  <string name="dialog_select_checkbox_style">style des cases à cocher</string>
+  <string name="checkbox_square">carrées (Material)</string>
+  <string name="checkbox_circular">rondes (moderne)</string>
+  <string name="dialog_select_language">sélectionner une langue</string>
+  <string name="imported_tasks_list_name">tâches importées</string>
+  <string name="tasks_imported_ok">tâches importées avec succès</string>
+  <string name="error_importing_csv">erreur lors de l’importation du fichier CSV</string>
+  <string name="share_task_as_image">partager la tâche sous forme d’image</string>
+  <string name="attach_image">joindre une image</string>
+  <string name="dependency_chain_label">chaîne de dépendances</string>
+  <string name="dependency_chain_desc">les tâches se débloquent dans l’ordre</string>
 </resources>
