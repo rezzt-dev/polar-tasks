@@ -34,6 +34,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### NUEVO
 
+- ampliar el selector de iconos de los formularios de creacion y edicion de listas con opciones para compras, estudios, salud, deporte, viajes, finanzas, ocio, familia y hogar.
 - crear el fichero `changelog.md` para registrar los cambios del proyecto de aqui en adelante.
 
 ### ENGLISH
@@ -54,4 +55,5 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### ADDED
 
+- expand the icon picker in the list creation and editing forms with options for shopping, education, health, fitness, travel, finance, leisure, family, and home.
 - create the `changelog.md` file to record project changes from now on.

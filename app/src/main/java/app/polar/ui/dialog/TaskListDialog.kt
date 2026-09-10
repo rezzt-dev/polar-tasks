@@ -27,7 +27,13 @@ class TaskListDialog(
   private val availableIcons = listOf(
     "ic_list", "ic_folder", "ic_work", "ic_home", "ic_favorite",
     "ic_schedule", "ic_star", "ic_circle", "ic_edit", "ic_location",
-    "ic_image", "ic_share", "ic_sort", "ic_chat", "ic_check_box", "ic_heart"
+    "ic_image", "ic_share", "ic_sort", "ic_chat", "ic_check_box", "ic_heart",
+    "ic_shopping_cart", "ic_school", "ic_menu_book", "ic_fitness_center",
+    "ic_restaurant", "ic_pets", "ic_flight", "ic_directions_car",
+    "ic_account_balance_wallet", "ic_savings", "ic_medical_services", "ic_family_restroom",
+    "ic_music_note", "ic_movie", "ic_sports_esports", "ic_code",
+    "ic_yard", "ic_cleaning_services", "ic_build", "ic_lightbulb",
+    "ic_card_giftcard", "ic_beach_access", "ic_child_care", "ic_flag"
   )
 
   private var selectedIcon = "ic_list"
