@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
       onDelete = ForeignKey.CASCADE
     )
   ],
-  indices = [Index(value = ["uuid"], unique = true)]
+  indices = [Index(value = ["taskId"])]
 )
 data class Subtask(
   @PrimaryKey(autoGenerate = true)
@@ -25,9 +25,5 @@ data class Subtask(
   val completed: Boolean = false,
   @androidx.room.ColumnInfo(name = "dueDate") val dueDate: Long? = null,
   val orderIndex: Int = 0,
-  val createdAt: Long = System.currentTimeMillis(),
-  val uuid: String = java.util.UUID.randomUUID().toString(),
-  val updatedAt: Long = System.currentTimeMillis(),
-  val deletedAt: Long? = null,
-  val dirty: Boolean = true
+  val createdAt: Long = System.currentTimeMillis()
 )

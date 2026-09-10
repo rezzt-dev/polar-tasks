@@ -11,7 +11,7 @@ interface TaskDao {
 
   @Query("SELECT * FROM tasks WHERE listId = :listId AND isDeleted = 0 ORDER BY orderIndex ASC")
   fun getTasksForListFlow(listId: Long): kotlinx.coroutines.flow.Flow<List<Task>>
-  
+
   @Query("SELECT * FROM tasks WHERE isDeleted = 0 ORDER BY createdAt DESC")
   fun getAllTasks(): LiveData<List<Task>>
 
@@ -24,23 +24,12 @@ interface TaskDao {
   @Query("SELECT * FROM tasks WHERE listId = :listId")
   suspend fun getAllTasksForListSnapshot(listId: Long): List<Task>
 
-  @Query("SELECT * FROM tasks WHERE dirty = 1")
-  suspend fun getDirtyTasks(): List<Task>
-
-  @Query("SELECT * FROM tasks WHERE uuid = :uuid LIMIT 1")
-  suspend fun getByUuid(uuid: String): Task?
-
-  // Local-only cache pointer (content:// URI for the downloaded/attached image) — never marks
-  // the row dirty, since imageUri itself never travels to Supabase (see doc 04).
-  @Query("UPDATE tasks SET imageUri = :imageUri WHERE id = :taskId")
-  suspend fun updateImageUriCache(taskId: Long, imageUri: String)
-
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insert(task: Task): Long
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertAll(tasks: List<Task>)
-  
+
   @Update
   suspend fun update(task: Task)
 
@@ -50,77 +39,50 @@ interface TaskDao {
   @Query("DELETE FROM tasks")
   suspend fun deleteAll()
 
-  // Physical delete only proceeds when the tombstone (and any subtask tombstone) already made it
-  // to Supabase (dirty = 0) — otherwise it disappears locally without the server ever finding out,
-  // and the next pull resurrects it (agent-docs/analisis-implementacion-supabase-sync.md, 3.1/3.2).
-  // The NOT EXISTS guard also stops Room's ON DELETE CASCADE from silently wiping out subtasks
-  // that still have unsynced changes.
-  @Query("""
-    DELETE FROM tasks
-    WHERE id = :taskId
-      AND dirty = 0
-      AND NOT EXISTS (SELECT 1 FROM subtasks WHERE subtasks.taskId = tasks.id AND subtasks.dirty = 1)
-  """)
-  suspend fun permanentDelete(taskId: Long): Int
+  @Query("UPDATE tasks SET isDeleted = 1 WHERE id = :taskId")
+  suspend fun softDelete(taskId: Long)
 
-  // Purga fisica sin el guardia de sincronizacion (dirty). Solo debe usarse cuando NO hay
-  // cuenta vinculada: sin servidor al que notificar el tombstone, el guardia dejaria la
-  // tarea atascada en la papelera para siempre. El CASCADE de Room limpia sus subtareas.
+  @Query("UPDATE tasks SET isDeleted = 0 WHERE id = :taskId")
+  suspend fun restore(taskId: Long)
+
+  // El ON DELETE CASCADE de la clave foránea elimina también sus subtareas.
   @Query("DELETE FROM tasks WHERE id = :taskId")
-  suspend fun forcePermanentDelete(taskId: Long): Int
+  suspend fun permanentDelete(taskId: Long)
 
-  @Query("""
-    DELETE FROM tasks
-    WHERE isDeleted = 1
-      AND dirty = 0
-      AND NOT EXISTS (SELECT 1 FROM subtasks WHERE subtasks.taskId = tasks.id AND subtasks.dirty = 1)
-  """)
-  suspend fun emptyTrash(): Int
-
-  // Vacia la papelera sin el guardia de sincronizacion (dirty). Ver forcePermanentDelete.
   @Query("DELETE FROM tasks WHERE isDeleted = 1")
-  suspend fun forceEmptyTrash(): Int
-
-  @Query("SELECT COUNT(*) FROM tasks WHERE isDeleted = 1")
-  suspend fun getTrashCount(): Int
-
-  // Trashed tasks whose tombstone already made it to Supabase — candidates to check against the
-  // server for a physical purge (see SyncManager.purgeTombstonesMissingRemote,
-  // agent-docs/analisis-implementacion-supabase-sync.md, hallazgo 4.5).
-  @Query("SELECT * FROM tasks WHERE isDeleted = 1 AND dirty = 0")
-  suspend fun getConfirmedTrashedTasksSnapshot(): List<Task>
+  suspend fun emptyTrash()
 
   @Query("SELECT * FROM tasks WHERE isDeleted = 1 ORDER BY createdAt DESC")
   fun getDeletedTasks(): LiveData<List<Task>>
-  
+
   @Query("SELECT * FROM tasks WHERE id = :id")
   suspend fun getTaskById(id: Long): Task?
-  
+
   @Query("""
-    SELECT * FROM tasks 
-    WHERE (title LIKE '%' || :query || '%' 
+    SELECT * FROM tasks
+    WHERE (title LIKE '%' || :query || '%'
     OR description LIKE '%' || :query || '%'
     OR tags LIKE '%' || :query || '%')
     AND isDeleted = 0
     ORDER BY createdAt DESC
   """)
   fun searchTasks(query: String): LiveData<List<Task>>
-  
+
   @Query("SELECT * FROM tasks WHERE dueDate BETWEEN :start AND :end AND isDeleted = 0")
   suspend fun getTasksBetweenDates(start: Long, end: Long): List<Task>
-  
+
   @Query("SELECT * FROM tasks WHERE dueDate BETWEEN :start AND :end AND isDeleted = 0 ORDER BY dueDate ASC")
   fun getTasksForDateLive(start: Long, end: Long): LiveData<List<Task>>
 
   @Query("""
-    SELECT 
-        tasks.*, 
+    SELECT
+        tasks.*,
         task_lists.title as listTitle,
         task_lists.isDependencyChain as isDependencyChain,
         (SELECT COUNT(*) FROM subtasks WHERE taskId = tasks.id) as totalSubtasks,
         (SELECT COUNT(*) FROM subtasks WHERE taskId = tasks.id AND completed = 1) as completedSubtasks
-    FROM tasks 
-    LEFT JOIN task_lists ON tasks.listId = task_lists.id 
+    FROM tasks
+    LEFT JOIN task_lists ON tasks.listId = task_lists.id
     WHERE tasks.isDeleted = 0
     ORDER BY task_lists.homeOrderIndex ASC, tasks.orderIndex ASC
   """)

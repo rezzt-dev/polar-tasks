@@ -5,7 +5,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Task
-import app.polar.data.sync.touched
 import app.polar.receiver.AlarmReceiver
 import android.content.Intent
 import android.app.PendingIntent
@@ -49,7 +48,11 @@ class RecurrenceWorker(
             // If *next* due date <= Now, then RESET.
             
             val tasks = taskDao.getAllTasksSnapshot() // Use snapshot or a specific query
-            val recurringCompletedTasks = tasks.filter { it.completed && it.recurrence != "NONE" && it.dueDate != null }
+            // Trashed tasks are left alone: resetting them would schedule alarms for a task the
+            // user already deleted. They recur again from their due date once restored.
+            val recurringCompletedTasks = tasks.filter {
+                it.completed && !it.isDeleted && it.recurrence != "NONE" && it.dueDate != null
+            }
             
             val now = System.currentTimeMillis()
             
@@ -58,17 +61,14 @@ class RecurrenceWorker(
                 
                 // If the next occurrence has arrived (or we are present in it)
                 if (nextDueDate <= now) {
-                    // Reset the task. Touched so the sync layer picks up this system-driven
-                    // change (see agent-docs/supabase-sync/04-estrategia-sincronizacion.md,
-                    // "Flujo de escritura local" — RecurrenceWorker must mark dirty/updatedAt
-                    // just like a user-initiated edit).
+                    // Reset the task and its subtasks for the new occurrence
                     val updatedTask = task.copy(
                         completed = false,
                         dueDate = nextDueDate
-                    ).touched()
+                    )
                     taskDao.update(updatedTask)
 
-                    subtaskDao.resetSubtasksForTask(task.id, updatedTask.updatedAt)
+                    subtaskDao.resetSubtasksForTask(task.id)
 
                     // Schedule alarm for the NEW due date
                     alarmHelper.scheduleTaskAlarm(task.id, nextDueDate)

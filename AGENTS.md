@@ -12,7 +12,7 @@
 - **Idioma principal del código y documentación técnica:** Español (docs técnicos), con código Kotlin y comentarios mixtos (español/inglés).
 - **Arquitectura:** MVVM + Clean Architecture pragmática.
 - **Persistencia:** Offline-first mediante Room Database (SQLite).
-- **Sin conectividad de red:** La app no consume APIs externas; toda la lógica es local.
+- **100 % offline:** La app no requiere cuenta, no consume APIs externas ni declara el permiso `INTERNET`; toda la lógica y los datos son locales.
 
 ---
 
@@ -48,7 +48,7 @@ app/src/main/java/app/polar/
 ├── PolarApplication.kt             # Application con @HiltAndroidApp
 │
 ├── data/                           # Capa de Datos (Data Layer)
-│   ├── AppDatabase.kt              # Room Database (v14) con migraciones manuales
+│   ├── AppDatabase.kt              # Room Database (v18) con migraciones manuales
 │   ├── dao/                        # Data Access Objects (Room)
 │   ├── entity/                     # Entidades (@Entity): Task, TaskList, Subtask, Reminder
 │   ├── model/                      # Modelos de dominio/datos auxiliares (TaskGroup, TaskWithList)
@@ -88,6 +88,7 @@ app/src/main/java/app/polar/
     ├── AlarmManagerHelper.kt       # Programación/cancelación de alarmas exactas
     ├── NotificationHelper.kt       # Canales y notificaciones
     ├── ThemeManager.kt             # Temas dinámicos, fuentes y localización
+    ├── LegacyCloudDataCleaner.kt   # Limpieza única de los restos de la sincronización de la v1.6
     ├── DateUtils.kt                # Helpers de fecha/calendario
     ├── DragDropHelper.kt           # Soporte drag-and-drop en RecyclerViews
     └── TaskSwipeHelper.kt          # Swipe bidireccional reutilizable para RecyclerViews
@@ -188,14 +189,14 @@ propios como `polar`, `material` o `eisenhower`).
 ### Características del esquema
 
 - `Task` tiene una Foreign Key a `TaskList` con `onDelete = CASCADE`.
-- Soft-delete: los campos `isDeleted` en `Task` y `Reminder` marcan elementos en papelera en lugar de borrarlos físicamente.
+- Soft-delete: los campos `isDeleted` en `Task` y `Reminder` marcan elementos en papelera en lugar de borrarlos físicamente. Las listas y las subtareas se borran de forma física (`ON DELETE CASCADE`); al vaciar la papelera, las tareas se eliminan junto a sus subtareas.
 - Tags se almacenan como cadena separada por comas en `Task.tags`.
 - Recurrencia: campo `recurrence` con valores `"NONE"`, `"DAILY"`, `"WEEKLY"`, `"MONTHLY"`.
 - Prioridad: entero `0=None, 1=Low, 2=Medium, 3=High`.
 
 ### Migraciones
 
-`AppDatabase` define migraciones manuales de la 6→7 hasta la 13→14. La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
+`AppDatabase` define migraciones manuales de la 6→7 hasta la 17→18. Las 14→17 (v1.6) añadieron columnas de sincronización en la nube (`uuid`, `updatedAt`, `deletedAt`, `dirty`, `imagePath`); la 17→18 las elimina al volver a un modelo 100 % local, recreando las tablas, aplicando los borrados lógicos pendientes y conservando el contador de `AUTOINCREMENT`. La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
 
 > Si alteras el esquema, **aumenta la versión** y proporciona una `Migration` explícita. No confíes únicamente en `fallbackToDestructiveMigration`.
 
@@ -261,7 +262,9 @@ Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXA
 La suite de tests unitarios es pequeña pero representativa:
 
 - `TaskViewModelTest` — Verifica que el ViewModel delega correctamente al UseCase y al Repository, y que la programación/cancelación de alarmas ocurre en los estados esperados.
-- `TaskRepositoryTest` — Verifica que el Repository expone flujos de DAO y traduce operaciones CRUD.
+- `TaskRepositoryTest` — Verifica que el Repository expone flujos de DAO y traduce operaciones CRUD (papelera, borrado de listas y reemplazo diferencial de subtareas).
+- `ReminderRepositoryTest` — Verifica las operaciones de papelera de recordatorios.
+- `ReminderPresentationTest` — Filtrado y agrupación de recordatorios por día.
 - `SmartParserTest` — Tests del parser NLP para extracción de fechas/tiempos de texto natural.
 - `MainDispatcherRule` — Regla de JUnit para reemplazar el dispatcher principal en tests de corrutinas.
 
@@ -270,6 +273,7 @@ La suite de tests unitarios es pequeña pero representativa:
 ### Tests Instrumentados (`app/src/androidTest/`)
 
 - `ExampleInstrumentedTest` — Test básico de contexto de la app.
+- `MigrationTest` — Ejecuta las migraciones 17→18 y 14→18 con `MigrationTestHelper` sobre los esquemas exportados en `app/schemas`.
 
 ### Convenciones para nuevos tests
 
@@ -282,7 +286,7 @@ La suite de tests unitarios es pequeña pero representativa:
 
 ## 9. Consideraciones de Seguridad
 
-- **Sin permisos de red:** La app no declara `INTERNET`. Es completamente offline.
+- **Sin permisos de red:** La app no declara `INTERNET`. Es completamente offline: no hay cuentas, sincronización ni SDKs de terceros que envíen datos fuera del dispositivo. `ACCESS_NETWORK_STATE`, `WAKE_LOCK` y `FOREGROUND_SERVICE` aparecen en el manifiesto final solo porque los declara WorkManager; ninguno da acceso a la red.
 - **Almacenamiento externo limitado:** Solo lectura de imágenes (`READ_MEDIA_IMAGES`, `READ_EXTERNAL_STORAGE` hasta API 32). Usa `FileProvider` para compartir archivos de backup de forma segura.
 - **Alarmas exactas:** Requiere `SCHEDULE_EXACT_ALARM` y `USE_EXACT_ALARM`. En Android 12+ (API 31), el sistema puede restringir el uso; la app debe manejar la posibilidad de que el permiso sea revocado por el usuario.
 - **Backup:** Habilitado (`android:allowBackup="true"`) con reglas de extracción declaradas en `data_extraction_rules.xml` y `backup_rules.xml`.
@@ -440,6 +444,7 @@ flujo:
 ## 11. Notas para Agentes de IA
 
 - **Idioma preferido para explicaciones técnicas:** Español (coincide con la documentación técnica del proyecto).
+- **App 100 % offline:** no añadas el permiso `INTERNET`, SDKs de red o de nube (Supabase, Firebase, Ktor, Retrofit…) ni flujos de cuenta; todos los datos viven en Room, en el propio dispositivo.
 - **Al redactar cualquier commit:** aplica las reglas de la sección "Redacción de commits" (10) antes de proponer título o descripción. <!-- formato centralizado para que el historial quede limpio y profesional, más cómodo de leer para usuarios y desarrolladores. -->
 - **Al registrar cambios en `changelog.md`:** sigue el formato de la sección "Formato de las secciones de `changelog.md`" (10): minúsculas sin acentos, títulos en mayúsculas sin acentos, contenido bilingüe (castellano e inglés).
 - **Al modificar `AGENTS.md`:** replica el cambio equivalente en `CLAUDE.md` (y viceversa) para que ambos ficheros no diverjan.

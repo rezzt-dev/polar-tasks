@@ -62,7 +62,7 @@
 - **advanced tagging**: color-coded tags for quick visual filtering and priority setting.
 - **calendar integration**: seamless switch between list view and monthly calendar view.
 - **universal search**: instantly find tasks, lists, or tags with a powerful local search.
-- **offline first**: complete functionality without an internet connection using local persistence.
+- **100% offline**: no account, no cloud and no internet permission — every list, task and reminder lives only on your device.
 
 ### technical highlights
 - **mvvm architecture**: clear separation of concerns for maintainable code.

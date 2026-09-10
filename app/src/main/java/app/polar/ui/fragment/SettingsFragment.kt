@@ -8,21 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import app.polar.R
 import app.polar.databinding.FragmentSettingsBinding
-import app.polar.ui.activity.AuthActivity
 import app.polar.util.ThemeManager
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class SettingsFragment : Fragment() {
   private var _binding: FragmentSettingsBinding? = null
   private val binding get() = _binding!!
@@ -36,10 +28,8 @@ class SettingsFragment : Fragment() {
   private fun sections() = mapOf(
     "appearance" to SettingsSection(binding.settingsAppearance, R.string.settings_appearance, R.string.settings_appearance_desc),
     "notifications" to SettingsSection(binding.settingsNotifications, R.string.settings_notifications, R.string.settings_notifications_desc),
-    "account" to SettingsSection(binding.settingsAccount, R.string.settings_account, R.string.settings_account_desc),
     "data" to SettingsSection(binding.settingsData, R.string.settings_data, R.string.settings_data_desc),
-    "help" to SettingsSection(binding.settingsHelp, R.string.settings_help, R.string.settings_help_desc),
-    "advanced" to SettingsSection(binding.settingsAdvanced, R.string.settings_advanced, R.string.settings_advanced_desc)
+    "help" to SettingsSection(binding.settingsHelp, R.string.settings_help, R.string.settings_help_desc)
   )
 
   private fun setupNavigation(savedInstanceState: Bundle?) {
@@ -47,10 +37,8 @@ class SettingsFragment : Fragment() {
     mapOf(
       binding.btnCategoryAppearance to "appearance",
       binding.btnCategoryNotifications to "notifications",
-      binding.btnCategoryAccount to "account",
       binding.btnCategoryData to "data",
-      binding.btnCategoryHelp to "help",
-      binding.btnCategoryAdvanced to "advanced"
+      binding.btnCategoryHelp to "help"
     ).forEach { (button, section) ->
       button.setOnClickListener {
         if (currentSection == "overview") overviewScrollY = binding.settingsScroll.scrollY
@@ -70,7 +58,6 @@ class SettingsFragment : Fragment() {
     }
     binding.settingsOverview.visibility = if (selected == null) View.VISIBLE else View.GONE
     binding.btnSettingsBack.visibility = if (selected == null) View.GONE else View.VISIBLE
-    binding.btnSettingsBack.setText(if (currentSection == "advanced") R.string.settings_account else R.string.settings_back)
     binding.tvSettingsTitle.setText(selected?.title ?: R.string.settings_intro)
     binding.tvSettingsDescription.setText(selected?.description ?: R.string.settings_intro_desc)
     androidx.core.view.ViewCompat.setAccessibilityPaneTitle(binding.root, binding.tvSettingsTitle.text)
@@ -86,7 +73,7 @@ class SettingsFragment : Fragment() {
   /** Returns to the parent category before MainActivity leaves settings. */
   fun navigateBack(): Boolean {
     if (currentSection == "overview") return false
-    showSection(if (currentSection == "advanced") "account" else "overview")
+    showSection("overview")
     return true
   }
 
@@ -95,10 +82,6 @@ class SettingsFragment : Fragment() {
     outState.putString("settings_section", currentSection)
     outState.putInt("settings_overview_scroll", overviewScrollY)
   }
-
-  @Inject lateinit var supabaseClient: SupabaseClient
-  @Inject lateinit var syncManager: app.polar.data.sync.SyncManager
-  @Inject lateinit var syncPrefs: app.polar.data.sync.SyncPrefs
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -116,8 +99,6 @@ class SettingsFragment : Fragment() {
 
     androidx.core.view.ViewCompat.setAccessibilityHeading(binding.tvSettingsTitle, true)
     setupNavigation(savedInstanceState)
-    setupAccountSettings()
-    setupSyncStatus()
     setupThemeSelection()
     setupFontSelection()
     setupCheckboxStyle()
@@ -125,170 +106,6 @@ class SettingsFragment : Fragment() {
     setupNotificationSettings()
     setupBackupSettings()
     setupLanguageSelection()
-    observeAccountStatus()
-    observeSyncStatus()
-  }
-
-  // Reacts to sign-in/sign-out/session expiration as they happen instead of only re-reading the
-  // status when this fragment happens to resume (agent-docs/analisis-implementacion-supabase-
-  // sync.md, hallazgo 4.11).
-  private fun observeAccountStatus() {
-    viewLifecycleOwner.lifecycleScope.launch {
-      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        supabaseClient.auth.sessionStatus.collect {
-          updateAccountStatus()
-        }
-      }
-    }
-  }
-
-  private fun updateAccountStatus() {
-    val email = supabaseClient.auth.currentUserOrNull()?.email
-    binding.tvAccountStatus.text = if (email != null) {
-      getString(R.string.account_signed_in_as, email)
-    } else {
-      getString(R.string.account_not_signed_in)
-    }
-  }
-
-  private fun setupAccountSettings() {
-    updateAccountStatus()
-    binding.btnAccount.setOnClickListener {
-      startActivity(Intent(requireContext(), AuthActivity::class.java))
-    }
-    binding.btnCloudFullOverwrite.setOnClickListener {
-      onCloudFullOverwriteClicked()
-    }
-  }
-
-  private fun onCloudFullOverwriteClicked() {
-    if (supabaseClient.auth.currentUserOrNull() == null) {
-      Snackbar.make(binding.root, getString(R.string.cloud_full_overwrite_requires_sign_in), Snackbar.LENGTH_SHORT).show()
-      return
-    }
-    MaterialAlertDialogBuilder(requireContext())
-      .setIcon(R.drawable.ic_stat_error)
-      .setTitle(getString(R.string.cloud_full_overwrite_warning_title))
-      .setMessage(getString(R.string.cloud_full_overwrite_warning_message))
-      .setPositiveButton(getString(R.string.cloud_full_overwrite_confirm)) { dialog, _ ->
-        dialog.dismiss()
-        performCloudFullOverwrite()
-      }
-      .setNegativeButton(getString(R.string.cancel), null)
-      .show()
-  }
-
-  private fun performCloudFullOverwrite() {
-    val progressSnackbar = Snackbar.make(binding.root, getString(R.string.cloud_full_overwrite_in_progress), Snackbar.LENGTH_INDEFINITE)
-    progressSnackbar.show()
-    viewLifecycleOwner.lifecycleScope.launch {
-      val result = syncManager.pushAllOverwrite()
-      progressSnackbar.dismiss()
-      if (result.isSuccess) {
-        Snackbar.make(binding.root, getString(R.string.cloud_full_overwrite_success), Snackbar.LENGTH_LONG).show()
-      } else {
-        val detail = result.exceptionOrNull()?.message
-        val message = if (detail.isNullOrBlank()) {
-          getString(R.string.cloud_full_overwrite_error)
-        } else {
-          getString(R.string.cloud_full_overwrite_error) + ": " + detail
-        }
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-      }
-    }
-  }
-
-  // Non-destructive "sincronizar ahora" + last-sync status row (hallazgo 4.9), and the dismiss
-  // action for the lost-conflicts warning (hallazgo 4.3).
-  private fun setupSyncStatus() {
-    binding.btnSyncNow.setOnClickListener { onSyncNowClicked() }
-    binding.btnDismissSyncConflictWarning.setOnClickListener {
-      syncPrefs.lostConflictsCount = 0
-    }
-    binding.btnCloudFullDownload.setOnClickListener { onCloudFullDownloadClicked() }
-  }
-
-  private fun onSyncNowClicked() {
-    if (supabaseClient.auth.currentUserOrNull() == null) {
-      Snackbar.make(binding.root, getString(R.string.sync_requires_sign_in), Snackbar.LENGTH_SHORT).show()
-      return
-    }
-    Snackbar.make(binding.root, getString(R.string.sync_status_syncing), Snackbar.LENGTH_SHORT).show()
-    app.polar.worker.SyncWorker.triggerImmediateSync(requireContext())
-  }
-
-  // Reacts to SyncPrefs writes — from this fragment's own "sincronizar ahora" tap or from the
-  // background SyncWorker finishing a cycle — the same reactive pattern already used for
-  // supabaseClient.auth.sessionStatus in observeAccountStatus() (hallazgo 4.11), instead of only
-  // refreshing on a fixed schedule.
-  private fun observeSyncStatus() {
-    viewLifecycleOwner.lifecycleScope.launch {
-      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        syncPrefs.changes().collect {
-          updateSyncStatus()
-        }
-      }
-    }
-  }
-
-  private fun updateSyncStatus() {
-    val error = syncPrefs.lastSyncError
-    val lastSuccess = syncPrefs.lastSyncSuccessAt
-    binding.tvSyncStatus.text = when {
-      error != null -> getString(R.string.sync_status_error, error)
-      lastSuccess == 0L -> getString(R.string.sync_status_never)
-      else -> {
-        val relative = android.text.format.DateUtils.getRelativeTimeSpanString(
-          lastSuccess,
-          System.currentTimeMillis(),
-          android.text.format.DateUtils.MINUTE_IN_MILLIS
-        )
-        getString(R.string.sync_status_last_success, relative)
-      }
-    }
-
-    val lostConflicts = syncPrefs.lostConflictsCount
-    binding.layoutSyncConflictWarning.visibility = if (lostConflicts > 0) View.VISIBLE else View.GONE
-    if (lostConflicts > 0) {
-      binding.tvSyncConflictWarning.text = getString(R.string.sync_conflicts_lost_message, lostConflicts)
-    }
-  }
-
-  private fun onCloudFullDownloadClicked() {
-    if (supabaseClient.auth.currentUserOrNull() == null) {
-      Snackbar.make(binding.root, getString(R.string.cloud_full_download_requires_sign_in), Snackbar.LENGTH_SHORT).show()
-      return
-    }
-    MaterialAlertDialogBuilder(requireContext())
-      .setIcon(R.drawable.ic_stat_error)
-      .setTitle(getString(R.string.cloud_full_download_warning_title))
-      .setMessage(getString(R.string.cloud_full_download_warning_message))
-      .setPositiveButton(getString(R.string.cloud_full_download_confirm)) { dialog, _ ->
-        dialog.dismiss()
-        performCloudFullDownload()
-      }
-      .setNegativeButton(getString(R.string.cancel), null)
-      .show()
-  }
-
-  private fun performCloudFullDownload() {
-    val progressSnackbar = Snackbar.make(binding.root, getString(R.string.cloud_full_download_in_progress), Snackbar.LENGTH_INDEFINITE)
-    progressSnackbar.show()
-    viewLifecycleOwner.lifecycleScope.launch {
-      val result = syncManager.pullAllOverwrite()
-      progressSnackbar.dismiss()
-      if (result.isSuccess) {
-        Snackbar.make(binding.root, getString(R.string.cloud_full_download_success), Snackbar.LENGTH_LONG).show()
-      } else {
-        val detail = result.exceptionOrNull()?.message
-        val message = if (detail.isNullOrBlank()) {
-          getString(R.string.cloud_full_download_error)
-        } else {
-          getString(R.string.cloud_full_download_error) + ": " + detail
-        }
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-      }
-    }
   }
 
   private fun setupThemeSelection() {

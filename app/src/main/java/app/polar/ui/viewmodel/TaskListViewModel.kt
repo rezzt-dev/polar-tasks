@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import app.polar.data.AppDatabase
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
-import app.polar.data.sync.touched
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,13 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     application: Application,
-    private val repository: TaskRepository
+    private val repository: TaskRepository,
+    private val alarmHelper: app.polar.util.AlarmManagerHelper
 ) : AndroidViewModel(application) {
   val allTaskLists: LiveData<List<TaskList>> = repository.allTaskLists
-  
+
   private val _selectedListId = MutableLiveData<Long?>()
   val selectedListId: LiveData<Long?> = _selectedListId
-  
+
   private val _errorMessage = MutableStateFlow<String?>(null)
   val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
@@ -35,27 +35,28 @@ class TaskListViewModel @Inject constructor(
   private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
       try {
           block()
-          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
           _errorMessage.value = "Error: ${e.message}"
       }
   }
-  
+
   fun selectList(listId: Long?) {
     _selectedListId.value = listId
   }
-  
+
   fun insertTaskList(title: String, icon: String = "ic_list", isDependencyChain: Boolean = false, color: String = "#7F52FF") = safeLaunch {
     val taskList = TaskList(title = title, icon = icon, isDependencyChain = isDependencyChain, color = color)
     repository.insertTaskList(taskList)
   }
-  
+
   fun updateTaskList(taskList: TaskList) = safeLaunch {
-    repository.updateTaskList(taskList.touched())
+    repository.updateTaskList(taskList)
   }
-  
+
   fun deleteTaskList(taskList: TaskList) = safeLaunch {
     repository.deleteTaskList(taskList)
+      .filter { it.dueDate != null }
+      .forEach { alarmHelper.cancelTaskAlarm(it.id) }
   }
 }

@@ -148,6 +148,9 @@ flujo:
 ## Notas rápidas
 
 - **Idioma para explicaciones técnicas:** Español.
+- **App 100 % offline:** no añadas el permiso `INTERNET`, SDKs de red o de nube
+  (Supabase, Firebase, Ktor, Retrofit…) ni flujos de cuenta; todos los datos
+  viven en Room, en el propio dispositivo.
 - **Interfaz siempre en minúsculas:** todos los textos de UI de la aplicación
   van **en minúsculas y en todos los idiomas** (incluido alemán, y nombres
   propios como `polar`, `material` o `eisenhower`). Aplica a los recursos de

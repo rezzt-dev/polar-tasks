@@ -7,9 +7,6 @@ import app.polar.data.dao.TaskListDao
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
-import app.polar.data.sync.touched
-import app.polar.data.sync.touchedDeleted
-import app.polar.data.sync.touchedRestored
 
 import javax.inject.Inject
 
@@ -20,15 +17,15 @@ class TaskRepository @Inject constructor(
 ) {
   // TaskList operations
   val allTaskLists: LiveData<List<TaskList>> = taskListDao.getAllLists()
-  
+
   suspend fun getTaskListsSnapshot(): List<TaskList> {
       return taskListDao.getAllTaskListsSnapshot()
   }
-  
+
   suspend fun insertTaskList(taskList: TaskList): Long {
     return taskListDao.insert(taskList)
   }
-  
+
   suspend fun updateTaskList(taskList: TaskList) {
     taskListDao.update(taskList)
   }
@@ -36,28 +33,19 @@ class TaskRepository @Inject constructor(
   suspend fun updateTaskLists(taskLists: List<TaskList>) {
     taskListDao.updateAll(taskLists)
   }
-  
-  // Lists have no physical delete under sync: a deleted list, and every task/subtask that
-  // hangs off it, must be soft-deleted so the tombstone can propagate to Supabase and the
-  // other app (see agent-docs/supabase-sync/04-estrategia-sincronizacion.md, "Manejo de
-  // borrado en cascada"). Room's ON DELETE CASCADE never fires here since we no longer issue
-  // a physical DELETE.
-  suspend fun deleteTaskList(taskList: TaskList) {
-    taskListDao.update(taskList.touchedDeleted())
-    taskDao.getAllTasksForListSnapshot(taskList.id)
-      .filter { !it.isDeleted }
-      .forEach { task ->
-        taskDao.update(task.touchedDeleted())
-        subtaskDao.getSubtasksForTaskDirect(task.id).forEach { subtask ->
-          subtaskDao.update(subtask.touchedDeleted())
-        }
-      }
+
+  // Borra la lista junto a todas sus tareas y subtareas (ON DELETE CASCADE). Devuelve las
+  // tareas que se han eliminado para que quien llama pueda cancelar sus alarmas.
+  suspend fun deleteTaskList(taskList: TaskList): List<Task> {
+    val tasks = taskDao.getAllTasksForListSnapshot(taskList.id)
+    taskListDao.delete(taskList)
+    return tasks
   }
-  
+
   suspend fun getTaskListById(id: Long): TaskList? {
     return taskListDao.getListById(id)
   }
-  
+
   // Task operations
   fun getTasksForList(listId: Long): LiveData<List<Task>> {
     return taskDao.getTasksForList(listId)
@@ -66,7 +54,7 @@ class TaskRepository @Inject constructor(
   fun getTasksForListFlow(listId: Long): kotlinx.coroutines.flow.Flow<List<Task>> {
     return taskDao.getTasksForListFlow(listId)
   }
-  
+
   fun getAllTasks(): LiveData<List<Task>> {
     return taskDao.getAllTasks()
   }
@@ -74,11 +62,11 @@ class TaskRepository @Inject constructor(
   fun getAllTasksFlow(): kotlinx.coroutines.flow.Flow<List<Task>> {
     return taskDao.getAllTasksFlow()
   }
-  
+
   suspend fun insertTask(task: Task): Long {
     return taskDao.insert(task)
   }
-  
+
   suspend fun updateTask(task: Task) {
     taskDao.update(task)
   }
@@ -86,15 +74,11 @@ class TaskRepository @Inject constructor(
   suspend fun updateTasks(tasks: List<Task>) {
     taskDao.updateAll(tasks)
   }
-  
+
   suspend fun getTaskById(taskId: Long): Task? {
     return taskDao.getTaskById(taskId)
   }
 
-  suspend fun cacheTaskImageUri(taskId: Long, imageUri: String) {
-    taskDao.updateImageUriCache(taskId, imageUri)
-  }
-  
   fun searchTasks(query: String): LiveData<List<Task>> {
     return taskDao.searchTasks(query)
   }
@@ -110,36 +94,36 @@ class TaskRepository @Inject constructor(
   fun getTasksWithListTitles(): LiveData<List<app.polar.data.model.TaskWithList>> {
       return taskDao.getTasksWithListTitles()
   }
-  
+
   // Subtask operations
   fun getSubtasksForTask(taskId: Long): LiveData<List<Subtask>> {
     return subtaskDao.getSubtasksForTask(taskId)
   }
-  
+
   suspend fun getSubtasksForTaskDirect(taskId: Long): List<Subtask> {
     return subtaskDao.getSubtasksForTaskDirect(taskId)
   }
-  
+
   suspend fun insertSubtask(subtask: Subtask): Long {
     return subtaskDao.insert(subtask)
   }
-  
+
   suspend fun updateSubtask(subtask: Subtask) {
     subtaskDao.update(subtask)
   }
-  
-  // Diffs the edited subtask list against what's stored instead of deleting everything and
-  // reinserting it, so an edit that doesn't touch a given subtask never generates a spurious
-  // tombstone + insert pair for it once sync is active (see agent-docs/supabase-sync/
-  // 06-plan-implementacion-android.md, punto 3 "Refactor obligatorio").
+
+  suspend fun deleteSubtask(subtask: Subtask) {
+    subtaskDao.delete(subtask)
+  }
+
+  // Compara la lista editada con lo guardado en vez de borrar y reinsertar todas las
+  // subtareas: solo se escriben las que cambian, conservando ids y fechas de creación.
   //
-  // `newSubtasks` is a snapshot the edit dialog took when it opened, held in memory for as long
-  // as the dialog stays open — a remote sync/Realtime change to `completed` that lands while the
-  // dialog is still open would otherwise be invisible to that snapshot, and saving would silently
-  // overwrite the fresh DB value back to the stale one. `touchedCompletedIds` scopes the
-  // `completed` diff to only the subtasks the user actually flipped the checkbox on *in this
-  // dialog session*; every other existing subtask keeps whatever `completed` is currently in the
-  // DB (`current`, fetched fresh above) regardless of what the stale snapshot says.
+  // `newSubtasks` es una foto que el diálogo de edición tomó al abrirse. Si mientras sigue
+  // abierto cambia el estado `completed` de alguna subtarea por otra vía (por ejemplo, al
+  // completar la tarea desde una notificación), guardar no debe devolverla al valor antiguo:
+  // `touchedCompletedIds` limita ese campo a las subtareas cuyo checkbox tocó el usuario en esta
+  // sesión del diálogo; el resto conserva el valor actual de la base de datos.
   suspend fun replaceSubtasksForTask(
     taskId: Long,
     newSubtasks: List<Subtask>,
@@ -149,12 +133,12 @@ class TaskRepository @Inject constructor(
     val existingById = existing.associateBy { it.id }
     val incomingIds = newSubtasks.filter { it.id != 0L }.map { it.id }.toSet()
 
-    existing.filter { it.id !in incomingIds }.forEach { subtaskDao.update(it.touchedDeleted()) }
+    existing.filter { it.id !in incomingIds }.forEach { subtaskDao.delete(it) }
 
     newSubtasks.forEachIndexed { index, incoming ->
       val current = existingById[incoming.id]
       if (current == null) {
-        subtaskDao.insert(incoming.copy(id = 0, taskId = taskId, orderIndex = index).touched())
+        subtaskDao.insert(incoming.copy(id = 0, taskId = taskId, orderIndex = index))
       } else {
         val completed = if (incoming.id in touchedCompletedIds) incoming.completed else current.completed
         if (
@@ -169,7 +153,7 @@ class TaskRepository @Inject constructor(
               completed = completed,
               dueDate = incoming.dueDate,
               orderIndex = index
-            ).touched()
+            )
           )
         }
       }
@@ -177,46 +161,28 @@ class TaskRepository @Inject constructor(
   }
 
   suspend fun completeSubtasksForTask(taskId: Long) {
-    subtaskDao.completeSubtasksForTask(taskId, System.currentTimeMillis())
+    subtaskDao.completeSubtasksForTask(taskId)
   }
 
   suspend fun resetSubtasksForTask(taskId: Long) {
-    subtaskDao.resetSubtasksForTask(taskId, System.currentTimeMillis())
+    subtaskDao.resetSubtasksForTask(taskId)
   }
 
   // Trash operations
-
-  // Cascades the tombstone to every active subtask, mirroring deleteTaskList()'s cascade to
-  // tasks/subtasks — otherwise a task's subtasks stay "active" while the task itself sits in the
-  // trash, which is exactly the state that made 3.2 (orphaned subtasks resurrecting after purge)
-  // easy to hit.
   suspend fun softDeleteTask(task: Task) {
-      taskDao.update(task.touchedDeleted())
-      subtaskDao.getSubtasksForTaskDirect(task.id).forEach { subtask ->
-          subtaskDao.update(subtask.touchedDeleted())
-      }
+      taskDao.softDelete(task.id)
   }
 
   suspend fun restoreTask(task: Task) {
-      taskDao.update(task.touchedRestored())
+      taskDao.restore(task.id)
   }
 
-  // Returns whether the row was actually purged. It can come back false if the tombstone (or one
-  // of its subtasks') hasn't reached Supabase yet — see TaskDao.permanentDelete.
-  suspend fun permanentDeleteTask(taskId: Long, force: Boolean = false): Boolean {
-      return if (force) {
-          taskDao.forcePermanentDelete(taskId) > 0
-      } else {
-          taskDao.permanentDelete(taskId) > 0
-      }
+  suspend fun permanentDeleteTask(taskId: Long) {
+      taskDao.permanentDelete(taskId)
   }
 
-  // Returns how many trashed tasks are still stuck after the purge attempt (unsynced tombstone,
-  // or an unsynced subtask blocking the cascade) so the caller can warn the user instead of
-  // silently leaving them in the trash forever.
-  suspend fun emptyTrash(force: Boolean = false): Int {
-      if (force) taskDao.forceEmptyTrash() else taskDao.emptyTrash()
-      return taskDao.getTrashCount()
+  suspend fun emptyTrash() {
+      taskDao.emptyTrash()
   }
 
   fun getDeletedTasks(): LiveData<List<Task>> {

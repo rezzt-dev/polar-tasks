@@ -7,16 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
-import app.polar.R
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
-import app.polar.data.sync.TaskImageStorage
-import app.polar.data.sync.touched
-import app.polar.data.sync.touchedDeleted
-import app.polar.data.sync.touchedRestored
 import app.polar.domain.usecase.GetFilteredTasksUseCase
 import app.polar.domain.model.SortMode
 import kotlinx.coroutines.launch
@@ -38,16 +33,14 @@ class TaskViewModel @Inject constructor(
     application: Application,
     internal val repository: TaskRepository,
     private val alarmHelper: app.polar.util.AlarmManagerHelper,
-    private val taskImageStorage: TaskImageStorage,
-    private val getFilteredTasksUseCase: GetFilteredTasksUseCase,
-    private val syncManager: app.polar.data.sync.SyncManager
+    private val getFilteredTasksUseCase: GetFilteredTasksUseCase
 ) : AndroidViewModel(application) {
 
 
 
   private val _selectedListId = MutableStateFlow(-1L)
   val selectedListId: StateFlow<Long> = _selectedListId.asStateFlow()
-  
+
   // Filter states
   private val _filterToday = MutableStateFlow(false)
   private val _filterPending = MutableStateFlow(false)
@@ -95,7 +88,6 @@ class TaskViewModel @Inject constructor(
   private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
       try {
           block()
-          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
           _errorMessage.value = "Error: ${e.message}"
@@ -156,12 +148,12 @@ class TaskViewModel @Inject constructor(
   // For now leaving as LiveData as it wasn't strictly requested to refactor EVERY usage, but ideally yes.
   // Converting to Flow using asFlow if repository supports it (DAO supports getTasksWithListTitles as LiveData currently).
   private val _rawHomeTasks = repository.getTasksWithListTitles() // This is LiveData
-  
+
   // We can wrap it in Flow? Or keep it hybrid. User asked for "StateFlow in ViewModels", implying migration.
   // I should update DAO for this too?
   // Let's create `homeTaskGroups` as StateFlow derived from `_rawHomeTasks` (observed as flow).
   // Ideally update DAO.
-  
+
   val homeTaskGroups: LiveData<List<app.polar.data.model.TaskGroup>> = androidx.lifecycle.MediatorLiveData<List<app.polar.data.model.TaskGroup>>().apply {
       fun update() {
            val rawList = _rawHomeTasks.value ?: emptyList()
@@ -170,14 +162,14 @@ class TaskViewModel @Inject constructor(
            val overdueOnly = _filterOverdue.value
            val recurrentOnly = _filterRecurrent.value
            val now = System.currentTimeMillis()
-           
+
            // Group by listId first to handle per-chain filtering
            val grouped = rawList.groupBy { it.task.listId }
-           
+
            val result = grouped.mapNotNull { (listId, tasksWithList) ->
                 val title = tasksWithList.firstOrNull()?.listTitle ?: "Unknown List"
                 val isDependencyChain = tasksWithList.firstOrNull()?.isDependencyChain ?: false
-                
+
                 // For chain lists: only show the first uncompleted task
                 val tasksToShow = if (isDependencyChain) {
                     val firstUncompleted = tasksWithList
@@ -187,7 +179,7 @@ class TaskViewModel @Inject constructor(
                 } else {
                     tasksWithList
                 }
-                
+
                 val filteredList = tasksToShow.filter { item ->
                     val task = item.task
                     var matches = true
@@ -221,7 +213,7 @@ class TaskViewModel @Inject constructor(
                     }
                     matches
                 }
-                
+
                 if (filteredList.isEmpty()) null
                 else app.polar.data.model.TaskGroup(listId, title, filteredList.map { it.task })
            }
@@ -233,9 +225,9 @@ class TaskViewModel @Inject constructor(
       addSource(_filterOverdue.asLiveData()) { update() }
       addSource(_filterRecurrent.asLiveData()) { update() }
   }
-  
 
-  
+
+
   fun loadTasksForList(listId: Long) {
     _selectedListId.value = listId
     // Reset filters
@@ -249,7 +241,7 @@ class TaskViewModel @Inject constructor(
         _isCurrentListChain.value = list?.isDependencyChain ?: false
     }
   }
-  
+
   fun loadAllTasks() {
       _selectedListId.value = -1L
       // Reset filters
@@ -286,7 +278,7 @@ class TaskViewModel @Inject constructor(
   fun getSubtasksForTask(taskId: Long): LiveData<List<Subtask>> {
     return repository.getSubtasksForTask(taskId)
   }
-  
+
   fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<Subtask> = emptyList(), dueDate: Long? = null, recurrence: String = "NONE", priority: Int = 0, timeEstimate: Int = 0) = safeLaunch {
     val task = Task(
       listId = listId,
@@ -303,9 +295,9 @@ class TaskViewModel @Inject constructor(
     // Insert subtasks
     subtasks.forEachIndexed { index, subtask ->
         // Ensure they are linked to the new task
-        repository.insertSubtask(subtask.copy(id = 0, taskId = taskId, orderIndex = index).touched())
+        repository.insertSubtask(subtask.copy(id = 0, taskId = taskId, orderIndex = index))
     }
-    
+
     // Schedule alarm
     if (dueDate != null) {
         alarmHelper.scheduleTaskAlarm(taskId, dueDate)
@@ -323,9 +315,9 @@ class TaskViewModel @Inject constructor(
   fun getAllTasks(): LiveData<List<Task>> {
     return repository.getAllTasks()
   }
-  
+
   fun updateTask(task: Task, subtasks: List<Subtask>? = null, touchedCompletedSubtaskIds: Set<Long> = emptySet()) = safeLaunch {
-    repository.updateTask(task.touched())
+    repository.updateTask(task)
 
     if (subtasks != null) {
         repository.replaceSubtasksForTask(task.id, subtasks, touchedCompletedSubtaskIds)
@@ -342,38 +334,23 @@ class TaskViewModel @Inject constructor(
       updateTask(task, newSubtasks)
   }
 
-  // Shows the picked image instantly from the local content:// URI, then uploads it to Supabase
-  // Storage in the background and records the resulting bucket path (image_path) so the other
-  // app/device can resolve and download it too (doc 06, punto 8).
+  // La imagen se guarda como la URI local elegida por el usuario; el permiso de lectura
+  // persistente lo toma TaskDetailActivity al seleccionarla.
   fun attachImage(task: Task, localUri: android.net.Uri) = safeLaunch {
-    val withLocalPreview = task.copy(imageUri = localUri.toString()).touched()
-    repository.updateTask(withLocalPreview)
-    val path = taskImageStorage.upload(task.uuid, localUri)
-    if (path != null) {
-        repository.updateTask(withLocalPreview.copy(imagePath = path).touched())
-    }
+    repository.updateTask(task.copy(imageUri = localUri.toString()))
   }
 
-  // Downloads the task's Storage image on demand (e.g. opening its detail screen) and caches it
-  // locally so subsequent views are instant/offline, without marking the row dirty.
-  suspend fun downloadAndCacheTaskImage(task: Task): android.net.Uri? {
-    val imagePath = task.imagePath ?: return null
-    val cached = taskImageStorage.downloadToCache(imagePath) ?: return null
-    repository.cacheTaskImageUri(task.id, cached.toString())
-    return cached
-  }
-  
   fun setTaskCompletion(task: Task, isCompleted: Boolean) = safeLaunch {
     if (task.completed == isCompleted) return@safeLaunch
-    repository.updateTask(task.copy(completed = isCompleted).touched())
-    
-    // Sync subtasks
+    repository.updateTask(task.copy(completed = isCompleted))
+
+    // Keep subtasks in step with the task
     if (isCompleted) {
         repository.completeSubtasksForTask(task.id)
     } else {
         repository.resetSubtasksForTask(task.id)
     }
-    
+
     if (isCompleted) {
         if (task.dueDate != null) {
             alarmHelper.cancelTaskAlarm(task.id)
@@ -387,15 +364,15 @@ class TaskViewModel @Inject constructor(
 
   fun toggleTaskCompletion(task: Task) = safeLaunch {
     val newCompletedState = !task.completed
-    repository.updateTask(task.copy(completed = newCompletedState).touched())
-    
-    // Sync subtasks
+    repository.updateTask(task.copy(completed = newCompletedState))
+
+    // Keep subtasks in step with the task
     if (newCompletedState) {
         repository.completeSubtasksForTask(task.id)
     } else {
         repository.resetSubtasksForTask(task.id)
     }
-    
+
     if (newCompletedState) {
         // Task completed.
         // If recurrent, RecurrenceWorker will reset it on due date.
@@ -411,38 +388,36 @@ class TaskViewModel @Inject constructor(
         }
     }
   }
-  
+
   fun insertSubtask(taskId: Long, title: String) = safeLaunch {
     val subtask = Subtask(taskId = taskId, title = title)
     repository.insertSubtask(subtask)
   }
 
   fun toggleSubtaskCompletion(subtask: Subtask) = safeLaunch {
-    repository.updateSubtask(subtask.copy(completed = !subtask.completed).touched())
+    repository.updateSubtask(subtask.copy(completed = !subtask.completed))
   }
 
   fun deleteSubtask(subtask: Subtask) = safeLaunch {
-    // Tombstone, not a physical delete: subtasks have no local trash, but a hard delete would
-    // never propagate as a removal to Supabase/the other app.
-    repository.updateSubtask(subtask.touchedDeleted())
+    repository.deleteSubtask(subtask)
   }
 
 
 
   fun renameSubtask(subtask: Subtask, newTitle: String) = safeLaunch {
-    repository.updateSubtask(subtask.copy(title = newTitle).touched())
+    repository.updateSubtask(subtask.copy(title = newTitle))
   }
 
   fun updateSubtask(subtask: Subtask) = safeLaunch {
-    repository.updateSubtask(subtask.touched())
+    repository.updateSubtask(subtask)
   }
 
   fun updateTasksOrder(tasks: List<Task>) = safeLaunch {
-    repository.updateTasks(tasks.map { it.touched() })
+    repository.updateTasks(tasks)
   }
 
   fun updateTaskListsOrder(taskLists: List<app.polar.data.entity.TaskList>) = safeLaunch {
-    repository.updateTaskLists(taskLists.map { it.touched() })
+    repository.updateTaskLists(taskLists)
   }
 
   fun updateTaskGroupsOrder(groups: List<app.polar.data.model.TaskGroup>) = safeLaunch {
@@ -451,7 +426,7 @@ class TaskViewModel @Inject constructor(
 
       val updatedLists = allLists.mapNotNull { list ->
           if (groupsMap.containsKey(list.id)) {
-              list.copy(homeOrderIndex = groupsMap[list.id]!!).touched()
+              list.copy(homeOrderIndex = groupsMap[list.id]!!)
           } else {
               null
           }
@@ -460,11 +435,11 @@ class TaskViewModel @Inject constructor(
         repository.updateTaskLists(updatedLists)
       }
   }
-  
+
   fun searchTasks(query: String): LiveData<List<Task>> {
     return repository.searchTasks(query)
   }
-  
+
   fun getTaskById(taskId: Long): LiveData<Task?> {
      val result = androidx.lifecycle.MutableLiveData<Task?>()
      viewModelScope.launch {
@@ -507,45 +482,12 @@ class TaskViewModel @Inject constructor(
       }
   }
 
-  // Forces a sync attempt first so as many trashed rows as possible have their tombstone
-  // confirmed on the server before the local purge runs (see repository.permanentDeleteTask /
-  // TaskDao.permanentDelete for why the purge itself refuses dirty rows). If sync fails (e.g.
-  // offline), the purge still runs but will simply purge nothing for this row.
-  fun permanentDelete(task: Task) = viewModelScope.launch {
-      try {
-          runCatching { syncManager.sync() }
-          var purged = repository.permanentDeleteTask(task.id)
-          // Sin cuenta vinculada no hay tombstone que confirmar en ningun servidor: el
-          // guardia de sincronizacion dejaria la tarea atascada para siempre. Purgamos
-          // directamente para que borrar funcione con o sin cuenta.
-          if (!purged && !syncManager.isSignedIn()) {
-              purged = repository.permanentDeleteTask(task.id, force = true)
-          }
-          if (!purged) {
-              _errorMessage.value = getApplication<Application>().getString(R.string.trash_item_purge_pending_sync)
-          }
-          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
-      } catch (e: Exception) {
-          e.printStackTrace()
-          _errorMessage.value = "Error: ${e.message}"
-      }
+  fun permanentDelete(task: Task) = safeLaunch {
+      repository.permanentDeleteTask(task.id)
   }
 
-  fun emptyTrash() = viewModelScope.launch {
-      try {
-          runCatching { syncManager.sync() }
-          var stillInTrash = repository.emptyTrash()
-          if (stillInTrash > 0 && !syncManager.isSignedIn()) {
-              stillInTrash = repository.emptyTrash(force = true)
-          }
-          if (stillInTrash > 0) {
-              _errorMessage.value = getApplication<Application>().getString(R.string.trash_purge_pending_sync_count, stillInTrash)
-          }
-          app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
-      } catch (e: Exception) {
-          e.printStackTrace()
-          _errorMessage.value = "Error: ${e.message}"
-      }
+  fun emptyTrash() = safeLaunch {
+      repository.emptyTrash()
   }
 
   fun getDeletedTasks(): LiveData<List<Task>> {

@@ -178,13 +178,6 @@ class TaskDetailActivity : BaseActivity() {
         if (!task.imageUri.isNullOrEmpty()) {
             binding.containerImage.visibility = View.VISIBLE
             binding.ivTaskImage.setImageURI(android.net.Uri.parse(task.imageUri))
-        } else if (!task.imagePath.isNullOrEmpty()) {
-            // Came from Supabase (another device/app attached it) but not cached locally yet.
-            binding.containerImage.visibility = View.VISIBLE
-            lifecycleScope.launch {
-                val cachedUri = viewModel.downloadAndCacheTaskImage(task)
-                if (cachedUri != null) binding.ivTaskImage.setImageURI(cachedUri)
-            }
         } else {
             binding.containerImage.visibility = View.GONE
         }

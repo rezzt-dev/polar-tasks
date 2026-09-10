@@ -11,7 +11,7 @@ Localizadas en `data/entity/*`, los esquemas principales se apoyan fuertemente d
 
 **1. Tareas (`TaskEntity`):**
 La tabla primordial de la aplicación.
-*   Campos base conteniendo metadatos como Título, Descripción Extensa opcional, UUID únicos.
+*   Campos base conteniendo metadatos como Título, Descripción Extensa opcional e identificador numérico autoincremental.
 *   **Gestión de Estados e Hilos Temporales:** Banderas lógicas booleanas para estados completados `isCompleted = true/false`, instantes Unix para marca temporal (`timestamp_created`, `due_date_nullable`).
 
 **2. Listas de Usuarios / Directorios (`ListEntity`):**
