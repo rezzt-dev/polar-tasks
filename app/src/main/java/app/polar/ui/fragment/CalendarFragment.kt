@@ -110,6 +110,7 @@ class CalendarFragment : Fragment() {
                 remindersViewModel.update(reminder.copy(isCompleted = isChecked))
             },
             onItemLongClick = { _, _ -> false },
+            showMenu = false,
             onItemClick = { reminder -> 
                 val fragment = app.polar.ui.dialog.ReminderDialog(
                     reminder = reminder,
@@ -132,6 +133,29 @@ class CalendarFragment : Fragment() {
         binding.recyclerDayReminders.layoutManager = LinearLayoutManager(context)
         binding.recyclerDayReminders.adapter = remindersAdapter
         binding.recyclerDayReminders.itemAnimator = null
+        lateinit var reminderTouchHelper: androidx.recyclerview.widget.ItemTouchHelper
+        val swipeHelper = app.polar.util.TaskSwipeHelper(
+            getSwipeFlagsForHolder = { androidx.recyclerview.widget.ItemTouchHelper.RIGHT },
+            swipeConfigForHolder = { holder, _ ->
+                val completed = remindersAdapter.reminderAt(holder.bindingAdapterPosition)?.isCompleted == true
+                app.polar.util.TaskSwipeHelper.SwipeConfig(
+                    R.attr.colorSuccess,
+                    if (completed) R.drawable.ic_undo else R.drawable.ic_check,
+                    R.attr.colorOnSuccess,
+                    if (completed) R.string.reminder_reactivate else R.string.reminder_complete
+                )
+            },
+            cornerRadiusDp = 20f,
+            onSwipedRight = { position ->
+                remindersAdapter.reminderAt(position)?.let { reminder ->
+                    reminderTouchHelper.attachToRecyclerView(null)
+                    reminderTouchHelper.attachToRecyclerView(binding.recyclerDayReminders)
+                    remindersViewModel.update(reminder.copy(isCompleted = !reminder.isCompleted))
+                }
+            }
+        )
+        reminderTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(swipeHelper)
+        reminderTouchHelper.attachToRecyclerView(binding.recyclerDayReminders)
     }
 
     private fun setupNavigation() {
@@ -191,7 +215,7 @@ class CalendarFragment : Fragment() {
         tasksAdapter.submitList(taskItems)
         
         // Map Reminders
-        remindersAdapter.submitList(dayReminders)
+        remindersAdapter.submitReminders(dayReminders)
         
         // Visibility toggles
         if (dayTasks.isEmpty()) {

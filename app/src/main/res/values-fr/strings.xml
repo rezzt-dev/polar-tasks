@@ -344,4 +344,37 @@
   <string name="attach_image">joindre une image</string>
   <string name="dependency_chain_label">chaîne de dépendances</string>
   <string name="dependency_chain_desc">les tâches se débloquent dans l’ordre</string>
+
+    <!-- Agenda de recordatorios -->
+    <string name="reminders_heading">Un esprit plus léger</string>
+    <string name="reminders_summary">%1$s · %2$s</string>
+    <string name="reminders_next">à venir · %1$s · %2$s</string>
+    <string name="reminders_filter_all">tous</string>
+    <string name="reminders_filter_pending">en attente</string>
+    <string name="reminders_filter_completed">terminés</string>
+    <string name="reminders_overdue">en retard</string>
+    <string name="reminders_upcoming">plus tard</string>
+    <string name="reminders_section_count">%1$s · %2$d</string>
+    <string name="reminder_complete">terminer</string>
+    <string name="reminder_reactivate">réactiver</string>
+    <string name="reminder_complete_named">terminer : %1$s</string>
+    <string name="reminder_reactivate_named">réactiver : %1$s</string>
+    <string name="reminder_options">options du rappel</string>
+    <string name="reminder_options_named">options : %1$s</string>
+    <string name="reminder_no_maps">aucune application de cartes disponible</string>
+    <string name="reminders_empty_title">Place à ce qui compte</string>
+    <string name="reminders_empty_description">Appuyez sur + pour créer votre premier rappel. Nous vous préviendrons au bon moment.</string>
+    <string name="reminders_empty_completed">Vos réussites seront ici</string>
+    <string name="reminders_empty_completed_description">Marquez un rappel comme terminé pour le retrouver ici.</string>
+    <string name="reminders_empty_pending">Tout est à jour</string>
+    <string name="reminders_empty_pending_description">Vous n’avez aucun rappel en attente. Profitez de ce moment de calme.</string>
+    <string name="reminder_completed">terminé</string>
+    <plurals name="reminders_pending_count">
+        <item quantity="one">%d en attente</item>
+        <item quantity="other">%d en attente</item>
+    </plurals>
+    <plurals name="reminders_overdue_count">
+        <item quantity="one">%d en retard</item>
+        <item quantity="other">%d en retard</item>
+    </plurals>
 </resources>

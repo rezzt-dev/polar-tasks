@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
   private lateinit var binding: ActivityMainBinding
+  val snackbarAnchor: android.view.View get() = binding.fabAddTask
   // themeManager is already in BaseActivity
   
   private val taskListViewModel: TaskListViewModel by viewModels()

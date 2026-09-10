@@ -353,4 +353,37 @@
     <string name="settings_advanced_desc">Sustituye los datos de la nube o de este dispositivo. Estas acciones sobrescriben información.</string>
     <string name="settings_appearance">Apariencia</string>
     <string name="settings_account">Cuenta y sincronización</string>
+
+    <!-- Agenda de recordatorios -->
+    <string name="reminders_heading">Tu agenda, en calma</string>
+    <string name="reminders_summary">%1$s · %2$s</string>
+    <string name="reminders_next">próximo · %1$s · %2$s</string>
+    <string name="reminders_filter_all">todos</string>
+    <string name="reminders_filter_pending">pendientes</string>
+    <string name="reminders_filter_completed">completados</string>
+    <string name="reminders_overdue">vencidos</string>
+    <string name="reminders_upcoming">más adelante</string>
+    <string name="reminders_section_count">%1$s · %2$d</string>
+    <string name="reminder_complete">completar</string>
+    <string name="reminder_reactivate">reactivar</string>
+    <string name="reminder_complete_named">completar: %1$s</string>
+    <string name="reminder_reactivate_named">reactivar: %1$s</string>
+    <string name="reminder_options">opciones del recordatorio</string>
+    <string name="reminder_options_named">opciones: %1$s</string>
+    <string name="reminder_no_maps">no hay ninguna aplicación de mapas disponible</string>
+    <string name="reminders_empty_title">Haz espacio para lo importante</string>
+    <string name="reminders_empty_description">Pulsa + para crear tu primer recordatorio. Te avisaremos cuando llegue el momento.</string>
+    <string name="reminders_empty_completed">Aquí irán tus logros</string>
+    <string name="reminders_empty_completed_description">Marca un recordatorio como completado y aparecerá aquí.</string>
+    <string name="reminders_empty_pending">Todo al día</string>
+    <string name="reminders_empty_pending_description">No tienes recordatorios pendientes. Disfruta de la tranquilidad.</string>
+    <string name="reminder_completed">completado</string>
+    <plurals name="reminders_pending_count">
+        <item quantity="one">%d pendiente</item>
+        <item quantity="other">%d pendientes</item>
+    </plurals>
+    <plurals name="reminders_overdue_count">
+        <item quantity="one">%d vencido</item>
+        <item quantity="other">%d vencidos</item>
+    </plurals>
 </resources>

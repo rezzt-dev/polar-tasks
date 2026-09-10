@@ -1,213 +1,155 @@
 package app.polar.ui.adapter
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.graphics.Paint
+import android.net.Uri
+import android.text.format.DateFormat
 import android.view.LayoutInflater
-import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import app.polar.R
 import app.polar.data.entity.Reminder
 import app.polar.databinding.ItemReminderBinding
-import java.text.SimpleDateFormat
-import java.util.Locale
+import app.polar.databinding.ItemReminderSectionBinding
+import app.polar.ui.model.ReminderPresentation
+import app.polar.ui.model.ReminderRow
+import app.polar.ui.model.ReminderSection
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.snackbar.Snackbar
+import java.util.Date
 
 class ReminderAdapter(
-    private val onCheckChanged: (Reminder, Boolean, android.view.View) -> Unit,
+    private val onCheckChanged: (Reminder, Boolean, View) -> Unit,
     private val onItemClick: (Reminder) -> Unit,
-    private val onItemLongClick: (Reminder, android.view.View) -> Boolean
-) : RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder>() {
+    private val onItemLongClick: (Reminder, View) -> Boolean,
+    private val showMenu: Boolean = true
+) : ListAdapter<ReminderRow, RecyclerView.ViewHolder>(DiffCallback) {
 
-    private var reminders: List<Reminder> = emptyList()
+    // El calendario comparte las tarjetas, pero no necesita cabeceras de sección.
+    fun submitReminders(reminders: List<Reminder>) = super.submitList(reminders.map { ReminderRow.Item(it) })
 
-    fun submitList(newReminders: List<Reminder>) {
-        val diffCallback = ReminderDiffCallback(reminders, newReminders)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        reminders = newReminders
-        diffResult.dispatchUpdatesTo(this)
+    fun submitRows(rows: List<ReminderRow>) = super.submitList(rows)
+
+    fun reminderAt(position: Int): Reminder? = (currentList.getOrNull(position) as? ReminderRow.Item)?.reminder
+
+    override fun getItemViewType(position: Int): Int = if (getItem(position) is ReminderRow.Header) 0 else 1
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == 0) SectionViewHolder(ItemReminderSectionBinding.inflate(inflater, parent, false))
+            else ReminderViewHolder(ItemReminderBinding.inflate(inflater, parent, false))
     }
 
-    fun getItem(position: Int): Reminder = reminders[position]
-
-    override fun getItemCount(): Int = reminders.size
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReminderViewHolder {
-        val binding = ItemReminderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ReminderViewHolder(binding)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val row = getItem(position)) {
+            is ReminderRow.Header -> (holder as SectionViewHolder).bind(row)
+            is ReminderRow.Item -> (holder as ReminderViewHolder).bind(row.reminder)
+        }
     }
 
-    override fun onBindViewHolder(holder: ReminderViewHolder, position: Int) {
-        val reminder = getItem(position)
-        holder.bind(reminder, onCheckChanged, onItemClick, onItemLongClick)
+    class SectionViewHolder(private val binding: ItemReminderSectionBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(header: ReminderRow.Header) {
+            binding.tvSection.text = binding.root.context.getString(
+                R.string.reminders_section_count, binding.root.context.getString(sectionLabel(header.section)), header.count
+            )
+        }
     }
 
-    class ReminderViewHolder(private val binding: ItemReminderBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(
-            reminder: Reminder,
-            onCheckChanged: (Reminder, Boolean, android.view.View) -> Unit,
-            onItemClick: (Reminder) -> Unit,
-            onItemLongClick: (Reminder, android.view.View) -> Boolean
-        ) {
-            // Reset any stale visual state from previous swipe/animation. No
-            // binding.root.animate().cancel() here — see TaskAdapter.TaskViewHolder.resetVisuals()
-            // for why: RecyclerView's default ItemAnimator plays an ADD animation on this exact
-            // view via the same ViewPropertyAnimator when a reminder is freshly inserted, and
-            // cancelling it mid-flight from bind() crashes with "Tmp detached view should be
-            // removed from RecyclerView before it can be recycled".
+    inner class ReminderViewHolder(private val binding: ItemReminderBinding) : RecyclerView.ViewHolder(binding.root) {
+        private val context = binding.root.context
+        private val foreground = MaterialColors.getColor(binding.root, com.google.android.material.R.attr.colorOnSurface)
+        private val secondary = MaterialColors.getColor(binding.root, com.google.android.material.R.attr.colorOnSurfaceVariant)
+        private val overdue = MaterialColors.getColor(binding.root, R.attr.colorDateOverdue)
+        private val success = MaterialColors.getColor(binding.root, R.attr.colorSuccess)
+        private val primary = MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
+
+        fun bind(reminder: Reminder) {
+            // No cancelar el ViewPropertyAnimator: pertenece también al ItemAnimator.
             binding.root.translationX = 0f
-            binding.root.translationY = 0f
-            binding.root.alpha = 1.0f
-            binding.root.scaleX = 1.0f
-            binding.root.scaleY = 1.0f
-
-            binding.tvReminderTitle.text = reminder.title
-
-            val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-            binding.tvReminderTime.text = dateFormat.format(java.util.Date(reminder.dateTime))
-
-            val hasLocation = reminder.locationName != null && reminder.locationName.isNotEmpty()
-            if (hasLocation) {
-                binding.layoutLocation.visibility = android.view.View.VISIBLE
-                binding.tvReminderLocation.text = reminder.locationName
-                binding.layoutLocation.isClickable = reminder.latitude != null && reminder.longitude != null
-                binding.layoutLocation.isFocusable = reminder.latitude != null && reminder.longitude != null
-                if (binding.layoutLocation.isClickable) {
-                    binding.layoutLocation.setOnClickListener {
-                        openLocationInMaps(it.context, reminder.latitude!!, reminder.longitude!!, reminder.locationName)
-                    }
-                } else {
-                    binding.layoutLocation.setOnClickListener(null)
-                }
-            } else {
-                binding.layoutLocation.visibility = android.view.View.GONE
-                binding.layoutLocation.setOnClickListener(null)
+            binding.root.alpha = 1f
+            val section = ReminderPresentation.section(reminder, System.currentTimeMillis())
+            val statusColor = when (section) {
+                ReminderSection.COMPLETED -> success
+                ReminderSection.OVERDUE -> overdue
+                else -> primary
             }
+            binding.tvReminderStatus.text = context.getString(if (reminder.isCompleted) R.string.reminder_completed else sectionLabel(section))
+            binding.tvReminderStatus.setTextColor(statusColor)
+            val icon = ContextCompat.getDrawable(context,
+                if (reminder.isCompleted) R.drawable.ic_check_circle else R.drawable.ic_notifications
+            )?.mutate()?.apply {
+                setTint(statusColor)
+                val size = (16 * context.resources.displayMetrics.density).toInt()
+                setBounds(0, 0, size, size)
+            }
+            binding.tvReminderStatus.setCompoundDrawablesRelative(icon, null, null, null)
+            binding.tvReminderTitle.text = reminder.title
+            binding.tvReminderTitle.setTextColor(if (reminder.isCompleted) secondary else foreground)
+            binding.tvReminderTitle.paintFlags = if (reminder.isCompleted)
+                binding.tvReminderTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            else binding.tvReminderTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            binding.tvReminderDescription.text = reminder.description
+            binding.tvReminderDescription.isVisible = reminder.description.isNotBlank()
+            val date = Date(reminder.dateTime)
+            binding.tvReminderTime.text = DateFormat.getTimeFormat(context).format(date)
+            binding.tvReminderTime.setTextColor(if (section == ReminderSection.OVERDUE) overdue else foreground)
+            binding.tvReminderDate.text = DateFormat.getMediumDateFormat(context).format(date)
+            binding.tvReminderLocation.text = reminder.locationName
+            binding.tvReminderLocation.isVisible = !reminder.locationName.isNullOrBlank()
+            binding.tvReminderLocation.setOnClickListener(null)
+            val hasCoordinates = reminder.latitude != null && reminder.longitude != null
+            binding.tvReminderLocation.isClickable = hasCoordinates
+            binding.tvReminderLocation.isFocusable = hasCoordinates
+            if (hasCoordinates) binding.tvReminderLocation.setOnClickListener { openLocation(reminder) }
 
-            // Remove listener to avoid triggering loop
             binding.cbReminderComplete.setOnCheckedChangeListener(null)
             binding.cbReminderComplete.isChecked = reminder.isCompleted
-
-            // Apply visual effects based on completion status
-            if (reminder.isCompleted) {
-                // Strikethrough title
-                binding.tvReminderTitle.paintFlags = binding.tvReminderTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-
-                // Reduce opacity of entire card
-                binding.root.alpha = 0.5f
-
-                // Reduce opacity of icon container
-                binding.iconContainer?.alpha = 0.4f
-
-                // Dim text colors
-                binding.tvReminderTitle.alpha = 0.6f
-                binding.tvReminderTime.alpha = 0.5f
-            } else {
-                // Remove strikethrough
-                binding.tvReminderTitle.paintFlags = binding.tvReminderTitle.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
-
-                // Full opacity
-                binding.root.alpha = 1.0f
-
-                // Full opacity for icon container
-                binding.iconContainer?.alpha = 1.0f
-
-                // Full opacity for text
-                binding.tvReminderTitle.alpha = 1.0f
-                binding.tvReminderTime.alpha = 1.0f
+            binding.cbReminderComplete.contentDescription = context.getString(
+                if (reminder.isCompleted) R.string.reminder_reactivate_named else R.string.reminder_complete_named, reminder.title
+            )
+            binding.cbReminderComplete.setOnCheckedChangeListener { _, checked ->
+                if (checked != reminder.isCompleted) onCheckChanged(reminder, checked, binding.root)
             }
-
-            binding.cbReminderComplete.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked != reminder.isCompleted) {
-                    onCheckChanged(reminder, isChecked, binding.root)
-                }
-            }
-
-            // Manual right-swipe handling to avoid ItemTouchHelper bugs
-            // when the dataset size doesn't change (toggle completion).
-            binding.root.setOnTouchListener(object : android.view.View.OnTouchListener {
-                private var downX = 0f
-                private var downY = 0f
-                private var isDragging = false
-
-                override fun onTouch(v: android.view.View, event: MotionEvent): Boolean {
-                    when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN -> {
-                            downX = event.rawX
-                            downY = event.rawY
-                            isDragging = false
-                            return false
-                        }
-                        MotionEvent.ACTION_MOVE -> {
-                            val deltaX = event.rawX - downX
-                            val deltaY = event.rawY - downY
-                            if (!isDragging) {
-                                if (kotlin.math.abs(deltaX) > kotlin.math.abs(deltaY) && kotlin.math.abs(deltaX) > 10f) {
-                                    isDragging = true
-                                    v.parent.requestDisallowInterceptTouchEvent(true)
-                                }
-                            }
-                            if (isDragging && deltaX > 0) {
-                                v.translationX = deltaX
-                                return true
-                            }
-                            return false
-                        }
-                        MotionEvent.ACTION_UP -> {
-                            val deltaX = event.rawX - downX
-                            if (isDragging) {
-                                v.parent.requestDisallowInterceptTouchEvent(false)
-                                if (deltaX > 150f) {
-                                    onCheckChanged(reminder, !reminder.isCompleted, v)
-                                }
-                                v.animate().translationX(0f).setDuration(200).start()
-                                isDragging = false
-                                return true
-                            }
-                            return false
-                        }
-                        MotionEvent.ACTION_CANCEL -> {
-                            if (isDragging) {
-                                v.parent.requestDisallowInterceptTouchEvent(false)
-                                v.animate().translationX(0f).setDuration(200).start()
-                                isDragging = false
-                            }
-                            return false
-                        }
-                    }
-                    return false
-                }
-            })
-
             binding.root.setOnClickListener { onItemClick(reminder) }
-            binding.root.setOnLongClickListener {
-                onItemLongClick(reminder, it)
-            }
+            binding.root.setOnLongClickListener { onItemLongClick(reminder, it) }
+            binding.btnReminderMenu.visibility = if (showMenu) View.VISIBLE else View.INVISIBLE
+            binding.btnReminderMenu.setOnClickListener { onItemLongClick(reminder, it) }
+            binding.btnReminderMenu.contentDescription = context.getString(R.string.reminder_options_named, reminder.title)
         }
 
-        private fun openLocationInMaps(context: android.content.Context, lat: Double, lng: Double, name: String?) {
-            val uri = if (!name.isNullOrBlank()) {
-                android.net.Uri.parse("geo:$lat,$lng?q=$lat,$lng($name)")
-            } else {
-                android.net.Uri.parse("geo:$lat,$lng?q=$lat,$lng")
-            }
-            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-            intent.setPackage("com.google.android.apps.maps")
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                val genericIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-                context.startActivity(genericIntent)
+        private fun openLocation(reminder: Reminder) {
+            val coordinates = "${reminder.latitude},${reminder.longitude}"
+            val query = Uri.encode("$coordinates (${reminder.locationName.orEmpty()})")
+            try {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:$coordinates?q=$query")))
+            } catch (_: ActivityNotFoundException) {
+                Snackbar.make(binding.root, R.string.reminder_no_maps, Snackbar.LENGTH_SHORT).show()
             }
         }
     }
 
-    class ReminderDiffCallback(
-        private val oldList: List<Reminder>,
-        private val newList: List<Reminder>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldList.size
-        override fun getNewListSize(): Int = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldList[oldItemPosition] == newList[newItemPosition]
+    companion object {
+        fun sectionLabel(section: ReminderSection): Int = when (section) {
+            ReminderSection.OVERDUE -> R.string.reminders_overdue
+            ReminderSection.TODAY -> R.string.today
+            ReminderSection.TOMORROW -> R.string.tomorrow
+            ReminderSection.UPCOMING -> R.string.reminders_upcoming
+            ReminderSection.COMPLETED -> R.string.reminders_filter_completed
+        }
+
+        private val DiffCallback = object : DiffUtil.ItemCallback<ReminderRow>() {
+            override fun areItemsTheSame(old: ReminderRow, new: ReminderRow): Boolean = when {
+                old is ReminderRow.Header && new is ReminderRow.Header -> old.section == new.section
+                old is ReminderRow.Item && new is ReminderRow.Item -> old.reminder.id == new.reminder.id
+                else -> false
+            }
+            override fun areContentsTheSame(old: ReminderRow, new: ReminderRow): Boolean = old == new
+        }
     }
 }

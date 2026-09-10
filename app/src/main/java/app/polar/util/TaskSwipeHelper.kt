@@ -7,6 +7,7 @@ import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -46,19 +47,23 @@ class TaskSwipeHelper(
     private val onSwipedLeft: (position: Int) -> Unit = {},
     private val onSelectedChangedCallback: (viewHolder: RecyclerView.ViewHolder?, actionState: Int) -> Unit = { _, _ -> },
     private val onClearViewCallback: (recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) -> Unit = { _, _ -> },
-    private val swipeThreshold: Float = DEFAULT_SWIPE_THRESHOLD
+    private val swipeThreshold: Float = DEFAULT_SWIPE_THRESHOLD,
+    private val swipeConfigForHolder: ((RecyclerView.ViewHolder, Boolean) -> SwipeConfig)? = null,
+    private val cornerRadiusDp: Float = 0f
 ) : ItemTouchHelper.SimpleCallback(0, 0) {
 
     data class SwipeConfig(
         @AttrRes val backgroundColorAttr: Int,
         @DrawableRes val iconRes: Int,
-        @AttrRes val iconTintAttr: Int? = null
+        @AttrRes val iconTintAttr: Int? = null,
+        @StringRes val labelRes: Int? = null
     )
 
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
     private val backgroundRect = RectF()
+    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER }
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
@@ -152,61 +157,36 @@ class TaskSwipeHelper(
         val itemView = viewHolder.itemView
         val context = itemView.context
 
-        val config = if (dX > 0) rightSwipeConfig else leftSwipeConfig
+        val config = swipeConfigForHolder?.invoke(viewHolder, dX > 0)
+            ?: if (dX > 0) rightSwipeConfig else leftSwipeConfig
         backgroundPaint.color = resolveThemeColor(context, config.backgroundColorAttr)
-
         val icon = ContextCompat.getDrawable(context, config.iconRes)?.mutate()
-        val fallbackTint = resolveThemeColor(context, MaterialR.attr.colorOnSurface)
-        val iconTint = config.iconTintAttr?.let { resolveThemeColor(context, it) } ?: fallbackTint
+        val iconTint = resolveThemeColor(context, config.iconTintAttr ?: MaterialR.attr.colorOnSurface)
         icon?.setTint(iconTint)
+        val left = if (dX > 0) itemView.left.toFloat() else (itemView.right + dX).coerceAtLeast(itemView.left.toFloat())
+        val right = if (dX > 0) (itemView.left + dX).coerceAtMost(itemView.right.toFloat()) else itemView.right.toFloat()
+        val save = canvas.save()
+        canvas.clipRect(left, itemView.top.toFloat(), right, itemView.bottom.toFloat())
+        backgroundRect.set(itemView.left.toFloat(), itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+        val radius = context.dpToPx(cornerRadiusDp)
+        canvas.drawRoundRect(backgroundRect, radius, radius, backgroundPaint)
 
-        if (dX > 0) {
-            // Izquierda a derecha: fondo desde el borde izquierdo hasta dX
-            backgroundRect.set(
-                itemView.left.toFloat(),
-                itemView.top.toFloat(),
-                itemView.left + dX,
-                itemView.bottom.toFloat()
-            )
-            canvas.drawRect(backgroundRect, backgroundPaint)
-
-            icon?.let {
-                val iconSize = context.dpToPx(ICON_SIZE_DP)
-                val iconMargin = context.dpToPx(ICON_MARGIN_DP)
-                val iconLeft = itemView.left + iconMargin
-                val iconTop = itemView.top + (itemView.height - iconSize) / 2f
-                it.setBounds(
-                    iconLeft.toInt(),
-                    iconTop.toInt(),
-                    (iconLeft + iconSize).toInt(),
-                    (iconTop + iconSize).toInt()
-                )
-                it.draw(canvas)
-            }
-        } else {
-            // Derecha a izquierda: fondo desde el borde derecho + dX hasta el borde derecho
-            backgroundRect.set(
-                itemView.right + dX,
-                itemView.top.toFloat(),
-                itemView.right.toFloat(),
-                itemView.bottom.toFloat()
-            )
-            canvas.drawRect(backgroundRect, backgroundPaint)
-
-            icon?.let {
-                val iconSize = context.dpToPx(ICON_SIZE_DP)
-                val iconMargin = context.dpToPx(ICON_MARGIN_DP)
-                val iconLeft = itemView.right - iconMargin - iconSize
-                val iconTop = itemView.top + (itemView.height - iconSize) / 2f
-                it.setBounds(
-                    iconLeft.toInt(),
-                    iconTop.toInt(),
-                    (iconLeft + iconSize).toInt(),
-                    (iconTop + iconSize).toInt()
-                )
-                it.draw(canvas)
-            }
+        val iconSize = context.dpToPx(ICON_SIZE_DP)
+        val label = config.labelRes?.let(context::getString)
+        labelPaint.color = iconTint
+        labelPaint.textSize = 12f * context.resources.displayMetrics.scaledDensity
+        val labelWidth = label?.let(labelPaint::measureText) ?: 0f
+        val inset = context.dpToPx(ICON_MARGIN_DP)
+        val actionWidth = maxOf(iconSize, labelWidth) + inset * 2
+        val centerX = if (dX > 0) itemView.left + actionWidth / 2 else itemView.right - actionWidth / 2
+        val showLabel = label != null && right - left >= actionWidth
+        val iconTop = itemView.top + (itemView.height - iconSize) / 2f - if (showLabel) context.dpToPx(10f) else 0f
+        icon?.setBounds((centerX - iconSize / 2).toInt(), iconTop.toInt(), (centerX + iconSize / 2).toInt(), (iconTop + iconSize).toInt())
+        icon?.draw(canvas)
+        if (showLabel) {
+            canvas.drawText(label!!, centerX, iconTop + iconSize + context.dpToPx(6f) - labelPaint.fontMetrics.top, labelPaint)
         }
+        canvas.restoreToCount(save)
     }
 
     private fun resolveThemeColor(context: android.content.Context, @AttrRes attr: Int): Int {

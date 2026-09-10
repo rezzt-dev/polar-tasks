@@ -344,4 +344,37 @@
   <string name="attach_image">attach image</string>
   <string name="dependency_chain_label">dependency chain</string>
   <string name="dependency_chain_desc">tasks unlock in order</string>
+
+    <!-- Agenda de recordatorios -->
+    <string name="reminders_heading">A little peace of mind</string>
+    <string name="reminders_summary">%1$s · %2$s</string>
+    <string name="reminders_next">up next · %1$s · %2$s</string>
+    <string name="reminders_filter_all">all</string>
+    <string name="reminders_filter_pending">pending</string>
+    <string name="reminders_filter_completed">completed</string>
+    <string name="reminders_overdue">overdue</string>
+    <string name="reminders_upcoming">later</string>
+    <string name="reminders_section_count">%1$s · %2$d</string>
+    <string name="reminder_complete">complete</string>
+    <string name="reminder_reactivate">reactivate</string>
+    <string name="reminder_complete_named">complete: %1$s</string>
+    <string name="reminder_reactivate_named">reactivate: %1$s</string>
+    <string name="reminder_options">reminder options</string>
+    <string name="reminder_options_named">options: %1$s</string>
+    <string name="reminder_no_maps">no maps app available</string>
+    <string name="reminders_empty_title">Make room for what matters</string>
+    <string name="reminders_empty_description">Tap + to create your first reminder. We will let you know when it is time.</string>
+    <string name="reminders_empty_completed">Your achievements go here</string>
+    <string name="reminders_empty_completed_description">Mark a reminder as completed and it will appear here.</string>
+    <string name="reminders_empty_pending">All caught up</string>
+    <string name="reminders_empty_pending_description">You have no pending reminders. Enjoy the peace of mind.</string>
+    <string name="reminder_completed">completed</string>
+    <plurals name="reminders_pending_count">
+        <item quantity="one">%d pending</item>
+        <item quantity="other">%d pending</item>
+    </plurals>
+    <plurals name="reminders_overdue_count">
+        <item quantity="one">%d overdue</item>
+        <item quantity="other">%d overdue</item>
+    </plurals>
 </resources>

@@ -20,6 +20,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### CAMBIOS
 
+- redisenar recordatorios con resumen del proximo aviso, filtros por estado, grupos por fecha y tarjetas con descripcion, hora, ubicacion y acciones accesibles; mostrar fondo, icono y texto al deslizar para completar, reactivar o enviar a la papelera con deshacer.
+
 - organizar los ajustes en categorias con vistas dedicadas, navegacion de vuelta, opciones avanzadas de nube separadas y valores legibles bajo cada preferencia.
 
 - dar feedback visual al deslizar elementos de la papelera reutilizando `TaskSwipeHelper`: fondo de color e icono al restablecer a la lista (derecha) o eliminar permanentemente (izquierda), igual que el swipe de la lista de tareas.
@@ -44,6 +46,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 ### ENGLISH
 
 #### CHANGED
+
+- redesign reminders with an upcoming alert summary, status filters, date groups and cards with description, time, location and accessible actions; reveal a background, icon and label when swiping to complete, reactivate or move to trash with undo.
 
 - organize settings into categories with dedicated views, back navigation, separate advanced cloud options and readable values below each preference.
 
