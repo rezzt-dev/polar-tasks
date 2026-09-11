@@ -44,6 +44,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - anadir a `agents.md` y `claude.md` la seccion de redaccion de commits, replica de `.docs/commit-guidelines.md`.
 - anadir a `agents.md` y `claude.md` la seccion con el formato de las entradas de `changelog.md`.
 - documentar en `agents.md` (seccion 4.6) y `claude.md` la regla de que toda la interfaz se escribe en minusculas y en todos los idiomas.
+- anadir `.docs/agent-docs/reglas-online-vs-offline.md` con las reglas obligatorias entre `polar-online/` y `polar-offline/` y renombrar `analisis-implementacion-supabase-sync.md` a `implementacion-supabase.md` dentro de `agent-docs/`.
+- crear `.docs/pr-merge-release-guidelines.md` y replicar su contenido en `agents.md` y `claude.md` para que las pull requests, los commits de merge y las releases de github usen el mismo formato de categorias que `changelog.md`.
 
 #### CORREGIDO
 
@@ -94,6 +96,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - add the commit writing section to `agents.md` and `claude.md`, mirroring `.docs/commit-guidelines.md`.
 - add the section describing the format of `changelog.md` entries to `agents.md` and `claude.md`.
 - document in `agents.md` (section 4.6) and `claude.md` the rule that the whole interface is written in lowercase in every language.
+- add `.docs/agent-docs/reglas-online-vs-offline.md` with the mandatory rules between `polar-online/` and `polar-offline/`, and rename `analisis-implementacion-supabase-sync.md` to `implementacion-supabase.md` inside `agent-docs/`.
+- create `.docs/pr-merge-release-guidelines.md` and mirror its content in `agents.md` and `claude.md` so pull requests, merge commits and github releases use the same category format as `changelog.md`.
 
 #### FIXED
 
