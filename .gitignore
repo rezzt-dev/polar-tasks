@@ -2,9 +2,6 @@
 # android (`polar-online/` y `polar-offline/`). los patrones sin `/` inicial se
 # aplican en cualquier nivel, asi que no hacen falta `.gitignore` por proyecto.
 
-# documentacion local (agent-docs, skills, notas de release): no se versiona
-.docs/
-
 # gradle y kotlin
 .gradle/
 build/
