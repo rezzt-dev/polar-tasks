@@ -428,6 +428,65 @@ flujo:
 - el commit que solo toca `changelog.md` usa el prefijo `changelog` (ver
   arriba).
 
+### Pull requests, merges y releases
+
+<!--
+  Este bloque replica literalmente el contenido de
+  `.docs/pr-merge-release-guidelines.md` y de la sección homónima de
+  `CLAUDE.md`. Existe para que las pull requests, los commits de merge y las
+  releases de github lean como una extensión directa de `changelog.md` en
+  vez de tener cada una su propio formato. Si editas estas reglas, replica el
+  cambio en `CLAUDE.md` y en `.docs/pr-merge-release-guidelines.md`.
+-->
+
+pull requests, merges y releases **no inventan su propio formato**: reusan
+literalmente el contenido y las reglas de estilo de `changelog.md` — minusculas
+y sin acentos, las mismas cinco categorias en el mismo orden (nuevo, cambios,
+corregido, eliminado, seguridad / added, changed, fixed, removed, security,
+omitiendo la que no tenga items), una linea por item en imperativo con
+backticks para nombres de ficheros, rutas, comandos e identificadores, y
+fechas en formato `aaaa-mm-dd`. las marcas `[online]` / `[offline]` de
+`changelog.md` se conservan tal cual. la fuente de verdad es siempre
+`changelog.md`: el contenido de pr, merge y release se extrae de ahi, nunca
+se redacta desde cero ni en paralelo.
+
+#### pull requests
+
+- **pr de trabajo normal** (`feature/...` o `fix/...` contra
+  `testing-branch`): mismo titulo que un commit,
+  `<prefijo> | <resumen corto en imperativo>` (ver "redaccion de commits"
+  arriba).
+- **pr de publicacion de version** (`testing-branch` → `release-branch` /
+  `main`, cierra una version): `release version <x.y.z> - <resumen corto en
+  imperativo>`.
+- **descripcion** (igual para las dos): el bloque `### CASTELLANO` +
+  `### ENGLISH` de la seccion correspondiente de `changelog.md`, pegado tal
+  cual con sus encabezados `####` de categoria. si la pr solo aporta parte de
+  `## SIN PUBLICAR / UNRELEASED`, se incluyen solo los items que introduce.
+  no se anaden parrafos sueltos ni resumenes fuera de la lista.
+
+#### commit de merge
+
+github genera el commit de merge a partir del titulo y la descripcion de la
+pr, asi que una pr correcta ya produce un merge correcto. usa siempre
+**"create a merge commit"** (nunca squash ni rebase), para conservar el
+historial de commits individuales junto al resumen de la pr.
+
+#### releases de github
+
+las releases son **en ingles unicamente** (no bilingues):
+
+- **titulo:** `v<x.y.z> — <resumen corto en ingles, minusculas, sin acentos>`
+  (ejemplo: `v1.7 — 100% offline, reminders redesign & settings categories`).
+- **cuerpo:** el bloque `### ENGLISH` de la version cerrada en
+  `changelog.md`, con sus categorias `#### ADDED` / `#### CHANGED` /
+  `#### FIXED` / `#### REMOVED` / `#### SECURITY` tal cual, omitiendo la que
+  no tenga items. no se reescribe en parrafos narrativos.
+- **tag:** siempre `v<x.y.z>`, sin sufijos adicionales.
+
+las releases anteriores a esta regla (`.docs/releases-docs/release-1.7/`)
+usan un formato narrativo distinto y quedan como historicas, sin reescribir.
+
 ### Estilo de Código
 
 - `kotlin.code.style=official` (configurado en `gradle.properties`).
