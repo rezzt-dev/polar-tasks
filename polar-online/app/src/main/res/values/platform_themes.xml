@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Aislar los atributos de la barra de navegación que requieren API 27. -->
+    <style name="Platform.Theme.Polar.Light" parent="Theme.Material3.Light.NoActionBar" />
+    <style name="Platform.Theme.Polar.Dark" parent="Theme.Material3.Dark.NoActionBar" />
+</resources>

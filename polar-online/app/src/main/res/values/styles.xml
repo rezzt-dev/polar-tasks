@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Section title used in settings screens -->
+    <style name="SettingsSectionTitle" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">?colorOnSurfaceVariant</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <!-- Divider used between settings items inside a card -->
+    <style name="SettingsDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?colorOutlineVariant</item>
+        <item name="android:layout_marginStart">56dp</item>
+    </style>
+
+</resources>
