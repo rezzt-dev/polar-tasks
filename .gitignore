@@ -1,15 +1,32 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# .gitignore unico del repositorio: cubre la raiz y los dos proyectos de
+# android (`polar-online/` y `polar-offline/`). los patrones sin `/` inicial se
+# aplican en cualquier nivel, asi que no hacen falta `.gitignore` por proyecto.
+
+# documentacion local (agent-docs, skills, notas de release): no se versiona
+.docs/
+
+# gradle y kotlin
+.gradle/
+build/
+.kotlin/
+.externalNativeBuild/
+.cxx/
+captures/
+
+# configuracion local (sdk y credenciales de supabase)
 local.properties
+
+# android studio / intellij (`**/` porque un patron con `/` interna solo se
+# aplicaria a la `.idea/` de la raiz)
+*.iml
+**/.idea/caches/
+**/.idea/libraries/
+**/.idea/modules.xml
+**/.idea/workspace.xml
+**/.idea/navEditor.xml
+**/.idea/assetWizardSettings.xml
+**/.idea/shelf/
+
+# sistema operativo
+.DS_Store
+Thumbs.db

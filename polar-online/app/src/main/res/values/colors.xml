@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Base -->
+  <color name="black">#000000</color>
+  <color name="white">#FFFFFF</color>
+  <color name="color_error">#E53935</color> <!-- Stronger Red -->
+
+  <!--
+    Semantic priority / status colors.
+    These are referenced through theme attributes, never used directly in
+    layouts or Canvas code, so the palette remains dynamic and theme-aware.
+  -->
+  <color name="priority_high">@color/color_error</color>
+  <color name="priority_medium">#FF9800</color>
+  <color name="priority_low">#2196F3</color>
+  <color name="date_overdue">@color/color_error</color>
+
+  <!--
+     STRICT 5-COLOR PALETTE (High Contrast Minimalist)
+     To ensure "checks" (checkboxes) and "colors" look better:
+     ACCENT MUST CONTRAST WITH BACKGROUND.
+  -->
+
+  <!-- Light Theme -->
+  <color name="light_c1_background">#F5F7F9</color>   <!-- Very light cool grey (better than plain F5F5F5) -->
+  <color name="light_c2_surface">#FFFFFF</color>      <!-- Pure White -->
+  <color name="light_c3_accent">#111827</color>       <!-- Almost Black (High contrast for buttons/checks) -->
+  <color name="light_c4_border">#E5E7EB</color>       <!-- Subtle Border -->
+  <color name="light_c5_foreground">#111827</color>   <!-- Same as accent for text -->
+
+  <!-- Dark Theme -->
+  <color name="dark_c1_background">#1A1A1A</color>    <!-- Pure Black (OLED) -->
+  <color name="dark_c2_surface">#1C1C1E</color>       <!-- Dark Grey Surface -->
+  <color name="dark_c3_accent">#F5F7F9</color>        <!-- Pure White (High contrast for buttons/checks) -->
+  <color name="dark_c4_border">#2C2C2E</color>        <!-- Dark Border -->
+  <color name="dark_c5_foreground">#FFFFFF</color>    <!-- White Text -->
+
+  <!-- MAPPINGS -->
+
+  <!-- Light -->
+  <color name="light_main_background">@color/light_c1_background</color>
+  <color name="light_panel_background">@color/light_c2_surface</color>
+  <color name="light_main_foreground">@color/light_c5_foreground</color>
+  <color name="light_secondary_foreground">@color/light_c4_border</color> <!-- Secondary text/icons lighter -->
+  <color name="light_main_border">@color/light_c4_border</color>
+
+  <color name="light_task_background">@color/light_c2_surface</color>
+  <color name="light_task_border">@color/light_c4_border</color>
+  <color name="light_task_title">@color/light_c5_foreground</color>
+
+  <color name="light_popup_background">@color/light_c2_surface</color>
+  <color name="light_input_background">@color/light_c1_background</color>
+  <color name="light_input_border">@color/light_c4_border</color>
+
+  <color name="light_button_background">@color/light_c3_accent</color>
+  <color name="light_button_click">@color/light_c4_border</color>
+
+  <!-- Dark -->
+  <color name="dark_main_background">@color/dark_c1_background</color>
+  <color name="dark_panel_background">@color/dark_c2_surface</color>
+  <color name="dark_main_foreground">@color/dark_c5_foreground</color>
+  <color name="dark_secondary_foreground">@color/dark_c4_border</color>
+  <color name="dark_main_border">@color/dark_c4_border</color>
+
+  <color name="dark_task_background">@color/dark_c2_surface</color>
+  <color name="dark_task_border">@color/dark_c4_border</color>
+  <color name="dark_task_title">@color/dark_c5_foreground</color>
+
+  <color name="dark_popup_background">@color/dark_c2_surface</color>
+  <color name="dark_input_background">@color/dark_c2_surface</color>
+  <color name="dark_input_border">@color/dark_c4_border</color>
+
+  <color name="dark_button_background">@color/dark_c3_accent</color>
+  <color name="dark_button_click">@color/dark_c4_border</color>
+
+  <!-- Multicolor Light Theme (Vibrant & Playful) -->
+  <color name="multi_light_background">#FDFCF6</color>      <!-- Warm off-white -->
+  <color name="multi_light_surface">#FFFFFF</color>
+  <color name="multi_light_primary">#FF6B6B</color>         <!-- Coral Red -->
+  <color name="multi_light_on_primary">#FFFFFF</color>
+  <color name="multi_light_primary_container">#FFD8D8</color>
+  <color name="multi_light_on_primary_container">#8B0000</color>
+  <color name="multi_light_secondary">#4D96FF</color>       <!-- Vibrant Blue -->
+  <color name="multi_light_on_secondary">#FFFFFF</color>
+  <color name="multi_light_secondary_container">#D4E5FF</color>
+  <color name="multi_light_on_secondary_container">#002B7A</color>
+  <color name="multi_light_foreground">#1A1A24</color>
+  <color name="multi_light_border">#EAE1D8</color>
+  <color name="multi_light_surface_container">#FFFDF5</color>
+  <color name="multi_light_surface_container_high">#F5EFDF</color>
+
+  <!-- Multicolor Dark Theme (Deep & Colorful) -->
+  <color name="multi_dark_background">#0F111A</color>       <!-- Deep Navy/Black -->
+  <color name="multi_dark_surface">#181A26</color>
+  <color name="multi_dark_primary">#FF8585</color>          <!-- Soft Coral -->
+  <color name="multi_dark_on_primary">#4A0000</color>
+  <color name="multi_dark_primary_container">#820000</color>
+  <color name="multi_dark_on_primary_container">#FFD8D8</color>
+  <color name="multi_dark_secondary">#70AFFF</color>        <!-- Soft Bright Blue -->
+  <color name="multi_dark_on_secondary">#002466</color>
+  <color name="multi_dark_secondary_container">#0042B3</color>
+  <color name="multi_dark_on_secondary_container">#D4E5FF</color>
+  <color name="multi_dark_foreground">#EAECEE</color>
+  <color name="multi_dark_border">#2C3040</color>
+  <color name="multi_dark_surface_container">#202436</color>
+  <color name="multi_dark_surface_container_high">#2A2F45</color>
+
+  <!-- Pastel Suave Theme (Calm & Soft) -->
+  <color name="pastel_background">#F5F5F7</color>           <!-- Soft Grey/Beige -->
+  <color name="pastel_surface">#FFFFFF</color>              <!-- Pure White -->
+  <color name="pastel_primary">#87C2CA</color>              <!-- Pastel Green/Blue -->
+  <color name="pastel_on_primary">#FFFFFF</color>
+  <color name="pastel_primary_container">#E0F2F2</color>    <!-- Very light Green/Blue -->
+  <color name="pastel_on_primary_container">#1B4D52</color> 
+  <color name="pastel_secondary">#DDCDFF</color>            <!-- Pastel Lilac -->
+  <color name="pastel_on_secondary">#3E2088</color>
+  <color name="pastel_secondary_container">#F3EBFF</color>  <!-- Very light Lilac -->
+  <color name="pastel_on_secondary_container">#1A0054</color>
+  <color name="pastel_error">#EDB974</color>                <!-- Soft Yellow/Orange warning -->
+  <color name="pastel_foreground">#222222</color>           <!-- Soft Dark text -->
+  <color name="pastel_border">#E8E8EC</color>               <!-- Clean soft border -->
+  <color name="pastel_surface_container">#FAFAFC</color>
+  <color name="pastel_surface_container_high">#F0F0F3</color>
+
+  <!-- Neon Dark Theme (Cyberpunk & Energetic) -->
+  <color name="neon_background">#050509</color>             <!-- Near Black -->
+  <color name="neon_surface">#11121A</color>                <!-- Very dark tinted surface -->
+  <color name="neon_primary">#00E5FF</color>                <!-- Neon Cyan -->
+  <color name="neon_on_primary">#000000</color>             <!-- Black text on neon -->
+  <color name="neon_primary_container">#004D55</color>      <!-- Darked Cyan container -->
+  <color name="neon_on_primary_container">#8BFEFF</color>   <!-- Light Cyan text -->
+  <color name="neon_secondary">#FF4DFF</color>              <!-- Neon Magenta -->
+  <color name="neon_on_secondary">#000000</color>           <!-- Black text on magenta -->
+  <color name="neon_secondary_container">#660066</color>    <!-- Dark Magenta container -->
+  <color name="neon_on_secondary_container">#FFB3FF</color> <!-- Light Magenta text -->
+  <color name="neon_error">#A6FF00</color>                  <!-- Neon Lime green (used creatively for alerts) -->
+  <color name="neon_foreground">#F5F5F5</color>             <!-- Near white text -->
+  <color name="neon_border">#202438</color>                 <!-- Deep cool grey border -->
+  <color name="neon_surface_container">#151620</color>
+  <color name="neon_surface_container_high">#1A1C29</color>
+
+  <!-- Onyx Dark Theme (Deep & Minimal) -->
+  <color name="onyx_background">#101010</color>             <!-- Base background -->
+  <color name="onyx_surface">#161616</color>                <!-- Elevated cards -->
+  <color name="onyx_surface_variant">#101010</color>        <!-- Same as background -->
+  <color name="onyx_surface_container">#1C1C1C</color>      <!-- Containers -->
+  <color name="onyx_surface_container_high">#242424</color> <!-- Highlighted containers -->
+  <color name="onyx_primary">#ECECEC</color>                <!-- Base foreground -->
+  <color name="onyx_on_primary">#101010</color>             <!-- Text on primary -->
+  <color name="onyx_primary_container">#2A2A2A</color>      <!-- Tonal button/container -->
+  <color name="onyx_on_primary_container">#ECECEC</color>   <!-- Text on container -->
+  <color name="onyx_secondary">#8C8C8C</color>              <!-- Muted accent -->
+  <color name="onyx_on_secondary">#101010</color>           <!-- Text on secondary -->
+  <color name="onyx_secondary_container">#202020</color>    <!-- Secondary tonal -->
+  <color name="onyx_on_secondary_container">#ECECEC</color> <!-- Text on secondary container -->
+  <color name="onyx_foreground">#ECECEC</color>             <!-- Primary text -->
+  <color name="onyx_on_surface_variant">#B3B3B3</color>     <!-- Secondary/muted text -->
+  <color name="onyx_border">#2A2A2A</color>                 <!-- Subtle borders -->
+  <color name="onyx_outline_variant">#1C1C1C</color>        <!-- Even subtler borders -->
+  <color name="onyx_error">#CF6679</color>                  <!-- Material dark red -->
+  <color name="onyx_on_error">#101010</color>               <!-- Text on error -->
+  <color name="onyx_success">#66BB6A</color>                <!-- Success green -->
+  <color name="onyx_on_success">#101010</color>             <!-- Text on success -->
+
+  <!-- Success / Positive feedback -->
+  <color name="light_success">#43A047</color>
+  <color name="dark_success">#66BB6A</color>
+  <color name="multi_light_success">#4CAF50</color>
+  <color name="multi_dark_success">#66BB6A</color>
+  <color name="pastel_success">#81C784</color>
+  <color name="neon_success">#00E676</color>
+
+  <!-- Semantics -->
+  <color name="accent_primary">@color/light_c3_accent</color>
+  <color name="accent_secondary">@color/light_c4_border</color>
+  
+  <color name="drawer_bg">#E6FFFFFF</color> <!-- 90% Opacity Surface -->
+</resources>
