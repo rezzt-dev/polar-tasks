@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+    android:id="@+id/action_sort_default"
+    android:title="@string/sort_default" />
+  <item
+    android:id="@+id/action_sort_unmark_first"
+    android:title="@string/sort_unmark_first" />
+</menu>

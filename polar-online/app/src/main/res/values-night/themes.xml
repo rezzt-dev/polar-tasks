@@ -1,0 +1,50 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <style name="Theme.Polar" parent="Platform.Theme.Polar.Dark">
+    <!-- 3. Accent -->
+    <item name="colorPrimary">@color/dark_c3_accent</item>
+    <item name="colorOnPrimary">@color/black</item>
+    <item name="colorPrimaryContainer">@color/dark_c4_border</item>
+    <item name="colorOnPrimaryContainer">@color/dark_c3_accent</item>
+    
+    <item name="colorSecondary">@color/dark_c3_accent</item>
+    <item name="colorOnSecondary">@color/black</item>
+    <item name="colorSecondaryContainer">@color/dark_c4_border</item> <!-- Dark Gray -->
+    <item name="colorOnSecondaryContainer">@color/dark_c5_foreground</item> <!-- White Text -->
+    <item name="colorError">@color/color_error</item>
+    <item name="colorSuccess">@color/dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/date_overdue</item>
+
+    <!-- 1. Background -->
+    <item name="android:colorBackground">@color/dark_c1_background</item>
+    <item name="colorOnBackground">@color/dark_c5_foreground</item>
+    
+    <!-- 2. Surface -->
+    <item name="colorSurface">@color/dark_c2_surface</item>
+    <item name="colorOnSurface">@color/dark_c5_foreground</item>
+    <item name="colorSurfaceVariant">@color/dark_c1_background</item>
+    
+    <item name="colorSurfaceContainer">@color/dark_c2_surface</item> 
+    <item name="colorSurfaceContainerHigh">@color/dark_c4_border</item>
+    <item name="colorOutline">@color/dark_c4_border</item>
+    <item name="colorOutlineVariant">@color/dark_c4_border</item>
+    
+    <!-- STATUS BAR FIX: Matches background -->
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    
+    <item name="android:fontFamily">@font/poppins</item>
+    <item name="fontFamily">@font/poppins</item>
+    
+    <item name="taskBackground">@color/dark_c2_surface</item>
+    <item name="taskBorder">@color/dark_c4_border</item>
+    <item name="mainBorder">@color/dark_c4_border</item>
+    <item name="buttonBackground">@color/dark_c3_accent</item>
+  </style>
+
+</resources>
