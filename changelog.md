@@ -108,7 +108,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - respetar el formato de 12 / 24 h del sistema al elegir la hora de una subtarea.
 - usar plurales en el analisis semanal de estadisticas (decia `1 tareas`).
 - [online] mostrar `v1.7` en el pie de ajustes, que seguia indicando `v1.5`.
-- centrar verticalmente la casilla y el titulo en el detalle de tarea, que quedaban alineados arriba.
+- centrar verticalmente la casilla, el icono de lista y sus textos en el detalle de tarea, eliminando el espacio tipografico que los desalineaba.
 
 #### NUEVO
 
@@ -227,7 +227,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - respect the system 12 / 24 h format when picking a subtask time.
 - use plurals in the weekly statistics insight (it said `1 tasks`).
 - [online] show `v1.7` in the settings footer, which still said `v1.5`.
-- vertically centre the checkbox and the title in the task details, which were aligned to the top.
+- vertically centre the checkbox, list icon and their labels in the task details, removing the font padding that misaligned them.
 
 #### ADDED
 
