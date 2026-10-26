@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -185,14 +188,16 @@ class CalendarFragment : Fragment() {
     }
 
     private fun observeReminders() {
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            remindersViewModel.calendarReminders.collect { reminders ->
-                monthRemindersMap = reminders.groupBy { reminder ->
-                    getStartOfDay(reminder.dateTime)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                remindersViewModel.calendarReminders.collect { reminders ->
+                    monthRemindersMap = reminders.groupBy { reminder ->
+                        getStartOfDay(reminder.dateTime)
+                    }
+
+                    calendarAdapter.submitData(daysList, monthTasksMap, monthRemindersMap, selectedDate)
+                    updateTasksForSelectedDate()
                 }
-                
-                calendarAdapter.submitData(daysList, monthTasksMap, monthRemindersMap, selectedDate)
-                updateTasksForSelectedDate()
             }
         }
     }

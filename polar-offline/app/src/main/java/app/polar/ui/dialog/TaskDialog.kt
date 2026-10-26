@@ -130,6 +130,12 @@ class TaskDialog(
           else -> "NONE"
         }
         isRecurrenceExplicitlySet = true
+        // Una recurrente necesita fecha de vencimiento: sin ella nunca llegaría a repetirse
+        if (selectedRecurrence != "NONE" && selectedDate == null) {
+          selectedDate = defaultDueDate()
+          isDateExplicitlySet = true
+          updateDateText()
+        }
         updateRecurrenceText()
         true
       }
@@ -194,13 +200,15 @@ class TaskDialog(
       val tagsString = tagList.joinToString(",")
       
       // Prioritize explicit Date selection
-      val finalDate = if (isDateExplicitlySet) selectedDate else parsedInfo.dueDate
+      var finalDate = if (isDateExplicitlySet) selectedDate else parsedInfo.dueDate
       
       // Prioritize explicit Recurrence selection
       val finalRecurrence = if (isRecurrenceExplicitlySet) selectedRecurrence
       else if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence
       else selectedRecurrence
       
+      if (finalRecurrence != "NONE" && finalDate == null) finalDate = defaultDueDate()
+
       val timeEstimate = binding.etTimeEstimate.text.toString().toIntOrNull() ?: 0
 
       if (parsedInfo.title.isNotEmpty()) {
@@ -249,6 +257,18 @@ class TaskDialog(
     }
   }
   
+  // Hoy a la hora de notificación por defecto
+  private fun defaultDueDate(): Long {
+    val sharedPrefs =
+      requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+    return java.util.Calendar.getInstance().apply {
+      set(java.util.Calendar.HOUR_OF_DAY, sharedPrefs.getInt("default_notification_hour", 7))
+      set(java.util.Calendar.MINUTE, sharedPrefs.getInt("default_notification_minute", 30))
+      set(java.util.Calendar.SECOND, 0)
+      set(java.util.Calendar.MILLISECOND, 0)
+    }.timeInMillis
+  }
+
   private fun updateDateText() {
     if (selectedDate != null) {
       val format = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())

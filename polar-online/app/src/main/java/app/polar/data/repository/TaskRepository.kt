@@ -28,6 +28,10 @@ class TaskRepository @Inject constructor(
   suspend fun insertTaskList(taskList: TaskList): Long {
     return taskListDao.insert(taskList)
   }
+
+  suspend fun getNextTaskListOrderIndex(): Int = taskListDao.getNextOrderIndex()
+
+  suspend fun getNextTaskListHomeOrderIndex(): Int = taskListDao.getNextHomeOrderIndex()
   
   suspend fun updateTaskList(taskList: TaskList) {
     taskListDao.update(taskList)
@@ -41,17 +45,18 @@ class TaskRepository @Inject constructor(
   // hangs off it, must be soft-deleted so the tombstone can propagate to Supabase and the
   // other app (see agent-docs/supabase-sync/04-estrategia-sincronizacion.md, "Manejo de
   // borrado en cascada"). Room's ON DELETE CASCADE never fires here since we no longer issue
-  // a physical DELETE.
-  suspend fun deleteTaskList(taskList: TaskList) {
+  // a physical DELETE. Devuelve las tareas que se han enviado a la papelera para que quien llama
+  // pueda cancelar sus alarmas.
+  suspend fun deleteTaskList(taskList: TaskList): List<Task> {
     taskListDao.update(taskList.touchedDeleted())
-    taskDao.getAllTasksForListSnapshot(taskList.id)
-      .filter { !it.isDeleted }
-      .forEach { task ->
+    val tasks = taskDao.getAllTasksForListSnapshot(taskList.id).filter { !it.isDeleted }
+    tasks.forEach { task ->
         taskDao.update(task.touchedDeleted())
         subtaskDao.getSubtasksForTaskDirect(task.id).forEach { subtask ->
           subtaskDao.update(subtask.touchedDeleted())
         }
       }
+    return tasks
   }
   
   suspend fun getTaskListById(id: Long): TaskList? {
@@ -91,12 +96,20 @@ class TaskRepository @Inject constructor(
     return taskDao.getTaskById(taskId)
   }
 
+  fun observeTaskById(taskId: Long): kotlinx.coroutines.flow.Flow<Task?> {
+    return taskDao.observeTaskById(taskId)
+  }
+
+  suspend fun getNextTaskOrderIndex(listId: Long): Int = taskDao.getNextOrderIndex(listId)
+
   suspend fun cacheTaskImageUri(taskId: Long, imageUri: String) {
     taskDao.updateImageUriCache(taskId, imageUri)
   }
   
+  // `%` y `_` se buscan de forma literal: sin escapar, "50%" coincidiría con cualquier tarea.
   fun searchTasks(query: String): LiveData<List<Task>> {
-    return taskDao.searchTasks(query)
+    val escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return taskDao.searchTasks(escaped)
   }
 
   suspend fun getTasksBetweenDates(start: Long, end: Long): List<Task> {
@@ -122,6 +135,10 @@ class TaskRepository @Inject constructor(
   
   suspend fun insertSubtask(subtask: Subtask): Long {
     return subtaskDao.insert(subtask)
+  }
+
+  suspend fun insertSubtasks(subtasks: List<Subtask>) {
+    if (subtasks.isNotEmpty()) subtaskDao.insertAll(subtasks)
   }
   
   suspend fun updateSubtask(subtask: Subtask) {
@@ -232,6 +249,7 @@ class TaskRepository @Inject constructor(
   suspend fun getCreatedTaskCountBetween(start: Long, end: Long): Int = taskDao.getCreatedTaskCountBetween(start, end)
   suspend fun getOverdueTaskCount(now: Long): Int = taskDao.getOverdueTaskCount(now)
   suspend fun getAllCompletedTasksSnapshot(): List<Task> = taskDao.getAllCompletedTasksSnapshot()
+  suspend fun getCompletedDueDatesSince(since: Long): List<Long> = taskDao.getCompletedDueDatesSince(since)
   suspend fun getTaskCountByPriority(): List<app.polar.data.model.PriorityCount> = taskDao.getTaskCountByPriority()
   suspend fun getTaskCountByList(): List<app.polar.data.model.ListTaskCount> = taskDao.getTaskCountByList()
 }

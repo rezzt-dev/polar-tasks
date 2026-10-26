@@ -210,16 +210,24 @@ class DrawerManager(
             taskListAdapter.submitList(lists)
         }
 
+        // Cada getDeleted*() crea un LiveData nuevo: los recuentos se guardan al observarlos en vez
+        // de leer `.value` de otra instancia (que siempre estaba vacía y dejaba el contador a 0).
         val tvTrashCount = binding.root.findViewById<android.widget.TextView>(R.id.tvTrashCount)
+        var taskCount = 0
+        var reminderCount = 0
         val updateTrashCount = {
-            val taskCount = taskViewModel.getDeletedTasks().value?.size ?: 0
-            val reminderCount = remindersViewModel.getDeletedReminders().value?.size ?: 0
             val total = taskCount + reminderCount
             tvTrashCount.text = if (total > 0) activity.getString(R.string.trash_with_count, total) else activity.getString(R.string.trash)
         }
 
-        taskViewModel.getDeletedTasks().observe(activity) { updateTrashCount() }
-        remindersViewModel.getDeletedReminders().observe(activity) { updateTrashCount() }
+        taskViewModel.getDeletedTasks().observe(activity) { tasks ->
+            taskCount = tasks.size
+            updateTrashCount()
+        }
+        remindersViewModel.getDeletedReminders().observe(activity) { reminders ->
+            reminderCount = reminders.size
+            updateTrashCount()
+        }
     }
 
     private fun showTaskListPopupMenu(taskList: TaskList) {

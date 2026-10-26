@@ -20,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     application: Application,
-    private val repository: TaskRepository
+    private val repository: TaskRepository,
+    private val alarmHelper: app.polar.util.AlarmManagerHelper
 ) : AndroidViewModel(application) {
   val allTaskLists: LiveData<List<TaskList>> = repository.allTaskLists
   
@@ -47,7 +48,14 @@ class TaskListViewModel @Inject constructor(
   }
   
   fun insertTaskList(title: String, icon: String = "ic_list", isDependencyChain: Boolean = false, color: String = "#7F52FF") = safeLaunch {
-    val taskList = TaskList(title = title, icon = icon, isDependencyChain = isDependencyChain, color = color)
+    val taskList = TaskList(
+      title = title,
+      icon = icon,
+      isDependencyChain = isDependencyChain,
+      color = color,
+      orderIndex = repository.getNextTaskListOrderIndex(),
+      homeOrderIndex = repository.getNextTaskListHomeOrderIndex()
+    )
     repository.insertTaskList(taskList)
   }
   
@@ -55,7 +63,10 @@ class TaskListViewModel @Inject constructor(
     repository.updateTaskList(taskList.touched())
   }
   
+  // Las tareas de la lista pasan a la papelera: sus alarmas no deben seguir sonando.
   fun deleteTaskList(taskList: TaskList) = safeLaunch {
     repository.deleteTaskList(taskList)
+      .filter { it.dueDate != null }
+      .forEach { alarmHelper.cancelTaskAlarm(it.id) }
   }
 }

@@ -174,7 +174,9 @@ class TaskSwipeHelper(
         val iconSize = context.dpToPx(ICON_SIZE_DP)
         val label = config.labelRes?.let(context::getString)
         labelPaint.color = iconTint
-        labelPaint.textSize = 12f * context.resources.displayMetrics.scaledDensity
+        labelPaint.textSize = android.util.TypedValue.applyDimension(
+            android.util.TypedValue.COMPLEX_UNIT_SP, 12f, context.resources.displayMetrics
+        )
         val labelWidth = label?.let(labelPaint::measureText) ?: 0f
         val inset = context.dpToPx(ICON_MARGIN_DP)
         val actionWidth = maxOf(iconSize, labelWidth) + inset * 2

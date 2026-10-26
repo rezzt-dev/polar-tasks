@@ -33,4 +33,11 @@ interface TaskListDao {
 
   @Query("SELECT * FROM task_lists WHERE id = :id")
   suspend fun getListById(id: Long): TaskList?
+
+  // Las listas nuevas se añaden al final, tanto en el menú lateral como en inicio.
+  @Query("SELECT COALESCE(MAX(orderIndex), -1) + 1 FROM task_lists")
+  suspend fun getNextOrderIndex(): Int
+
+  @Query("SELECT COALESCE(MAX(homeOrderIndex), -1) + 1 FROM task_lists")
+  suspend fun getNextHomeOrderIndex(): Int
 }

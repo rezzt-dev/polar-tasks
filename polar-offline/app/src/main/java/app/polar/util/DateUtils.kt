@@ -8,8 +8,6 @@ import java.util.Date
 import java.util.Locale
 
 object DateUtils {
-    private val dateFormat = SimpleDateFormat("d, MMM", Locale("es", "ES"))
-    
     // ThreadLocal Calendars to avoid excessive allocations in onBindViewHolder while keeping thread safety
     private val calendarCache = object : ThreadLocal<Calendar>() {
         override fun initialValue(): Calendar = Calendar.getInstance()
@@ -36,7 +34,8 @@ object DateUtils {
         return when {
             isToday -> context.getString(R.string.today)
             isTomorrow -> context.getString(R.string.tomorrow)
-            else -> dateFormat.format(Date(dueDateMs)).lowercase()
+            // Formato creado por llamada: respeta el idioma activo y SimpleDateFormat no es thread-safe.
+            else -> SimpleDateFormat("d, MMM", Locale.getDefault()).format(Date(dueDateMs)).lowercase()
         }
     }
 
@@ -88,12 +87,11 @@ object DateUtils {
         cal.timeInMillis = timeInMillis
         val hasTime = cal.get(Calendar.HOUR_OF_DAY) != 0 || cal.get(Calendar.MINUTE) != 0
         
-        val format = if (hasTime) {
-            SimpleDateFormat("d 'de' MMMM 'de' yyyy, HH:mm", Locale.getDefault())
-        } else {
-            SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale.getDefault())
-        }
-        
-        return format.format(Date(timeInMillis))
+        // Patrón propio de cada idioma ("5 de octubre de 2026" / "5 October 2026"...).
+        val locale = Locale.getDefault()
+        val pattern = android.text.format.DateFormat.getBestDateTimePattern(
+            locale, if (hasTime) "dMMMMyyyyHHmm" else "dMMMMyyyy"
+        )
+        return SimpleDateFormat(pattern, locale).format(Date(timeInMillis))
     }
 }

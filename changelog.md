@@ -46,14 +46,50 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - documentar en `agents.md` (seccion 4.6) y `claude.md` la regla de que toda la interfaz se escribe en minusculas y en todos los idiomas.
 - anadir `.docs/agent-docs/reglas-online-vs-offline.md` con las reglas obligatorias entre `polar-online/` y `polar-offline/` y renombrar `analisis-implementacion-supabase-sync.md` a `implementacion-supabase.md` dentro de `agent-docs/`.
 - crear `.docs/pr-merge-release-guidelines.md` y replicar su contenido en `agents.md` y `claude.md` para que las pull requests, los commits de merge y las releases de github usen el mismo formato de categorias que `changelog.md`.
+- centralizar en `AlarmRescheduler` la reprogramacion y cancelacion en bloque de alarmas de tareas, subtareas y recordatorios, y usarlo al reiniciar el dispositivo, al conceder el permiso de alarmas exactas y al restaurar una copia.
+- unificar en `TaskFilter` las reglas de los filtros de hoy, pendientes, vencidas y recurrentes, que estaban duplicadas en `GetFilteredTasksUseCase` y `TaskViewModel`.
+- calcular las estadisticas con una unica consulta agrupada en memoria (`CompletionHistory`) en lugar de una consulta por dia (unas 430 por carga).
+- revisar en `RecurrenceWorker` solo las tareas recurrentes completadas en lugar de cargar todas las tareas cada hora.
+- mover la importacion csv a `CsvImporter`: lectura fuera del hilo principal, una unica transaccion, soporte de comas, comillas y saltos de linea dentro de las celdas y aviso cuando el fichero no contiene tareas.
+- refrescar el widget automaticamente cuando cambian las tareas (observador de room en `PolarApplication`) y al cambiar de dia.
+- generar los textos de notificaciones y widget con el idioma elegido en la app (`ThemeManager.localizedContext()`).
+- sustituir apis obsoletas (`systemUiVisibility`, `launchWhenStarted`, `announceForAccessibility`, `adapterPosition`, `scaledDensity` y el constructor de `Locale`) y eliminar los avisos de compilacion.
+- anadir tests unitarios de `TaskFilter`, `CompletionHistory`, `RecurrenceUtils` y `CsvImporter`, y ampliar `TaskViewModelTest` con el orden de las tareas nuevas y las alarmas de subtareas.
+- documentar en `agents.md` y `claude.md` el uso de `AlarmRescheduler`, el refresco del widget y la revision horaria de `RecurrenceWorker`.
 
 #### CORREGIDO
 
+- corregir las tareas recurrentes: al llegar el dia de la siguiente ocurrencia `RecurrenceWorker` reabre la tarea con nueva fecha de vencimiento y nueva fecha de creacion, desmarca sus subtareas y reprograma la alarma.
+- corregir las tareas recurrentes completadas con retraso o tras varios dias sin abrir la app: se ajustan a la ocurrencia vigente (`RecurrenceUtils`) en lugar de reaparecer una a una con fechas ya pasadas.
+- revisar las recurrentes cada hora y al abrir la app (antes cada 12 horas) para que reaparezcan al empezar el dia.
+- exigir fecha de vencimiento al elegir una repeticion en `TaskDialog` (tambien si se detecta en el titulo); sin fecha la tarea nunca se repetia.
+- aplicar al completar una tarea desde la accion de la notificacion la misma regla que desde la app: completar las subtareas y cancelar la alarma, recurrentes incluidas.
+- no programar alarmas al editar una tarea completada y unificar `toggleTaskCompletion` con `setTaskCompletion` para eliminar logica duplicada.
+- mostrar en el detalle de tarea la repeticion `lunes y miercoles` y `primer dia del mes`, que aparecia vacia.
 - corregir los errores de lint al completar las traducciones, aplicar tintes compatibles en recordatorios y aislar los atributos de navegacion de api 27 en temas especificos.
 - pasar a minusculas todos los textos de interfaz de recordatorios y ajustes (navegacion de ajustes, detalle de tarea, dialogos y agenda de recordatorios) en `values`, `values-en-rGB`, `values-en-rUS`, `values-de` y `values-fr` para respetar la convencion de minusculas de toda la app.
 - [offline] ignorar en `RecurrenceWorker` las tareas recurrentes que estan en la papelera: se reactivaban y programaban alarmas de tareas ya borradas.
 - [offline] actualizar a `v1.7` la version que muestra el pie de los ajustes (`developed_by_full`), que seguia indicando `v1.5`, en todos los idiomas.
 - [online] permitir eliminar permanentemente y vaciar la papelera sin cuenta vinculada: el guardia de sincronizacion (`dirty = 0`) dejaba los elementos atascados con el aviso `still waiting to sync with the cloud` cuando la app es puramente local; ahora, si no hay sesion, se purga directamente con `forcePermanentDelete` / `forceEmptyTrash`.
+- no reprogramar al reiniciar el dispositivo las alarmas de tareas que estan en la papelera, y reprogramar tambien las de las subtareas.
+- no notificar subtareas cuya tarea esta completada o en la papelera, y abrir su tarea desde la notificacion de una subtarea sin las acciones de completar y posponer, que apuntaban a una tarea inexistente.
+- cancelar el aviso de una subtarea al quitarle la fecha, completarla o eliminarla, y cancelar la alarma anterior al programar una con fecha ya pasada en vez de dejarla sonando.
+- cancelar al restaurar una copia las alarmas que apuntaban a ids de otras tareas y programar las de los datos restaurados.
+- evitar que falle por valores nulos la restauracion de copias antiguas a las que les faltan campos.
+- anadir las listas y tareas nuevas al final (`orderIndex`) en vez de con indice 0, que en las cadenas de dependencia colocaba el paso nuevo el primero.
+- actualizar al momento el detalle de tarea al completarla, editarla o adjuntar una imagen, y evitar que desmarcar desde el detalle una tarea recien completada la vuelva a completar.
+- usar el selector de documentos al adjuntar una imagen en el detalle de tarea, que cerraba la app (`takePersistableUriPermission` con `GetContent`), y ocultar la imagen si ya no se puede leer.
+- ignorar las acciones completar y posponer de una notificacion si la tarea ya se completo o se envio a la papelera.
+- corregir el contador de la papelera del menu lateral, que siempre mostraba 0.
+- conservar la lista abierta, el titulo y el boton de anadir al recrear la pantalla principal (girar el dispositivo, cambiar tema o idioma, restaurar una copia).
+- abrir la tarea al tocarla en el widget, refrescarlo solo y traducir sus textos, que estaban fijos en ingles.
+- traducir los textos de notificaciones, del canal y de la confirmacion de recordatorio, que estaban fijos en castellano, y mostrar el titulo del recordatorio como texto en lugar de interpretarlo como html.
+- formatear en el idioma de la app las fechas del detalle, de las tarjetas, de la exportacion como imagen y de las estadisticas, que estaban fijas en castellano (`Locale("es")` y el literal `de`).
+- buscar `%` y `_` de forma literal, que devolvian cualquier tarea.
+- evitar que el lector de pantalla anuncie la ordenacion cada vez que se abre una lista.
+- evitar que la app se cierre al salir de ajustes mientras se restaura una copia.
+- [online] restaurar la copia en una unica transaccion (si fallaba a mitad se perdian los datos) y exportar tambien las listas borradas, sin las cuales la copia no se podia restaurar.
+- [online] cancelar las alarmas de las tareas al eliminar su lista.
 
 #### NUEVO
 
@@ -98,14 +134,50 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - document in `agents.md` (section 4.6) and `claude.md` the rule that the whole interface is written in lowercase in every language.
 - add `.docs/agent-docs/reglas-online-vs-offline.md` with the mandatory rules between `polar-online/` and `polar-offline/`, and rename `analisis-implementacion-supabase-sync.md` to `implementacion-supabase.md` inside `agent-docs/`.
 - create `.docs/pr-merge-release-guidelines.md` and mirror its content in `agents.md` and `claude.md` so pull requests, merge commits and github releases use the same category format as `changelog.md`.
+- centralize in `AlarmRescheduler` the bulk rescheduling and cancelling of task, subtask and reminder alarms, and use it after a device reboot, when the exact alarm permission is granted and when restoring a backup.
+- merge into `TaskFilter` the rules of the today, pending, overdue and recurring filters, which were duplicated in `GetFilteredTasksUseCase` and `TaskViewModel`.
+- compute statistics with a single query grouped in memory (`CompletionHistory`) instead of one query per day (about 430 per load).
+- check only completed recurring tasks in `RecurrenceWorker` instead of loading every task each hour.
+- move csv import to `CsvImporter`: reading off the main thread, a single transaction, support for commas, quotes and line breaks inside cells, and a message when the file contains no tasks.
+- refresh the widget automatically when tasks change (room observer in `PolarApplication`) and when the day changes.
+- build notification and widget texts with the language chosen in the app (`ThemeManager.localizedContext()`).
+- replace deprecated apis (`systemUiVisibility`, `launchWhenStarted`, `announceForAccessibility`, `adapterPosition`, `scaledDensity` and the `Locale` constructor) and remove the compiler warnings.
+- add unit tests for `TaskFilter`, `CompletionHistory`, `RecurrenceUtils` and `CsvImporter`, and extend `TaskViewModelTest` with the order of new tasks and subtask alarms.
+- document in `agents.md` and `claude.md` how to use `AlarmRescheduler`, the widget refresh and the hourly `RecurrenceWorker` check.
 
 #### FIXED
 
+- fix recurring tasks: when the day of the next occurrence arrives `RecurrenceWorker` reopens the task with a new due date and a new creation date, unchecks its subtasks and reschedules the alarm.
+- fix recurring tasks completed late or after several days without opening the app: they are moved to the current occurrence (`RecurrenceUtils`) instead of reappearing one by one with past dates.
+- check recurring tasks every hour and on app start (previously every 12 hours) so they reappear when the day begins.
+- require a due date when choosing a repetition in `TaskDialog` (also when detected in the title); without one the task never repeated.
+- apply the same rule when completing a task from the notification action as in the app: complete the subtasks and cancel the alarm, recurring tasks included.
+- do not schedule alarms when editing a completed task and merge `toggleTaskCompletion` into `setTaskCompletion` to remove duplicated logic.
+- show the `monday and wednesday` and `first day of the month` repetitions in the task detail, which were rendered empty.
 - fix lint errors by completing translations, applying compatible reminder icon tints and isolating api 27 navigation attributes in version-specific themes.
 - lowercase every reminders and settings interface string (settings navigation, task detail, dialogs and reminders agenda) in `values`, `values-en-rGB`, `values-en-rUS`, `values-de` and `values-fr` to follow the app-wide lowercase convention.
 - [offline] skip trashed recurring tasks in `RecurrenceWorker`: they were reset and scheduled alarms for tasks the user had already deleted.
 - [offline] update the version shown in the settings footer (`developed_by_full`) to `v1.7` in every language; it still read `v1.5`.
 - [online] allow permanently deleting and emptying the trash without a linked account: the sync guard (`dirty = 0`) left items stuck with the `still waiting to sync with the cloud` warning when the app is purely local; now, if there is no session, the purge runs directly via `forcePermanentDelete` / `forceEmptyTrash`.
+- do not reschedule after a device reboot the alarms of tasks in the trash, and reschedule subtask alarms too.
+- do not notify subtasks whose task is completed or in the trash, and open their task from a subtask notification without the complete and snooze actions, which pointed to a nonexistent task.
+- cancel a subtask alert when its date is cleared or it is completed or deleted, and cancel the previous alarm when scheduling one with a past date instead of leaving it ringing.
+- cancel on backup restore the alarms that pointed to the ids of other tasks and schedule those of the restored data.
+- prevent restoring old backups that lack some fields from failing because of null values.
+- add new lists and tasks at the end (`orderIndex`) instead of with index 0, which put the new step first in dependency chains.
+- update the task detail right away when the task is completed, edited or gets an image, and stop unchecking a just completed task from the detail from completing it again.
+- use the document picker when attaching an image in the task detail, which crashed the app (`takePersistableUriPermission` with `GetContent`), and hide the image if it can no longer be read.
+- ignore the complete and snooze notification actions if the task was already completed or moved to the trash.
+- fix the trash counter in the side menu, which always showed 0.
+- keep the open list, the title and the add button when the main screen is recreated (rotating the device, changing theme or language, restoring a backup).
+- open the task when tapped in the widget, refresh it automatically and translate its texts, which were hardcoded in english.
+- translate the notification, channel and reminder confirmation texts, which were hardcoded in spanish, and show the reminder title as plain text instead of parsing it as html.
+- format the dates in the detail, cards, image export and statistics in the app language; they were hardcoded in spanish (`Locale("es")` and the literal `de`).
+- search `%` and `_` literally; they returned every task.
+- stop the screen reader from announcing the sort order every time a list is opened.
+- prevent the app from crashing when leaving settings while a backup is being restored.
+- [online] restore the backup in a single transaction (a failure halfway lost the data) and also export deleted lists, without which the backup could not be restored.
+- [online] cancel the task alarms when their list is deleted.
 
 #### ADDED
 

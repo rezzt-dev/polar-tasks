@@ -32,16 +32,8 @@ class PolarApplication : Application() {
 
     NotificationHelper.createNotificationChannel(this)
 
-    // Schedule Recurrence Worker (runs periodically to check for tasks to reset)
-    val workRequest = androidx.work.PeriodicWorkRequestBuilder<app.polar.worker.RecurrenceWorker>(
-      12, java.util.concurrent.TimeUnit.HOURS
-    ).build()
-
-    androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-      "RecurrenceWorker",
-      androidx.work.ExistingPeriodicWorkPolicy.KEEP,
-      workRequest
-    )
+    scheduleRecurrenceWorker()
+    observeTasksForWidget()
 
     // Cloud sync (see agent-docs/supabase-sync/06-plan-implementacion-android.md). Safe to
     // schedule even when the user has never signed in: SyncManager.sync() no-ops without a
@@ -110,5 +102,39 @@ class PolarApplication : Application() {
           }
         }
     }
+  }
+
+  // Cualquier escritura en `tasks` (app, notificaciones, workers, sincronización, copias) refresca
+  // el widget, sin que cada punto de escritura tenga que acordarse de avisarle.
+  private fun observeTasksForWidget() {
+    app.polar.data.AppDatabase.getDatabase(this).invalidationTracker.addObserver(
+      object : androidx.room.InvalidationTracker.Observer("tasks") {
+        override fun onInvalidated(tables: Set<String>) {
+          app.polar.widget.TaskWidgetProvider.notifyDataChanged(this@PolarApplication)
+        }
+      }
+    )
+  }
+
+  // Se revisa cada hora (mínimo razonable de WorkManager) para que una tarea recurrente reaparezca
+  // poco después de medianoche, y una vez al abrir la app para ponerse al día de inmediato.
+  private fun scheduleRecurrenceWorker() {
+    val workManager = androidx.work.WorkManager.getInstance(this)
+
+    val periodicRequest = androidx.work.PeriodicWorkRequestBuilder<app.polar.worker.RecurrenceWorker>(
+      1, java.util.concurrent.TimeUnit.HOURS
+    ).build()
+    // UPDATE (no KEEP) para que las instalaciones previas dejen atrás el intervalo antiguo de 12 h.
+    workManager.enqueueUniquePeriodicWork(
+      "RecurrenceWorker",
+      androidx.work.ExistingPeriodicWorkPolicy.UPDATE,
+      periodicRequest
+    )
+
+    workManager.enqueueUniqueWork(
+      "RecurrenceWorkerOnStart",
+      androidx.work.ExistingWorkPolicy.REPLACE,
+      androidx.work.OneTimeWorkRequestBuilder<app.polar.worker.RecurrenceWorker>().build()
+    )
   }
 }

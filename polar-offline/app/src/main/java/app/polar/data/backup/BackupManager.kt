@@ -8,6 +8,8 @@ import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Reminder
+import app.polar.util.AlarmManagerHelper
+import app.polar.util.AlarmRescheduler
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -30,6 +32,7 @@ class BackupManager(private val context: Context) {
 
     private val gson = Gson()
     private val database = AppDatabase.getDatabase(context)
+    private val alarmRescheduler = AlarmRescheduler(database, AlarmManagerHelper(context))
 
     suspend fun exportBackup(uri: Uri): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
@@ -69,6 +72,9 @@ class BackupManager(private val context: Context) {
 
             val backupData = parseBackup(jsonString)
 
+            // Las alarmas apuntan a ids concretos: tras restaurar, esos ids pasan a ser de otros
+            // elementos (o de ninguno). Se cancelan todas y se reconstruyen desde la copia.
+            alarmRescheduler.cancelAll()
             database.withTransaction {
                 database.subtaskDao().deleteAll()
                 database.taskDao().deleteAll()
@@ -85,6 +91,10 @@ class BackupManager(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)
+        } finally {
+            // Si la restauración falla, la transacción deja los datos anteriores: se reprograman
+            // igualmente sus alarmas, canceladas antes de empezar.
+            runCatching { alarmRescheduler.rescheduleAll() }.onFailure { it.printStackTrace() }
         }
     }
 
@@ -112,18 +122,29 @@ class BackupManager(private val context: Context) {
             parentDeletedAt != null && deletedAt >= parentDeletedAt
         }
 
-        val taskLists = root.listOf("taskLists", TaskList::class.java)
+        val taskLists = root.listOf("taskLists", TaskList::class.java) { TaskList(title = "") }
         val listIds = taskLists.map { it.id }.toSet()
-        val tasks = root.listOf("tasks", Task::class.java).filter { it.listId in listIds }
+        val tasks = root.listOf("tasks", Task::class.java) { Task(listId = 0, title = "") }
+            .filter { it.listId in listIds }
         val taskIds = tasks.map { it.id }.toSet()
-        val subtasks = root.listOf("subtasks", Subtask::class.java).filter { it.taskId in taskIds }
-        val reminders = root.listOf("reminders", Reminder::class.java)
+        val subtasks = root.listOf("subtasks", Subtask::class.java) { Subtask(taskId = 0, title = "") }
+            .filter { it.taskId in taskIds }
+        val reminders = root.listOf("reminders", Reminder::class.java) { Reminder(title = "", dateTime = 0) }
 
         return BackupData(taskLists = taskLists, tasks = tasks, subtasks = subtasks, reminders = reminders)
     }
 
-    private fun <T> JsonObject.listOf(key: String, type: Class<T>): List<T> =
-        getAsJsonArray(key)?.map { gson.fromJson(it, type) }.orEmpty()
+    // Gson no usa los valores por defecto de Kotlin: un campo que no venga en la copia (copias de
+    // versiones anteriores a su existencia) quedaría a null aunque el tipo no lo admita, y la
+    // inserción fallaría. Cada elemento se superpone sobre una instancia por defecto.
+    private fun <T : Any> JsonObject.listOf(key: String, type: Class<T>, defaults: () -> T): List<T> =
+        getAsJsonArray(key)?.map { element ->
+            val merged = gson.toJsonTree(defaults()).asJsonObject
+            element.asJsonObject.entrySet().forEach { (field, value) ->
+                if (!value.isJsonNull) merged.add(field, value)
+            }
+            gson.fromJson(merged, type)
+        }.orEmpty()
 
     private fun JsonObject.filterArray(key: String, keep: (JsonObject) -> Boolean) {
         val array = getAsJsonArray(key) ?: return

@@ -46,7 +46,14 @@ class TaskListViewModel @Inject constructor(
   }
 
   fun insertTaskList(title: String, icon: String = "ic_list", isDependencyChain: Boolean = false, color: String = "#7F52FF") = safeLaunch {
-    val taskList = TaskList(title = title, icon = icon, isDependencyChain = isDependencyChain, color = color)
+    val taskList = TaskList(
+      title = title,
+      icon = icon,
+      isDependencyChain = isDependencyChain,
+      color = color,
+      orderIndex = repository.getNextTaskListOrderIndex(),
+      homeOrderIndex = repository.getNextTaskListHomeOrderIndex()
+    )
     repository.insertTaskList(taskList)
   }
 

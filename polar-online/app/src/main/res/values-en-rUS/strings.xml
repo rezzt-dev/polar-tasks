@@ -377,4 +377,18 @@
         <item quantity="one">%d overdue</item>
         <item quantity="other">%d overdue</item>
     </plurals>
+
+    <!-- Notificaciones, widget e importacion -->
+    <string name="notification_channel_name">task reminders</string>
+    <string name="notification_channel_desc">alerts for task, subtask and reminder deadlines</string>
+    <string name="notification_action_complete">complete</string>
+    <string name="notification_action_snooze">snooze 1 h</string>
+    <string name="notification_reminder_title">reminder: %1$s</string>
+    <string name="notification_subtask_of">subtask of %1$s</string>
+    <string name="reminder_created_title">reminder created</string>
+    <string name="reminder_created_message">a reminder has been set for %1$s at %2$s for:</string>
+    <string name="widget_title">today\'s tasks</string>
+    <string name="widget_empty">no tasks for today</string>
+    <string name="widget_refresh">refresh</string>
+    <string name="csv_import_empty">the file contains no tasks to import</string>
 </resources>

@@ -77,6 +77,12 @@ interface ReminderDao {
     
     @Query("SELECT * FROM reminders")
     suspend fun getAllRemindersSnapshot(): List<Reminder>
+
+    @Query("SELECT * FROM reminders WHERE isDeleted = 0 AND isCompleted = 0 AND dateTime > :now")
+    suspend fun getAlarmableReminders(now: Long): List<Reminder>
+
+    @Query("SELECT id FROM reminders")
+    suspend fun getAllReminderIds(): List<Long>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(reminders: List<Reminder>)

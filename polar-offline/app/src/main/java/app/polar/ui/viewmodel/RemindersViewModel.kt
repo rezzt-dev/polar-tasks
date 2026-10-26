@@ -145,10 +145,7 @@ class RemindersViewModel @Inject constructor(
             )
     }
 
-    fun toggleCompletion(reminder: Reminder) = safeLaunch {
-        val updated = reminder.copy(isCompleted = !reminder.isCompleted)
-        update(updated)
-    }
+    fun toggleCompletion(reminder: Reminder) = update(reminder.copy(isCompleted = !reminder.isCompleted))
 
 
 }

@@ -28,13 +28,17 @@ class DragDropHelper(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        onItemMove(viewHolder.adapterPosition, target.adapterPosition)
+        val from = viewHolder.bindingAdapterPosition
+        val to = target.bindingAdapterPosition
+        if (from == RecyclerView.NO_POSITION || to == RecyclerView.NO_POSITION) return false
+        onItemMove(from, to)
         isMoved = true
         return true
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        onSwiped?.invoke(viewHolder.adapterPosition, direction)
+        val position = viewHolder.bindingAdapterPosition
+        if (position != RecyclerView.NO_POSITION) onSwiped?.invoke(position, direction)
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {

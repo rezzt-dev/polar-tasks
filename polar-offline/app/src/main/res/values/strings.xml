@@ -317,4 +317,18 @@
         <item quantity="one">%d vencido</item>
         <item quantity="other">%d vencidos</item>
     </plurals>
+
+    <!-- Notificaciones, widget e importacion -->
+    <string name="notification_channel_name">recordatorios de tareas</string>
+    <string name="notification_channel_desc">avisos de vencimiento de tareas, subtareas y recordatorios</string>
+    <string name="notification_action_complete">completar</string>
+    <string name="notification_action_snooze">posponer 1 h</string>
+    <string name="notification_reminder_title">recordatorio: %1$s</string>
+    <string name="notification_subtask_of">subtarea de %1$s</string>
+    <string name="reminder_created_title">recordatorio creado</string>
+    <string name="reminder_created_message">se ha puesto un recordatorio el dia %1$s a la hora %2$s con el motivo de:</string>
+    <string name="widget_title">tareas de hoy</string>
+    <string name="widget_empty">no tienes tareas para hoy</string>
+    <string name="widget_refresh">actualizar</string>
+    <string name="csv_import_empty">el archivo no contiene tareas para importar</string>
 </resources>

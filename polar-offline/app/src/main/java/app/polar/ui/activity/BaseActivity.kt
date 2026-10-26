@@ -3,7 +3,6 @@ package app.polar.ui.activity
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import app.polar.util.ThemeManager
@@ -18,14 +17,7 @@ abstract class BaseActivity : AppCompatActivity() {
         val config = newBase.resources.configuration
         config.fontScale = fontScale
         
-        val sharedPrefs = newBase.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val localeStr = sharedPrefs.getString("app_locale", "es") ?: "es"
-        val locale = if (localeStr.contains("-r")) {
-            val parts = localeStr.split("-r")
-            java.util.Locale(parts[0], parts[1])
-        } else {
-            java.util.Locale(localeStr)
-        }
+        val locale = ThemeManager.loadAppLocale(newBase)
         java.util.Locale.setDefault(locale)
         config.setLocale(locale)
         
@@ -79,13 +71,8 @@ abstract class BaseActivity : AppCompatActivity() {
                         WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
                 )
             } else {
-                val decorView = window.decorView
-                val flags = decorView.systemUiVisibility
-                decorView.systemUiVisibility = if (light) {
-                    flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                } else {
-                    flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-                }
+                androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
+                    .isAppearanceLightStatusBars = light
             }
         } catch (e: Exception) {
             // Ignorar: el ajuste de iconos de status bar no es crítico.

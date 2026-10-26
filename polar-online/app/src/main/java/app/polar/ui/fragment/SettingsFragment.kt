@@ -543,7 +543,8 @@ class SettingsFragment : Fragment() {
             if (opResult.isSuccess) {
               Snackbar.make(binding.root, getString(R.string.backup_restored), Snackbar.LENGTH_LONG).show()
               delay(1000)
-              requireActivity().recreate()
+              // El usuario puede haber salido de la pantalla durante la espera.
+              activity?.recreate()
             } else {
               Snackbar.make(binding.root, getString(R.string.error_restoring_backup), Snackbar.LENGTH_SHORT).show()
             }
@@ -556,43 +557,20 @@ class SettingsFragment : Fragment() {
     registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == android.app.Activity.RESULT_OK) {
         result.data?.data?.let { uri ->
+          val listTitle = getString(R.string.imported_tasks_list_name)
+          val appContext = requireContext().applicationContext
+          val importer = app.polar.data.backup.CsvImporter(appContext)
           viewLifecycleOwner.lifecycleScope.launch {
-            try {
-              val contentResolver = requireContext().contentResolver
-              contentResolver.openInputStream(uri)?.use { inputStream ->
-                java.io.BufferedReader(java.io.InputStreamReader(inputStream)).use { reader ->
-                  var line: String? = reader.readLine()
-                  val lines = mutableListOf<String>()
-                  while (line != null) {
-                    if (line.isNotBlank()) lines.add(line)
-                    line = reader.readLine()
-                  }
-                  
-                  val db = app.polar.data.AppDatabase.getDatabase(requireContext())
-                  val taskListId = db.taskListDao().insert(app.polar.data.entity.TaskList(title = getString(R.string.imported_tasks_list_name)))
-                  
-                  for ((index, row) in lines.withIndex()) {
-                    if (index == 0 && (row.contains("title", ignoreCase = true) || row.contains("desc", ignoreCase = true))) {
-                      continue
-                    }
-                    val parts = row.split(",")
-                    val title = parts.getOrNull(0)?.trim()?.removeSurrounding("\"")
-                    val desc = parts.getOrNull(1)?.trim()?.removeSurrounding("\"") ?: ""
-                    if (!title.isNullOrBlank()) {
-                      db.taskDao().insert(app.polar.data.entity.Task(
-                        listId = taskListId,
-                        title = title,
-                        description = desc,
-                        priority = 0
-                      ))
-                    }
-                  }
-                }
-              }
-              Snackbar.make(binding.root, getString(R.string.tasks_imported_ok), Snackbar.LENGTH_LONG).show()
+            val message = try {
+              val imported = importer.import(uri, listTitle)
+              // Las filas nuevas nacen pendientes de subir: se envían ya si hay sesión.
+              if (imported > 0) app.polar.worker.SyncWorker.triggerImmediateSync(appContext)
+              if (imported > 0) R.string.tasks_imported_ok else R.string.csv_import_empty
             } catch (e: Exception) {
-              Snackbar.make(binding.root, getString(R.string.error_importing_csv), Snackbar.LENGTH_SHORT).show()
+              e.printStackTrace()
+              R.string.error_importing_csv
             }
+            Snackbar.make(binding.root, getString(message), Snackbar.LENGTH_LONG).show()
           }
         }
       }

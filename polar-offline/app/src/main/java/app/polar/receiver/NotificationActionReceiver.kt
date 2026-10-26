@@ -3,15 +3,15 @@ package app.polar.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.core.app.NotificationManagerCompat
 import app.polar.data.AppDatabase
-import app.polar.util.NotificationHelper
+import app.polar.util.RecurrenceUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.core.app.NotificationManagerCompat
 import java.util.Calendar
 import javax.inject.Inject
-import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NotificationActionReceiver : BroadcastReceiver() {
@@ -19,54 +19,41 @@ class NotificationActionReceiver : BroadcastReceiver() {
     @Inject
     lateinit var alarmHelper: app.polar.util.AlarmManagerHelper
 
-
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         val taskId = intent.getLongExtra(EXTRA_TASK_ID, -1L)
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
+        if (taskId == -1L || notificationId == -1) return
 
-        if (taskId != -1L && notificationId != -1) {
-            val goAsync = goAsync()
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val db = AppDatabase.getDatabase(context)
+        val pendingResult = goAsync()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val db = AppDatabase.getDatabase(context)
+                // La notificación puede seguir visible aunque la tarea ya se haya completado o
+                // enviado a la papelera desde la app: en ese caso la acción no debe hacer nada.
+                val task = db.taskDao().getTaskById(taskId)?.takeIf { !it.completed && !it.isDeleted }
 
-                    if (action == ACTION_COMPLETE) {
-                        val task = db.taskDao().getTaskById(taskId)
-                        if (task != null) {
-                            db.taskDao().update(task.copy(completed = true))
-                            // Cancel notification
-                            NotificationManagerCompat.from(context).cancel(notificationId)
-                            // Maybe reschedule if recurring? Logic is in ViewModel mainly but we might duplicate or invoke VM...
-                            // For now simple completion.
-                        }
-                    } else if (action == ACTION_SNOOZE) {
-                        // Snooze for 1 hour
-                        val calendar = Calendar.getInstance()
-                        calendar.add(Calendar.HOUR_OF_DAY, 1)
-                        val snoozeTime = calendar.timeInMillis
-
-                        // Persist the new due date so the task shows the snoozed time everywhere
-                        // (lists, calendar, widget), not only in the rescheduled alarm.
-                        val task = db.taskDao().getTaskById(taskId)
-                        if (task != null) {
-                            db.taskDao().update(task.copy(dueDate = snoozeTime))
-                        }
-
-                        // Reschedule alarm
-                        alarmHelper.scheduleTaskAlarm(taskId, snoozeTime)
-
-                        // Cancel current notification
-                        NotificationManagerCompat.from(context).cancel(notificationId)
-                    }
-                } finally {
-                    goAsync.finish()
+                if (task != null && action == ACTION_COMPLETE) {
+                    // Misma regla que completar desde la app (recurrentes incluidas)
+                    db.taskDao().update(RecurrenceUtils.complete(task, System.currentTimeMillis()))
+                    db.subtaskDao().completeSubtasksForTask(taskId)
+                    alarmHelper.cancelTaskAlarm(taskId)
+                } else if (task != null && action == ACTION_SNOOZE) {
+                    val snoozeTime = Calendar.getInstance().apply { add(Calendar.HOUR_OF_DAY, 1) }.timeInMillis
+                    // Persist the new due date so the task shows the snoozed time everywhere
+                    // (lists, calendar, widget), not only in the rescheduled alarm.
+                    db.taskDao().update(task.copy(dueDate = snoozeTime))
+                    alarmHelper.scheduleTaskAlarm(taskId, snoozeTime)
                 }
+
+                NotificationManagerCompat.from(context).cancel(notificationId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                pendingResult.finish()
             }
         }
     }
-
-
 
     companion object {
         const val ACTION_COMPLETE = "app.polar.ACTION_COMPLETE"

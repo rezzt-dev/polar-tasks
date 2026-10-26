@@ -224,6 +224,9 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
   `safeLaunch`.
 - **Activities:** extienden `BaseActivity` y se anotan con `@AndroidEntryPoint`.
 - **Colores:** usa atributos de tema (`?attr/...`), nunca hex hardcodeados.
+- **Alarmas:** se programan desde ViewModels/receivers con `AlarmManagerHelper`, nunca desde la UI;
+  para reconstruirlas o cancelarlas en bloque usa `AlarmRescheduler`. Los textos generados fuera
+  de una activity (notificaciones, widget) usan `ThemeManager.localizedContext()`.
 - **Commits:** aplica la sección "Redacción de commits" antes de proponer título o descripción.
 - **`changelog.md`:** registra los cambios según la sección "Formato de las secciones de `changelog.md`".
 - **Pull requests, merges y releases:** aplica la sección "Pull requests, merges y releases" antes de redactar cualquiera de los tres.

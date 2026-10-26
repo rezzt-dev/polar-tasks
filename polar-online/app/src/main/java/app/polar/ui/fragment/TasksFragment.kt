@@ -435,10 +435,12 @@ class TasksFragment : Fragment() {
               launch {
                   viewModel.sortMode.collect { mode ->
                       updateSortIndicator(mode)
-                      // Accessibility announcement
-                      if (mode == SortMode.UNMARK_FIRST) {
-                          binding.root.announceForAccessibility(getString(R.string.sort_unmark_first))
-                      }
+                      // El lector de pantalla lee la ordenación activa al enfocar el botón, sin
+                      // anunciarla cada vez que se abre la pantalla.
+                      androidx.core.view.ViewCompat.setStateDescription(
+                          binding.btnSort,
+                          getString(if (mode == SortMode.UNMARK_FIRST) R.string.sort_unmark_first else R.string.sort_default)
+                      )
                   }
               }
           }

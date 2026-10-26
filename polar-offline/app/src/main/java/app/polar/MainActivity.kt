@@ -50,6 +50,9 @@ class MainActivity : BaseActivity() {
     // BaseActivity handles theme init
     
     super.onCreate(savedInstanceState)
+    // En el primer arranque se muestra el tutorial; no tiene sentido montar la pantalla principal.
+    if (checkFirstRun()) return
+
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
     
@@ -60,8 +63,10 @@ class MainActivity : BaseActivity() {
     // observeTaskLists() moved to DrawerManager
     
     // Load initial fragment
-    if (savedInstanceState == null) {
-      if (intent.getBooleanExtra("NAVIGATE_TO_REMINDERS", false)) {
+    if (savedInstanceState != null) {
+      restoreNavigationState(savedInstanceState)
+    } else {
+      if (intent.getBooleanExtra(EXTRA_NAVIGATE_TO_REMINDERS, false)) {
           openReminders()
       } else {
           currentListId = -1L
@@ -98,10 +103,39 @@ class MainActivity : BaseActivity() {
         }
     })
     
-    checkFirstRun()
     requestNotificationPermissionIfNeeded()
   }
-    private fun checkFirstRun() {
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    if (!::binding.isInitialized) return
+    currentListId?.let { outState.putLong(STATE_CURRENT_LIST_ID, it) }
+    outState.putCharSequence(STATE_TOOLBAR_TITLE, binding.toolbar.title)
+  }
+
+  // El FragmentManager ya restaura el fragmento visible; aquí se recupera lo que vive en la
+  // activity (lista actual, título y botón de añadir), que antes se perdía al recrearla (rotación,
+  // cambio de tema o idioma, restaurar una copia).
+  private fun restoreNavigationState(savedInstanceState: Bundle) {
+    currentListId = if (savedInstanceState.containsKey(STATE_CURRENT_LIST_ID)) {
+      savedInstanceState.getLong(STATE_CURRENT_LIST_ID)
+    } else {
+      null
+    }
+    savedInstanceState.getCharSequence(STATE_TOOLBAR_TITLE)?.let { binding.toolbar.title = it }
+
+    val listId = currentListId
+    // Tras la muerte del proceso el ViewModel vuelve a empezar en "inicio": recargar la lista.
+    if (listId != null && listId > 0 && taskViewModel.selectedListId.value != listId) {
+      taskListViewModel.selectList(listId)
+      taskViewModel.loadTasksForList(listId)
+    }
+    if (listId != null && (listId > 0 || listId == REMINDERS_LIST_ID)) {
+      binding.fabAddTask.show()
+    }
+  }
+
+    private fun checkFirstRun(): Boolean {
         val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val isFirstRun = sharedPrefs.getBoolean("is_first_run", true)
         
@@ -109,6 +143,7 @@ class MainActivity : BaseActivity() {
             startActivity(android.content.Intent(this, app.polar.ui.activity.TutorialActivity::class.java))
             finish()
         }
+        return isFirstRun
     }
     
     private fun requestNotificationPermissionIfNeeded() {
@@ -129,7 +164,7 @@ class MainActivity : BaseActivity() {
   
   override fun onNewIntent(intent: android.content.Intent) {
       super.onNewIntent(intent)
-      if (intent.getBooleanExtra("NAVIGATE_TO_REMINDERS", false)) {
+      if (intent.getBooleanExtra(EXTRA_NAVIGATE_TO_REMINDERS, false)) {
           openReminders()
       }
   }
@@ -232,7 +267,7 @@ class MainActivity : BaseActivity() {
 
   
   private fun openReminders() {
-      currentListId = -2L // Special ID for Reminders
+      currentListId = REMINDERS_LIST_ID
       binding.toolbar.title = getString(R.string.reminders)
       binding.fabAddTask.show()
       
@@ -253,10 +288,9 @@ class MainActivity : BaseActivity() {
   
   private fun setupFab() {
     binding.fabAddTask.setOnClickListener {
-      if (currentListId == -2L) {
+      if (currentListId == REMINDERS_LIST_ID) {
           app.polar.ui.dialog.ReminderDialog(
               onSaveWithLocation = { title, desc, time, lat, lng, radius, locName ->
-                   val remindersViewModel: app.polar.ui.viewmodel.RemindersViewModel by viewModels()
                    remindersViewModel.insert(title, desc, time, lat, lng, radius, locName)
               }
           ).show(supportFragmentManager, "CreateReminderDialog")
@@ -363,6 +397,14 @@ class MainActivity : BaseActivity() {
       }
       else -> super.onOptionsItemSelected(item)
     }
+  }
+
+  companion object {
+    const val EXTRA_NAVIGATE_TO_REMINDERS = "NAVIGATE_TO_REMINDERS"
+    // Id especial de currentListId para la pantalla de recordatorios.
+    private const val REMINDERS_LIST_ID = -2L
+    private const val STATE_CURRENT_LIST_ID = "state_current_list_id"
+    private const val STATE_TOOLBAR_TITLE = "state_toolbar_title"
   }
   
 }

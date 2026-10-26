@@ -95,12 +95,30 @@ interface TaskDao {
   
   @Query("SELECT * FROM tasks WHERE id = :id")
   suspend fun getTaskById(id: Long): Task?
+
+  @Query("SELECT * FROM tasks WHERE id = :id")
+  fun observeTaskById(id: Long): kotlinx.coroutines.flow.Flow<Task?>
+
+  // Las tareas nuevas van al final de la lista (imprescindible en las cadenas de dependencia).
+  @Query("SELECT COALESCE(MAX(orderIndex), -1) + 1 FROM tasks WHERE listId = :listId")
+  suspend fun getNextOrderIndex(listId: Long): Int
+
+  // Tareas que deben sonar: pendientes, fuera de la papelera y con vencimiento futuro.
+  @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 0 AND dueDate > :now")
+  suspend fun getAlarmableTasks(now: Long): List<Task>
+
+  @Query("SELECT id FROM tasks")
+  suspend fun getAllTaskIds(): List<Long>
+
+  // Candidatas a reabrirse en RecurrenceWorker (las de la papelera recurren al restaurarlas).
+  @Query("SELECT * FROM tasks WHERE completed = 1 AND isDeleted = 0 AND recurrence != 'NONE' AND dueDate IS NOT NULL")
+  suspend fun getCompletedRecurringTasks(): List<Task>
   
   @Query("""
     SELECT * FROM tasks 
-    WHERE (title LIKE '%' || :query || '%' 
-    OR description LIKE '%' || :query || '%'
-    OR tags LIKE '%' || :query || '%')
+    WHERE (title LIKE '%' || :query || '%' ESCAPE '\'
+    OR description LIKE '%' || :query || '%' ESCAPE '\'
+    OR tags LIKE '%' || :query || '%' ESCAPE '\')
     AND isDeleted = 0
     ORDER BY createdAt DESC
   """)
@@ -150,6 +168,9 @@ interface TaskDao {
 
   @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 1 ORDER BY createdAt DESC")
   suspend fun getAllCompletedTasksSnapshot(): List<Task>
+
+  @Query("SELECT dueDate FROM tasks WHERE isDeleted = 0 AND completed = 1 AND dueDate >= :since")
+  suspend fun getCompletedDueDatesSince(since: Long): List<Long>
 
   @Query("""
     SELECT * FROM tasks

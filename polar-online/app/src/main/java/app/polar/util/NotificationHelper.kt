@@ -2,33 +2,51 @@ package app.polar.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
+import app.polar.MainActivity
 import app.polar.R
+import app.polar.data.entity.Reminder
+import app.polar.data.entity.Subtask
+import app.polar.receiver.NotificationActionReceiver
+import app.polar.ui.activity.TaskDetailActivity
 
 object NotificationHelper {
     const val CHANNEL_ID = "task_reminders"
-    const val CHANNEL_NAME = "task reminders"
-    const val CHANNEL_DESC = "notifications for task deadlines"
+
+    // Espacios de id de notificación separados para que tareas, recordatorios y subtareas no se pisen.
+    private const val REMINDER_NOTIFICATION_OFFSET = 1_000_000
+    private const val SUBTASK_NOTIFICATION_OFFSET = 2_000_000
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val localized = ThemeManager.localizedContext(context)
             val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build()
 
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-                description = CHANNEL_DESC
+            // Volver a crear el canal solo actualiza su nombre y descripción (p. ej. al cambiar el idioma).
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                localized.getString(R.string.notification_channel_name),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = localized.getString(R.string.notification_channel_desc)
                 setSound(soundUri, audioAttributes)
             }
-            val notificationManager: NotificationManager =
+            val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
@@ -36,107 +54,130 @@ object NotificationHelper {
 
     private fun isDndActive(context: Context): Boolean {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
-        } else {
-            false
+        return notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+    }
+
+    private fun taskDetailIntent(context: Context, taskId: Long, requestCode: Int): PendingIntent {
+        val intent = Intent(context, TaskDetailActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(TaskDetailActivity.EXTRA_TASK_ID, taskId)
+        }
+        return PendingIntent.getActivity(
+            context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    private fun taskActionIntent(context: Context, action: String, taskId: Long, requestCode: Int): PendingIntent {
+        val intent = Intent(context, NotificationActionReceiver::class.java).apply {
+            this.action = action
+            putExtra(NotificationActionReceiver.EXTRA_TASK_ID, taskId)
+            putExtra(NotificationActionReceiver.EXTRA_NOTIFICATION_ID, taskId.toInt())
+        }
+        return PendingIntent.getBroadcast(
+            context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    private fun notify(context: Context, notificationId: Int, builder: NotificationCompat.Builder) {
+        try {
+            NotificationManagerCompat.from(context).notify(notificationId, builder.build())
+        } catch (e: SecurityException) {
+            // Sin permiso de notificaciones: no hay nada que mostrar.
+            e.printStackTrace()
         }
     }
 
     fun showNotification(context: Context, taskId: Long, title: String, description: String) {
-        // Create an explicit intent for an Activity in your app
-        val intent = android.content.Intent(context, app.polar.ui.activity.TaskDetailActivity::class.java).apply {
-            flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(app.polar.ui.activity.TaskDetailActivity.EXTRA_TASK_ID, taskId)
-        }
-        val pendingIntent: android.app.PendingIntent = android.app.PendingIntent.getActivity(
-            context, taskId.toInt(), intent, android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-
-
-        // Action: Complete
-        val completeIntent = android.content.Intent(context, app.polar.receiver.NotificationActionReceiver::class.java).apply {
-            action = app.polar.receiver.NotificationActionReceiver.ACTION_COMPLETE
-            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_TASK_ID, taskId)
-            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_NOTIFICATION_ID, taskId.toInt())
-        }
-        val completePendingIntent = android.app.PendingIntent.getBroadcast(
-            context,
-            taskId.toInt() * 10, // Unique Request Code
-            completeIntent,
-            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        // Action: Snooze (1 Hour)
-        val snoozeIntent = android.content.Intent(context, app.polar.receiver.NotificationActionReceiver::class.java).apply {
-            action = app.polar.receiver.NotificationActionReceiver.ACTION_SNOOZE
-            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_TASK_ID, taskId)
-            putExtra(app.polar.receiver.NotificationActionReceiver.EXTRA_NOTIFICATION_ID, taskId.toInt())
-        }
-        val snoozePendingIntent = android.app.PendingIntent.getBroadcast(
-            context,
-            taskId.toInt() * 10 + 1, // Unique Request Code
-            snoozeIntent,
-            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        val localized = ThemeManager.localizedContext(context)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_check_box) 
+            .setSmallIcon(R.drawable.ic_check_box)
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setContentIntent(taskDetailIntent(context, taskId, taskId.toInt()))
             .setAutoCancel(true)
-            .addAction(R.drawable.ic_check_box, "completar", completePendingIntent)
-            .addAction(R.drawable.ic_schedule, "posponer 1h", snoozePendingIntent)
+            .addAction(
+                R.drawable.ic_check_box,
+                localized.getString(R.string.notification_action_complete),
+                taskActionIntent(context, NotificationActionReceiver.ACTION_COMPLETE, taskId, taskId.toInt() * 10)
+            )
+            .addAction(
+                R.drawable.ic_schedule,
+                localized.getString(R.string.notification_action_snooze),
+                taskActionIntent(context, NotificationActionReceiver.ACTION_SNOOZE, taskId, taskId.toInt() * 10 + 1)
+            )
 
-        try {
-           with(NotificationManagerCompat.from(context)) {
-               notify(taskId.toInt(), builder.build())
-           }
-        } catch (e: SecurityException) {
-            // Handle permission issue
-        }
+        notify(context, taskId.toInt(), builder)
     }
 
-    fun showReminderNotification(context: Context, reminder: app.polar.data.entity.Reminder) {
-        val intent = android.content.Intent(context, app.polar.MainActivity::class.java).apply {
-             flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-             putExtra("NAVIGATE_TO_REMINDERS", true)
+    // Las subtareas abren el detalle de su tarea y no llevan acciones: completar o posponer
+    // actúan sobre tareas, no sobre subtareas.
+    fun showSubtaskNotification(context: Context, subtask: Subtask, parentTitle: String?) {
+        val notificationId = SUBTASK_NOTIFICATION_OFFSET + subtask.id.toInt()
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_check_box)
+            .setContentTitle(subtask.title)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setContentIntent(taskDetailIntent(context, subtask.taskId, notificationId))
+            .setAutoCancel(true)
+
+        if (!parentTitle.isNullOrBlank()) {
+            builder.setContentText(
+                ThemeManager.localizedContext(context).getString(R.string.notification_subtask_of, parentTitle)
+            )
         }
 
-        val pendingIntent = android.app.PendingIntent.getActivity(
+        notify(context, notificationId, builder)
+    }
+
+    fun showReminderNotification(context: Context, reminder: Reminder) {
+        val localized = ThemeManager.localizedContext(context)
+        val notificationId = REMINDER_NOTIFICATION_OFFSET + reminder.id.toInt()
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(MainActivity.EXTRA_NAVIGATE_TO_REMINDERS, true)
+        }
+        val pendingIntent = PendingIntent.getActivity(
             context,
-            (reminder.id + 1000000).toInt(),
+            notificationId,
             intent,
-            android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_check_box)
-            .setContentTitle("recordatorio: ${reminder.title}")
+            .setContentTitle(localized.getString(R.string.notification_reminder_title, reminder.title))
             .setContentText(reminder.description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
-        // Add "View Location" action if coordinates are available
+        // Acción "ver ubicación" si el recordatorio tiene coordenadas
         if (reminder.latitude != null && reminder.longitude != null) {
-            val locationUri = if (!reminder.locationName.isNullOrBlank()) {
-                android.net.Uri.parse("geo:${reminder.latitude},${reminder.longitude}?q=${reminder.latitude},${reminder.longitude}(${reminder.locationName})")
+            val coordinates = "${reminder.latitude},${reminder.longitude}"
+            val query = if (!reminder.locationName.isNullOrBlank()) {
+                "$coordinates(${reminder.locationName})"
             } else {
-                android.net.Uri.parse("geo:${reminder.latitude},${reminder.longitude}?q=${reminder.latitude},${reminder.longitude}")
+                coordinates
             }
-            val locationIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, locationUri)
-            locationIntent.setPackage("com.google.android.apps.maps")
-            val locationPendingIntent = android.app.PendingIntent.getActivity(
+            val locationIntent = Intent(Intent.ACTION_VIEW, "geo:$coordinates?q=${Uri.encode(query)}".toUri())
+                .setPackage("com.google.android.apps.maps")
+            val locationPendingIntent = PendingIntent.getActivity(
                 context,
-                (reminder.id + 1000000).toInt() * 10 + 2,
+                notificationId * 10 + 2,
                 locationIntent,
-                android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-            builder.addAction(R.drawable.ic_location_notification, context.getString(R.string.view_location), locationPendingIntent)
+            builder.addAction(
+                R.drawable.ic_location_notification,
+                localized.getString(R.string.view_location),
+                locationPendingIntent
+            )
         }
 
         if (isDndActive(context)) {
@@ -145,43 +186,30 @@ object NotificationHelper {
             builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
         }
 
-        try {
-           with(NotificationManagerCompat.from(context)) {
-               notify((reminder.id + 1000000).toInt(), builder.build())
-           }
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        }
+        notify(context, notificationId, builder)
     }
 
-
     fun showCreationConfirmation(context: Context, title: String, dateTime: Long) {
-        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-        val timeFormat = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-        val dateObj = java.util.Date(dateTime)
-        
-        val dateStr = dateFormat.format(dateObj)
-        val timeStr = timeFormat.format(dateObj)
-        
-        // "se ha puesto un recordatorio el dia X a la hora X con el motivo de: [texto en negrita]"
-        // Using BigTextStyle to ensure full text is visible and styling
-        val message = "se ha puesto un recordatorio el dia $dateStr a la hora $timeStr con el motivo de: <b>$title</b>"
-        
+        val localized = ThemeManager.localizedContext(context)
+        val date = java.util.Date(dateTime)
+        val dateStr = android.text.format.DateFormat.getDateFormat(localized).format(date)
+        val timeStr = android.text.format.DateFormat.getTimeFormat(localized).format(date)
+
+        // El título lo escribe el usuario: se añade como texto en negrita, nunca como HTML.
+        val message = buildSpannedString {
+            append(localized.getString(R.string.reminder_created_message, dateStr, timeStr))
+            append(" ")
+            bold { append(title) }
+        }
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_check_box) 
-            .setContentTitle("recordatorio creado")
-             // setContentText usually strips HTML, use BigText for better support or Html.fromHtml if supported
-            .setContentText("se ha puesto un recordatorio el dia $dateStr...")
-            .setStyle(NotificationCompat.BigTextStyle().bigText(androidx.core.text.HtmlCompat.fromHtml(message, androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY)))
+            .setSmallIcon(R.drawable.ic_check_box)
+            .setContentTitle(localized.getString(R.string.reminder_created_title))
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
-            
-        try {
-           with(NotificationManagerCompat.from(context)) {
-               // Use a unique ID for confirmation, e.g., current time
-               notify(System.currentTimeMillis().toInt(), builder.build())
-           }
-        } catch (e: SecurityException) {
-        }
+
+        notify(context, System.currentTimeMillis().toInt(), builder)
     }
 }

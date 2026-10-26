@@ -35,6 +35,24 @@ class ThemeManager(private val context: Context) {
     
     private const val KEY_FONT_SCALE = "font_scale"
     const val DEFAULT_FONT_SCALE = 1.0f
+
+    /** Idioma elegido en ajustes ("es", "en-rGB", "de"...); "es" si no se ha elegido ninguno. */
+    fun loadAppLocale(context: Context): java.util.Locale {
+      val localeStr = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        .getString("app_locale", "es") ?: "es"
+      // "en-rGB" (formato de recursos) -> etiqueta BCP 47 "en-GB"
+      return java.util.Locale.forLanguageTag(localeStr.replace("-r", "-"))
+    }
+
+    /**
+     * Contexto con el idioma de la app para textos que se generan fuera de una activity
+     * (notificaciones, widget): el contexto de aplicación usa el idioma del sistema.
+     */
+    fun localizedContext(context: Context): Context {
+      val config = android.content.res.Configuration(context.resources.configuration)
+      config.setLocale(loadAppLocale(context))
+      return context.createConfigurationContext(config)
+    }
   }
   
   fun saveTheme(theme: String) {

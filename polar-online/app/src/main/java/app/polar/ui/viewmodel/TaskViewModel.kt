@@ -11,6 +11,7 @@ import app.polar.R
 import app.polar.data.AppDatabase
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
+import app.polar.util.RecurrenceUtils
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
 import app.polar.data.sync.TaskImageStorage
@@ -18,6 +19,7 @@ import app.polar.data.sync.touched
 import app.polar.data.sync.touchedDeleted
 import app.polar.data.sync.touchedRestored
 import app.polar.domain.usecase.GetFilteredTasksUseCase
+import app.polar.domain.util.TaskFilter
 import app.polar.domain.model.SortMode
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -152,23 +154,12 @@ class TaskViewModel @Inject constructor(
 
 
 
-  // TODO: Migrate Home Tasks logic to Use Case or Flow as well if desired.
-  // For now leaving as LiveData as it wasn't strictly requested to refactor EVERY usage, but ideally yes.
-  // Converting to Flow using asFlow if repository supports it (DAO supports getTasksWithListTitles as LiveData currently).
-  private val _rawHomeTasks = repository.getTasksWithListTitles() // This is LiveData
-  
-  // We can wrap it in Flow? Or keep it hybrid. User asked for "StateFlow in ViewModels", implying migration.
-  // I should update DAO for this too?
-  // Let's create `homeTaskGroups` as StateFlow derived from `_rawHomeTasks` (observed as flow).
-  // Ideally update DAO.
-  
+  private val _rawHomeTasks = repository.getTasksWithListTitles()
+
   val homeTaskGroups: LiveData<List<app.polar.data.model.TaskGroup>> = androidx.lifecycle.MediatorLiveData<List<app.polar.data.model.TaskGroup>>().apply {
       fun update() {
            val rawList = _rawHomeTasks.value ?: emptyList()
-           val todayOnly = _filterToday.value
-           val pendingOnly = _filterPending.value
-           val overdueOnly = _filterOverdue.value
-           val recurrentOnly = _filterRecurrent.value
+           val filter = TaskFilter(_filterToday.value, _filterPending.value, _filterOverdue.value, _filterRecurrent.value)
            val now = System.currentTimeMillis()
            
            // Group by listId first to handle per-chain filtering
@@ -188,40 +179,13 @@ class TaskViewModel @Inject constructor(
                     tasksWithList
                 }
                 
+                // Los filtros explícitos de pendientes/vencidas excluyen completadas; el resto
+                // permite mostrarlas bajo el apartado colapsable. En inicio, "pendientes" son
+                // además las que no se han empezado (ninguna subtarea hecha).
                 val filteredList = tasksToShow.filter { item ->
-                    val task = item.task
-                    var matches = true
-
-                    // Los filtros explícitos de pendientes/vencidas excluyen completadas.
-                    // El resto de filtros y la vista sin filtros permiten mostrar completadas
-                    // bajo el apartado colapsable correspondiente.
-                    if (pendingOnly) {
-                       if (task.completed) matches = false
-                       if (item.completedSubtasks > 0) matches = false
-                    }
-                    if (overdueOnly) {
-                         if (task.dueDate == null) {
-                            matches = false
-                        } else {
-                            val isToday = android.text.format.DateUtils.isToday(task.dueDate)
-                            val isFuture = task.dueDate >= now
-                            if (isToday || isFuture) matches = false
-                        }
-                        if (task.completed) matches = false
-                    }
-                    if (todayOnly) {
-                        if (task.dueDate == null) {
-                            matches = false
-                        } else {
-                            if (!android.text.format.DateUtils.isToday(task.dueDate)) matches = false
-                        }
-                    }
-                    if (recurrentOnly) {
-                        if (task.recurrence == "NONE") matches = false
-                    }
-                    matches
+                    filter.matches(item.task, now) && !(filter.pendingOnly && item.completedSubtasks > 0)
                 }
-                
+
                 if (filteredList.isEmpty()) null
                 else app.polar.data.model.TaskGroup(listId, title, filteredList.map { it.task })
            }
@@ -263,6 +227,7 @@ class TaskViewModel @Inject constructor(
       val percent: Int = if (total > 0) (completed * 100 / total) else 0
   }
 
+  @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
   val listProgress: StateFlow<ListProgress> = _selectedListId
       .flatMapLatest { listId ->
           if (listId > 0) {
@@ -296,17 +261,15 @@ class TaskViewModel @Inject constructor(
       dueDate = dueDate,
       recurrence = recurrence,
       priority = priority,
-      timeEstimate = timeEstimate
+      timeEstimate = timeEstimate,
+      orderIndex = repository.getNextTaskOrderIndex(listId)
     )
     val taskId = repository.insertTask(task)
 
-    // Insert subtasks
-    subtasks.forEachIndexed { index, subtask ->
-        // Ensure they are linked to the new task
-        repository.insertSubtask(subtask.copy(id = 0, taskId = taskId, orderIndex = index).touched())
-    }
-    
-    // Schedule alarm
+    repository.insertSubtasks(
+        subtasks.mapIndexed { index, subtask -> subtask.copy(id = 0, taskId = taskId, orderIndex = index).touched() }
+    )
+
     if (dueDate != null) {
         alarmHelper.scheduleTaskAlarm(taskId, dueDate)
     }
@@ -331,16 +294,15 @@ class TaskViewModel @Inject constructor(
         repository.replaceSubtasksForTask(task.id, subtasks, touchedCompletedSubtaskIds)
     }
 
-    if (task.dueDate != null) {
+    // Una tarea completada (p. ej. recurrente esperando su siguiente ocurrencia) no debe sonar.
+    if (task.dueDate != null && !task.completed) {
         alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
     } else {
         alarmHelper.cancelTaskAlarm(task.id)
     }
   }
 
-  fun updateTaskWithSubtasks(task: Task, newSubtasks: List<Subtask>) = safeLaunch {
-      updateTask(task, newSubtasks)
-  }
+  fun updateTaskWithSubtasks(task: Task, newSubtasks: List<Subtask>) = updateTask(task, newSubtasks)
 
   // Shows the picked image instantly from the local content:// URI, then uploads it to Supabase
   // Storage in the background and records the resulting bucket path (image_path) so the other
@@ -365,66 +327,56 @@ class TaskViewModel @Inject constructor(
   
   fun setTaskCompletion(task: Task, isCompleted: Boolean) = safeLaunch {
     if (task.completed == isCompleted) return@safeLaunch
-    repository.updateTask(task.copy(completed = isCompleted).touched())
-    
-    // Sync subtasks
+    // Al completar una recurrente, la fecha se ajusta a la ocurrencia vigente (ver RecurrenceUtils);
+    // el RecurrenceWorker la reabrirá con la siguiente fecha cuando llegue su día.
+    val updated = if (isCompleted) RecurrenceUtils.complete(task, System.currentTimeMillis())
+                  else task.copy(completed = false)
+    repository.updateTask(updated.touched())
+
+    // Keep subtasks in step with the task
     if (isCompleted) {
         repository.completeSubtasksForTask(task.id)
+        alarmHelper.cancelTaskAlarm(task.id)
     } else {
         repository.resetSubtasksForTask(task.id)
-    }
-    
-    if (isCompleted) {
-        if (task.dueDate != null) {
-            alarmHelper.cancelTaskAlarm(task.id)
-        }
-    } else {
-        if (task.dueDate != null) {
-            alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
-        }
+        updated.dueDate?.let { alarmHelper.scheduleTaskAlarm(task.id, it) }
     }
   }
 
-  fun toggleTaskCompletion(task: Task) = safeLaunch {
-    val newCompletedState = !task.completed
-    repository.updateTask(task.copy(completed = newCompletedState).touched())
-    
-    // Sync subtasks
-    if (newCompletedState) {
-        repository.completeSubtasksForTask(task.id)
-    } else {
-        repository.resetSubtasksForTask(task.id)
-    }
-    
-    if (newCompletedState) {
-        // Task completed.
-        // If recurrent, RecurrenceWorker will reset it on due date.
-        // Cancel alarm for now.
-        if (task.dueDate != null) {
-            alarmHelper.cancelTaskAlarm(task.id)
-        }
-    } else {
-        // Task unchecked.
-        // Reschedule alarm if it has future or present date.
-        if (task.dueDate != null) {
-            alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
-        }
-    }
-  }
-  
+  fun toggleTaskCompletion(task: Task) = setTaskCompletion(task, !task.completed)
+
   fun insertSubtask(taskId: Long, title: String) = safeLaunch {
     val subtask = Subtask(taskId = taskId, title = title)
     repository.insertSubtask(subtask)
   }
 
   fun toggleSubtaskCompletion(subtask: Subtask) = safeLaunch {
-    repository.updateSubtask(subtask.copy(completed = !subtask.completed).touched())
+    val updated = subtask.copy(completed = !subtask.completed).touched()
+    repository.updateSubtask(updated)
+    syncSubtaskAlarm(updated)
   }
 
   fun deleteSubtask(subtask: Subtask) = safeLaunch {
     // Tombstone, not a physical delete: subtasks have no local trash, but a hard delete would
     // never propagate as a removal to Supabase/the other app.
     repository.updateSubtask(subtask.touchedDeleted())
+    alarmHelper.cancelSubtaskAlarm(subtask.id)
+  }
+
+  fun setSubtaskDueDate(subtask: Subtask, dueDate: Long?) = safeLaunch {
+    val updated = subtask.copy(dueDate = dueDate).touched()
+    repository.updateSubtask(updated)
+    syncSubtaskAlarm(updated)
+  }
+
+  // Solo suena una subtarea pendiente con fecha; quitar la fecha o completarla cancela su aviso.
+  private fun syncSubtaskAlarm(subtask: Subtask) {
+    val dueDate = subtask.dueDate
+    if (dueDate != null && !subtask.completed) {
+        alarmHelper.scheduleSubtaskAlarm(subtask.id, dueDate)
+    } else {
+        alarmHelper.cancelSubtaskAlarm(subtask.id)
+    }
   }
 
 
@@ -465,13 +417,9 @@ class TaskViewModel @Inject constructor(
     return repository.searchTasks(query)
   }
   
-  fun getTaskById(taskId: Long): LiveData<Task?> {
-     val result = androidx.lifecycle.MutableLiveData<Task?>()
-     viewModelScope.launch {
-         result.postValue(repository.getTaskById(taskId))
-     }
-     return result
-  }
+  // Observa la tarea en la base de datos: la pantalla de detalle se actualiza tras completarla,
+  // editarla, adjuntar una imagen o recibir un cambio sincronizado, también desde una notificación.
+  fun observeTask(taskId: Long): LiveData<Task?> = repository.observeTaskById(taskId).asLiveData()
 
   fun getTaskListById(listId: Long): LiveData<app.polar.data.entity.TaskList?> {
       val result = androidx.lifecycle.MutableLiveData<app.polar.data.entity.TaskList?>()
@@ -514,6 +462,7 @@ class TaskViewModel @Inject constructor(
   fun permanentDelete(task: Task) = viewModelScope.launch {
       try {
           runCatching { syncManager.sync() }
+          alarmHelper.cancelTaskAlarm(task.id)
           var purged = repository.permanentDeleteTask(task.id)
           // Sin cuenta vinculada no hay tombstone que confirmar en ningun servidor: el
           // guardia de sincronizacion dejaria la tarea atascada para siempre. Purgamos

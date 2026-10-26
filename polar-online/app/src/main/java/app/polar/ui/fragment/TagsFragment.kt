@@ -44,7 +44,7 @@ class TagsFragment : Fragment() {
         binding.rvTagsGrid.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTagsGrid.adapter = adapter
 
-        viewModel.repository.getAllTasks().observe(viewLifecycleOwner) { tasks ->
+        viewModel.getAllTasks().observe(viewLifecycleOwner) { tasks ->
             if (tasks != null) {
                 val tagCounts = mutableMapOf<String, MutableList<Task>>()
                 tasks.forEach { task ->

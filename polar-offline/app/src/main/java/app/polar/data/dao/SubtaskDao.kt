@@ -21,6 +21,26 @@ interface SubtaskDao {
   @Query("SELECT * FROM subtasks")
   suspend fun getAllSubtasksSnapshot(): List<Subtask>
 
+  // Subtarea a la que tiene sentido avisar: pendiente, con fecha y cuya tarea sigue activa.
+  @Query("""
+    SELECT subtasks.* FROM subtasks
+    INNER JOIN tasks ON tasks.id = subtasks.taskId
+    WHERE subtasks.id = :subtaskId AND subtasks.completed = 0 AND subtasks.dueDate IS NOT NULL
+      AND tasks.completed = 0 AND tasks.isDeleted = 0
+  """)
+  suspend fun getAlarmableSubtask(subtaskId: Long): Subtask?
+
+  @Query("""
+    SELECT subtasks.* FROM subtasks
+    INNER JOIN tasks ON tasks.id = subtasks.taskId
+    WHERE subtasks.completed = 0 AND subtasks.dueDate > :now
+      AND tasks.completed = 0 AND tasks.isDeleted = 0
+  """)
+  suspend fun getAlarmableSubtasks(now: Long): List<Subtask>
+
+  @Query("SELECT id FROM subtasks")
+  suspend fun getAllSubtaskIds(): List<Long>
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insert(subtask: Subtask): Long
 

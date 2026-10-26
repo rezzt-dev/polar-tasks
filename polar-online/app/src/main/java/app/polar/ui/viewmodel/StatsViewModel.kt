@@ -4,13 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.polar.data.model.ListTaskCount
 import app.polar.data.repository.TaskRepository
+import app.polar.domain.util.CompletionHistory
+import app.polar.util.RecurrenceUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,14 +46,21 @@ class StatsViewModel @Inject constructor(
             val createdThisMonth = repository.getCreatedTaskCountBetween(monthRange.first, monthRange.second)
             val completedLastWeek = repository.getCompletedTaskCountBetween(lastWeekRange.first, lastWeekRange.second)
 
-            val (weeklyCounts, weeklyLabels) = buildWeeklySeries()
-            val (trendCounts, trendLabels) = buildTrendSeries()
+            // Una sola consulta para series, racha y mejor día (antes, una por cada día del año).
+            val historyStart = Calendar.getInstance().apply {
+                timeInMillis = RecurrenceUtils.startOfDay(now)
+                add(Calendar.DAY_OF_YEAR, -HISTORY_DAYS)
+            }.timeInMillis
+            val history = CompletionHistory(repository.getCompletedDueDatesSince(historyStart))
+
+            val (weeklyCounts, weeklyLabels) = buildWeeklySeries(history, now)
+            val (trendCounts, trendLabels) = buildTrendSeries(history, now)
 
             val priorityCounts = buildPriorityCounts()
             val listCounts = buildListCounts()
 
-            val streak = calculateStreak()
-            val bestDay = calculateBestDay()
+            val streak = history.streak(now)
+            val bestDay = bestDayName(history, now)
 
             _uiState.value = StatsUiState(
                 isEmpty = totalTasks == 0,
@@ -114,65 +126,22 @@ class StatsViewModel @Inject constructor(
         return start to cal.timeInMillis
     }
 
-    private suspend fun buildWeeklySeries(): Pair<List<Int>, List<String>> {
-        val counts = mutableListOf<Int>()
-        val labels = mutableListOf<String>()
-        val cal = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            add(Calendar.DAY_OF_YEAR, -6)
-        }
-
-        for (i in 0 until 7) {
-            val dayStart = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            val dayEnd = cal.timeInMillis
-            counts.add(repository.getCompletedTaskCountBetween(dayStart, dayEnd))
-            labels.add(dayShortLabel(dayStart))
-        }
-        return counts to labels
+    private fun buildWeeklySeries(history: CompletionHistory, now: Long): Pair<List<Int>, List<String>> {
+        val days = history.lastDays(now, 7)
+        // Inicial del día en el idioma de la app ("EEEEE": l, m, x... / m, t, w...)
+        val format = SimpleDateFormat("EEEEE", Locale.getDefault())
+        return days.map(history::countOn) to days.map { format.format(Date(it)).lowercase() }
     }
 
-    private suspend fun buildTrendSeries(): Pair<List<Int>, List<String>> {
-        val counts = mutableListOf<Int>()
-        val labels = mutableListOf<String>()
-        val cal = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            add(Calendar.DAY_OF_YEAR, -29)
-        }
-
-        for (i in 0 until 30) {
-            val dayStart = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            val dayEnd = cal.timeInMillis
-            counts.add(repository.getCompletedTaskCountBetween(dayStart, dayEnd))
-            labels.add(trendLabel(dayStart, i))
-        }
-        return counts to labels
-    }
-
-    private fun dayShortLabel(timestamp: Long): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = timestamp }
-        return when (cal.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.MONDAY -> "l"
-            Calendar.TUESDAY -> "m"
-            Calendar.WEDNESDAY -> "x"
-            Calendar.THURSDAY -> "j"
-            Calendar.FRIDAY -> "v"
-            Calendar.SATURDAY -> "s"
-            Calendar.SUNDAY -> "d"
-            else -> "?"
-        }
+    private fun buildTrendSeries(history: CompletionHistory, now: Long): Pair<List<Int>, List<String>> {
+        val days = history.lastDays(now, TREND_DAYS)
+        val labels = days.mapIndexed { index, dayStart -> trendLabel(dayStart, index) }
+        return days.map(history::countOn) to labels
     }
 
     private fun trendLabel(timestamp: Long, index: Int): String {
         val cal = Calendar.getInstance().apply { timeInMillis = timestamp }
-        return if (index == 0 || index == 29 || cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+        return if (index == 0 || index == TREND_DAYS - 1 || cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
             "${cal.get(Calendar.DAY_OF_MONTH)}"
         } else {
             ""
@@ -191,67 +160,15 @@ class StatsViewModel @Inject constructor(
             .take(6)
     }
 
-    private suspend fun calculateStreak(): Int {
-        var streak = 0
-        val cal = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        for (i in 0 until 365) {
-            val dayStart = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            val dayEnd = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_YEAR, -1)
-
-            val completed = repository.getCompletedTaskCountBetween(dayStart, dayEnd)
-            if (completed > 0) {
-                streak++
-                cal.add(Calendar.DAY_OF_YEAR, -1)
-            } else {
-                if (i == 0) {
-                    cal.add(Calendar.DAY_OF_YEAR, -1)
-                    continue
-                }
-                break
-            }
-        }
-        return streak
+    private fun bestDayName(history: CompletionHistory, now: Long): String {
+        val dayOfWeek = history.bestDayOfWeek(now) ?: return "-"
+        val day = Calendar.getInstance().apply { set(Calendar.DAY_OF_WEEK, dayOfWeek) }
+        return SimpleDateFormat("EEEE", Locale.getDefault()).format(day.time).lowercase()
     }
 
-    private suspend fun calculateBestDay(): String {
-        val cal = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            add(Calendar.DAY_OF_YEAR, -30)
-        }
-
-        val dayTotals = mutableMapOf<Int, Int>()
-        for (i in 0 until 30) {
-            val dayStart = cal.timeInMillis
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-            val dayEnd = cal.timeInMillis
-            val completed = repository.getCompletedTaskCountBetween(dayStart, dayEnd)
-            val dow = Calendar.getInstance().apply { timeInMillis = dayStart }.get(Calendar.DAY_OF_WEEK)
-            dayTotals[dow] = (dayTotals[dow] ?: 0) + completed
-        }
-
-        val best = dayTotals.maxByOrNull { it.value }
-        return if ((best?.value ?: 0) > 0) {
-            when (best?.key) {
-                Calendar.MONDAY -> "lunes"
-                Calendar.TUESDAY -> "martes"
-                Calendar.WEDNESDAY -> "miercoles"
-                Calendar.THURSDAY -> "jueves"
-                Calendar.FRIDAY -> "viernes"
-                Calendar.SATURDAY -> "sabado"
-                Calendar.SUNDAY -> "domingo"
-                else -> "-"
-            }
-        } else "-"
+    private companion object {
+        const val TREND_DAYS = 30
+        // La racha mira hasta un año atrás (más el día de hoy).
+        const val HISTORY_DAYS = 366
     }
 }

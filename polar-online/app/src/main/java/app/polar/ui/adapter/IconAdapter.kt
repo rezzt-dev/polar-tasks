@@ -57,8 +57,10 @@ class IconAdapter(
       binding.root.strokeWidth = if (isSelected) 4 else 0
       
       binding.root.setOnClickListener {
+        val position = bindingAdapterPosition
+        if (position == RecyclerView.NO_POSITION) return@setOnClickListener
         val oldPosition = selectedPosition
-        selectedPosition = adapterPosition
+        selectedPosition = position
         notifyItemChanged(oldPosition)
         notifyItemChanged(selectedPosition)
         onIconSelected(iconName)

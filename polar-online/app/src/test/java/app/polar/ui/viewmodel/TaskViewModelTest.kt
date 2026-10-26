@@ -3,6 +3,7 @@ package app.polar.ui.viewmodel
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.work.WorkManager
+import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.data.repository.TaskRepository
 import app.polar.data.sync.SyncManager
@@ -91,6 +92,50 @@ class TaskViewModelTest {
         coVerify { repository.insertTask(match { it.title == taskTitle }) }
         // Verify Alarm
         verify { alarmHelper.scheduleTaskAlarm(1L, dueDate) }
+    }
+
+    @Test
+    fun `insertTask appends the task at the end of its list`() = runTest {
+        setupViewModel()
+        coEvery { repository.getNextTaskOrderIndex(7L) } returns 4
+        coEvery { repository.insertTask(any()) } returns 10L
+
+        viewModel.insertTask(7L, "Last step", "")
+
+        coVerify { repository.insertTask(match { it.listId == 7L && it.orderIndex == 4 }) }
+    }
+
+    @Test
+    fun `setSubtaskDueDate schedules the alarm of a pending subtask and marks it for sync`() = runTest {
+        setupViewModel()
+        val subtask = Subtask(id = 3, taskId = 1, title = "Sub", dirty = false)
+
+        viewModel.setSubtaskDueDate(subtask, 5000L)
+
+        coVerify { repository.updateSubtask(match { it.id == 3L && it.dueDate == 5000L && it.dirty }) }
+        verify { alarmHelper.scheduleSubtaskAlarm(3L, 5000L) }
+    }
+
+    @Test
+    fun `clearing a subtask due date cancels its alarm`() = runTest {
+        setupViewModel()
+        val subtask = Subtask(id = 3, taskId = 1, title = "Sub", dueDate = 5000L)
+
+        viewModel.setSubtaskDueDate(subtask, null)
+
+        verify { alarmHelper.cancelSubtaskAlarm(3L) }
+        verify(exactly = 0) { alarmHelper.scheduleSubtaskAlarm(any(), any()) }
+    }
+
+    @Test
+    fun `deleting a subtask tombstones it and cancels its alarm`() = runTest {
+        setupViewModel()
+        val subtask = Subtask(id = 3, taskId = 1, title = "Sub", dueDate = 5000L)
+
+        viewModel.deleteSubtask(subtask)
+
+        coVerify { repository.updateSubtask(match { it.id == 3L && it.deletedAt != null }) }
+        verify { alarmHelper.cancelSubtaskAlarm(3L) }
     }
 
     @Test

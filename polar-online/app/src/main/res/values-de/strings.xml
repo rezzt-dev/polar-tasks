@@ -377,4 +377,18 @@
         <item quantity="one">%d überfällig</item>
         <item quantity="other">%d überfällig</item>
     </plurals>
+
+    <!-- Notificaciones, widget e importacion -->
+    <string name="notification_channel_name">aufgabenerinnerungen</string>
+    <string name="notification_channel_desc">hinweise zu fälligen aufgaben, unteraufgaben und erinnerungen</string>
+    <string name="notification_action_complete">erledigen</string>
+    <string name="notification_action_snooze">1 std. später</string>
+    <string name="notification_reminder_title">erinnerung: %1$s</string>
+    <string name="notification_subtask_of">unteraufgabe von %1$s</string>
+    <string name="reminder_created_title">erinnerung erstellt</string>
+    <string name="reminder_created_message">eine erinnerung wurde für den %1$s um %2$s eingerichtet:</string>
+    <string name="widget_title">heutige aufgaben</string>
+    <string name="widget_empty">keine aufgaben für heute</string>
+    <string name="widget_refresh">aktualisieren</string>
+    <string name="csv_import_empty">die datei enthält keine aufgaben zum importieren</string>
 </resources>

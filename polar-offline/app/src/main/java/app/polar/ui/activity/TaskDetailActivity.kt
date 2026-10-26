@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,18 +29,23 @@ class TaskDetailActivity : BaseActivity() {
   private val viewModel: TaskViewModel by viewModels()
   private lateinit var subtaskAdapter: SubtaskAdapter
   private var currentTask: app.polar.data.entity.Task? = null
+  private var shownListId: Long? = null
+  private var shownImageUri: String? = null
 
+  // OpenDocument (y no GetContent) para poder conservar el permiso de lectura de la imagen entre
+  // reinicios: con GetContent, takePersistableUriPermission lanzaba SecurityException.
   private val pickImageLauncher = registerForActivityResult(
-      androidx.activity.result.contract.ActivityResultContracts.GetContent()
+      androidx.activity.result.contract.ActivityResultContracts.OpenDocument()
   ) { uri ->
-      uri?.let {
-          contentResolver.takePersistableUriPermission(
-              it,
-              android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-          )
-          val task = currentTask ?: return@let
-          viewModel.attachImage(task, it)
+      val task = currentTask
+      if (uri == null || task == null) return@registerForActivityResult
+      try {
+          contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      } catch (e: SecurityException) {
+          // El proveedor no ofrece permisos persistentes: la imagen se verá mientras dure el acceso.
+          e.printStackTrace()
       }
+      viewModel.attachImage(task, uri)
   }
 
   companion object {
@@ -70,8 +76,12 @@ class TaskDetailActivity : BaseActivity() {
   }
 
   private fun loadTaskData(taskId: Long) {
-    viewModel.getTaskById(taskId).observe(this) { task ->
-        if (task == null) return@observe
+    viewModel.observeTask(taskId).observe(this) { task ->
+        // La tarea se ha eliminado definitivamente (p. ej. al vaciar la papelera): no hay nada que mostrar.
+        if (task == null) {
+            finish()
+            return@observe
+        }
 
         currentTask = task
 
@@ -89,8 +99,8 @@ class TaskDetailActivity : BaseActivity() {
         // Checkbox / Completion
         binding.cbDetailCompleted.setOnCheckedChangeListener(null)
         binding.cbDetailCompleted.isChecked = task.completed
-        binding.cbDetailCompleted.setOnCheckedChangeListener { _, _ ->
-            viewModel.toggleTaskCompletion(task)
+        binding.cbDetailCompleted.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setTaskCompletion(task, isChecked)
         }
 
         // Tags
@@ -102,7 +112,7 @@ class TaskDetailActivity : BaseActivity() {
         }
 
         // Creation Date
-        val createFormat = SimpleDateFormat("d MMM, yyyy", Locale("es", "ES"))
+        val createFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
         binding.tvDetailDate.text = createFormat.format(Date(task.createdAt))
 
         // Time Estimate Pill
@@ -141,7 +151,7 @@ class TaskDetailActivity : BaseActivity() {
         // Due Date Card
         if (task.dueDate != null) {
             binding.cardDueDate.visibility = View.VISIBLE
-            val format = SimpleDateFormat("EEEE, d MMMM", Locale("es", "ES"))
+            val format = SimpleDateFormat("EEEE, d MMMM", Locale.getDefault())
 
             val dateStr = when {
                 android.text.format.DateUtils.isToday(task.dueDate) -> getString(R.string.today)
@@ -164,6 +174,8 @@ class TaskDetailActivity : BaseActivity() {
                     "DAILY" -> getString(R.string.recurrence_daily)
                     "WEEKLY" -> getString(R.string.recurrence_weekly)
                     "MONTHLY" -> getString(R.string.recurrence_monthly)
+                    "MON_WED" -> getString(R.string.recurrence_summary_mon_wed)
+                    "FIRST_DAY_MONTH" -> getString(R.string.recurrence_summary_first_day_month)
                     else -> ""
                 }
                 binding.tvDetailRecurrence.text = recText
@@ -174,17 +186,25 @@ class TaskDetailActivity : BaseActivity() {
             binding.cardDueDate.visibility = View.GONE
         }
 
-        // Image attachment
-        if (!task.imageUri.isNullOrEmpty()) {
-            binding.containerImage.visibility = View.VISIBLE
-            binding.ivTaskImage.setImageURI(android.net.Uri.parse(task.imageUri))
-        } else {
-            binding.containerImage.visibility = View.GONE
+        // Image attachment (solo se decodifica de nuevo si cambia; si ya no se puede leer, se oculta)
+        if (task.imageUri != shownImageUri) {
+            shownImageUri = task.imageUri
+            if (!task.imageUri.isNullOrEmpty()) {
+                binding.ivTaskImage.setImageURI(task.imageUri.toUri())
+                binding.containerImage.visibility =
+                    if (binding.ivTaskImage.drawable != null) View.VISIBLE else View.GONE
+            } else {
+                binding.ivTaskImage.setImageDrawable(null)
+                binding.containerImage.visibility = View.GONE
+            }
         }
 
-        // List Name
-        viewModel.getTaskListById(task.listId).observe(this) { taskList ->
-            binding.tvDetailListName.text = taskList?.title ?: getString(R.string.no_list)
+        // List Name (solo se consulta de nuevo si la tarea cambia de lista)
+        if (task.listId != shownListId) {
+            shownListId = task.listId
+            viewModel.getTaskListById(task.listId).observe(this) { taskList ->
+                binding.tvDetailListName.text = taskList?.title ?: getString(R.string.no_list)
+            }
         }
     }
 
@@ -215,12 +235,7 @@ class TaskDetailActivity : BaseActivity() {
           subtask = subtask,
           onEdit = { showRenameSubtaskDialog(subtask) },
           onDelete = { viewModel.deleteSubtask(subtask) },
-          onDueDateSet = { dueDate ->
-              viewModel.updateSubtask(subtask.copy(dueDate = dueDate))
-              if (dueDate != null) {
-                  app.polar.util.AlarmManagerHelper(this).scheduleSubtaskAlarm(subtask.id, dueDate)
-              }
-          }
+          onDueDateSet = { dueDate -> viewModel.setSubtaskDueDate(subtask, dueDate) }
       ).show(supportFragmentManager, "SubtaskDetail")
   }
 
@@ -297,7 +312,7 @@ class TaskDetailActivity : BaseActivity() {
             return true
         }
         R.id.action_attach_image -> {
-            pickImageLauncher.launch("image/*")
+            pickImageLauncher.launch(arrayOf("image/*"))
             return true
         }
         R.id.action_edit_task -> {
@@ -441,9 +456,9 @@ class TaskDetailActivity : BaseActivity() {
                 val cachePath = java.io.File(context.cacheDir, "shared_images")
                 cachePath.mkdirs()
                 val newFile = java.io.File(cachePath, "task_export_${task.id}.png")
-                val stream = java.io.FileOutputStream(newFile)
-                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
-                stream.close()
+                java.io.FileOutputStream(newFile).use { stream ->
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                }
 
                 val contentUri = androidx.core.content.FileProvider.getUriForFile(context, "app.polar.fileprovider", newFile)
                 if (contentUri != null) {

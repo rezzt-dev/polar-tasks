@@ -308,4 +308,18 @@
         <item quantity="one">%d en retard</item>
         <item quantity="other">%d en retard</item>
     </plurals>
+
+    <!-- Notificaciones, widget e importacion -->
+    <string name="notification_channel_name">rappels de tâches</string>
+    <string name="notification_channel_desc">alertes d\'échéance des tâches, sous-tâches et rappels</string>
+    <string name="notification_action_complete">terminer</string>
+    <string name="notification_action_snooze">reporter d\'1 h</string>
+    <string name="notification_reminder_title">rappel : %1$s</string>
+    <string name="notification_subtask_of">sous-tâche de %1$s</string>
+    <string name="reminder_created_title">rappel créé</string>
+    <string name="reminder_created_message">un rappel a été programmé le %1$s à %2$s pour :</string>
+    <string name="widget_title">tâches du jour</string>
+    <string name="widget_empty">aucune tâche pour aujourd\'hui</string>
+    <string name="widget_refresh">actualiser</string>
+    <string name="csv_import_empty">le fichier ne contient aucune tâche à importer</string>
 </resources>

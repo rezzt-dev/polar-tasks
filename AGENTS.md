@@ -207,12 +207,19 @@ propios como `polar`, `material` o `eisenhower`).
 
 Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`.
 - `AlarmReceiver` — dispara la notificación cuando suena la alarma.
-- `BootReceiver` — reprograma alarmas persistidas tras reinicio del dispositivo.
-- `NotificationActionReceiver` — maneja acciones sobre notificaciones (completar, posponer).
+- `AlarmReceiver` — dispara la notificación cuando suena la alarma, tras comprobar en la base de datos que el elemento sigue pendiente y fuera de la papelera.
+- `BootReceiver` — reconstruye todas las alarmas con `AlarmRescheduler` tras reiniciar el dispositivo y al conceder el permiso de alarmas exactas.
+- `NotificationActionReceiver` — maneja acciones sobre notificaciones (completar, posponer); no hace nada si la tarea ya se completó o se borró.
+- `AlarmRescheduler` (`util/`) — única fuente para reprogramar o cancelar en bloque las alarmas desde la base de datos. Úsalo siempre que los ids dejen de ser válidos (por ejemplo, al restaurar una copia) en lugar de recorrer tablas a mano.
+- Los textos de notificaciones y widget se generan con `ThemeManager.localizedContext()`: el contexto de aplicación no lleva el idioma elegido en ajustes.
 
 ### WorkManager (`worker/`)
 
-- `RecurrenceWorker` — se ejecuta cada 12 horas para revisar y resetear tareas recurrentes cuya fecha de vencimiento haya pasado.
+- `RecurrenceWorker` — se ejecuta cada hora y al abrir la app para reabrir las tareas recurrentes completadas cuya siguiente ocurrencia ya ha empezado (reglas de fechas en `RecurrenceUtils`).
+
+### Widget (`widget/`)
+
+- `TaskWidgetProvider` / `TaskWidgetService` — tareas pendientes de hoy; al tocar una se abre su detalle. `PolarApplication` registra un observador de Room sobre `tasks` que refresca el widget ante cualquier escritura, así que no hace falta avisarle desde cada punto que modifica tareas.
 
 ---
 

@@ -26,6 +26,10 @@ class TaskRepository @Inject constructor(
     return taskListDao.insert(taskList)
   }
 
+  suspend fun getNextTaskListOrderIndex(): Int = taskListDao.getNextOrderIndex()
+
+  suspend fun getNextTaskListHomeOrderIndex(): Int = taskListDao.getNextHomeOrderIndex()
+
   suspend fun updateTaskList(taskList: TaskList) {
     taskListDao.update(taskList)
   }
@@ -79,8 +83,16 @@ class TaskRepository @Inject constructor(
     return taskDao.getTaskById(taskId)
   }
 
+  fun observeTaskById(taskId: Long): kotlinx.coroutines.flow.Flow<Task?> {
+    return taskDao.observeTaskById(taskId)
+  }
+
+  suspend fun getNextTaskOrderIndex(listId: Long): Int = taskDao.getNextOrderIndex(listId)
+
+  // `%` y `_` se buscan de forma literal: sin escapar, "50%" coincidiría con cualquier tarea.
   fun searchTasks(query: String): LiveData<List<Task>> {
-    return taskDao.searchTasks(query)
+    val escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return taskDao.searchTasks(escaped)
   }
 
   suspend fun getTasksBetweenDates(start: Long, end: Long): List<Task> {
@@ -106,6 +118,10 @@ class TaskRepository @Inject constructor(
 
   suspend fun insertSubtask(subtask: Subtask): Long {
     return subtaskDao.insert(subtask)
+  }
+
+  suspend fun insertSubtasks(subtasks: List<Subtask>) {
+    if (subtasks.isNotEmpty()) subtaskDao.insertAll(subtasks)
   }
 
   suspend fun updateSubtask(subtask: Subtask) {
@@ -198,6 +214,7 @@ class TaskRepository @Inject constructor(
   suspend fun getCreatedTaskCountBetween(start: Long, end: Long): Int = taskDao.getCreatedTaskCountBetween(start, end)
   suspend fun getOverdueTaskCount(now: Long): Int = taskDao.getOverdueTaskCount(now)
   suspend fun getAllCompletedTasksSnapshot(): List<Task> = taskDao.getAllCompletedTasksSnapshot()
+  suspend fun getCompletedDueDatesSince(since: Long): List<Long> = taskDao.getCompletedDueDatesSince(since)
   suspend fun getTaskCountByPriority(): List<app.polar.data.model.PriorityCount> = taskDao.getTaskCountByPriority()
   suspend fun getTaskCountByList(): List<app.polar.data.model.ListTaskCount> = taskDao.getTaskCountByList()
 }
