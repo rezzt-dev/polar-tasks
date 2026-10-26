@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- fila de tarea (inicio y listas): casilla alineada con la primera linea del titulo,
-     metadatos discretos debajo y separador fino alineado con el texto -->
+<!-- fila de tarea (inicio y listas): casilla y menu centrados verticalmente,
+     con metadatos discretos debajo del titulo -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -56,7 +56,7 @@
             android:gravity="top"
             android:minHeight="@dimen/task_item_min_height"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
+            android:paddingStart="16dp"
             android:paddingTop="14dp"
             android:paddingEnd="0dp"
             android:paddingBottom="14dp">
@@ -65,7 +65,7 @@
                 android:id="@+id/cbTaskComplete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-1dp"
+                android:layout_gravity="center_vertical"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
                 android:padding="0dp" />
@@ -182,8 +182,7 @@
                 android:id="@+id/btnTaskOverflow"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginTop="-7dp"
-                android:layout_marginBottom="-8dp"
+                android:layout_gravity="center_vertical"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/more_options"
                 android:padding="9dp"
@@ -197,20 +196,13 @@
         <View
             android:id="@+id/viewPriorityStripe"
             android:layout_width="3dp"
-            android:layout_height="18dp"
+            android:layout_height="match_parent"
             android:layout_gravity="start"
             android:layout_marginStart="0dp"
-            android:layout_marginTop="17dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
             android:background="@drawable/bg_priority_marker"
             android:visibility="gone" />
-
-        <!-- Separador alineado con el texto -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="44dp"
-            android:background="?attr/colorOutlineVariant" />
 
     </FrameLayout>
 

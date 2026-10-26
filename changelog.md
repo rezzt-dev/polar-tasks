@@ -68,6 +68,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### CORREGIDO
 
+- corregir el contraste del texto de los menus emergentes en todos los temas, alargar la barra lateral de prioridad a la altura del contenido y centrar verticalmente la casilla y el boton de opciones de las tareas en inicio y listas, sin linea separadora y con mas espacio entre la barra y la casilla.
 - corregir las tareas recurrentes: al llegar el dia de la siguiente ocurrencia `RecurrenceWorker` reabre la tarea con nueva fecha de vencimiento y nueva fecha de creacion, desmarca sus subtareas y reprograma la alarma.
 - corregir las tareas recurrentes completadas con retraso o tras varios dias sin abrir la app: se ajustan a la ocurrencia vigente (`RecurrenceUtils`) en lugar de reaparecer una a una con fechas ya pasadas.
 - revisar las recurrentes cada hora y al abrir la app (antes cada 12 horas) para que reaparezcan al empezar el dia.
@@ -107,6 +108,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - respetar el formato de 12 / 24 h del sistema al elegir la hora de una subtarea.
 - usar plurales en el analisis semanal de estadisticas (decia `1 tareas`).
 - [online] mostrar `v1.7` en el pie de ajustes, que seguia indicando `v1.5`.
+- centrar verticalmente la casilla y el titulo en el detalle de tarea, que quedaban alineados arriba.
 
 #### NUEVO
 
@@ -185,6 +187,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### FIXED
 
+- fix popup menu text contrast across all themes, extend the priority stripe to the content height and vertically center task checkboxes and overflow buttons on the home screen and in lists, without a divider line and with more space between the stripe and the checkbox.
 - fix recurring tasks: when the day of the next occurrence arrives `RecurrenceWorker` reopens the task with a new due date and a new creation date, unchecks its subtasks and reschedules the alarm.
 - fix recurring tasks completed late or after several days without opening the app: they are moved to the current occurrence (`RecurrenceUtils`) instead of reappearing one by one with past dates.
 - check recurring tasks every hour and on app start (previously every 12 hours) so they reappear when the day begins.
@@ -224,6 +227,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - respect the system 12 / 24 h format when picking a subtask time.
 - use plurals in the weekly statistics insight (it said `1 tasks`).
 - [online] show `v1.7` in the settings footer, which still said `v1.5`.
+- vertically centre the checkbox and the title in the task details, which were aligned to the top.
 
 #### ADDED
 

@@ -24,10 +24,10 @@
         <item name="textAppearanceLabelLarge">@style/TextAppearance.Polar.LabelLarge</item>
         <item name="textAppearanceLabelMedium">@style/TextAppearance.Polar.LabelMedium</item>
         <item name="textAppearanceLabelSmall">@style/TextAppearance.Polar.LabelSmall</item>
-        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.Polar.BodyMedium</item>
-        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Polar.BodyMedium</item>
-        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.Polar.BodyMedium</item>
-        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.Polar.BodyMedium</item>
+        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.Polar.PopupMenu</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Polar.PopupMenu</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.Polar.PopupMenu</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.Polar.PopupMenu</item>
 
         <!-- Formas -->
         <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Polar.ExtraSmall</item>
@@ -458,6 +458,11 @@
 
     <style name="Widget.Polar.Snackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
         <item name="android:textAppearance">@style/TextAppearance.Polar.BodyMedium</item>
+    </style>
+
+    <!-- Color explicito para que los menus sean legibles en todos los temas. -->
+    <style name="TextAppearance.Polar.PopupMenu" parent="TextAppearance.Polar.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="Widget.Polar.PopupMenu" parent="Widget.Material3.PopupMenu">
