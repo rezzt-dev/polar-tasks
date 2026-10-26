@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -60,30 +59,40 @@ class EisenhowerFragment : Fragment() {
     }
 
     private fun createTaskItemView(task: Task): View {
+        val density = resources.displayMetrics.density
         val layout = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.CENTER_VERTICAL
-            setPadding(0, 4, 0, 4)
+            minimumHeight = (36 * density).toInt()
         }
 
-        val checkbox = CheckBox(requireContext()).apply {
+        // MaterialCheckBox para heredar el estilo de casilla del tema (cuadrada o circular)
+        val checkbox = com.google.android.material.checkbox.MaterialCheckBox(requireContext()).apply {
             isChecked = task.completed
+            minWidth = 0
+            minimumWidth = 0
+            minHeight = 0
+            minimumHeight = 0
+            scaleX = 0.85f
+            scaleY = 0.85f
             setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     taskViewModel.setTaskCompletion(task, true)
-                    Snackbar.make(binding.root, "tarea completada", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, R.string.task_completed, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
 
         val titleTextView = TextView(requireContext()).apply {
             text = task.title
-            textSize = 13f
+            androidx.core.widget.TextViewCompat.setTextAppearance(this, R.style.TextAppearance_Polar_BodyMedium)
+            maxLines = 2
+            ellipsize = android.text.TextUtils.TruncateAt.END
             layoutParams = LinearLayout.LayoutParams(
                 0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 1.0f
-            )
+            ).apply { marginStart = (6 * density).toInt() }
         }
 
         layout.addView(checkbox)

@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -20,15 +18,15 @@ class TutorialActivity : BaseActivity() {
     private lateinit var binding: ActivityTutorialBinding
     private val tutorialPages = listOf(
         TutorialPage(R.string.tutorial_title_1, R.string.tutorial_desc_1, R.drawable.ic_home),
-        TutorialPage(R.string.tutorial_title_2, R.string.tutorial_desc_2, R.drawable.ic_tasks),
-        TutorialPage(R.string.tutorial_title_3, R.string.tutorial_desc_3, R.drawable.ic_chat),
-        TutorialPage(R.string.tutorial_title_4, R.string.tutorial_desc_4, R.drawable.ic_check_box),
+        TutorialPage(R.string.tutorial_title_2, R.string.tutorial_desc_2, R.drawable.ic_stat_list),
+        TutorialPage(R.string.tutorial_title_3, R.string.tutorial_desc_3, R.drawable.ic_swipe),
+        TutorialPage(R.string.tutorial_title_4, R.string.tutorial_desc_4, R.drawable.ic_image),
         TutorialPage(R.string.tutorial_title_5, R.string.tutorial_desc_5, R.drawable.ic_calendar),
-        TutorialPage(R.string.tutorial_title_6, R.string.tutorial_desc_6, R.drawable.ic_theme),
+        TutorialPage(R.string.tutorial_title_6, R.string.tutorial_desc_6, R.drawable.ic_settings_theme),
         TutorialPage(R.string.tutorial_title_7, R.string.tutorial_desc_7, R.drawable.ic_stats)
     )
 
-    private lateinit var indicators: Array<ImageView>
+    private lateinit var indicators: Array<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +42,15 @@ class TutorialActivity : BaseActivity() {
         val adapter = TutorialPagerAdapter(this)
         binding.viewPager.adapter = adapter
 
+        // Transición entre páginas: fundido con un ligero desplazamiento del contenido.
+        binding.viewPager.setPageTransformer { page, position ->
+            val offset = kotlin.math.abs(position).coerceAtMost(1f)
+            page.alpha = 1f - offset
+            page.translationX = -position * page.width * 0.75f
+            page.scaleX = 1f - offset * 0.04f
+            page.scaleY = 1f - offset * 0.04f
+        }
+
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -53,66 +60,61 @@ class TutorialActivity : BaseActivity() {
         })
     }
 
+    // Indicadores tipo píldora: el activo se alarga y se rellena con el color de acento.
     private fun setupIndicators() {
         val count = tutorialPages.size
-        indicators = Array(count) { ImageView(this) }
-        
-        // Define exact small size for dots (e.g., 10dp)
         val density = resources.displayMetrics.density
-        val sizePx = (10 * density).toInt()
-        
-        val layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).apply {
-            setMargins(8, 0, 8, 0)
-        }
-
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)
-        val primaryColor = typedValue.data
-
-        for (i in 0 until count) {
-            indicators[i].apply {
-                setImageDrawable(ContextCompat.getDrawable(this@TutorialActivity, R.drawable.ic_circle_outline))
-                this.layoutParams = layoutParams
-                setColorFilter(primaryColor)
+        val dot = (6 * density).toInt()
+        indicators = Array(count) {
+            View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(dot, dot).apply {
+                    marginStart = (3 * density).toInt()
+                    marginEnd = (3 * density).toInt()
+                }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = dot / 2f
+                }
             }
-            binding.dotsLayout.addView(indicators[i])
         }
-        if (count > 0) {
-            updateIndicators(0)
-        }
+        indicators.forEach { binding.dotsLayout.addView(it) }
+        if (count > 0) updateIndicators(0)
     }
 
     private fun updateIndicators(position: Int) {
-        val typedValue = android.util.TypedValue()
-        theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)
-        val primaryColor = typedValue.data
-        
-        for (i in indicators.indices) {
-            indicators[i].setImageDrawable(
-                ContextCompat.getDrawable(
-                    this,
-                    if (i == position) R.drawable.ic_circle else R.drawable.ic_circle_outline
-                )
-            )
-            indicators[i].setColorFilter(primaryColor)
+        val density = resources.displayMetrics.density
+        val dot = (6 * density).toInt()
+        val active = (20 * density).toInt()
+        val activeColor = resolveColor(androidx.appcompat.R.attr.colorPrimary)
+        val inactiveColor = resolveColor(com.google.android.material.R.attr.colorOutline)
+
+        indicators.forEachIndexed { i, view ->
+            val target = if (i == position) active else dot
+            (view.background as android.graphics.drawable.GradientDrawable)
+                .setColor(if (i == position) activeColor else inactiveColor)
+            val start = view.layoutParams.width
+            if (start == target) return@forEachIndexed
+            android.animation.ValueAnimator.ofInt(start, target).apply {
+                duration = 220
+                interpolator = android.view.animation.PathInterpolator(0.4f, 0f, 0.2f, 1f)
+                addUpdateListener {
+                    view.layoutParams = view.layoutParams.apply { width = it.animatedValue as Int }
+                }
+                start()
+            }
         }
+    }
+
+    private fun resolveColor(attr: Int): Int {
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(attr, typedValue, true)
+        return typedValue.data
     }
 
     private fun updateButtons(position: Int) {
         binding.btnBack.visibility = if (position == 0) View.INVISIBLE else View.VISIBLE
-        
-        if (position == tutorialPages.size - 1) {
-            binding.btnSkip.visibility = View.INVISIBLE
-            binding.btnNext.icon = null
-            binding.btnNext.setText(R.string.action_finish)
-            binding.btnNext.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-        } else {
-            binding.btnSkip.visibility = View.VISIBLE
-            binding.btnNext.icon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_forward)
-            binding.btnNext.text = ""
-            val scale = resources.displayMetrics.density
-            binding.btnNext.layoutParams.width = (56 * scale + 0.5f).toInt()
-        }
+        val isLast = position == tutorialPages.size - 1
+        binding.btnSkip.visibility = if (isLast) View.INVISIBLE else View.VISIBLE
+        binding.btnNext.setText(if (isLast) R.string.action_finish else R.string.action_next)
     }
 
     private fun setupButtons() {

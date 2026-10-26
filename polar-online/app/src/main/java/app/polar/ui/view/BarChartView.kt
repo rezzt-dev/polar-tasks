@@ -36,13 +36,13 @@ class BarChartView @JvmOverloads constructor(
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         textSize = dpToPx(12f)
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        typeface = ChartTypeface.resolve(context, Typeface.BOLD)
     }
 
     private val valueTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         textSize = dpToPx(10f)
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        typeface = ChartTypeface.resolve(context)
     }
     
     private val barRect = RectF()

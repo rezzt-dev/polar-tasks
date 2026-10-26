@@ -18,6 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:navigationContentDescription="@string/back"
             app:navigationIcon="@drawable/ic_arrow_back" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -28,30 +29,20 @@
 
         <LinearLayout
             android:id="@+id/emptyState"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="@dimen/spacing_xlarge"
+            style="@style/Polar.EmptyState"
             android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_search_results"
-                android:textSize="@dimen/text_size_title"
-                android:textColor="?attr/colorOnBackground"
-                android:alpha="0.6" />
+            <ImageView
+                style="@style/Polar.EmptyState.Icon"
+                android:src="@drawable/ic_search" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_small"
-                android:text="@string/try_different_search"
-                android:textSize="@dimen/text_size_body"
-                android:textColor="?attr/colorOnBackground"
-                android:alpha="0.4" />
+                style="@style/Polar.EmptyState.Title"
+                android:text="@string/no_search_results" />
+
+            <TextView
+                style="@style/Polar.EmptyState.Body"
+                android:text="@string/try_different_search" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -59,8 +50,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:layoutAnimation="@anim/polar_list_layout"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:paddingTop="@dimen/spacing_small"
-            android:paddingBottom="@dimen/spacing_medium"
+            android:paddingBottom="@dimen/spacing_large"
             tools:listitem="@layout/item_task" />
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

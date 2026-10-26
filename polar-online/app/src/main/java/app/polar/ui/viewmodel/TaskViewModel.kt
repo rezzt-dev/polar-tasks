@@ -100,7 +100,7 @@ class TaskViewModel @Inject constructor(
           app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
-          _errorMessage.value = "Error: ${e.message}"
+          _errorMessage.value = "error: ${e.message}"
       }
   }
 
@@ -476,7 +476,7 @@ class TaskViewModel @Inject constructor(
           app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
-          _errorMessage.value = "Error: ${e.message}"
+          _errorMessage.value = "error: ${e.message}"
       }
   }
 
@@ -493,7 +493,7 @@ class TaskViewModel @Inject constructor(
           app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
-          _errorMessage.value = "Error: ${e.message}"
+          _errorMessage.value = "error: ${e.message}"
       }
   }
 

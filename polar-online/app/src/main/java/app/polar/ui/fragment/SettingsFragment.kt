@@ -75,6 +75,15 @@ class SettingsFragment : Fragment() {
     binding.tvSettingsDescription.setText(selected?.description ?: R.string.settings_intro_desc)
     androidx.core.view.ViewCompat.setAccessibilityPaneTitle(binding.root, binding.tvSettingsTitle.text)
     if (resetScroll) {
+      // Cambio de categoría: el contenido entra con un fundido corto y un leve desplazamiento.
+      binding.settingsScroll.alpha = 0f
+      binding.settingsScroll.translationY = 8f * resources.displayMetrics.density
+      binding.settingsScroll.animate()
+        .alpha(1f)
+        .translationY(0f)
+        .setDuration(220)
+        .setInterpolator(android.view.animation.PathInterpolator(0.05f, 0.7f, 0.1f, 1f))
+        .start()
       binding.settingsScroll.post {
         _binding?.let { currentBinding ->
           currentBinding.settingsScroll.scrollTo(0, if (currentSection == "overview") overviewScrollY else 0)
@@ -332,6 +341,7 @@ class SettingsFragment : Fragment() {
 
   private fun setupFontSelection() {
     val fontEntries = linkedMapOf(
+      getString(R.string.font_inter) to ThemeManager.FONT_INTER,
       getString(R.string.font_poppins) to ThemeManager.FONT_POPPINS,
       getString(R.string.font_comfortaa) to ThemeManager.FONT_COMFORTAA,
       getString(R.string.font_figtree) to ThemeManager.FONT_FIGTREE,
@@ -414,10 +424,10 @@ class SettingsFragment : Fragment() {
     val currentSp = (currentScale * 14.0f)
 
     binding.sliderFontSize.value = currentSp.coerceIn(8.0f, 20.0f)
-    binding.tvFontSizeLabel.text = "${currentSp.toInt()} sp"
+    binding.tvFontSizeLabel.text = getString(R.string.font_size_value, currentSp.toInt())
 
     binding.sliderFontSize.addOnChangeListener { _, value, _ ->
-      binding.tvFontSizeLabel.text = "${value.toInt()} sp"
+      binding.tvFontSizeLabel.text = getString(R.string.font_size_value, value.toInt())
     }
 
     binding.sliderFontSize.addOnSliderTouchListener(object :
@@ -585,7 +595,7 @@ class SettingsFragment : Fragment() {
       "english (uk)" to "en-rGB",
       "english (us)" to "en-rUS",
       "deutsch" to "de",
-      "francais" to "fr"
+      "français" to "fr"
     )
     val langLabels = langEntries.keys.toTypedArray()
     val langValues = langEntries.values.toList()

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- casilla cuadrada marcada: cuadrado relleno con el check recortado (evenOdd),
+     a juego con el trazo de los iconos lucide. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillType="evenOdd"
+        android:fillColor="@android:color/white"
+        android:pathData="M8.5,3.125 h7 a5.375,5.375 0 0,1 5.375,5.375 v7 a5.375,5.375 0 0,1 -5.375,5.375 h-7 a5.375,5.375 0 0,1 -5.375,-5.375 v-7 a5.375,5.375 0 0,1 5.375,-5.375 Z M8.2071,11.2929 L10.5,13.5858 L15.7929,8.2929 A1,1 0 0,1 17.2071,9.7071 L11.2071,15.7071 A1,1 0 0,1 9.7929,15.7071 L6.7929,12.7071 A1,1 0 0,1 8.2071,11.2929 Z" />
+</vector>

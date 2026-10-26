@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- entrada escalonada de los elementos de una lista al cargarla -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@anim/polar_emphasized_decelerate">
+    <translate
+        android:duration="260"
+        android:fromYDelta="12dp"
+        android:toYDelta="0" />
+    <alpha
+        android:duration="200"
+        android:fromAlpha="0"
+        android:toAlpha="1" />
+</set>

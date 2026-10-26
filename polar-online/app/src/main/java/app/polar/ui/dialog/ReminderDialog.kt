@@ -164,7 +164,7 @@ class ReminderDialog(
         if (lat == null || lng == null) {
             Toast.makeText(
                 requireContext(),
-                "introduce coordenadas validas",
+                getString(R.string.invalid_coordinates),
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -220,9 +220,11 @@ class ReminderDialog(
     }
 
     private fun updateDateDisplay() {
-        val format = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-        val formattedDate = format.format(java.util.Date(selectedDate)).lowercase().replace(".", "")
-        binding.tvDueDate.text = formattedDate
+        // Fecha y hora con el patrón y el formato 12/24 h del idioma y del sistema.
+        val locale = Locale.getDefault()
+        val skeleton = if (DateFormat.is24HourFormat(requireContext())) "EEEdMMMyHHmm" else "EEEdMMMyhmma"
+        val format = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton), locale)
+        binding.tvDueDate.text = format.format(java.util.Date(selectedDate)).lowercase(locale)
     }
 
     override fun onDestroyView() {

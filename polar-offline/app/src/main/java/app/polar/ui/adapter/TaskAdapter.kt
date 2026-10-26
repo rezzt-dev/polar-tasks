@@ -139,6 +139,7 @@ class TaskAdapter(
         // Theme colors resolved once in init{} — theme does not change during adapter lifetime
         private val colorPrimary: Int
         private val colorOnSurface: Int
+        private val colorOnSurfaceVariant: Int
         private val colorSurfaceVariant: Int
         private val colorPriorityHigh: Int
         private val colorPriorityMedium: Int
@@ -157,6 +158,7 @@ class TaskAdapter(
             }
             colorPrimary = resolve(android.R.attr.colorPrimary)
             colorOnSurface = resolve(com.google.android.material.R.attr.colorOnSurface)
+            colorOnSurfaceVariant = resolve(com.google.android.material.R.attr.colorOnSurfaceVariant)
             colorSurfaceVariant = resolve(com.google.android.material.R.attr.colorSurfaceVariant)
             colorPriorityHigh = resolve(app.polar.R.attr.colorPriorityHigh)
             colorPriorityMedium = resolve(app.polar.R.attr.colorPriorityMedium)
@@ -244,9 +246,9 @@ class TaskAdapter(
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
-            // Sin prioridad la franja no desaparece: adopta el color de texto del tema activo
-            binding.viewPriorityStripe.visibility = android.view.View.VISIBLE
-            binding.viewPriorityStripe.setBackgroundColor(priorityColor)
+            // La marca lateral solo aparece con prioridad; sin ella basta la casilla neutra
+            binding.viewPriorityStripe.visibility = if (task.priority > 0) android.view.View.VISIBLE else android.view.View.GONE
+            binding.viewPriorityStripe.backgroundTintList = android.content.res.ColorStateList.valueOf(priorityColor)
             
             if (task.completed) {
                 binding.tvTaskTitle.paintFlags = binding.tvTaskTitle.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
@@ -268,11 +270,11 @@ class TaskAdapter(
 
                 when {
                     !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) ->
-                        binding.tvTaskDate.setTextColor(colorDateOverdue)
+                        setDateColor(colorDateOverdue)
                     app.polar.util.DateUtils.isToday(task.dueDate) ->
-                        binding.tvTaskDate.setTextColor(colorPrimary)
+                        setDateColor(colorPrimary)
                     else ->
-                        binding.tvTaskDate.setTextColor(colorOnSurface)
+                        setDateColor(colorOnSurfaceVariant)
                 }
 
                 binding.tvTaskDate.visibility = android.view.View.VISIBLE
@@ -314,6 +316,15 @@ class TaskAdapter(
             }
         }
         
+        /** Color de la fecha y de su icono: vencida, hoy o neutra. */
+        private fun setDateColor(color: Int) {
+            binding.tvTaskDate.setTextColor(color)
+            androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(
+                binding.tvTaskDate,
+                android.content.res.ColorStateList.valueOf(color)
+            )
+        }
+
         fun resetVisuals() {
              // No itemView.animate().cancel() here: the RecyclerView's own TaskItemAnimator
              // (DefaultItemAnimator) plays its ADD animation for a freshly inserted row using

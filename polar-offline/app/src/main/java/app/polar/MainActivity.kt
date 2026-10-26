@@ -5,9 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +18,7 @@ import app.polar.ui.adapter.TaskListAdapter
 import app.polar.ui.dialog.TaskDialog
 import app.polar.ui.dialog.TaskListDialog
 import app.polar.ui.fragment.TasksFragment
+import app.polar.ui.manager.DrawerManager
 import app.polar.ui.viewmodel.TaskListViewModel
 import app.polar.ui.viewmodel.TaskViewModel
 import app.polar.util.ThemeManager
@@ -37,8 +37,9 @@ class MainActivity : BaseActivity() {
   private val taskViewModel: TaskViewModel by viewModels()
   private val remindersViewModel: app.polar.ui.viewmodel.RemindersViewModel by viewModels()
   
-  private lateinit var drawerManager: app.polar.ui.manager.DrawerManager
+  private lateinit var drawerManager: DrawerManager
   private var currentListId: Long? = null
+  private var activeDestination = DrawerManager.Destination.HOME
   
   private val requestNotificationPermissionLauncher = registerForActivityResult(
       ActivityResultContracts.RequestPermission()
@@ -71,10 +72,7 @@ class MainActivity : BaseActivity() {
       } else {
           currentListId = -1L
           taskViewModel.loadAllTasks()
-          binding.toolbar.title = getString(R.string.home)
-          supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, TasksFragment())
-            .commit()
+          showScreen(TasksFragment(), getString(R.string.home), DrawerManager.Destination.HOME, animate = false)
       }
     }
     
@@ -111,6 +109,7 @@ class MainActivity : BaseActivity() {
     if (!::binding.isInitialized) return
     currentListId?.let { outState.putLong(STATE_CURRENT_LIST_ID, it) }
     outState.putCharSequence(STATE_TOOLBAR_TITLE, binding.toolbar.title)
+    outState.putString(STATE_DESTINATION, activeDestination.name)
   }
 
   // El FragmentManager ya restaura el fragmento visible; aquí se recupera lo que vive en la
@@ -123,6 +122,10 @@ class MainActivity : BaseActivity() {
       null
     }
     savedInstanceState.getCharSequence(STATE_TOOLBAR_TITLE)?.let { binding.toolbar.title = it }
+    activeDestination = savedInstanceState.getString(STATE_DESTINATION)
+      ?.let { runCatching { DrawerManager.Destination.valueOf(it) }.getOrNull() }
+      ?: DrawerManager.Destination.HOME
+    drawerManager.setActiveDestination(activeDestination, currentListId)
 
     val listId = currentListId
     // Tras la muerte del proceso el ViewModel vuelve a empezar en "inicio": recargar la lista.
@@ -188,7 +191,7 @@ class MainActivity : BaseActivity() {
   }
   
   private fun setupDrawerManager() {
-      drawerManager = app.polar.ui.manager.DrawerManager(
+      drawerManager = DrawerManager(
           this, 
           binding, 
           taskListViewModel, 
@@ -198,68 +201,66 @@ class MainActivity : BaseActivity() {
       drawerManager.setup()
   }
 
-  private fun handleNavigation(event: app.polar.ui.manager.DrawerManager.NavigationEvent) {
+  /**
+   * Muestra una sección principal con la transición "fade through" (fundido con un leve escalado)
+   * y sincroniza el título de la barra y la sección marcada en el cajón.
+   */
+  private fun showScreen(
+      fragment: androidx.fragment.app.Fragment,
+      title: CharSequence,
+      destination: DrawerManager.Destination,
+      animate: Boolean = true
+  ) {
+      binding.toolbar.title = title
+      activeDestination = destination
+      drawerManager.setActiveDestination(destination, currentListId)
+      supportFragmentManager.beginTransaction().apply {
+          if (animate) {
+              setCustomAnimations(R.anim.polar_fade_through_enter, R.anim.polar_fade_through_exit)
+          }
+          setReorderingAllowed(true)
+          replace(R.id.fragmentContainer, fragment)
+      }.commit()
+  }
+
+  private fun handleNavigation(event: DrawerManager.NavigationEvent) {
       when (event) {
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.Home -> {
-                currentListId = -1L
-                taskViewModel.loadAllTasks()
-                binding.toolbar.title = getString(R.string.home)
-                binding.fabAddTask.hide()
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, TasksFragment())
-                    .commit()
-          }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.Calendar -> {
+          is DrawerManager.NavigationEvent.Home -> navigateToHome()
+          is DrawerManager.NavigationEvent.Calendar -> {
                 currentListId = null
-                binding.toolbar.title = getString(R.string.calendar)
                 binding.fabAddTask.hide()
-                supportFragmentManager.beginTransaction()
-                  .replace(R.id.fragmentContainer, app.polar.ui.fragment.CalendarFragment())
-                  .commit()
+                showScreen(app.polar.ui.fragment.CalendarFragment(), getString(R.string.calendar), DrawerManager.Destination.CALENDAR)
           }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.Tags -> {
+          is DrawerManager.NavigationEvent.Tags -> {
                 currentListId = null
-                binding.toolbar.title = getString(R.string.all_tags)
                 binding.fabAddTask.hide()
-                supportFragmentManager.beginTransaction()
-                  .replace(R.id.fragmentContainer, app.polar.ui.fragment.TagsFragment())
-                  .commit()
+                showScreen(app.polar.ui.fragment.TagsFragment(), getString(R.string.all_tags), DrawerManager.Destination.TAGS)
           }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.Reminders -> {
-                openReminders()
-          }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.Eisenhower -> {
+          is DrawerManager.NavigationEvent.Reminders -> openReminders()
+          is DrawerManager.NavigationEvent.Eisenhower -> {
                 currentListId = null
-                binding.toolbar.title = getString(R.string.eisenhower_matrix)
                 binding.fabAddTask.hide()
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, app.polar.ui.fragment.EisenhowerFragment())
-                    .commit()
+                showScreen(app.polar.ui.fragment.EisenhowerFragment(), getString(R.string.eisenhower_matrix), DrawerManager.Destination.EISENHOWER)
           }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.Trash -> {
+          is DrawerManager.NavigationEvent.Trash -> {
                 currentListId = -3L
-                binding.toolbar.title = getString(R.string.trash)
                 binding.fabAddTask.hide()
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, app.polar.ui.fragment.TrashFragment())
-                    .commit()
+                showScreen(app.polar.ui.fragment.TrashFragment(), getString(R.string.trash), DrawerManager.Destination.TRASH)
           }
-          is app.polar.ui.manager.DrawerManager.NavigationEvent.TaskListSelected -> {
+          is DrawerManager.NavigationEvent.Stats -> openStats()
+          is DrawerManager.NavigationEvent.Settings -> openSettings()
+          is DrawerManager.NavigationEvent.TaskListSelected -> {
                 val taskList = event.list
                 currentListId = taskList.id
                 taskListViewModel.selectList(taskList.id)
                 taskViewModel.loadTasksForList(taskList.id)
-                binding.toolbar.title = taskList.title
-                
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, TasksFragment())
-                    .commit()
+                showScreen(TasksFragment(), taskList.title, DrawerManager.Destination.LIST)
                 binding.fabAddTask.show()
           }
-           is app.polar.ui.manager.DrawerManager.NavigationEvent.CreateList -> {
+           is DrawerManager.NavigationEvent.CreateList -> {
                 showCreateListDialog()
            }
-           is app.polar.ui.manager.DrawerManager.NavigationEvent.EditList -> {
+           is DrawerManager.NavigationEvent.EditList -> {
                 showEditListDialog(event.list)
            }
       }
@@ -268,22 +269,27 @@ class MainActivity : BaseActivity() {
   
   private fun openReminders() {
       currentListId = REMINDERS_LIST_ID
-      binding.toolbar.title = getString(R.string.reminders)
       binding.fabAddTask.show()
-      
-      supportFragmentManager.beginTransaction()
-          .replace(R.id.fragmentContainer, app.polar.ui.fragment.RemindersFragment())
-          .commit()
+      showScreen(app.polar.ui.fragment.RemindersFragment(), getString(R.string.reminders), DrawerManager.Destination.REMINDERS)
+  }
+
+  private fun openStats() {
+      binding.fabAddTask.hide()
+      currentListId = null
+      showScreen(app.polar.ui.fragment.StatsFragment(), getString(R.string.statistics), DrawerManager.Destination.STATS)
+  }
+
+  private fun openSettings() {
+      binding.fabAddTask.hide()
+      currentListId = null
+      showScreen(app.polar.ui.fragment.SettingsFragment(), getString(R.string.settings), DrawerManager.Destination.SETTINGS)
   }
   
   private fun navigateToHome() {
       currentListId = -1L
       taskViewModel.loadAllTasks()
-      binding.toolbar.title = getString(R.string.home)
       binding.fabAddTask.hide()
-      supportFragmentManager.beginTransaction()
-          .replace(R.id.fragmentContainer, TasksFragment())
-          .commit()
+      showScreen(TasksFragment(), getString(R.string.home), DrawerManager.Destination.HOME)
   }
   
   private fun setupFab() {
@@ -373,38 +379,13 @@ class MainActivity : BaseActivity() {
     }
   }
 
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    return when (item.itemId) {
-      R.id.action_stats -> {
-        binding.fabAddTask.hide()
-        currentListId = null
-        binding.toolbar.title = getString(R.string.statistics)
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, app.polar.ui.fragment.StatsFragment())
-            .commit()
-        true
-      }
-      R.id.action_settings -> {
-        binding.fabAddTask.hide()
-        currentListId = null
-        binding.toolbar.title = getString(R.string.settings)
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, app.polar.ui.fragment.SettingsFragment())
-            .commit()
-        true
-      }
-      else -> super.onOptionsItemSelected(item)
-    }
-  }
-
   companion object {
     const val EXTRA_NAVIGATE_TO_REMINDERS = "NAVIGATE_TO_REMINDERS"
     // Id especial de currentListId para la pantalla de recordatorios.
     private const val REMINDERS_LIST_ID = -2L
     private const val STATE_CURRENT_LIST_ID = "state_current_list_id"
     private const val STATE_TOOLBAR_TITLE = "state_toolbar_title"
+    private const val STATE_DESTINATION = "state_destination"
   }
   
 }

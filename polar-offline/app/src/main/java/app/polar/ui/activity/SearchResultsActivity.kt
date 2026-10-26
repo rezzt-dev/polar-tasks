@@ -42,8 +42,7 @@ class SearchResultsActivity : BaseActivity() {
   }
 
   private fun setupToolbar(query: String) {
-    binding.toolbar.title = "\"$query\""
-    binding.toolbar.subtitle = getString(R.string.search)
+    binding.toolbar.title = getString(R.string.search_query_title, query)
     binding.toolbar.setNavigationOnClickListener {
       finish()
     }
@@ -56,9 +55,12 @@ class SearchResultsActivity : BaseActivity() {
       onCheckChanged = { task, _, _ ->
         viewModel.toggleTaskCompletion(task)
       },
-      onItemLongClick = { task ->
-        // Optionally handle long click
-        true
+      onItemLongClick = { _ -> true },
+      onItemClick = { task ->
+        startActivity(
+          android.content.Intent(this, TaskDetailActivity::class.java)
+            .putExtra(TaskDetailActivity.EXTRA_TASK_ID, task.id)
+        )
       }
     )
 
@@ -72,6 +74,8 @@ class SearchResultsActivity : BaseActivity() {
     viewModel.searchTasks(query).observe(this) { results ->
       // Verificar que la Activity no esté finalizando
       if (isFinishing) return@observe
+
+      binding.toolbar.subtitle = resources.getQuantityString(R.plurals.search_results_count, results.size, results.size)
 
       if (results.isEmpty()) {
         binding.emptyState.visibility = android.view.View.VISIBLE

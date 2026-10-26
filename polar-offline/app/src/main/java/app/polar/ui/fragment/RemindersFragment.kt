@@ -5,7 +5,8 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
+import app.polar.ui.widget.applyPolarStyle
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -141,7 +142,9 @@ class RemindersFragment : Fragment() {
 
     private fun showReminderPopupMenu(reminder: Reminder, anchor: View) {
         PopupMenu(requireContext(), anchor).apply {
-            menuInflater.inflate(R.menu.menu_task, menu)
+            // Los recordatorios solo admiten editar y eliminar.
+            menuInflater.inflate(R.menu.menu_task_list, menu)
+            applyPolarStyle(requireContext())
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_edit -> { showEditReminderDialog(reminder); true }

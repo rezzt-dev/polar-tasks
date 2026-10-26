@@ -39,7 +39,7 @@ class TaskListViewModel @Inject constructor(
           app.polar.worker.SyncWorker.triggerImmediateSync(getApplication())
       } catch (e: Exception) {
           e.printStackTrace()
-          _errorMessage.value = "Error: ${e.message}"
+          _errorMessage.value = "error: ${e.message}"
       }
   }
   

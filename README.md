@@ -152,6 +152,8 @@ how to contribute:
 ## License
 this project is licensed under a custom non-commercial license. personal, educational and evaluation use is allowed; commercial use requires prior written permission from the author. see the [license](./LICENSE) file for full details.
 
+the app bundles the [inter](https://rsms.me/inter) font (sil open font license 1.1) and icons from [lucide](https://lucide.dev) (isc license). see [third-party notices](./THIRD_PARTY_NOTICES.md) for the full license texts.
+
 ---
 ## Author
 __rezzt.dev__

@@ -1,12 +1,33 @@
-<vector
-    android:tint="?attr/colorControlNormal" xmlns:android="http://schemas.android.com/apk/res/android"
-    
+<?xml version="1.0" encoding="utf-8"?>
+<!-- lucide: arrow-up-down (isc license, https://lucide.dev) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24"
-    >
-  <path
-      android:fillColor="@android:color/white"
-      android:pathData="M3,18h6v-2H3v2zM3,6v2h18V6H3zm0,7h12v-2H3v2z"/>
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:pathData="m 21 16 -4 4 -4 -4"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.75"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M 17 20 V 4"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.75"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="m 3 8 4 -4 4 4"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.75"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M 7 4 v 16"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.75"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

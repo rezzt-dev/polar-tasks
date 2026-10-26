@@ -20,4 +20,7 @@
   <attr name="colorPriorityMedium" format="color" />
   <attr name="colorPriorityLow" format="color" />
   <attr name="colorDateOverdue" format="color" />
+
+  <!-- Estilo de los chips de entrada creados desde codigo (etiquetas con boton de quitar) -->
+  <attr name="polarInputChipStyle" format="reference" />
 </resources>

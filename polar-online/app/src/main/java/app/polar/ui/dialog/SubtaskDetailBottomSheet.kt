@@ -42,10 +42,6 @@ class SubtaskDetailBottomSheet(
             dismiss()
         }
         
-        binding.btnClose.setOnClickListener {
-            dismiss()
-        }
-        
         binding.containerDueDate.setOnClickListener {
             showDateTimePicker()
         }
@@ -54,23 +50,32 @@ class SubtaskDetailBottomSheet(
     private fun updateDueDateText() {
         if (subtask.dueDate != null) {
             binding.tvSubtaskDueDate.text = app.polar.util.DateUtils.formatTaskDate(requireContext(), subtask.dueDate)
-            binding.tvSubtaskDueDate.alpha = 1.0f
+            binding.tvSubtaskDueDate.setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
         } else {
-            binding.tvSubtaskDueDate.text = "sin recordatorio"
-            binding.tvSubtaskDueDate.alpha = 0.6f
+            binding.tvSubtaskDueDate.text = getString(app.polar.R.string.no_reminder)
+            binding.tvSubtaskDueDate.setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurfaceVariant))
         }
+    }
+
+    private fun resolveColor(attr: Int): Int {
+        val value = android.util.TypedValue()
+        requireContext().theme.resolveAttribute(attr, value, true)
+        return value.data
     }
 
     private fun showDateTimePicker() {
         val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
-            .setTitleText("seleccionar fecha")
+            .setTitleText(getString(app.polar.R.string.select_date_title))
             .setSelection(subtask.dueDate ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
             .build()
             
         datePicker.addOnPositiveButtonClickListener { dateSelection ->
             val timePicker = com.google.android.material.timepicker.MaterialTimePicker.Builder()
-                .setTimeFormat(com.google.android.material.timepicker.TimeFormat.CLOCK_24H)
-                .setTitleText("seleccionar hora")
+                .setTimeFormat(
+                    if (android.text.format.DateFormat.is24HourFormat(requireContext())) com.google.android.material.timepicker.TimeFormat.CLOCK_24H
+                    else com.google.android.material.timepicker.TimeFormat.CLOCK_12H
+                )
+                .setTitleText(getString(app.polar.R.string.select_time))
                 .build()
                 
             timePicker.addOnPositiveButtonClickListener {

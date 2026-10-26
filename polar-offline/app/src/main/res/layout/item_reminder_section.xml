@@ -8,6 +8,4 @@
     android:paddingTop="20dp"
     android:paddingBottom="8dp"
     android:accessibilityHeading="true"
-    android:textSize="13sp"
-    android:textStyle="bold"
-    android:textColor="?attr/colorOnSurfaceVariant" />
+    android:textAppearance="@style/TextAppearance.Polar.Section" />

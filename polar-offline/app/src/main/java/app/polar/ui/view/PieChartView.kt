@@ -37,12 +37,12 @@ class PieChartView @JvmOverloads constructor(
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dpToPx(12f)
-        typeface = Typeface.DEFAULT
+        typeface = ChartTypeface.resolve(context)
     }
 
     private val percentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dpToPx(12f)
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        typeface = ChartTypeface.resolve(context, Typeface.BOLD)
     }
 
     private val emptyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

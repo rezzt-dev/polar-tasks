@@ -85,7 +85,7 @@ class ReminderAdapter(
                 if (reminder.isCompleted) R.drawable.ic_check_circle else R.drawable.ic_notifications
             )?.mutate()?.apply {
                 setTint(statusColor)
-                val size = (16 * context.resources.displayMetrics.density).toInt()
+                val size = (14 * context.resources.displayMetrics.density).toInt()
                 setBounds(0, 0, size, size)
             }
             binding.tvReminderStatus.setCompoundDrawablesRelative(icon, null, null, null)

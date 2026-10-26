@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="?android:attr/colorBackground">
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        style="@style/Widget.Polar.BottomSheet.DragHandle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/tvSheetTagTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="tareas con etiqueta"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="16dp"/>
+        style="@style/Polar.DialogTitle"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        tools:text="#trabajo" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSheetTasks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </LinearLayout>

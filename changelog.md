@@ -56,6 +56,15 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - sustituir apis obsoletas (`systemUiVisibility`, `launchWhenStarted`, `announceForAccessibility`, `adapterPosition`, `scaledDensity` y el constructor de `Locale`) y eliminar los avisos de compilacion.
 - anadir tests unitarios de `TaskFilter`, `CompletionHistory`, `RecurrenceUtils` y `CsvImporter`, y ampliar `TaskViewModelTest` con el orden de las tareas nuevas y las alarmas de subtareas.
 - documentar en `agents.md` y `claude.md` el uso de `AlarmRescheduler`, el refresco del widget y la revision horaria de `RecurrenceWorker`.
+- redisenar con el nuevo sistema todas las pantallas: inicio y listas, detalle de tarea, dialogos de tarea, lista, recordatorio y subtarea, calendario, recordatorios, estadisticas, ajustes, papelera, etiquetas, matriz de eisenhower, busqueda, tutorial, widget y tarjeta de exportacion como imagen.
+- renovar la paleta de los temas claro y oscuro con grises neutros y definir en todos los temas los roles de color de material 3 que faltaban (`colorOnSurfaceVariant`, contenedores y superficies inversas), que antes caian en los morados por defecto.
+- usar en el tema neon un rojo para los errores y la prioridad alta en lugar del verde lima.
+- unificar en `TaskImageExporter` la exportacion de tareas como imagen, que estaba duplicada en la lista y en el detalle.
+- revisar todos los textos de la interfaz en los cinco idiomas: tildes, `ñ`, signos de apertura, acentos franceses, un unico tono (tuteo, `du` y `vous`), tutorial traducido 1:1 y plurales correctos.
+- generar las fechas con el formato propio de cada idioma (`getBestDateTimePattern`) y en minusculas.
+- sustituir los atributos `paddingHorizontal` / `layout_marginHorizontal` (api 26) por sus equivalentes compatibles con android 7, donde se ignoraban.
+- poner en minusculas el prefijo `error:` de los mensajes de error de los viewmodels.
+- documentar el sistema de diseno en `agents.md` (seccion 4.7) y `claude.md`.
 
 #### CORREGIDO
 
@@ -90,11 +99,30 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - evitar que la app se cierre al salir de ajustes mientras se restaura una copia.
 - [online] restaurar la copia en una unica transaccion (si fallaba a mitad se perdian los datos) y exportar tambien las listas borradas, sin las cuales la copia no se podia restaurar.
 - [online] cancelar las alarmas de las tareas al eliminar su lista.
+- traducir los textos que estaban fijos en castellano en el cajon lateral, la matriz de eisenhower, las etiquetas, el calendario, las subtareas, el dialogo de recordatorio, el menu de tarea y la copia al portapapeles.
+- mostrar solo editar y eliminar en el menu de un recordatorio, que ofrecia acciones de tareas que no hacian nada.
+- mostrar la fecha de las tareas en la hoja de una etiqueta, que quedaba oculta.
+- evitar que los iconos de las listas con un color de poco contraste (p. ej. blanco) desaparezcan en los temas claros.
+- respetar la fuente elegida en las graficas de estadisticas y en el calendario, que usaban la del sistema.
+- respetar el formato de 12 / 24 h del sistema al elegir la hora de una subtarea.
+- usar plurales en el analisis semanal de estadisticas (decia `1 tareas`).
+- [online] mostrar `v1.7` en el pie de ajustes, que seguia indicando `v1.5`.
 
 #### NUEVO
 
 - ampliar el selector de iconos de los formularios de creacion y edicion de listas con opciones para compras, estudios, salud, deporte, viajes, finanzas, ocio, familia y hogar.
 - crear el fichero `changelog.md` para registrar los cambios del proyecto de aqui en adelante.
+- anadir un sistema de diseno comun (`ThemeOverlay.Polar.Foundation`) con escala tipografica, formas, estilos de componentes y animaciones, que `BaseActivity` aplica sobre cualquier tema.
+- incluir la fuente inter en la app (`res/font/`, sin depender de la red) y usarla como tipografia por defecto, manteniendo el resto de opciones.
+- sustituir todos los iconos por el pack lucide (trazo fino y uniforme) conservando los nombres `ic_*`, de los que dependen los iconos de lista guardados en la base de datos.
+- anadir transiciones suaves al cambiar de seccion (fade through), al abrir y cerrar pantallas, al cargar listas y al cambiar de categoria en ajustes, y respuesta haptica al completar tareas y al cruzar el umbral de un deslizamiento.
+- marcar en el cajon lateral la seccion o lista abierta, mostrar la fecha de hoy y mover estadisticas y ajustes al pie del cajon para dejar la barra superior solo con la busqueda.
+- mostrar en inicio un resumen de tareas pendientes y vencidas bajo el saludo, y en cada lista el progreso con texto y porcentaje.
+- anadir una paleta de colores predefinida y un selector de color personalizado plegable al crear o editar listas.
+- mostrar las etiquetas del formulario de tarea como chips con boton de quitar, admitir varias separadas por comas y anadir etiquetas y subtareas con la tecla de confirmar del teclado.
+- abrir el detalle al tocar un resultado de busqueda y mostrar el numero de resultados.
+- anadir iconos a los menus emergentes y destacar en rojo la accion de eliminar.
+- anadir `THIRD_PARTY_NOTICES.md` con las licencias de inter (sil ofl 1.1) y lucide (isc).
 
 #### ELIMINADO
 
@@ -102,6 +130,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - [offline] eliminar la sincronizacion en la nube con supabase: `SyncManager`, `SyncWorker`, `SyncPrefs`, dtos, mappers, resolucion de conflictos, realtime y almacenamiento de imagenes en la nube.
 - [offline] eliminar el inicio de sesion (`AuthActivity`, `AuthViewModel`, `activity_auth.xml`) y las categorias de ajustes de cuenta y de opciones avanzadas de nube, con sus textos en todos los idiomas.
 - [offline] eliminar las dependencias de supabase, ktor y kotlinx serialization, los campos `SUPABASE_URL` / `SUPABASE_ANON_KEY` de `BuildConfig` y los tests y documentos de diseno de la sincronizacion.
+- eliminar layouts, drawables, adapters y textos sin uso (`item_task_minimal.xml`, `item_task_group.xml`, `TagAdapter`, fondos y cadenas obsoletas).
 
 #### SEGURIDAD
 
@@ -144,6 +173,15 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - replace deprecated apis (`systemUiVisibility`, `launchWhenStarted`, `announceForAccessibility`, `adapterPosition`, `scaledDensity` and the `Locale` constructor) and remove the compiler warnings.
 - add unit tests for `TaskFilter`, `CompletionHistory`, `RecurrenceUtils` and `CsvImporter`, and extend `TaskViewModelTest` with the order of new tasks and subtask alarms.
 - document in `agents.md` and `claude.md` how to use `AlarmRescheduler`, the widget refresh and the hourly `RecurrenceWorker` check.
+- redesign every screen with the new system: home and lists, task details, task, list, reminder and subtask dialogs, calendar, reminders, statistics, settings, bin, tags, eisenhower matrix, search, tutorial, widget and the share-as-image card.
+- refresh the light and dark theme palette with neutral greys and define in every theme the missing material 3 colour roles (`colorOnSurfaceVariant`, containers and inverse surfaces), which used to fall back to the default purples.
+- use red instead of lime green for errors and high priority in the neon theme.
+- merge the share-as-image export, duplicated in the list and in the details screen, into `TaskImageExporter`.
+- review every interface string in the five languages: accents, `ñ`, opening punctuation, french accents, a single tone (informal spanish, `du` and `vous`), a 1:1 translated tutorial and correct plurals.
+- build dates with each language's own pattern (`getBestDateTimePattern`) and in lowercase.
+- replace the `paddingHorizontal` / `layout_marginHorizontal` attributes (api 26) with their android 7 compatible equivalents, where they were ignored.
+- lowercase the `error:` prefix of the viewmodel error messages.
+- document the design system in `agents.md` (section 4.7) and `claude.md`.
 
 #### FIXED
 
@@ -178,11 +216,30 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - prevent the app from crashing when leaving settings while a backup is being restored.
 - [online] restore the backup in a single transaction (a failure halfway lost the data) and also export deleted lists, without which the backup could not be restored.
 - [online] cancel the task alarms when their list is deleted.
+- translate the strings that were hardcoded in spanish in the drawer, the eisenhower matrix, tags, calendar, subtasks, the reminder dialog, the task menu and the clipboard copy.
+- show only edit and delete in a reminder's menu, which offered task actions that did nothing.
+- show the task date in a tag's sheet, which stayed hidden.
+- keep list icons with a low-contrast colour (e.g. white) from disappearing in light themes.
+- respect the chosen font in the statistics charts and the calendar, which used the system font.
+- respect the system 12 / 24 h format when picking a subtask time.
+- use plurals in the weekly statistics insight (it said `1 tasks`).
+- [online] show `v1.7` in the settings footer, which still said `v1.5`.
 
 #### ADDED
 
 - expand the icon picker in the list creation and editing forms with options for shopping, education, health, fitness, travel, finance, leisure, family, and home.
 - create the `changelog.md` file to record project changes from now on.
+- add a shared design system (`ThemeOverlay.Polar.Foundation`) with a type scale, shapes, component styles and motion, applied by `BaseActivity` on top of any theme.
+- bundle the inter font in the app (`res/font/`, no network needed) and use it as the default font, keeping the other options.
+- replace every icon with the lucide pack (thin, consistent stroke) while keeping the `ic_*` names that list icons stored in the database rely on.
+- add smooth transitions when switching sections (fade through), opening and closing screens, loading lists and changing settings categories, plus haptic feedback when completing tasks and crossing a swipe threshold.
+- highlight the open section or list in the drawer, show today's date and move statistics and settings to the drawer footer so the top bar only holds search.
+- show a summary of pending and overdue tasks under the home greeting, and each list's progress as text and percentage.
+- add a preset colour palette and a collapsible custom colour picker when creating or editing lists.
+- show tags in the task form as chips with a remove button, accept several separated by commas and add tags and subtasks with the keyboard's done key.
+- open the details when tapping a search result and show the number of results.
+- add icons to popup menus and highlight the delete action in red.
+- add `THIRD_PARTY_NOTICES.md` with the inter (sil ofl 1.1) and lucide (isc) licences.
 
 #### REMOVED
 
@@ -190,6 +247,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - [offline] remove supabase cloud sync: `SyncManager`, `SyncWorker`, `SyncPrefs`, dtos, mappers, conflict resolution, realtime and cloud image storage.
 - [offline] remove sign-in (`AuthActivity`, `AuthViewModel`, `activity_auth.xml`) and the account and advanced cloud settings categories, with their strings in every language.
 - [offline] remove the supabase, ktor and kotlinx serialization dependencies, the `SUPABASE_URL` / `SUPABASE_ANON_KEY` `BuildConfig` fields and the sync tests and design docs.
+- remove unused layouts, drawables, adapters and strings (`item_task_minimal.xml`, `item_task_group.xml`, `TagAdapter`, obsolete backgrounds and strings).
 
 #### SECURITY
 

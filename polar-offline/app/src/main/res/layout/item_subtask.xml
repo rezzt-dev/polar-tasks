@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- subtarea dentro de una tarea: casilla reducida y texto secundario -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:orientation="horizontal"
   android:gravity="center_vertical"
-  android:paddingTop="@dimen/spacing_tiny"
-  android:paddingBottom="@dimen/spacing_tiny">
+  android:minHeight="32dp"
+  android:orientation="horizontal">
 
   <com.google.android.material.checkbox.MaterialCheckBox
     android:id="@+id/checkboxSubtask"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="0dp"
-    android:minHeight="0dp" />
+    android:minHeight="0dp"
+    android:scaleX="0.8"
+    android:scaleY="0.8" />
 
   <TextView
     android:id="@+id/tvSubtaskTitle"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    android:layout_marginStart="@dimen/spacing_small"
-    android:textSize="@dimen/text_size_body"
+    android:layout_marginStart="8dp"
+    android:textAppearance="?attr/textAppearanceBodyMedium"
     android:textColor="?attr/colorOnSurface"
-    android:alpha="0.8"
-    tools:text="review code changes" />
+    tools:text="revisar los cambios" />
+
+  <!-- Quitar: solo en el dialogo de edicion (SubtaskAdapter con showRemoveButton) -->
+  <ImageButton
+    android:id="@+id/btnRemoveSubtask"
+    android:layout_width="32dp"
+    android:layout_height="32dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:contentDescription="@string/delete"
+    android:padding="8dp"
+    android:scaleType="fitCenter"
+    android:src="@drawable/ic_x"
+    android:visibility="gone"
+    app:tint="?attr/colorOnSurfaceVariant" />
 </LinearLayout>

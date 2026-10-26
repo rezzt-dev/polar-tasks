@@ -22,8 +22,20 @@ class TaskListAdapter(
     return TaskListViewHolder(binding)
   }
   
+  private var selectedListId: Long? = null
+
   override fun onBindViewHolder(holder: TaskListViewHolder, position: Int) {
     holder.bind(getItem(position))
+  }
+
+  /** Marca como activa en el cajón la lista abierta (o ninguna con `null`). */
+  fun setSelectedListId(listId: Long?) {
+    if (selectedListId == listId) return
+    val previous = currentList.indexOfFirst { it.id == selectedListId }
+    selectedListId = listId
+    val current = currentList.indexOfFirst { it.id == listId }
+    if (previous >= 0) notifyItemChanged(previous)
+    if (current >= 0) notifyItemChanged(current)
   }
   
   inner class TaskListViewHolder(
@@ -32,6 +44,7 @@ class TaskListAdapter(
     
     fun bind(taskList: TaskList) {
       binding.tvListTitle.text = taskList.title
+      binding.root.isActivated = taskList.id == selectedListId
       
       // Set icon
       val iconResId = binding.root.context.resources.getIdentifier(
@@ -45,9 +58,22 @@ class TaskListAdapter(
       
       try {
         val parsedColor = android.graphics.Color.parseColor(taskList.color)
-        binding.ivListIcon.setColorFilter(parsedColor)
+        // Un color elegido en un tema oscuro (p. ej. blanco) puede desaparecer en uno claro:
+        // si apenas contrasta con la superficie se usa el tinte del tema.
+        val surface = com.google.android.material.color.MaterialColors.getColor(
+          binding.root, com.google.android.material.R.attr.colorSurface
+        )
+        if (androidx.core.graphics.ColorUtils.calculateContrast(
+            androidx.core.graphics.ColorUtils.setAlphaComponent(parsedColor, 255), surface
+          ) < MIN_ICON_CONTRAST
+        ) {
+          binding.ivListIcon.clearColorFilter()
+        } else {
+          binding.ivListIcon.setColorFilter(parsedColor)
+        }
       } catch (e: Exception) {
-        // ignore
+        // color no válido: volver al tinte del tema en lugar de heredar el de otra fila reciclada
+        binding.ivListIcon.clearColorFilter()
       }
       
       binding.root.setOnClickListener {
@@ -60,6 +86,10 @@ class TaskListAdapter(
     }
   }
   
+  companion object {
+    private const val MIN_ICON_CONTRAST = 1.8
+  }
+
   private class TaskListDiffCallback : DiffUtil.ItemCallback<TaskList>() {
     override fun areItemsTheSame(oldItem: TaskList, newItem: TaskList): Boolean {
       return oldItem.id == newItem.id

@@ -73,7 +73,7 @@ class RemindersViewModel @Inject constructor(
             block()
         } catch (e: Exception) {
             e.printStackTrace()
-            _errorMessage.value = "Error: ${e.message}"
+            _errorMessage.value = "error: ${e.message}"
         }
     }
 

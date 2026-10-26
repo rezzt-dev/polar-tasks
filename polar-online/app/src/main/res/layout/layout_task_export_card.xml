@@ -1,109 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- tarjeta que se renderiza a imagen para compartir una tarea (ver TaskImageExporter) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="380dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="2dp"
-    android:background="@android:color/transparent">
+    android:background="?android:attr/colorBackground"
+    android:padding="16dp">
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Polar.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1.5dp"
-        app:strokeColor="?attr/colorOnSurface"
-        android:backgroundTint="?android:attr/colorBackground">
+        app:cardCornerRadius="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="28dp">
+            android:padding="24dp">
 
-            <!-- Card Header: Brand + Priority Badge -->
-            <RelativeLayout
+            <!-- Marca y prioridad -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tvBrandName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="polar."
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:alpha="0.9" />
+                    android:layout_weight="1"
+                    android:text="@string/app_name"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
-                <!-- Priority Badge -->
                 <TextView
                     android:id="@+id/tvPriorityBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/bg_tag_pill"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="prioridad alta"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
+                    android:drawablePadding="6dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
                     android:textColor="?attr/colorOnSurface"
-                    android:visibility="visible" />
-            </RelativeLayout>
+                    android:visibility="gone"
+                    app:drawableStartCompat="@drawable/bg_priority_dot"
+                    tools:text="prioridad alta"
+                    tools:visibility="visible" />
+            </LinearLayout>
 
-            <!-- Divider line -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="?android:attr/listDivider"
-                android:alpha="0.2" />
-
-            <!-- Task Title -->
             <TextView
                 android:id="@+id/tvExportTaskTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="titulo de la tarea"
-                android:textSize="24sp"
-                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:textColor="?attr/colorOnSurface"
-                android:lineSpacingMultiplier="1.1" />
+                tools:text="revisar la propuesta de diseño" />
 
-            <!-- Task Description -->
             <TextView
                 android:id="@+id/tvExportTaskDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="descripcion detallada de la tarea..."
-                android:textSize="14sp"
-                android:textColor="?attr/colorOnSurface"
-                android:alpha="0.75"
-                android:lineSpacingMultiplier="1.2"
-                android:visibility="visible" />
+                android:layout_marginTop="8dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="comentarios del equipo antes del viernes." />
 
-            <!-- Subtasks Container -->
+            <!-- Subtareas -->
             <LinearLayout
                 android:id="@+id/containerExportSubtasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="subtareas"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:alpha="0.85" />
+                    android:text="@string/subtasks"
+                    android:textAppearance="@style/TextAppearance.Polar.Section" />
 
                 <LinearLayout
                     android:id="@+id/llSubtasksList"
@@ -113,16 +92,21 @@
                     android:orientation="vertical" />
             </LinearLayout>
 
-            <!-- Meta Container: Due Date + Tags -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:background="?attr/colorOutlineVariant" />
+
+            <!-- Fecha y etiquetas -->
             <LinearLayout
                 android:id="@+id/containerExportMeta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="14dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <!-- Due Date indicator -->
                 <LinearLayout
                     android:id="@+id/llExportDueDate"
                     android:layout_width="0dp"
@@ -130,38 +114,38 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_schedule"
-                        app:tint="?attr/colorOnSurface"
-                        android:alpha="0.7" />
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_calendar_mini"
+                        app:tint="?attr/colorOnSurfaceVariant" />
 
                     <TextView
                         android:id="@+id/tvExportDueDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="mañana, 10:00"
-                        android:textSize="12sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.8" />
+                        android:layout_marginStart="6dp"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="27 de octubre de 2026, 10:00" />
                 </LinearLayout>
 
-                <!-- Tags list -->
                 <TextView
                     android:id="@+id/tvExportTags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="#trabajo #importante"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorPrimary"
-                    android:visibility="gone" />
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:visibility="gone"
+                    tools:text="#trabajo #diseño"
+                    tools:visibility="visible" />
             </LinearLayout>
-
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-</LinearLayout>
+</FrameLayout>

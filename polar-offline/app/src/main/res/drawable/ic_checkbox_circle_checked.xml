@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- casilla circular marcada: circulo relleno con el check recortado (evenOdd). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillType="evenOdd"
+        android:fillColor="@android:color/white"
+        android:pathData="M2.125,12 a9.875,9.875 0 1,0 19.75,0 a9.875,9.875 0 1,0 -19.75,0 Z M8.2071,11.2929 L10.5,13.5858 L15.7929,8.2929 A1,1 0 0,1 17.2071,9.7071 L11.2071,15.7071 A1,1 0 0,1 9.7929,15.7071 L6.7929,12.7071 A1,1 0 0,1 8.2071,11.2929 Z" />
+</vector>

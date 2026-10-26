@@ -1,61 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- dialogo de un solo campo (anadir o renombrar una subtarea) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp"
     android:background="@drawable/dialog_background"
-    android:backgroundTint="?attr/colorSurface">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvDialogTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="title"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="16dp"/>
+        style="@style/Polar.DialogTitle"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="24dp"
+        tools:text="@string/add_subtask_title" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilInput"
+        style="@style/Widget.Polar.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="?attr/colorPrimary"
-        app:hintTextColor="?attr/colorPrimary">
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
             android:inputType="textCapSentences"
-            android:textColor="?attr/colorOnSurface"/>
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="24dp"
-        android:gravity="end">
+        style="@style/Polar.DialogActions"
+        android:layout_marginTop="12dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancel"
+            style="@style/Widget.Polar.Button.Text.Neutral"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:text="@string/cancel" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
+            style="@style/Widget.Polar.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/save"
-            style="@style/Widget.Material3.Button.TonalButton"/>
+            android:text="@string/save" />
     </LinearLayout>
 
 </LinearLayout>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- la pantalla nueva entra desde un poco a la derecha con fundido -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@anim/polar_emphasized_decelerate"
+    android:shareInterpolator="true">
+    <translate
+        android:duration="320"
+        android:fromXDelta="8%"
+        android:toXDelta="0" />
+    <alpha
+        android:duration="220"
+        android:fromAlpha="0"
+        android:toAlpha="1" />
+</set>

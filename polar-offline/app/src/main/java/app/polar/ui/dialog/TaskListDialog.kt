@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.WindowManager
@@ -37,7 +38,8 @@ class TaskListDialog(
   )
 
   private var selectedIcon = "ic_list"
-  private var selectedColor = "#7F52FF"
+  private var selectedColor = PRESET_COLORS[7]
+  private lateinit var iconAdapter: IconAdapter
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     _binding = DialogTaskListBinding.inflate(LayoutInflater.from(context))
@@ -55,7 +57,10 @@ class TaskListDialog(
     }
 
     // Icon picker
-    val iconAdapter = IconAdapter(availableIcons) { icon -> selectedIcon = icon }
+    iconAdapter = IconAdapter(availableIcons) { icon ->
+      selectedIcon = icon
+      updateListPreview()
+    }
     binding.recyclerIcons.apply {
       layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
       adapter = iconAdapter
@@ -70,6 +75,9 @@ class TaskListDialog(
       selectedColor = String.format("#%06X", 0xFFFFFF and color)
       updateColorUI()
     }
+
+    setupColorPresets()
+    binding.rowCustomColor.setOnClickListener { toggleCustomColorPicker() }
 
     // Sync UI to initial color
     updateColorUI()
@@ -94,11 +102,93 @@ class TaskListDialog(
   private fun updateColorUI() {
     runCatching {
       val parsed = Color.parseColor(selectedColor)
-      // Update preview circle
       binding.colorPreviewCircle.backgroundTintList = ColorStateList.valueOf(parsed)
-      // Update hex label
       binding.tvColorHex.text = selectedColor.uppercase()
+      iconAdapter.setAccentColor(parsed)
     }
+    updateListPreview()
+    refreshPresetSelection()
+  }
+
+  /** Vista previa junto al nombre: el icono elegido en el color elegido. */
+  private fun updateListPreview() {
+    val ctx = requireContext()
+    val iconRes = ctx.resources.getIdentifier(selectedIcon, "drawable", ctx.packageName)
+    if (iconRes != 0) binding.ivListPreview.setImageResource(iconRes)
+    runCatching {
+      binding.ivListPreview.imageTintList = ColorStateList.valueOf(Color.parseColor(selectedColor))
+    }
+  }
+
+  // Paleta predefinida: círculos de color con un anillo en el seleccionado.
+  private fun setupColorPresets() {
+    val density = resources.displayMetrics.density
+    val size = (32 * density).toInt()
+    PRESET_COLORS.forEach { hex ->
+      val swatch = View(requireContext()).apply {
+        layoutParams = android.view.ViewGroup.MarginLayoutParams(size, size)
+        tag = hex
+        contentDescription = getString(R.string.color_option, hex)
+        isClickable = true
+        isFocusable = true
+        setOnClickListener {
+          selectedColor = hex
+          runCatching { binding.colorPickerView.setColor(Color.parseColor(hex)) }
+          updateColorUI()
+        }
+      }
+      binding.colorPresets.addView(swatch)
+    }
+    refreshPresetSelection()
+  }
+
+  private fun refreshPresetSelection() {
+    if (_binding == null) return
+    val density = resources.displayMetrics.density
+    val ringColor = resolveColor(com.google.android.material.R.attr.colorOnSurface)
+    val gapColor = resolveColor(com.google.android.material.R.attr.colorSurface)
+    for (i in 0 until binding.colorPresets.childCount) {
+      val swatch = binding.colorPresets.getChildAt(i)
+      val hex = swatch.tag as? String ?: continue
+      val selected = hex.equals(selectedColor, ignoreCase = true)
+      val fill = android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.OVAL
+        setColor(Color.parseColor(hex))
+        // El seleccionado se marca con un anillo separado por un hueco del color de fondo.
+        if (selected) setStroke((3 * density).toInt(), gapColor)
+      }
+      swatch.background = if (selected) {
+        android.graphics.drawable.LayerDrawable(
+          arrayOf(
+            android.graphics.drawable.GradientDrawable().apply {
+              shape = android.graphics.drawable.GradientDrawable.OVAL
+              setStroke((2 * density).toInt(), ringColor)
+            },
+            fill
+          )
+        ).apply { setLayerInset(1, (2 * density).toInt(), (2 * density).toInt(), (2 * density).toInt(), (2 * density).toInt()) }
+      } else {
+        fill
+      }
+      swatch.isSelected = selected
+    }
+  }
+
+  private fun toggleCustomColorPicker() {
+    val card = binding.cardColorPicker
+    val expand = card.visibility != View.VISIBLE
+    android.transition.TransitionManager.beginDelayedTransition(
+      binding.root as android.view.ViewGroup,
+      android.transition.AutoTransition().setDuration(200)
+    )
+    card.visibility = if (expand) View.VISIBLE else View.GONE
+    binding.ivCustomColorArrow.animate().rotation(if (expand) 180f else 0f).setDuration(200).start()
+  }
+
+  private fun resolveColor(attr: Int): Int {
+    val value = android.util.TypedValue()
+    requireContext().theme.resolveAttribute(attr, value, true)
+    return value.data
   }
 
   override fun onStart() {
@@ -125,6 +215,14 @@ class TaskListDialog(
     val lp = win.attributes
     lp.gravity = android.view.Gravity.CENTER
     win.attributes = lp
+  }
+
+  companion object {
+    // Paleta neutra y equilibrada; el índice 7 (índigo) es el color por defecto de una lista nueva.
+    private val PRESET_COLORS = listOf(
+      "#64748B", "#EF4444", "#F97316", "#EAB308", "#22C55E",
+      "#14B8A6", "#3B82F6", "#6366F1", "#A855F7", "#EC4899"
+    )
   }
 
   override fun onDestroyView() {

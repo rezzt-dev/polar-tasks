@@ -62,7 +62,7 @@ class StatsFragment : Fragment() {
         binding.emptyState.visibility = View.GONE
 
         // Hero
-        binding.tvCompletionRate.text = "${state.completionRate}%"
+        binding.tvCompletionRate.text = getString(R.string.percent_value, state.completionRate)
         binding.progressCompletion.setProgressCompat(state.completionRate, true)
         binding.tvCompletionInsight.text = buildInsight(state)
 
@@ -98,7 +98,7 @@ class StatsFragment : Fragment() {
         return when {
             previous == 0 -> {
                 if (current > 0) {
-                    getString(R.string.stats_insight_more, current, 100)
+                    resources.getQuantityString(R.plurals.stats_insight_more_count, current, current, 100)
                 } else {
                     getString(R.string.stats_insight_same)
                 }
@@ -107,12 +107,12 @@ class StatsFragment : Fragment() {
             current > previous -> {
                 val diff = current - previous
                 val percent = (diff * 100) / previous
-                getString(R.string.stats_insight_more, current, percent)
+                resources.getQuantityString(R.plurals.stats_insight_more_count, current, current, percent)
             }
             else -> {
                 val diff = previous - current
                 val percent = (diff * 100) / previous
-                getString(R.string.stats_insight_less, current, percent)
+                resources.getQuantityString(R.plurals.stats_insight_less_count, current, current, percent)
             }
         }
     }

@@ -1,12 +1,15 @@
-<vector
-    android:tint="?attr/colorControlNormal" xmlns:android="http://schemas.android.com/apk/res/android"
-    
+<?xml version="1.0" encoding="utf-8"?>
+<!-- lucide: folder (isc license, https://lucide.dev) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24"
-    >
-  <path
-      android:fillColor="@android:color/white"
-      android:pathData="M10,4H4c-1.1,0 -1.99,0.9 -1.99,2L2,18c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V8c0,-1.1 -0.9,-2 -2,-2h-8l-2,-2z"/>
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:pathData="M 20 20 a 2 2 0 0 0 2 -2 V 8 a 2 2 0 0 0 -2 -2 h -7.9 a 2 2 0 0 1 -1.69 -0.9 L 9.6 3.9 A 2 2 0 0 0 7.93 3 H 4 a 2 2 0 0 0 -2 2 v 13 a 2 2 0 0 0 2 2 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.75"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

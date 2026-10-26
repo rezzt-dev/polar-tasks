@@ -23,6 +23,7 @@ class ThemeManager(private val context: Context) {
     const val THEME_ONYX = "onyx"
     const val THEME_SYSTEM = "system"
     
+    const val FONT_INTER = "inter"
     const val FONT_POPPINS = "poppins"
     const val FONT_COMFORTAA = "comfortaa"
     const val FONT_FIGTREE = "figtree"
@@ -79,7 +80,7 @@ class ThemeManager(private val context: Context) {
   }
   
   fun loadFont(): String {
-      return prefs.getString(KEY_FONT, FONT_POPPINS) ?: FONT_POPPINS
+      return prefs.getString(KEY_FONT, FONT_INTER) ?: FONT_INTER
   }
   
   fun loadCheckboxStyle(): String {
@@ -92,13 +93,14 @@ class ThemeManager(private val context: Context) {
   
   fun getFontOverlayStyle(): Int {
       return when (loadFont()) {
+          FONT_INTER -> R.style.Overlay_Polar_Font_Inter
           FONT_POPPINS -> R.style.Overlay_Polar_Font_Poppins
           FONT_COMFORTAA -> R.style.Overlay_Polar_Font_Comfortaa
           FONT_FIGTREE -> R.style.Overlay_Polar_Font_Figtree
           FONT_JETBRAINS_MONO -> R.style.Overlay_Polar_Font_JetBrainsMono
           FONT_ARIAL -> R.style.Overlay_Polar_Font_Arial
           FONT_SYSTEM -> R.style.Overlay_Polar_Font_System
-          else -> R.style.Overlay_Polar_Font_Poppins
+          else -> R.style.Overlay_Polar_Font_Inter
       }
   }
 

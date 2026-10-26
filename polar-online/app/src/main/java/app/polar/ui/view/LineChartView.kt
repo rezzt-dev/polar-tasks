@@ -42,7 +42,7 @@ class LineChartView @JvmOverloads constructor(
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         textSize = dpToPx(10f)
-        typeface = Typeface.DEFAULT
+        typeface = ChartTypeface.resolve(context)
     }
 
     private val animator = ValueAnimator.ofFloat(0f, 1f).apply {

@@ -217,6 +217,14 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
   usuario (títulos de tareas, notas, etiquetas, etc.) ni a los especificadores
   de formato (`%1$s`, `%d`). Al añadir una funcionalidad o traducir strings,
   replica esta convención en todos los `values-*`.
+- **Ortografía:** minúsculas no significa sin acentos: tildes, `ñ`, `¿`/`¡`,
+  umlauts y acentos franceses son obligatorios. Tono: tuteo, `du` y `vous`.
+  Las fechas del sistema se generan con `DateFormat.getBestDateTimePattern()` y
+  se pasan a `lowercase(locale)`.
+- **Sistema de diseño:** tipografía con `?attr/textAppearance*`, componentes
+  `Widget.Polar.*` y piezas `Polar.*`, iconos Lucide (`ic_*`, sin renombrar),
+  fuente Inter empaquetada y nada de `paddingHorizontal`/`marginHorizontal`
+  (API 26). Detalle en la sección 4.7 de `AGENTS.md`.
 - **UI:** 100% XML + View Binding (no Compose, no Navigation Component).
 - **Procesador de anotaciones:** `kapt` (no KSP).
 - **Room:** al alterar el esquema, sube la versión y añade `Migration` manual.

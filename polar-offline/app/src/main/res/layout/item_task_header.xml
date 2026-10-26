@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- cabecera de grupo en inicio (nombre de la lista) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical"
-    android:paddingTop="16dp"
-    android:paddingBottom="8dp"
-    android:paddingHorizontal="16dp">
+    android:paddingStart="8dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="2dp">
 
     <TextView
         android:id="@+id/tvHeaderTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
-        tools:text="header title" />
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="trabajo" />
 
 </LinearLayout>

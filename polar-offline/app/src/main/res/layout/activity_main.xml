@@ -6,11 +6,12 @@
   android:layout_height="match_parent"
   tools:context=".MainActivity">
 
-  <!-- Main content -->
+  <!-- Contenido principal -->
   <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:id="@+id/mainContent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
 
     <com.google.android.material.appbar.AppBarLayout
       android:id="@+id/appBarLayout"
@@ -18,15 +19,16 @@
       android:layout_height="wrap_content"
       android:fitsSystemWindows="true"
       android:background="?android:attr/colorBackground"
-      android:elevation="0dp"
-      app:elevation="0dp">
+      android:stateListAnimator="@null"
+      app:elevation="0dp"
+      app:liftOnScroll="false">
 
       <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?android:attr/colorBackground"
-        android:elevation="0dp"
+        app:navigationContentDescription="@string/open_menu"
         app:navigationIcon="@drawable/ic_menu"
         app:title="@string/app_name" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -42,260 +44,219 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|end"
-      android:layout_margin="@dimen/spacing_medium"
+      android:layout_marginEnd="@dimen/spacing_screen"
+      android:layout_marginBottom="@dimen/spacing_large"
       android:contentDescription="@string/create_task"
       app:srcCompat="@drawable/ic_add" />
   </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-  <!-- Navigation drawer -->
+  <!-- Cajon lateral -->
   <com.google.android.material.navigation.NavigationView
     android:id="@+id/navigationView"
     android:layout_width="@dimen/drawer_width"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="@color/drawer_bg">
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true"
+    app:drawerLayoutCornerSize="20dp">
 
     <LinearLayout
+      android:id="@+id/drawerContent"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:orientation="vertical"
-      android:paddingTop="24dp">
-      
+      android:paddingTop="20dp"
+      android:paddingBottom="12dp">
+
+      <!-- Cabecera: marca y fecha de hoy -->
       <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="24dp"
-        android:paddingBottom="16dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
         android:text="@string/app_name"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-black"
-        android:textColor="?attr/colorOnSurface"/>
+        android:textAppearance="?attr/textAppearanceHeadlineSmall"
+        android:textColor="?attr/colorOnSurface" />
 
-      <!-- Home Item -->
+      <TextView
+        android:id="@+id/tvDrawerDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="lunes, 26 de octubre" />
+
+      <!-- Secciones -->
       <LinearLayout
         android:id="@+id/btnHome"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true">
+        style="@style/Polar.DrawerItem"
+        android:layout_marginTop="20dp">
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:src="@drawable/ic_home"
-          app:tint="?attr/colorOnSurface"
-          android:alpha="0.7"/>
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_home" />
 
         <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:text="@string/home"
-          android:textSize="14sp"
-          android:textColor="?attr/colorOnSurface"/>
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/home" />
       </LinearLayout>
 
-      <!-- Reminders Item -->
       <LinearLayout
         android:id="@+id/btnReminders"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="4dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true">
+        style="@style/Polar.DrawerItem">
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:src="@drawable/ic_tasks"
-          app:tint="?attr/colorOnSurface"
-          android:alpha="0.7"/>
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_tasks" />
 
         <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:text="@string/reminders"
-          android:textSize="14sp"
-          android:textColor="?attr/colorOnSurface"/>
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/reminders" />
       </LinearLayout>
 
-       <!-- Calendar Item -->
       <LinearLayout
         android:id="@+id/btnCalendar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="4dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true">
+        style="@style/Polar.DrawerItem">
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:src="@drawable/ic_calendar" 
-          app:tint="?attr/colorOnSurface"
-          android:alpha="0.7"/>
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_calendar" />
 
         <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:text="@string/calendar"
-          android:textSize="14sp"
-          android:textColor="?attr/colorOnSurface"/>
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/calendar" />
       </LinearLayout>
 
-      <!-- Tags Item -->
       <LinearLayout
         android:id="@+id/btnTags"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="4dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
+        style="@style/Polar.DrawerItem"
         android:visibility="gone">
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:src="@drawable/ic_label" 
-          app:tint="?attr/colorOnSurface"
-          android:alpha="0.7"/>
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_label" />
 
         <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:text="todas las etiquetas"
-          android:textSize="14sp"
-          android:textColor="?attr/colorOnSurface"/>
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/all_tags" />
       </LinearLayout>
 
-      <!-- Matriz Eisenhower Item -->
       <LinearLayout
         android:id="@+id/btnEisenhower"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="4dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
+        style="@style/Polar.DrawerItem"
         android:visibility="gone">
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:src="@drawable/ic_folder" 
-          app:tint="?attr/colorOnSurface"
-          android:alpha="0.7"/>
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_grid" />
 
         <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:text="matriz de eisenhower"
-          android:textSize="14sp"
-          android:textColor="?attr/colorOnSurface"/>
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/eisenhower_matrix" />
       </LinearLayout>
 
-      <View
+      <!-- Listas -->
+      <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="8dp"
-        android:background="?android:attr/listDivider"
-        android:alpha="0.1"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="24dp"
+        android:paddingEnd="14dp">
 
-      <!-- Task Lists -->
+        <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="@string/lists"
+          android:textAppearance="@style/TextAppearance.Polar.Section" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/btnCreateList"
+          style="@style/Widget.Polar.Button.Icon"
+          android:layout_width="36dp"
+          android:layout_height="36dp"
+          android:contentDescription="@string/create_list"
+          android:insetTop="0dp"
+          android:insetBottom="0dp"
+          android:tooltipText="@string/create_list"
+          app:icon="@drawable/ic_add"
+          app:iconSize="18dp" />
+      </LinearLayout>
+
       <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTaskLists"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingVertical="8dp" />
-        
-      <!-- Trash Item -->
-      <LinearLayout
-        android:id="@+id/btnTrash"
+        android:overScrollMode="ifContentScrolls"
+        android:paddingBottom="8dp"
+        tools:itemCount="4"
+        tools:listitem="@layout/item_task_list" />
+
+      <!-- Pie: herramientas -->
+      <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="4dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_height="1dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/colorOutlineVariant" />
+
+      <LinearLayout
+        android:id="@+id/btnStats"
+        style="@style/Polar.DrawerItem">
 
         <ImageView
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:src="@drawable/ic_delete" 
-          app:tint="?attr/colorError"
-          android:alpha="0.9"/>
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_stats" />
+
+        <TextView
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/statistics" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:id="@+id/btnTrash"
+        style="@style/Polar.DrawerItem">
+
+        <ImageView
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_trash" />
+
+        <TextView
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/trash" />
 
         <TextView
           android:id="@+id/tvTrashCount"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:text="papelera"
-          android:textSize="14sp"
-          android:textColor="?attr/colorError"
-          android:textStyle="bold"/>
+          android:duplicateParentState="true"
+          android:textAppearance="?attr/textAppearanceLabelMedium"
+          android:textColor="?attr/colorOnSurfaceVariant"
+          android:visibility="gone"
+          tools:text="3"
+          tools:visibility="visible" />
       </LinearLayout>
 
-      <View
-         android:layout_width="match_parent"
-         android:layout_height="1dp"
-         android:layout_marginVertical="8dp"
-         android:background="?android:attr/listDivider"
-         android:alpha="0.1"/>
+      <LinearLayout
+        android:id="@+id/btnSettings"
+        style="@style/Polar.DrawerItem">
 
-      <!-- Create List Button -->
-      <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCreateList"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_margin="16dp"
-        android:text="@string/create_list"
-        app:icon="@drawable/ic_add"
-        app:iconGravity="textStart"
-        style="@style/Widget.Material3.Button.TonalButton"
-        app:cornerRadius="15dp"/>
-        
+        <ImageView
+          style="@style/Polar.DrawerItem.Icon"
+          android:src="@drawable/ic_settings" />
+
+        <TextView
+          style="@style/Polar.DrawerItem.Label"
+          android:text="@string/settings" />
+      </LinearLayout>
     </LinearLayout>
   </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

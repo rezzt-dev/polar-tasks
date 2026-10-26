@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
+import app.polar.ui.widget.applyPolarStyle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -109,6 +110,11 @@ class TasksFragment : Fragment() {
       binding.btnSort.setOnClickListener { anchor ->
           PopupMenu(requireContext(), anchor).apply {
               menuInflater.inflate(R.menu.menu_sort, menu)
+              // La ordenación activa aparece marcada (grupo de selección única).
+              menu.findItem(
+                  if (viewModel.sortMode.value == SortMode.UNMARK_FIRST) R.id.action_sort_unmark_first
+                  else R.id.action_sort_default
+              )?.isChecked = true
               setOnMenuItemClickListener { item ->
                   when (item.itemId) {
                       R.id.action_sort_default -> {
@@ -139,7 +145,7 @@ class TasksFragment : Fragment() {
           in 13..20 -> getString(R.string.good_afternoon)
           else -> getString(R.string.good_night)
       }
-      binding.tvGreeting?.text = greetingText
+      binding.tvGreeting.text = greetingText
   }
 
   private fun handleTaskCompletion(task: Task, isChecked: Boolean, view: android.view.View) {
@@ -152,6 +158,14 @@ class TasksFragment : Fragment() {
        view.translationX = 0f
 
        if (isChecked) {
+           // Confirmación táctil al completar, como en el gesto de deslizar.
+           view.performHapticFeedback(
+               if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                   android.view.HapticFeedbackConstants.CONFIRM
+               } else {
+                   android.view.HapticFeedbackConstants.VIRTUAL_KEY
+               }
+           )
            viewModel.setTaskCompletion(task, true)
        } else {
            viewModel.setTaskCompletion(task, false)
@@ -504,7 +518,27 @@ class TasksFragment : Fragment() {
       val items = buildHomeItems(latestHomeGroups)
       val hasTasks = items.any { it is HomeItem.TaskItem }
       updateEmptyState(!hasTasks)
+      updateHomeSummary(items)
       homeTaskAdapter.submitList(items)
+  }
+
+  /** Subtítulo del saludo: tareas pendientes y, si las hay, cuántas están vencidas. */
+  private fun updateHomeSummary(items: List<HomeItem>) {
+      val pending = items.filterIsInstance<HomeItem.TaskItem>().map { it.task }.filter { !it.completed }
+      val overdue = pending.count { task ->
+          task.dueDate?.let { app.polar.util.DateUtils.isOverdue(it) } == true
+      }
+      binding.tvHomeSummary.visibility = View.VISIBLE
+      binding.tvHomeSummary.text = if (pending.isEmpty()) {
+          getString(R.string.home_all_done)
+      } else {
+          val base = resources.getQuantityString(R.plurals.home_pending_summary, pending.size, pending.size)
+          if (overdue > 0) {
+              base + " · " + resources.getQuantityString(R.plurals.home_overdue_count, overdue, overdue)
+          } else {
+              base
+          }
+      }
   }
 
   private fun buildHomeItems(
@@ -522,9 +556,11 @@ class TasksFragment : Fragment() {
   }
   
   private fun updateEmptyState(isEmpty: Boolean) {
+       val isHome = viewModel.selectedListId.value == -1L
+       binding.tvEmptyTitle.setText(if (isHome) R.string.home_empty_title else R.string.no_tasks)
+       binding.tvEmptyBody.setText(if (isHome) R.string.home_empty_body else R.string.add_first_task)
        binding.emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
        binding.recyclerTasks.visibility = if (isEmpty) View.GONE else View.VISIBLE
-       // Keep greeting is nice.
   }
   
   private fun updateListProgress(progress: app.polar.ui.viewmodel.TaskViewModel.ListProgress) {
@@ -535,28 +571,31 @@ class TasksFragment : Fragment() {
       }
       binding.progressContainer.visibility = View.VISIBLE
       binding.progressBar.setProgress(progress.percent, true)
-      binding.tvProgressText.text = "${progress.completed}/${progress.total} (${progress.percent}%)"
+      binding.tvProgressText.text = getString(R.string.progress_summary, progress.completed, progress.total)
+      binding.tvProgressPercent.text = getString(R.string.percent_value, progress.percent)
   }
 
   private fun configureMode(listId: Long) {
       if (listId == -1L) {
           // Home Mode
           binding.recyclerTasks.adapter = homeTaskAdapter
-          binding.tvGreeting?.visibility = View.VISIBLE
-          binding.chipGroupFilters.visibility = View.GONE
+          binding.homeHeader.visibility = View.VISIBLE
+          binding.filterBar.visibility = View.GONE
           binding.progressContainer.visibility = View.GONE
           binding.btnSort.visibility = View.GONE
           binding.chipSortIndicator.visibility = View.GONE
       } else {
           // List Mode
           binding.recyclerTasks.adapter = taskAdapter
-          binding.tvGreeting?.visibility = View.GONE
-          binding.chipGroupFilters.visibility = View.VISIBLE
+          binding.homeHeader.visibility = View.GONE
+          binding.filterBar.visibility = View.VISIBLE
           binding.btnSort.visibility = View.VISIBLE
           updateSortIndicator(viewModel.sortMode.value)
           // Progress visibility will be handled by updateListProgress observation
       }
       binding.recyclerTasks.itemAnimator = TaskItemAnimator()
+      // Al cambiar de modo la lista entra con la animación escalonada del layout.
+      binding.recyclerTasks.scheduleLayoutAnimation()
   }
 
   private fun showTaskPopupMenu(task: Task, anchorView: View? = null) {
@@ -580,6 +619,7 @@ class TasksFragment : Fragment() {
     
     PopupMenu(requireContext(), view).apply {
        menuInflater.inflate(R.menu.menu_task, menu)
+       applyPolarStyle(requireContext())
       setOnMenuItemClickListener { item ->
         when (item.itemId) {
           R.id.action_export -> {
@@ -606,114 +646,12 @@ class TasksFragment : Fragment() {
   }
 
   private fun exportTaskAsImage(task: Task) {
+    // Se leen las subtareas una sola vez y se comparte la tarjeta renderizada.
     val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
     val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
         override fun onChanged(subtasks: List<app.polar.data.entity.Subtask>) {
             subtasksLiveData.removeObserver(this)
-            val context = requireContext()
-            val inflater = android.view.LayoutInflater.from(context)
-            val cardView = inflater.inflate(R.layout.layout_task_export_card, null)
-
-            val tvTitle = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskTitle)
-            val tvDesc = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskDesc)
-            val tvPriority = cardView.findViewById<android.widget.TextView>(R.id.tvPriorityBadge)
-            val llSubtasksList = cardView.findViewById<android.widget.LinearLayout>(R.id.llSubtasksList)
-            val containerSubtasks = cardView.findViewById<android.widget.LinearLayout>(R.id.containerExportSubtasks)
-            val llDueDate = cardView.findViewById<android.widget.LinearLayout>(R.id.llExportDueDate)
-            val tvDueDate = cardView.findViewById<android.widget.TextView>(R.id.tvExportDueDate)
-            val tvTags = cardView.findViewById<android.widget.TextView>(R.id.tvExportTags)
-
-            tvTitle.text = task.title
-            if (task.description.isNotBlank()) {
-                tvDesc.text = task.description
-                tvDesc.visibility = android.view.View.VISIBLE
-            } else {
-                tvDesc.visibility = android.view.View.GONE
-            }
-
-            val priorityText = when (task.priority) {
-                1 -> getString(R.string.priority_low)
-                2 -> getString(R.string.priority_medium)
-                3 -> getString(R.string.priority_high)
-                else -> getString(R.string.priority_none)
-            }
-            val priorityColor = when (task.priority) {
-                1 -> resolveColorAttr(R.attr.colorPriorityLow)
-                2 -> resolveColorAttr(R.attr.colorPriorityMedium)
-                3 -> resolveColorAttr(R.attr.colorPriorityHigh)
-                else -> resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
-            }
-            tvPriority.text = priorityText
-            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(priorityColor)
-            tvPriority.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnPrimary))
-
-            if (subtasks.isNotEmpty()) {
-                containerSubtasks.visibility = android.view.View.VISIBLE
-                llSubtasksList.removeAllViews()
-                subtasks.take(8).forEach { sub ->
-                    val stTv = android.widget.TextView(context).apply {
-                        text = "• ${sub.title}"
-                        textSize = 13f
-                        setPadding(0, 4, 0, 4)
-                        val typedValue = android.util.TypedValue()
-                        context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                        setTextColor(typedValue.data)
-                        alpha = 0.85f
-                    }
-                    llSubtasksList.addView(stTv)
-                }
-            } else {
-                containerSubtasks.visibility = android.view.View.GONE
-            }
-
-            if (task.dueDate != null) {
-                llDueDate.visibility = android.view.View.VISIBLE
-                tvDueDate.text = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
-            } else {
-                llDueDate.visibility = android.view.View.GONE
-            }
-
-            val extractedTags = task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-            if (extractedTags.isNotEmpty()) {
-                tvTags.visibility = android.view.View.VISIBLE
-                tvTags.text = extractedTags.joinToString(" ") { "#$it" }
-            } else {
-                tvTags.visibility = android.view.View.GONE
-            }
-
-            val widthSpec = android.view.View.MeasureSpec.makeMeasureSpec(
-                android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380f, context.resources.displayMetrics).toInt(),
-                android.view.View.MeasureSpec.EXACTLY
-            )
-            val heightSpec = android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
-            cardView.measure(widthSpec, heightSpec)
-            cardView.layout(0, 0, cardView.measuredWidth, cardView.measuredHeight)
-
-            val bitmap = android.graphics.Bitmap.createBitmap(cardView.measuredWidth, cardView.measuredHeight, android.graphics.Bitmap.Config.ARGB_8888)
-            val canvas = android.graphics.Canvas(bitmap)
-            cardView.draw(canvas)
-
-            try {
-                val cachePath = java.io.File(context.cacheDir, "shared_images")
-                cachePath.mkdirs()
-                val newFile = java.io.File(cachePath, "task_export_${task.id}.png")
-                val stream = java.io.FileOutputStream(newFile)
-                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
-                stream.close()
-
-                val contentUri = androidx.core.content.FileProvider.getUriForFile(context, "app.polar.fileprovider", newFile)
-                if (contentUri != null) {
-                    val shareIntent = android.content.Intent().apply {
-                        action = android.content.Intent.ACTION_SEND
-                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        setDataAndType(contentUri, context.contentResolver.getType(contentUri))
-                        putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
-                    }
-                    context.startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.share_task_as_image)))
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            app.polar.ui.export.TaskImageExporter.share(requireContext(), task, subtasks)
         }
     }
     subtasksLiveData.observe(viewLifecycleOwner, observer)
@@ -741,7 +679,7 @@ class TasksFragment : Fragment() {
             if (task.dueDate != null) {
                 sb.appendLine()
                 val formattedDate = app.polar.util.DateUtils.formatSmartDate(task.dueDate)
-                sb.appendLine("fecha: $formattedDate")
+                sb.appendLine(getString(R.string.clipboard_date_line, formattedDate))
             }
 
             val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
@@ -792,12 +730,6 @@ class TasksFragment : Fragment() {
     subtasksLiveData.observe(viewLifecycleOwner, observer)
   }
   
-  private fun resolveColorAttr(attr: Int): Int {
-      val typedValue = android.util.TypedValue()
-      requireContext().theme.resolveAttribute(attr, typedValue, true)
-      return typedValue.data
-  }
-
   override fun onDestroyView() {
     super.onDestroyView()
     _binding = null

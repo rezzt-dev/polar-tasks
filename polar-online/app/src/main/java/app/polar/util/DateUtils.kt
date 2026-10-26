@@ -35,7 +35,13 @@ object DateUtils {
             isToday -> context.getString(R.string.today)
             isTomorrow -> context.getString(R.string.tomorrow)
             // Formato creado por llamada: respeta el idioma activo y SimpleDateFormat no es thread-safe.
-            else -> SimpleDateFormat("d, MMM", Locale.getDefault()).format(Date(dueDateMs)).lowercase()
+            // Patrón localizado ("22 oct", "oct 22"...) y con año solo si no es el actual.
+            else -> {
+                val locale = Locale.getDefault()
+                val skeleton = if (now.get(Calendar.YEAR) == dueDate.get(Calendar.YEAR)) "dMMM" else "dMMMy"
+                val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, skeleton)
+                SimpleDateFormat(pattern, locale).format(Date(dueDateMs)).lowercase(locale)
+            }
         }
     }
 
@@ -92,6 +98,6 @@ object DateUtils {
         val pattern = android.text.format.DateFormat.getBestDateTimePattern(
             locale, if (hasTime) "dMMMMyyyyHHmm" else "dMMMMyyyy"
         )
-        return SimpleDateFormat(pattern, locale).format(Date(timeInMillis))
+        return SimpleDateFormat(pattern, locale).format(Date(timeInMillis)).lowercase(locale)
     }
 }

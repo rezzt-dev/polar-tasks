@@ -98,8 +98,9 @@ app/src/main/java/app/polar/
 - `layout/` — ~35 archivos XML de layouts (Activities, Fragments, Items, Dialogs).
 - `menu/` — Menús de Toolbar/ActionBar.
 - `drawable/` — ~61 recursos gráficos, vectores y formas.
-- `values/` — Strings (es, en-rGB, fr), colores, temas, dimensiones, atributos personalizados.
-- `values-night/colors.xml` — Paleta para modo oscuro.
+- `values/` — Strings, colores, temas (solo color), estilos del sistema de diseño, dimensiones y atributos personalizados.
+- `values-night/` — Tema y colores del modo oscuro.
+- `anim/`, `color/`, `font/` — Animaciones, listas de estados de color y la fuente Inter empaquetada.
 - `xml/` — Configuración de widgets, FileProvider paths, reglas de backup.
 
 > **No existe carpeta `navigation/`**: la navegación se maneja manualmente con `FragmentManager` desde `MainActivity` y `DrawerManager`.
@@ -125,7 +126,7 @@ private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
         block()
     } catch (e: Exception) {
         e.printStackTrace()
-        _errorMessage.value = "Error: ${e.message}"
+        _errorMessage.value = "error: ${e.message}"
     }
 }
 ```
@@ -142,6 +143,7 @@ Se usa **View Binding** en toda la UI. Está habilitado en `build.gradle.kts` (`
 
 Todas las Activities heredan de `BaseActivity`, que gestiona:
 - Aplicación de tema dinámico (multicolor, oscuro, pastel, etc.) antes de `super.onCreate()`.
+- Overlay del sistema de diseño (`ThemeOverlay.Polar.Foundation`, ver 4.7) sobre cualquier tema.
 - Overlay de fuentes personalizadas.
 - Overlay de estilos de checkbox.
 - Configuración de locale (idioma) vía `attachBaseContext()`.
@@ -171,6 +173,52 @@ propios como `polar`, `material` o `eisenhower`).
   `%d`, `\n`).
 - Al añadir una funcionalidad nueva o traducir strings, replica esta convención
   en `values/`, `values-en-rGB/`, `values-en-rUS/`, `values-de/` y `values-fr/`.
+- Minúsculas no significa sin acentos: la ortografía de cada idioma es obligatoria
+  (tildes, `ñ`, `¿` y `¡` en castellano; `ä`, `ö`, `ü`, `ß` en alemán; acentos y
+  espacio antes de `?`, `!` y `:` en francés). El tono es el mismo en todas las
+  pantallas: tuteo en castellano, `du` en alemán y `vous` en francés.
+- Las fechas que genera el sistema (`SimpleDateFormat`, `DateFormat`) se pasan a
+  minúsculas con `lowercase(locale)` y se construyen con
+  `DateFormat.getBestDateTimePattern()` en lugar de patrones fijos.
+- Las cantidades usan `<plurals>`; en francés se define también `many`.
+
+### 4.7 Sistema de Diseño
+
+La interfaz sigue un sistema de diseño único, minimalista y neutro, compartido por
+todos los temas:
+
+- **Fundamentos (`res/values/styles.xml`):** `ThemeOverlay.Polar.Foundation`
+  define tipografía (`TextAppearance.Polar.*`), formas (`ShapeAppearance.Polar.*`:
+  10/12/16/24dp), estilos por defecto de los componentes de Material y las
+  animaciones de ventana. `BaseActivity` lo aplica antes de los overlays de fuente
+  y casilla. Los temas de `themes.xml` solo definen color (todos los roles de
+  Material 3, incluidos `colorOnSurfaceVariant`, contenedores y superficies
+  inversas para snackbars).
+- **Tipografía:** en layouts usa siempre `?attr/textAppearance*` (nunca
+  `@style/TextAppearance.Material3.*` ni `textSize`/`fontFamily` sueltos) para
+  respetar la fuente elegida. La fuente por defecto es Inter, empaquetada en
+  `res/font/` (funciona sin red). En vistas dibujadas con `Canvas` usa
+  `ChartTypeface.resolve()`.
+- **Componentes:** usa los estilos `Widget.Polar.*` (botones, chips, tarjetas,
+  campos de texto, menús, hojas inferiores) y las piezas de layout `Polar.*`
+  (`Polar.DrawerItem`, `Polar.FormRow`, `Polar.EmptyState`, `Polar.DialogActions`,
+  `Polar.InlineInput`...). Los menús emergentes son `androidx.appcompat.widget.PopupMenu`
+  con `applyPolarStyle()` (iconos y acción destructiva en `colorError`).
+- **Iconos:** pack [Lucide](https://lucide.dev) convertido a vector drawable
+  (viewport 24, trazo 1.75, `android:tint="?attr/colorControlNormal"`). Los
+  nombres `ic_*` se conservan porque los iconos de lista se guardan por nombre en
+  la base de datos; no los renombres. Para añadir uno nuevo usa
+  `.docs/agent-docs/tools/lucide2vd.py` (mapeo `nombre -> icono lucide`).
+  Créditos y licencias en `THIRD_PARTY_NOTICES.md`.
+- **Espaciado:** margen lateral de pantalla `@dimen/spacing_screen` (20dp) y escala
+  de 4dp. No uses `paddingHorizontal`/`layout_marginHorizontal` (API 26, ignorados
+  en Android 7): usa `Start`/`End` y `Top`/`Bottom`.
+- **Movimiento:** cambio de sección con fade through (`polar_fade_through_*`,
+  desde `MainActivity.showScreen()`), activities con `Animation.Polar.Activity`,
+  listas con `@anim/polar_list_layout` y respuesta háptica al completar o al cruzar
+  el umbral de un deslizamiento.
+- **Widget:** los RemoteViews no resuelven atributos de tema; usa los colores
+  `@color/widget_*` (con variante en `values-night`).
 
 ---
 

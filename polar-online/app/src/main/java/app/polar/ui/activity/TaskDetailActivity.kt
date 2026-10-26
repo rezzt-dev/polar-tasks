@@ -107,29 +107,34 @@ class TaskDetailActivity : BaseActivity() {
         // Tags
         if (!task.tags.isNullOrEmpty()) {
             binding.tvDetailTags.text = task.tags.split(",").joinToString("  ") { "#${it.trim()}" }
-            binding.tvDetailTags.visibility = View.VISIBLE
+            binding.rowTags.visibility = View.VISIBLE
         } else {
-            binding.tvDetailTags.visibility = View.GONE
+            binding.rowTags.visibility = View.GONE
         }
 
-        // Creation Date
-        val createFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
-        binding.tvDetailDate.text = createFormat.format(Date(task.createdAt))
+        // Fecha de creación como pie discreto
+        val locale = Locale.getDefault()
+        val createFormat = SimpleDateFormat(
+            android.text.format.DateFormat.getBestDateTimePattern(locale, "dMMMy"), locale
+        )
+        binding.tvDetailDate.text = getString(
+            R.string.created_on, createFormat.format(Date(task.createdAt)).lowercase(locale)
+        )
 
-        // Time Estimate Pill
+        // Estimación
         if (task.timeEstimate > 0) {
             binding.chipTimeEstimate.text = DateUtils.formatTimeEstimate(task.timeEstimate)
-            binding.chipTimeEstimate.visibility = View.VISIBLE
+            binding.rowEstimate.visibility = View.VISIBLE
         } else {
-            binding.chipTimeEstimate.visibility = View.GONE
+            binding.rowEstimate.visibility = View.GONE
         }
 
         // Priority Pill
         if (task.priority in 1..3) {
             val priorityText = when (task.priority) {
-                1 -> getString(R.string.priority_low)
-                2 -> getString(R.string.priority_medium)
-                3 -> getString(R.string.priority_high)
+                1 -> getString(R.string.priority_label_low)
+                2 -> getString(R.string.priority_label_medium)
+                3 -> getString(R.string.priority_label_high)
                 else -> getString(R.string.priority_none)
             }
             val priorityColor = when (task.priority) {
@@ -139,27 +144,27 @@ class TaskDetailActivity : BaseActivity() {
                 else -> resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
             }
             binding.chipPriority.text = priorityText
-            binding.chipPriority.setTextColor(priorityColor)
-            binding.chipPriority.compoundDrawableTintList = android.content.res.ColorStateList.valueOf(priorityColor)
-            binding.chipPriority.visibility = View.VISIBLE
+            binding.ivPriority.imageTintList = android.content.res.ColorStateList.valueOf(priorityColor)
+            binding.rowPriority.visibility = View.VISIBLE
         } else {
-            binding.chipPriority.visibility = View.GONE
+            binding.rowPriority.visibility = View.GONE
         }
-
-        binding.metaPillsContainer.visibility =
-            if (task.timeEstimate > 0 || task.priority in 1..3) View.VISIBLE else View.GONE
 
         // Due Date Card
         if (task.dueDate != null) {
             binding.cardDueDate.visibility = View.VISIBLE
-            val format = SimpleDateFormat("EEEE, d MMMM", Locale.getDefault())
+            val format = SimpleDateFormat(
+                android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM"), locale
+            )
 
             val dateStr = when {
                 android.text.format.DateUtils.isToday(task.dueDate) -> getString(R.string.today)
                 android.text.format.DateUtils.isToday(task.dueDate - 86400000L) -> getString(R.string.tomorrow)
                 else -> format.format(Date(task.dueDate))
             }
-            binding.tvDetailDueDate.text = dateStr.replaceFirstChar { it.uppercase() }
+            val timeStr = android.text.format.DateFormat.getTimeFormat(this).format(Date(task.dueDate))
+            // Toda la interfaz va en minúsculas, también las fechas que genera el sistema.
+            binding.tvDetailDueDate.text = "$dateStr · $timeStr".lowercase(locale)
 
             // Color if overdue
             if (!task.completed && task.dueDate < System.currentTimeMillis() && !android.text.format.DateUtils.isToday(task.dueDate)) {
@@ -170,7 +175,7 @@ class TaskDetailActivity : BaseActivity() {
 
             // Recurrence info
             if (task.recurrence != "NONE") {
-                binding.tvDetailRecurrence.visibility = View.VISIBLE
+                binding.rowRecurrence.visibility = View.VISIBLE
                 val recText = when(task.recurrence) {
                     "DAILY" -> getString(R.string.recurrence_daily)
                     "WEEKLY" -> getString(R.string.recurrence_weekly)
@@ -181,10 +186,11 @@ class TaskDetailActivity : BaseActivity() {
                 }
                 binding.tvDetailRecurrence.text = recText
             } else {
-                binding.tvDetailRecurrence.visibility = View.GONE
+                binding.rowRecurrence.visibility = View.GONE
             }
         } else {
             binding.cardDueDate.visibility = View.GONE
+            binding.rowRecurrence.visibility = View.GONE
         }
 
         // Image attachment (solo se decodifica de nuevo si cambia; si ya no se puede leer, se oculta)
@@ -379,116 +385,14 @@ class TaskDetailActivity : BaseActivity() {
   }
 
   private fun exportTaskAsImage(task: app.polar.data.entity.Task) {
+    // Se leen las subtareas una sola vez y se comparte la tarjeta renderizada.
     val subtasksLiveData = viewModel.getSubtasksForTask(task.id)
     val observer = object : androidx.lifecycle.Observer<List<app.polar.data.entity.Subtask>> {
         override fun onChanged(subtasks: List<app.polar.data.entity.Subtask>) {
             subtasksLiveData.removeObserver(this)
-            val context = this@TaskDetailActivity
-            val inflater = android.view.LayoutInflater.from(context)
-            val cardView = inflater.inflate(R.layout.layout_task_export_card, null)
-
-            val tvTitle = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskTitle)
-            val tvDesc = cardView.findViewById<android.widget.TextView>(R.id.tvExportTaskDesc)
-            val tvPriority = cardView.findViewById<android.widget.TextView>(R.id.tvPriorityBadge)
-            val llSubtasksList = cardView.findViewById<android.widget.LinearLayout>(R.id.llSubtasksList)
-            val containerSubtasks = cardView.findViewById<android.widget.LinearLayout>(R.id.containerExportSubtasks)
-            val llDueDate = cardView.findViewById<android.widget.LinearLayout>(R.id.llExportDueDate)
-            val tvDueDate = cardView.findViewById<android.widget.TextView>(R.id.tvExportDueDate)
-            val tvTags = cardView.findViewById<android.widget.TextView>(R.id.tvExportTags)
-
-            tvTitle.text = task.title
-            if (task.description.isNotBlank()) {
-                tvDesc.text = task.description
-                tvDesc.visibility = android.view.View.VISIBLE
-            } else {
-                tvDesc.visibility = android.view.View.GONE
-            }
-
-            val priorityText = when (task.priority) {
-                1 -> getString(R.string.priority_low)
-                2 -> getString(R.string.priority_medium)
-                3 -> getString(R.string.priority_high)
-                else -> getString(R.string.priority_none)
-            }
-            val priorityColor = when (task.priority) {
-                1 -> resolveColorAttr(R.attr.colorPriorityLow)
-                2 -> resolveColorAttr(R.attr.colorPriorityMedium)
-                3 -> resolveColorAttr(R.attr.colorPriorityHigh)
-                else -> resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
-            }
-            tvPriority.text = priorityText
-            tvPriority.backgroundTintList = android.content.res.ColorStateList.valueOf(priorityColor)
-            tvPriority.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnPrimary))
-
-            if (subtasks.isNotEmpty()) {
-                containerSubtasks.visibility = android.view.View.VISIBLE
-                llSubtasksList.removeAllViews()
-                subtasks.take(8).forEach { sub ->
-                    val stTv = android.widget.TextView(context).apply {
-                        text = "• ${sub.title}"
-                        textSize = 13f
-                        setPadding(0, 4, 0, 4)
-                        val typedValue = android.util.TypedValue()
-                        context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-                        setTextColor(typedValue.data)
-                        alpha = 0.85f
-                    }
-                    llSubtasksList.addView(stTv)
-                }
-            } else {
-                containerSubtasks.visibility = android.view.View.GONE
-            }
-
-            if (task.dueDate != null) {
-                llDueDate.visibility = android.view.View.VISIBLE
-                tvDueDate.text = DateUtils.formatSmartDate(task.dueDate)
-            } else {
-                llDueDate.visibility = android.view.View.GONE
-            }
-
-            val extractedTags = task.tags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-            if (extractedTags.isNotEmpty()) {
-                tvTags.visibility = android.view.View.VISIBLE
-                tvTags.text = extractedTags.joinToString(" ") { "#$it" }
-            } else {
-                tvTags.visibility = android.view.View.GONE
-            }
-
-            val widthSpec = android.view.View.MeasureSpec.makeMeasureSpec(
-                android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_DIP, 380f, context.resources.displayMetrics).toInt(),
-                android.view.View.MeasureSpec.EXACTLY
-            )
-            val heightSpec = android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED)
-            cardView.measure(widthSpec, heightSpec)
-            cardView.layout(0, 0, cardView.measuredWidth, cardView.measuredHeight)
-
-            val bitmap = android.graphics.Bitmap.createBitmap(cardView.measuredWidth, cardView.measuredHeight, android.graphics.Bitmap.Config.ARGB_8888)
-            val canvas = android.graphics.Canvas(bitmap)
-            cardView.draw(canvas)
-
-            try {
-                val cachePath = java.io.File(context.cacheDir, "shared_images")
-                cachePath.mkdirs()
-                val newFile = java.io.File(cachePath, "task_export_${task.id}.png")
-                java.io.FileOutputStream(newFile).use { stream ->
-                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
-                }
-
-                val contentUri = androidx.core.content.FileProvider.getUriForFile(context, "app.polar.fileprovider", newFile)
-                if (contentUri != null) {
-                    val shareIntent = android.content.Intent().apply {
-                        action = android.content.Intent.ACTION_SEND
-                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        setDataAndType(contentUri, context.contentResolver.getType(contentUri))
-                        putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
-                    }
-                    context.startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.share_task_as_image)))
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            app.polar.ui.export.TaskImageExporter.share(this@TaskDetailActivity, task, subtasks)
         }
     }
-    subtasksLiveData.observe(this@TaskDetailActivity, observer)
+    subtasksLiveData.observe(this, observer)
   }
 }

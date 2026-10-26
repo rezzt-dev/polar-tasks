@@ -181,6 +181,6 @@ class TaskViewModelTest {
 
         viewModel.emptyTrash()
 
-        assertEquals("Error: disk full", viewModel.errorMessage.value)
+        assertEquals("error: disk full", viewModel.errorMessage.value)
     }
 }

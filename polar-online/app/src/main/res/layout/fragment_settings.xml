@@ -14,7 +14,7 @@
         android:layout_marginStart="12dp"
         android:text="@string/settings_back"
         android:visibility="gone"
-        style="@style/Widget.Material3.Button.TextButton"
+        style="@style/Widget.Polar.Button.Text.Neutral"
         app:icon="@drawable/ic_arrow_back" />
     <androidx.core.widget.NestedScrollView
         android:id="@+id/settingsScroll"
@@ -26,21 +26,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:paddingTop="12dp"
             android:paddingBottom="32dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_intro"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:textColor="?attr/colorOnSurface"
                 android:id="@+id/tvSettingsTitle" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_intro_desc"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:id="@+id/tvSettingsDescription"
                 android:layout_marginTop="8dp"
@@ -54,8 +55,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -67,7 +68,7 @@
                             android:id="@+id/btnCategoryAppearance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:minHeight="72dp"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="16dp"
@@ -82,7 +83,7 @@
                                 android:src="@drawable/ic_settings_theme"
                                 android:background="@drawable/bg_settings_icon"
                                 android:importantForAccessibility="no"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?attr/colorOnSurface" />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -92,15 +93,15 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_appearance"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
                                     android:textColor="?attr/colorOnSurface" />
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_appearance_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -116,7 +117,7 @@
                             android:id="@+id/btnCategoryNotifications"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:minHeight="72dp"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="16dp"
@@ -131,7 +132,7 @@
                                 android:src="@drawable/ic_settings_notifications"
                                 android:background="@drawable/bg_settings_icon"
                                 android:importantForAccessibility="no"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?attr/colorOnSurface" />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -141,15 +142,15 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_notifications"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
                                     android:textColor="?attr/colorOnSurface" />
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_notifications_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -165,7 +166,7 @@
                             android:id="@+id/btnCategoryAccount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:minHeight="72dp"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="16dp"
@@ -177,10 +178,10 @@
                                 android:layout_height="40dp"
                                 android:padding="8dp"
                                 android:layout_marginEnd="16dp"
-                                android:src="@drawable/ic_sync"
+                                android:src="@drawable/ic_cloud"
                                 android:background="@drawable/bg_settings_icon"
                                 android:importantForAccessibility="no"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?attr/colorOnSurface" />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -190,15 +191,15 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_account"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
                                     android:textColor="?attr/colorOnSurface" />
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_account_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -214,7 +215,7 @@
                             android:id="@+id/btnCategoryData"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:minHeight="72dp"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="16dp"
@@ -229,7 +230,7 @@
                                 android:src="@drawable/ic_settings_backup_export"
                                 android:background="@drawable/bg_settings_icon"
                                 android:importantForAccessibility="no"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?attr/colorOnSurface" />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -239,15 +240,15 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_data"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
                                     android:textColor="?attr/colorOnSurface" />
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_data_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -263,7 +264,7 @@
                             android:id="@+id/btnCategoryHelp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:minHeight="72dp"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="16dp"
@@ -278,7 +279,7 @@
                                 android:src="@drawable/ic_settings_tutorial"
                                 android:background="@drawable/bg_settings_icon"
                                 android:importantForAccessibility="no"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?attr/colorOnSurface" />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -288,15 +289,15 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_help"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
                                     android:textColor="?attr/colorOnSurface" />
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_help_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -314,7 +315,7 @@
                     android:layout_gravity="center_horizontal"
                     android:gravity="center"
                     android:text="@string/developed_by_full"
-                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="?colorOnSurfaceVariant" />
             </LinearLayout>
             <LinearLayout
@@ -327,8 +328,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -346,12 +347,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_theme"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -364,16 +367,16 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/visual_theme"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvThemeValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/loading"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -395,12 +398,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_font"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -413,16 +418,16 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/typography"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvFontValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/loading"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -444,13 +449,15 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
                                 android:id="@+id/ivCheckboxIconPreview"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_checkbox"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -463,16 +470,16 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/checkbox_style"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvCheckboxValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/loading"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -490,12 +497,14 @@
                             android:minHeight="56dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_text_size"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -508,7 +517,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/font_size"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <com.google.android.material.slider.Slider
                                     android:id="@+id/sliderFontSize"
@@ -527,8 +536,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="12dp"
-                                android:text="14 sp"
-                                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                tools:text="14 sp"
+                                android:textAppearance="?attr/textAppearanceBodyMedium"
                                 android:textColor="?colorOnSurfaceVariant" />
                         </LinearLayout>
                         <View
@@ -543,12 +552,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_language"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -561,16 +572,16 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/language"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvLanguageValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/loading"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -593,8 +604,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -612,12 +623,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_notifications"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -630,14 +643,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/notification_permissions"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/notification_permissions_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -660,12 +673,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_schedule"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -678,16 +693,16 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/tasks_notification"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvDailyNotificationTime"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="07:30"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    tools:text="07:30"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -710,8 +725,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -731,12 +746,14 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal"
-                                android:paddingHorizontal="16dp"
-                                android:paddingVertical="12dp">
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:paddingTop="12dp"
+                                android:paddingBottom="12dp">
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginEnd="16dp"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="20dp"
                                     android:importantForAccessibility="no"
                                     android:src="@drawable/ic_stat_error"
                                     app:tint="?attr/colorError" />
@@ -745,7 +762,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurface"
                                     tools:text="3 cambios se sobrescribieron por ediciones más recientes en otro dispositivo" />
                                 <TextView
@@ -758,7 +775,7 @@
                                     android:focusable="true"
                                     android:padding="8dp"
                                     android:text="@string/sync_conflicts_dismiss"
-                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    android:textAppearance="?attr/textAppearanceLabelLarge"
                                     android:textColor="?attr/colorPrimary" />
                             </LinearLayout>
                             <View
@@ -774,14 +791,16 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_sync"
+                                android:src="@drawable/ic_user"
                                 app:tint="?colorOnSurfaceVariant" />
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -792,7 +811,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/account_row_title"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvAccountStatus"
@@ -800,7 +819,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/account_not_signed_in"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -823,14 +842,16 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_sync"
+                                android:src="@drawable/ic_refresh"
                                 app:tint="?colorOnSurfaceVariant" />
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -841,7 +862,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/sync_status_row_title"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:id="@+id/tvSyncStatus"
@@ -849,7 +870,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/sync_status_never"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -866,8 +887,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -879,7 +900,7 @@
                             android:id="@+id/btnCategoryAdvanced"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:minHeight="72dp"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
                             android:padding="16dp"
@@ -894,7 +915,7 @@
                                 android:src="@drawable/ic_settings_schedule"
                                 android:background="@drawable/bg_settings_icon"
                                 android:importantForAccessibility="no"
-                                app:tint="?attr/colorPrimary" />
+                                app:tint="?attr/colorOnSurface" />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -904,15 +925,15 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_advanced"
-                                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                                    android:textAppearance="?attr/textAppearanceTitleMedium"
                                     android:textColor="?attr/colorOnSurface" />
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="@string/settings_advanced_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?attr/colorOnSurfaceVariant"
-                                    android:layout_marginTop="4dp" />
+                                    android:layout_marginTop="2dp" />
                             </LinearLayout>
                             <ImageView
                                 android:layout_width="20dp"
@@ -935,8 +956,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -954,12 +975,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_backup_export"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -972,14 +995,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/export_local_backup"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/export_local_backup_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -1002,12 +1025,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_backup_import"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -1020,14 +1045,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/restore_data"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/restore_data_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -1050,12 +1075,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_csv"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -1068,14 +1095,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/import_csv"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/import_csv_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -1099,8 +1126,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -1118,12 +1145,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_settings_tutorial"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -1136,14 +1165,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/initial_tutorial"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/initial_tutorial_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -1167,8 +1196,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeColor="?attr/colorOutlineVariant"
                     app:strokeWidth="1dp">
@@ -1186,12 +1215,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_cloud_upload"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -1204,14 +1235,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/cloud_full_overwrite_title"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/cloud_full_overwrite_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView
@@ -1234,12 +1265,14 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="12dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="12dp">
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginEnd="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="20dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_cloud_download"
                                 app:tint="?colorOnSurfaceVariant" />
@@ -1252,14 +1285,14 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/cloud_full_download_title"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
                                     android:textColor="?colorOnSurface" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
                                     android:text="@string/cloud_full_download_desc"
-                                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                    android:textAppearance="?attr/textAppearanceBodyMedium"
                                     android:textColor="?colorOnSurfaceVariant" />
                             </LinearLayout>
                             <ImageView

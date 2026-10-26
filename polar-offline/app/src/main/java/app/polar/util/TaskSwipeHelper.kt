@@ -65,6 +65,9 @@ class TaskSwipeHelper(
     private val backgroundRect = RectF()
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER }
 
+    // Si el deslizamiento activo ya ha pasado el umbral; al cruzarlo se da un toque háptico.
+    private var thresholdReached = false
+
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
@@ -120,6 +123,7 @@ class TaskSwipeHelper(
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
+        thresholdReached = false
         try {
             onClearViewCallback.invoke(recyclerView, viewHolder)
         } catch (e: Exception) {
@@ -137,6 +141,7 @@ class TaskSwipeHelper(
         isCurrentlyActive: Boolean
     ) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            if (isCurrentlyActive) notifyThreshold(viewHolder, dX)
             try {
                 drawSwipeBackground(c, viewHolder, dX)
             } catch (e: Exception) {
@@ -145,6 +150,22 @@ class TaskSwipeHelper(
         }
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+    }
+
+    private fun notifyThreshold(viewHolder: RecyclerView.ViewHolder, dX: Float) {
+        val width = viewHolder.itemView.width
+        if (width == 0) return
+        val reached = kotlin.math.abs(dX) >= width * getSwipeThreshold(viewHolder)
+        if (reached && !thresholdReached) {
+            viewHolder.itemView.performHapticFeedback(
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    android.view.HapticFeedbackConstants.CONFIRM
+                } else {
+                    android.view.HapticFeedbackConstants.VIRTUAL_KEY
+                }
+            )
+        }
+        thresholdReached = reached
     }
 
     private fun drawSwipeBackground(
@@ -159,7 +180,10 @@ class TaskSwipeHelper(
 
         val config = swipeConfigForHolder?.invoke(viewHolder, dX > 0)
             ?: if (dX > 0) rightSwipeConfig else leftSwipeConfig
+        // El fondo y el icono ganan intensidad hasta llegar al umbral: así se ve cuándo se aplicará la acción.
+        val progress = (kotlin.math.abs(dX) / (itemView.width * getSwipeThreshold(viewHolder)).coerceAtLeast(1f)).coerceIn(0f, 1f)
         backgroundPaint.color = resolveThemeColor(context, config.backgroundColorAttr)
+        backgroundPaint.alpha = (150 + 105 * progress).toInt()
         val icon = ContextCompat.getDrawable(context, config.iconRes)?.mutate()
         val iconTint = resolveThemeColor(context, config.iconTintAttr ?: MaterialR.attr.colorOnSurface)
         icon?.setTint(iconTint)
@@ -171,7 +195,7 @@ class TaskSwipeHelper(
         val radius = context.dpToPx(cornerRadiusDp)
         canvas.drawRoundRect(backgroundRect, radius, radius, backgroundPaint)
 
-        val iconSize = context.dpToPx(ICON_SIZE_DP)
+        val iconSize = context.dpToPx(ICON_SIZE_DP) * (0.85f + 0.15f * progress)
         val label = config.labelRes?.let(context::getString)
         labelPaint.color = iconTint
         labelPaint.textSize = android.util.TypedValue.applyDimension(
@@ -202,7 +226,7 @@ class TaskSwipeHelper(
     }
 
     companion object {
-        private const val ICON_SIZE_DP = 24f
+        private const val ICON_SIZE_DP = 22f
         private const val ICON_MARGIN_DP = 16f
         private const val DEFAULT_SWIPE_THRESHOLD = 0.5f
         private const val TAG = "TaskSwipeHelper"

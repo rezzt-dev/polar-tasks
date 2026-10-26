@@ -12,7 +12,10 @@ import app.polar.databinding.ItemSubtaskBinding
 class SubtaskAdapter(
   private val onCheckChanged: (Subtask, Boolean) -> Unit,
   private val onDelete: (Subtask) -> Unit = {},
-  private val onItemClick: (Subtask) -> Unit = {}
+  private val onItemClick: (Subtask) -> Unit = {},
+  // En el diálogo de edición se muestra un botón para quitar la subtarea en vez de depender
+  // solo de la pulsación larga, que no se descubre.
+  private val showRemoveButton: Boolean = false
 ) : ListAdapter<Subtask, SubtaskAdapter.SubtaskViewHolder>(SubtaskDiffCallback()) {
   
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubtaskViewHolder {
@@ -43,7 +46,7 @@ class SubtaskAdapter(
         binding.tvSubtaskTitle.alpha = 0.5f
       } else {
         binding.tvSubtaskTitle.paintFlags = binding.tvSubtaskTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-        binding.tvSubtaskTitle.alpha = 0.8f
+        binding.tvSubtaskTitle.alpha = 1.0f
       }
       
       binding.checkboxSubtask.setOnCheckedChangeListener { _, isChecked ->
@@ -58,6 +61,9 @@ class SubtaskAdapter(
           onDelete(subtask)
           true
       }
+
+      binding.btnRemoveSubtask.visibility = if (showRemoveButton) android.view.View.VISIBLE else android.view.View.GONE
+      binding.btnRemoveSubtask.setOnClickListener { onDelete(subtask) }
     }
   }
   

@@ -17,7 +17,8 @@ import app.polar.util.TaskSwipeHelper
 import com.google.android.material.R as MaterialR
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import android.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
+import app.polar.ui.widget.applyPolarStyle
 import androidx.core.graphics.ColorUtils
 
 class DrawerManager(
@@ -36,18 +37,74 @@ class DrawerManager(
         object Reminders : NavigationEvent()
         object Eisenhower : NavigationEvent()
         object Trash : NavigationEvent()
+        object Stats : NavigationEvent()
+        object Settings : NavigationEvent()
         data class TaskListSelected(val list: TaskList) : NavigationEvent()
         object CreateList : NavigationEvent()
         data class EditList(val list: TaskList) : NavigationEvent()
     }
 
+    /** Destinos fijos del cajón; las listas se marcan aparte por su id. */
+    enum class Destination { HOME, REMINDERS, CALENDAR, TAGS, EISENHOWER, STATS, TRASH, SETTINGS, LIST, NONE }
+
     private lateinit var taskListAdapter: TaskListAdapter
 
     fun setup() {
         setupDrawerBlur()
+        setupHeader()
         setupRecyclerView()
         setupStaticItems()
         observeData()
+    }
+
+    private fun setupHeader() {
+        // El contenido del cajón es una vista propia: hay que apartarlo a mano de las barras
+        // de estado y de navegación para que la cabecera y el pie no queden debajo.
+        val content = binding.root.findViewById<View>(R.id.drawerContent)
+        val baseTop = content.paddingTop
+        val baseBottom = content.paddingBottom
+        // NavigationView consume los insets sin pasarlos a sus hijos, así que se escuchan en ella.
+        val navigationView = binding.root.findViewById<View>(R.id.navigationView)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(navigationView) { _, insets ->
+            val bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            content.setPadding(content.paddingLeft, baseTop + bars.top, content.paddingRight, baseBottom + bars.bottom)
+            insets
+        }
+
+        val tvDate = binding.root.findViewById<android.widget.TextView>(R.id.tvDrawerDate)
+        val update = {
+            val locale = java.util.Locale.getDefault()
+            // Patrón localizado ("lunes, 26 de octubre", "monday 26 october"...), en minúsculas
+            // como el resto de la interfaz.
+            val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
+            tvDate.text = java.text.SimpleDateFormat(pattern, locale).format(java.util.Date()).lowercase(locale)
+        }
+        update()
+        // La fecha se refresca al abrir el cajón por si la app ha pasado la medianoche abierta.
+        binding.drawerLayout.addDrawerListener(object : androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerOpened(drawerView: View) = update()
+        })
+    }
+
+    /**
+     * Marca en el cajón la sección visible. Para [Destination.LIST] se marca la lista [listId];
+     * cualquier otro destino desmarca las listas.
+     */
+    fun setActiveDestination(destination: Destination, listId: Long? = null) {
+        val items = mapOf(
+            Destination.HOME to R.id.btnHome,
+            Destination.REMINDERS to R.id.btnReminders,
+            Destination.CALENDAR to R.id.btnCalendar,
+            Destination.TAGS to R.id.btnTags,
+            Destination.EISENHOWER to R.id.btnEisenhower,
+            Destination.STATS to R.id.btnStats,
+            Destination.TRASH to R.id.btnTrash,
+            Destination.SETTINGS to R.id.btnSettings
+        )
+        items.forEach { (dest, id) ->
+            binding.root.findViewById<View>(id).isActivated = dest == destination
+        }
+        taskListAdapter.setSelectedListId(if (destination == Destination.LIST) listId else null)
     }
 
     private fun setupDrawerBlur() {
@@ -185,6 +242,16 @@ class DrawerManager(
             onNavigate(NavigationEvent.Trash)
             closeDrawer()
         }
+
+        binding.root.findViewById<View>(R.id.btnStats).setOnClickListener {
+            onNavigate(NavigationEvent.Stats)
+            closeDrawer()
+        }
+
+        binding.root.findViewById<View>(R.id.btnSettings).setOnClickListener {
+            onNavigate(NavigationEvent.Settings)
+            closeDrawer()
+        }
     }
 
     private fun showDeleteListConfirmation(taskList: TaskList, position: Int) {
@@ -217,7 +284,8 @@ class DrawerManager(
         var reminderCount = 0
         val updateTrashCount = {
             val total = taskCount + reminderCount
-            tvTrashCount.text = if (total > 0) activity.getString(R.string.trash_with_count, total) else activity.getString(R.string.trash)
+            tvTrashCount.text = total.toString()
+            tvTrashCount.visibility = if (total > 0) View.VISIBLE else View.GONE
         }
 
         taskViewModel.getDeletedTasks().observe(activity) { tasks ->
@@ -237,6 +305,7 @@ class DrawerManager(
 
         PopupMenu(activity, view).apply {
             menuInflater.inflate(R.menu.menu_task_list, menu)
+            applyPolarStyle(activity)
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_edit -> {

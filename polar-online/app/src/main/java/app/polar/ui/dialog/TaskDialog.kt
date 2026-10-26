@@ -12,7 +12,6 @@ import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.databinding.DialogTaskBinding
 import app.polar.ui.adapter.SubtaskAdapter
-import app.polar.ui.adapter.TagAdapter
 
 class TaskDialog(
   private val task: Task? = null,
@@ -37,7 +36,6 @@ class TaskDialog(
   private var selectedPriority: Int = 0
   
   private lateinit var subtaskAdapter: SubtaskAdapter
-  private lateinit var tagAdapter: TagAdapter
   
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     _binding = DialogTaskBinding.inflate(LayoutInflater.from(context))
@@ -112,7 +110,7 @@ class TaskDialog(
     }
     
     binding.containerRecurrence.setOnClickListener {
-      val popup = android.widget.PopupMenu(requireContext(), it)
+      val popup = androidx.appcompat.widget.PopupMenu(requireContext(), it)
       popup.menu.add(0, 0, 0, getString(R.string.recurrence_summary_none))
       popup.menu.add(0, 1, 1, getString(R.string.recurrence_daily))
       popup.menu.add(0, 2, 2, getString(R.string.recurrence_weekly))
@@ -143,7 +141,7 @@ class TaskDialog(
     }
     
     binding.containerPriority.setOnClickListener {
-      val popup = android.widget.PopupMenu(requireContext(), it)
+      val popup = androidx.appcompat.widget.PopupMenu(requireContext(), it)
       popup.menu.add(0, 0, 0, getString(R.string.priority_label_none))
       popup.menu.add(0, 1, 1, getString(R.string.priority_label_low))
       popup.menu.add(0, 2, 2, getString(R.string.priority_label_medium))
@@ -168,12 +166,29 @@ class TaskDialog(
     }
     
     binding.btnAddTag.setOnClickListener {
-      val tagText = binding.etTag.text.toString().trim()
-      if (tagText.isNotEmpty() && !tagList.contains(tagText)) {
-        tagList.add(tagText)
-        updateTagList()
-        binding.etTag.text?.clear()
-      }
+      // Admite varias etiquetas separadas por comas y con o sin almohadilla.
+      binding.etTag.text.toString()
+        .split(",")
+        .map { it.trim().removePrefix("#").trim() }
+        .filter { it.isNotEmpty() && !tagList.contains(it) }
+        .distinct()
+        .forEach { tagList.add(it) }
+      updateTagList()
+      binding.etTag.text?.clear()
+    }
+
+    // "hecho" en el teclado añade la etiqueta o la subtarea sin tener que pulsar el botón +
+    binding.etTag.setOnEditorActionListener { _, actionId, _ ->
+      if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+        binding.btnAddTag.performClick()
+        true
+      } else false
+    }
+    binding.etSubtaskTitle.setOnEditorActionListener { _, actionId, _ ->
+      if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+        binding.btnAddSubtask.performClick()
+        true
+      } else false
     }
     
     binding.btnCancel.setOnClickListener {
@@ -249,11 +264,18 @@ class TaskDialog(
     super.onStart()
     dialog?.window?.apply {
       setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
-      // Set dialog size so ScrollView can properly constrain content
+      // Tamaño fijo para que el NestedScrollView pueda limitar el contenido; en pantallas
+      // grandes el ancho no pasa de 520dp para que el formulario no se estire.
       val displayMetrics = resources.displayMetrics
-      val width = (displayMetrics.widthPixels * 0.9).toInt()
+      val maxWidth = (520 * displayMetrics.density).toInt()
+      val width = minOf((displayMetrics.widthPixels * 0.92).toInt(), maxWidth)
       val maxHeight = (displayMetrics.heightPixels * 0.85).toInt()
       setLayout(width, maxHeight)
+      // Al crear una tarea se empieza a escribir directamente en el título.
+      if (task == null) {
+        setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        binding.etTaskTitle.requestFocus()
+      }
     }
   }
   
@@ -271,12 +293,15 @@ class TaskDialog(
 
   private fun updateDateText() {
     if (selectedDate != null) {
-      val format = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
-      binding.tvDueDate.text = format.format(java.util.Date(selectedDate!!))
-      binding.tvDueDate.alpha = 1.0f
+      val locale = java.util.Locale.getDefault()
+      val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEdMMMy")
+      binding.tvDueDate.text = java.text.SimpleDateFormat(pattern, locale)
+        .format(java.util.Date(selectedDate!!))
+        .lowercase(locale)
+      setRowValueState(binding.tvDueDate, isSet = true)
     } else {
       binding.tvDueDate.text = getString(R.string.no_due_date)
-      binding.tvDueDate.alpha = 0.6f
+      setRowValueState(binding.tvDueDate, isSet = false)
     }
   }
   
@@ -290,12 +315,7 @@ class TaskDialog(
       else -> getString(R.string.recurrence_summary_none)
     }
     binding.tvRecurrence.text = text
-    
-    if (selectedRecurrence == "NONE") {
-      binding.tvRecurrence.alpha = 0.6f
-    } else {
-      binding.tvRecurrence.alpha = 1.0f
-    }
+    setRowValueState(binding.tvRecurrence, isSet = selectedRecurrence != "NONE")
   }
   
   private fun updatePriorityText() {
@@ -317,14 +337,23 @@ class TaskDialog(
     if (priorityColorAttr != null) {
       val color = resolveColorAttr(priorityColorAttr)
       binding.ivPriorityIcon.imageTintList = android.content.res.ColorStateList.valueOf(color)
-      binding.tvPriority.setTextColor(color)
-      binding.tvPriority.alpha = 1.0f
+      setRowValueState(binding.tvPriority, isSet = true)
     } else {
-      val primaryColor = resolveColorAttr(android.R.attr.colorPrimary)
-      binding.ivPriorityIcon.imageTintList = android.content.res.ColorStateList.valueOf(primaryColor)
-      binding.tvPriority.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurface))
-      binding.tvPriority.alpha = 0.6f
+      binding.ivPriorityIcon.imageTintList = android.content.res.ColorStateList.valueOf(
+        resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
+      )
+      setRowValueState(binding.tvPriority, isSet = false)
     }
+  }
+
+  /** Valor elegido en el color del texto; sin valor, en el color secundario del tema. */
+  private fun setRowValueState(view: android.widget.TextView, isSet: Boolean) {
+    view.setTextColor(
+      resolveColorAttr(
+        if (isSet) com.google.android.material.R.attr.colorOnSurface
+        else com.google.android.material.R.attr.colorOnSurfaceVariant
+      )
+    )
   }
 
   private fun resolveColorAttr(attr: Int): Int {
@@ -335,6 +364,7 @@ class TaskDialog(
   
   private fun setupSubtaskList() {
     subtaskAdapter = SubtaskAdapter(
+      showRemoveButton = true,
       onCheckChanged = { subtask, isChecked ->
         val index = subtaskList.indexOf(subtask)
         if (index != -1) {
@@ -354,23 +384,28 @@ class TaskDialog(
   }
   
   private fun setupTagList() {
-    tagAdapter = TagAdapter { tag ->
-      tagList.remove(tag)
-      updateTagList()
-    }
-    binding.recyclerTags.layoutManager = LinearLayoutManager(context)
-    binding.recyclerTags.adapter = tagAdapter
-    binding.recyclerTags.isNestedScrollingEnabled = false
     updateTagList()
   }
-  
+
+  // Las etiquetas se muestran como chips con botón de quitar.
   private fun updateTagList() {
-    if (tagList.isNotEmpty()) {
-      binding.recyclerTags.visibility = View.VISIBLE
-      tagAdapter.submitList(tagList.toList())
-    } else {
-      binding.recyclerTags.visibility = View.GONE
+    val group = binding.chipGroupTags
+    group.removeAllViews()
+    tagList.forEach { tag ->
+      val chip = com.google.android.material.chip.Chip(
+        requireContext(), null, R.attr.polarInputChipStyle
+      ).apply {
+        text = "#$tag"
+        isCloseIconVisible = true
+        closeIconContentDescription = getString(R.string.delete)
+        setOnCloseIconClickListener {
+          tagList.remove(tag)
+          updateTagList()
+        }
+      }
+      group.addView(chip)
     }
+    group.visibility = if (tagList.isEmpty()) View.GONE else View.VISIBLE
   }
   
   private fun updateSubtaskList() {

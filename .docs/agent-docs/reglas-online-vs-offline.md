@@ -97,7 +97,7 @@ del punto 2 es, probablemente, un olvido de portado — repórtalo o corrígelo.
 | `ui/viewmodel/` | `AuthViewModel.kt` | Estado de sesión (`sessionStatus`, sign-in/sign-out/reset password). |
 | `worker/` | `SyncWorker.kt` | Sincronización periódica/inmediata contra Supabase. |
 | `ui/fragment/SettingsFragment.kt` + `fragment_settings.xml` | Sección "cuenta y sincronización" (login/logout, "sincronizar ahora", subir/descargar copia completa, aviso de conflictos perdidos) | Toda esa UI depende de tener sesión Supabase; en offline `SettingsFragment` es un subconjunto sin esa sección. |
-| `res/drawable/` | `ic_cloud_download.xml`, `ic_cloud_upload.xml` | Iconografía exclusiva de los botones de sync. |
+| `res/drawable/` | `ic_cloud_download.xml`, `ic_cloud_upload.xml`, `ic_cloud.xml`, `ic_user.xml` | Iconografía exclusiva de la categoría "cuenta y sincronización" de ajustes (botones de sync, cuenta y nube). |
 | `res/values*/strings.xml` | Claves `auth_*`, `account_*`, `cloud_*`, `sync_*` | Textos de las pantallas/diálogos anteriores. |
 | Único fichero exclusivo de `polar-offline/` | `util/LegacyCloudDataCleaner.kt` | Migración de limpieza al pasar de una build con cuenta a una 100% local (ver punto 3). No tiene sentido en `polar-online/`, que sí usa esas preferencias/Workers activamente. |
 

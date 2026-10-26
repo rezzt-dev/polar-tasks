@@ -67,7 +67,7 @@ class TagsFragment : Fragment() {
         val tvTitle = view.findViewById<TextView>(R.id.tvSheetTagTitle)
         val rvTasks = view.findViewById<RecyclerView>(R.id.rvSheetTasks)
 
-        tvTitle.text = "tareas con etiqueta #$tag"
+        tvTitle.text = getString(R.string.tag_tasks_title, tag)
 
         val taskAdapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -80,7 +80,9 @@ class TagsFragment : Fragment() {
                 val v = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
                 // hide some elements not used in summary
                 v.findViewById<View>(R.id.cbTaskComplete).visibility = View.GONE
-                v.findViewById<View>(R.id.tagsContainer).visibility = View.GONE
+                // La fecha vive dentro de tagsContainer: se ocultan solo las etiquetas.
+                v.findViewById<View>(R.id.tvTaskTags).visibility = View.GONE
+                v.findViewById<View>(R.id.btnTaskOverflow).visibility = View.GONE
                 return TaskViewHolder(v)
             }
 
@@ -154,7 +156,7 @@ class TagsFragment : Fragment() {
 
             fun bind(model: TagModel) {
                 tvTagName.text = "#${model.tag}"
-                tvTagCount.text = "${model.count} ${if (model.count == 1) "tarea" else "tareas"}"
+                tvTagCount.text = itemView.resources.getQuantityString(R.plurals.tasks_count, model.count, model.count)
                 itemView.setOnClickListener { onTagClick(model) }
             }
         }

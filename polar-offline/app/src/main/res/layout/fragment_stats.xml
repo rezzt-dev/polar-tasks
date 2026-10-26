@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/statsScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,7 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
             android:visibility="gone">
 
             <!-- Completion Hero -->
@@ -25,26 +29,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="?attr/colorSurface"
-                app:strokeColor="?attr/colorSurfaceVariant">
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:id="@+id/tvCompletionTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/completion_rate"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
                         android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.8"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -53,9 +55,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/stats_completion_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.6"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginTop="2dp"
                         app:layout_constraintTop_toBottomOf="@id/tvCompletionTitle"
                         app:layout_constraintStart_toStartOf="parent"
@@ -65,10 +66,12 @@
                         android:id="@+id/tvCompletionRate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0%"
-                        android:textSize="56sp"
+                        tools:text="0 %"
+                        android:textSize="48sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorPrimary"
+                        android:letterSpacing="-0.03"
+                        android:fontFeatureSettings="tnum"
+                        android:textColor="?attr/colorOnSurface"
                         android:layout_marginTop="12dp"
                         app:layout_constraintTop_toBottomOf="@id/tvCompletionSubtitle"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -79,9 +82,10 @@
                         android:layout_height="wrap_content"
                         android:progress="0"
                         app:indicatorColor="?attr/colorPrimary"
-                        app:trackColor="?attr/colorSurfaceVariant"
-                        app:indicatorSize="100dp"
-                        app:trackThickness="12dp"
+                        app:trackColor="?attr/colorSurfaceContainerHighest"
+                        app:indicatorSize="96dp"
+                        app:trackThickness="8dp"
+                        app:trackCornerRadius="4dp"
                         app:indicatorDirectionCircular="clockwise"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -93,10 +97,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="12dp"
-                        android:textSize="13sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.75"
-                        android:lineSpacingMultiplier="1.1"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         app:layout_constraintTop_toBottomOf="@id/tvCompletionRate"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/progressCompletion" />
@@ -124,7 +126,7 @@
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
+                    app:strokeColor="?attr/colorOutlineVariant">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -133,30 +135,28 @@
                         android:padding="20dp">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_stat_list"
-                            app:tint="?attr/colorOnSurface"
-                            android:alpha="0.7"
-                            android:layout_marginBottom="12dp"
+                            app:tint="?attr/colorOnSurfaceVariant"
+                            android:layout_marginBottom="16dp"
                             android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/tvTotalCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
+                            tools:text="0"
+                            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                            android:fontFeatureSettings="tnum"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/total_tasks"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -170,7 +170,7 @@
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
+                    app:strokeColor="?attr/colorOutlineVariant">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -179,29 +179,28 @@
                         android:padding="20dp">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_stat_check"
-                            app:tint="?attr/colorPrimary"
-                            android:layout_marginBottom="12dp"
+                            app:tint="?attr/colorOnSurfaceVariant"
+                            android:layout_marginBottom="16dp"
                             android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/tvCompletedCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
+                            tools:text="0"
+                            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                            android:fontFeatureSettings="tnum"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/completed_tasks"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -215,7 +214,7 @@
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
+                    app:strokeColor="?attr/colorOutlineVariant">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -224,29 +223,28 @@
                         android:padding="20dp">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_stat_schedule"
                             app:tint="?attr/colorPriorityMedium"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="16dp"
                             android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/tvPendingCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
+                            tools:text="0"
+                            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                            android:fontFeatureSettings="tnum"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/pending_tasks"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -260,7 +258,7 @@
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorSurfaceVariant">
+                    app:strokeColor="?attr/colorOutlineVariant">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -269,29 +267,28 @@
                         android:padding="20dp">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_stat_error"
                             app:tint="?attr/colorError"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="16dp"
                             android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/tvOverdueCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
+                            tools:text="0"
+                            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                            android:fontFeatureSettings="tnum"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/overdue_tasks"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </GridLayout>
@@ -301,17 +298,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="?attr/colorSurface"
-                app:strokeColor="?attr/colorSurfaceVariant">
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -324,7 +321,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_stat_check"
-                            app:tint="?attr/colorPrimary"
+                            app:tint="?attr/colorOnSurfaceVariant"
                             android:layout_marginEnd="10dp"
                             android:contentDescription="@null" />
 
@@ -332,19 +329,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/weekly_activity"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.8" />
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stats_weekly_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.6"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginBottom="20dp" />
 
                     <app.polar.ui.view.BarChartView
@@ -360,17 +354,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="?attr/colorSurface"
-                app:strokeColor="?attr/colorSurfaceVariant">
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -383,7 +377,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_stat_trend"
-                            app:tint="?attr/colorPrimary"
+                            app:tint="?attr/colorOnSurfaceVariant"
                             android:layout_marginEnd="10dp"
                             android:contentDescription="@null" />
 
@@ -391,19 +385,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/stats_trend_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.8" />
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stats_trend_subtitle"
-                        android:textSize="12sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:alpha="0.6"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:layout_marginBottom="8dp" />
 
                     <app.polar.ui.view.LineChartView
@@ -419,17 +410,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="?attr/colorSurface"
-                app:strokeColor="?attr/colorSurfaceVariant">
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -442,7 +433,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_stat_list_chart"
-                            app:tint="?attr/colorPrimary"
+                            app:tint="?attr/colorOnSurfaceVariant"
                             android:layout_marginEnd="10dp"
                             android:contentDescription="@null" />
 
@@ -450,10 +441,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/stats_status_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.8" />
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <app.polar.ui.view.PieChartView
@@ -469,17 +458,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="?attr/colorSurface"
-                app:strokeColor="?attr/colorSurfaceVariant">
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -500,10 +489,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/stats_priority_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.8" />
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <app.polar.ui.view.HorizontalBarChartView
@@ -519,17 +506,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="?attr/colorSurface"
-                app:strokeColor="?attr/colorSurfaceVariant">
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -542,7 +529,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_stat_list"
-                            app:tint="?attr/colorPrimary"
+                            app:tint="?attr/colorOnSurfaceVariant"
                             android:layout_marginEnd="10dp"
                             android:contentDescription="@null" />
 
@@ -550,10 +537,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/stats_lists_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.8" />
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:textColor="?attr/colorOnSurface" />
                     </LinearLayout>
 
                     <app.polar.ui.view.HorizontalBarChartView
@@ -576,23 +561,24 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="24dp"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeColor="?attr/colorSurfaceVariant">
+                    app:strokeColor="?attr/colorOutlineVariant">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:paddingTop="28dp"
-                        android:paddingBottom="28dp">
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp">
 
                         <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            app:tint="?attr/colorPriorityMedium"
                             android:src="@drawable/ic_stat_fire"
                             android:contentDescription="@null"
                             android:layout_marginBottom="12dp" />
@@ -601,18 +587,17 @@
                             android:id="@+id/tvStreak"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
+                            tools:text="0"
+                            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                            android:fontFeatureSettings="tnum"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/current_streak"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -621,23 +606,24 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    app:cardCornerRadius="24dp"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1dp"
                     app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeColor="?attr/colorSurfaceVariant">
+                    app:strokeColor="?attr/colorOutlineVariant">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:paddingTop="28dp"
-                        android:paddingBottom="28dp">
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp">
 
                         <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            app:tint="?attr/colorPriorityMedium"
                             android:src="@drawable/ic_stat_star"
                             android:contentDescription="@null"
                             android:layout_marginBottom="12dp" />
@@ -646,61 +632,38 @@
                             android:id="@+id/tvBestDay"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
-                            android:textSize="24sp"
-                            android:textStyle="bold"
+                            tools:text="-"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
                             android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/best_day"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:alpha="0.6" />
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Empty State -->
+        <!-- Estado vacio -->
         <LinearLayout
             android:id="@+id/emptyState"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="32dp"
+            style="@style/Polar.EmptyState"
+            android:layout_marginTop="120dp"
+            android:layout_gravity="center_horizontal"
             android:visibility="visible">
-
             <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/ic_stat_insight"
-                app:tint="?attr/colorOnSurfaceVariant"
-                android:alpha="0.2"
-                android:layout_marginBottom="24dp"
-                android:contentDescription="@null" />
-
+                style="@style/Polar.EmptyState.Icon"
+                android:src="@drawable/ic_stat_insight" />
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/stats_empty_title"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginBottom="8dp" />
-
+                style="@style/Polar.EmptyState.Title"
+                android:text="@string/stats_empty_title" />
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/stats_empty_subtitle"
-                android:textSize="14sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:gravity="center" />
-
+                style="@style/Polar.EmptyState.Body"
+                android:text="@string/stats_empty_subtitle" />
         </LinearLayout>
-
     </FrameLayout>
 </androidx.core.widget.NestedScrollView>

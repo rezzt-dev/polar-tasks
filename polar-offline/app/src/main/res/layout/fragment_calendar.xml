@@ -1,81 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="16dp"
+    android:paddingTop="8dp"
     android:background="?android:attr/colorBackground">
 
-    <!-- Calendar Section (Top) -->
+    <!-- Mes -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="8dp">
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp">
 
-        <!-- Month Navigation -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal"
+            android:paddingStart="8dp">
 
             <TextView
                 android:id="@+id/tvMonthYear"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:textColor="?attr/colorOnBackground"
-                android:text="january 2026"/>
+                tools:text="octubre de 2026" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPrevMonth"
-                style="@style/Widget.Material3.Button.IconButton"
+                style="@style/Widget.Polar.Button.Icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:icon="@drawable/ic_arrow_back"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                app:iconTint="?attr/colorOnSurface"/>
+                android:contentDescription="@string/previous_month"
+                app:icon="@drawable/ic_chevron_left" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnNextMonth"
-                style="@style/Widget.Material3.Button.IconButton"
+                style="@style/Widget.Polar.Button.Icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:icon="@drawable/ic_arrow_forward"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                app:iconTint="?attr/colorOnSurface"/>
+                android:contentDescription="@string/next_month"
+                app:icon="@drawable/ic_chevron_right" />
         </LinearLayout>
 
-        <!-- Week Header -->
+        <!-- Dias de la semana -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="12dp">
-            
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/mon_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/tue_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/wed_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/thu_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/fri_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/sat_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" android:text="@string/sun_short" android:textAllCaps="false" android:textSize="12sp" android:alpha="0.6" android:textColor="?attr/colorOnSurface"/>
+            android:paddingBottom="4dp">
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/mon_short" />
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/tue_short" />
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/wed_short" />
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/thu_short" />
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/fri_short" />
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/sat_short" />
+            <TextView style="@style/Polar.CalendarWeekday" android:text="@string/sun_short" />
         </LinearLayout>
 
         <!-- Calendar Grid -->
@@ -90,8 +78,10 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_marginVertical="8dp"/>
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="4dp"
+        android:background="?attr/colorOutlineVariant" />
 
     <!-- Bottom Task List Section -->
     <androidx.core.widget.NestedScrollView
@@ -103,30 +93,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:paddingBottom="80dp">
 
             <TextView
                 android:id="@+id/tvSelectedDateTasks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp"
                 android:text="@string/tasks_for_selected_date"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:paddingVertical="8dp"/>
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface" />
 
             <!-- Tasks Section -->
             <TextView
                 android:id="@+id/tvTasksHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="tareas"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="2dp"
+                android:text="@string/tasks"
+                android:textAppearance="@style/TextAppearance.Polar.Section" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -144,13 +135,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/no_tasks_for_date"
-                    android:gravity="center"
-                    android:layout_gravity="center"
+                    android:gravity="start"
                     android:visibility="gone"
-                    android:paddingVertical="16dp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:alpha="0.5"/>
+                    android:paddingStart="8dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
             </FrameLayout>
 
             <!-- Reminders Section -->
@@ -158,12 +149,11 @@
                 android:id="@+id/tvRemindersHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="recordatorios"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginBottom="2dp"
+                android:text="@string/reminders"
+                android:textAppearance="@style/TextAppearance.Polar.Section" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -180,14 +170,14 @@
                     android:id="@+id/tvNoReminders"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="no hay recordatorios"
-                    android:gravity="center"
-                    android:layout_gravity="center"
+                    android:text="@string/no_reminders_for_date"
+                    android:gravity="start"
                     android:visibility="gone"
-                    android:paddingVertical="16dp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:alpha="0.5"/>
+                    android:paddingStart="8dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
             </FrameLayout>
 
         </LinearLayout>

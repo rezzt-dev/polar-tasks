@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">polar.</string>
-  
   <!-- Menu -->
-  <string name="menu_toggle">toggle menu</string>
-  <string name="theme_toggle">toggle theme</string>
   <string name="settings">settings</string>
   <string name="search">search</string>
-  <string name="search_hint">search tasks...</string>
-  
+  <string name="search_hint">search tasks…</string>
   <!-- Task Lists -->
-  <string name="create_list">create list</string>
+  <string name="create_list">new list</string>
   <string name="edit_list">edit list</string>
   <string name="delete_list">delete list</string>
-  <string name="list_title_hint">list title</string>
-  <string name="no_lists">no task lists</string>
-  <string name="create_first_list">create your first list to get started</string>
-  <string name="select_icon">select icon</string>
-  
+  <string name="list_title_hint">list name</string>
+  <string name="select_icon">icon</string>
   <!-- Calendar Weeks -->
   <string name="mon_short">mon</string>
   <string name="tue_short">tue</string>
@@ -26,52 +19,43 @@
   <string name="fri_short">fri</string>
   <string name="sat_short">sat</string>
   <string name="sun_short">sun</string>
-  
   <!-- Calendar UI -->
   <string name="tasks_for_selected_date">tasks</string>
   <string name="no_tasks_for_date">no tasks for this day</string>
   <string name="today">today</string>
   <string name="tomorrow">tomorrow</string>
-  
   <!-- Tasks -->
-  <string name="create_task">create task</string>
+  <string name="create_task">new task</string>
   <string name="edit_task">edit task</string>
-  <string name="delete_task">delete task</string>
-  <string name="task_title_hint">task title</string>
-  <string name="task_description_hint">description (optional)</string>
+  <string name="task_title_hint">what needs to be done?</string>
+  <string name="task_description_hint">add notes</string>
   <string name="no_tasks">no tasks</string>
-  <string name="add_first_task">add your first task</string>
-  <string name="no_search_results">no tasks found</string>
-  <string name="try_different_search">try with other terms</string>
-  
+  <string name="add_first_task">tap + to add the first one.</string>
+  <string name="no_search_results">no results</string>
+  <string name="try_different_search">try different words.</string>
   <!-- Reminders -->
   <string name="new_reminder">new reminder</string>
   <string name="edit_reminder">edit reminder</string>
-  <string name="select_date_time">select date and time</string>
+  <string name="select_date_time">choose date and time</string>
   <string name="add_location">add location</string>
-  <string name="google_maps_link_hint">paste a google maps link</string>
+  <string name="google_maps_link_hint">google maps link</string>
   <string name="extract_coordinates">extract</string>
   <string name="view_on_map">view on map</string>
-  <string name="invalid_maps_link">could not extract coordinates from the link</string>
-  <string name="short_link_not_supported">short links cannot be processed offline. paste the full google maps link.</string>
+  <string name="invalid_maps_link">couldn\'t extract coordinates from the link</string>
+  <string name="short_link_not_supported">short links can\'t be processed offline. paste the full google maps link.</string>
   <string name="view_location">view location</string>
   <string name="select_date">select date</string>
   <string name="select_time">select time</string>
-  
   <!-- Subtasks -->
   <string name="add_subtask">add subtask</string>
-  <string name="subtask_hint">subtask title</string>
+  <string name="subtask_hint">add subtask</string>
   <string name="subtasks">subtasks</string>
-  
   <!-- Tags -->
-  <string name="tags">tags</string>
-  <string name="tags_hint">tags (separated by commas)</string>
-  <string name="add_tags">add tags</string>
-  
+  <string name="tags_hint">add tags</string>
   <!-- Actions -->
   <string name="save">save</string>
   <string name="cancel">cancel</string>
-  <string name="export">export</string>
+  <string name="export">copy as text</string>
   <string name="edit">edit</string>
   <string name="delete">delete</string>
   <string name="task_copied">task copied to clipboard</string>
@@ -79,23 +63,17 @@
   <string name="filter_pending">pending</string>
   <string name="filter_overdue">overdue</string>
   <string name="filter_recurrent">recurring</string>
-  <string name="confirm_delete">are you sure you want to delete this?</string>
-  <string name="add">add</string>
-  
+  <string name="confirm_delete">are you sure you want to delete it? this can\'t be undone.</string>
   <!-- Watermark -->
-  <string name="developed_by">developed by rezzt.dev</string>
 
   <!-- Settings -->
-  <string name="appearance">appearance</string>
-  <string name="dark_mode">dark mode</string>
   <string name="theme_light">light</string>
   <string name="theme_dark">dark</string>
   <string name="theme_multicolor_light">multicolor light</string>
   <string name="theme_multicolor_dark">multicolor dark</string>
-  <string name="theme_pastel">soft pastel</string>
-  <string name="theme_neon">dark neon</string>
+  <string name="theme_pastel">pastel</string>
+  <string name="theme_neon">neon</string>
   <string name="theme_onyx">onyx</string>
-  <string name="font">font</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
   <string name="font_figtree">figtree</string>
@@ -106,34 +84,23 @@
   <string name="calendar">calendar</string>
   <string name="reminders">reminders</string>
   <string name="trash">trash</string>
-  <string name="trash_with_count">trash (%d)</string>
-  
   <!-- Status Messages -->
   <string name="list_deleted">list deleted</string>
-  
   <!-- Greetings -->
   <string name="good_morning">good morning</string>
   <string name="good_afternoon">good afternoon</string>
-  <string name="good_night">good night</string>
-
+  <string name="good_night">good evening</string>
   <!-- Statistics -->
   <string name="statistics">statistics</string>
-  <string name="total_tasks">total tasks</string>
+  <string name="total_tasks">in total</string>
   <string name="completed_tasks">completed</string>
   <string name="pending_tasks">pending</string>
   <string name="overdue_tasks">overdue</string>
   <string name="completion_rate">completion rate</string>
-  <string name="this_week">this week</string>
-  <string name="this_month">this month</string>
   <string name="weekly_activity">weekly activity</string>
-  <string name="tasks_completed_week">tasks completed this week</string>
-  <string name="tasks_completed_month">tasks completed this month</string>
-  <string name="tasks_created_week">tasks created this week</string>
-  <string name="tasks_created_month">tasks created this month</string>
   <string name="best_day">best day</string>
   <string name="current_streak">current streak</string>
-  <string name="days">days</string>
-  <string name="stats_completion_subtitle">general progress</string>
+  <string name="stats_completion_subtitle">overall progress</string>
   <string name="stats_weekly_subtitle">completed in the last 7 days</string>
   <string name="stats_trend_title">30-day trend</string>
   <string name="stats_trend_subtitle">tasks completed per day</string>
@@ -141,185 +108,231 @@
   <string name="stats_status_completed">completed</string>
   <string name="stats_status_pending">pending</string>
   <string name="stats_status_overdue">overdue</string>
-  <string name="stats_priority_title">distribution by priority</string>
-  <string name="stats_lists_title">performance by list</string>
-  <string name="stats_insight_more">you are on the rise! this week you completed %1$d tasks, %2$d%% more than last week.</string>
-  <string name="stats_insight_less">this week you completed %1$d tasks, %2$d%% less than last week.</string>
-  <string name="stats_insight_same">you are keeping the pace: you completed the same number of tasks as last week.</string>
+  <string name="stats_priority_title">by priority</string>
+  <string name="stats_lists_title">by list</string>
+  <string name="stats_insight_same">you\'re keeping pace: you completed as many tasks as last week.</string>
   <string name="stats_empty_title">no data yet</string>
-  <string name="stats_empty_subtitle">create your first task to start seeing useful statistics.</string>
-  
+  <string name="stats_empty_subtitle">create your first task to start seeing statistics.</string>
   <!-- Messages -->
-  <string name="task_moved_trash">task moved to trash</string>
-  <string name="reminder_moved_trash">reminder moved to trash</string>
+  <string name="task_moved_trash">task moved to the trash</string>
+  <string name="reminder_moved_trash">reminder moved to the trash</string>
   <string name="undo">undo</string>
   <string name="trash_emptied">trash emptied</string>
-  <string name="empty_trash">empty trash</string>
-  <string name="confirm_empty_trash_title">empty trash?</string>
-  <string name="confirm_empty_trash_message">this will permanently delete all items. this action cannot be undone.</string>
-  <string name="trash_clean">trash clean</string>
-  <string name="no_deleted_items">no deleted items</string>
-  <string name="deleted_items">deleted items</string>
+  <string name="empty_trash">empty</string>
+  <string name="confirm_empty_trash_title">empty the trash?</string>
+  <string name="confirm_empty_trash_message">all items will be permanently deleted. this can\'t be undone.</string>
+  <string name="trash_clean">the trash is empty</string>
+  <string name="no_deleted_items">anything you delete will appear here.</string>
+  <string name="deleted_items">deleted</string>
   <string name="item_restored">item restored</string>
   <string name="permanently_deleted">permanently deleted</string>
-  <string name="error_saving_backup">error saving backup</string>
-  <string name="backup_saved">backup saved successfully</string>
-  <string name="backup_restored">backup restored. restarting...</string>
-  <string name="error_restoring_backup">error restoring backup</string>
-
-  <string name="recurrence_daily">daily</string>
-  <string name="recurrence_weekly">weekly</string>
-  <string name="recurrence_monthly">monthly</string>
+  <string name="error_saving_backup">couldn\'t save the backup</string>
+  <string name="backup_saved">backup saved</string>
+  <string name="backup_restored">backup restored. restarting…</string>
+  <string name="error_restoring_backup">couldn\'t restore the backup</string>
+  <string name="recurrence_daily">every day</string>
+  <string name="recurrence_weekly">every week</string>
+  <string name="recurrence_monthly">every month</string>
   <string name="no_list">no list</string>
-  <string name="add_subtask_title">add subtask</string>
+  <string name="add_subtask_title">new subtask</string>
   <string name="priority_low">low</string>
   <string name="priority_medium">medium</string>
   <string name="priority_high">high</string>
   <string name="priority_none">no priority</string>
-
   <string name="font_system">system</string>
-  
   <!-- Settings Screen -->
-  <string name="visual_theme">visual theme</string>
-  <string name="loading">loading...</string>
-  <string name="typography">typography</string>
+  <string name="visual_theme">theme</string>
+  <string name="loading">loading…</string>
+  <string name="typography">font</string>
   <string name="checkbox_style">checkbox style</string>
-  <string name="font_size">font size</string>
+  <string name="font_size">text size</string>
   <string name="language">language</string>
-  <string name="export_local_backup">export local backup</string>
-  <string name="export_local_backup_desc">generate a json file with your data</string>
-  <string name="restore_data">restore data</string>
-  <string name="restore_data_desc">recover from a backup file</string>
-  <string name="system_label">system</string>
+  <string name="export_local_backup">export backup</string>
+  <string name="export_local_backup_desc">save all your data to a json file</string>
+  <string name="restore_data">restore backup</string>
+  <string name="restore_data_desc">recover your data from a backup file</string>
   <string name="notification_permissions">notification permissions</string>
-  <string name="notification_permissions_desc">android notification settings</string>
-  <string name="tasks_notification">tasks notification</string>
-  <string name="daily_at">daily at %s</string>
-  <string name="initial_tutorial">initial tutorial</string>
-  <string name="initial_tutorial_desc">review application usage guide</string>
-  <string name="developed_by_full">polar tasks v1.7\ndeveloped by rezzt.dev</string>
-  
+  <string name="notification_permissions_desc">system notification settings</string>
+  <string name="tasks_notification">task alerts</string>
+  <string name="daily_at">every day at %s</string>
+  <string name="initial_tutorial">tutorial</string>
+  <string name="initial_tutorial_desc">learn how to get the most out of polar</string>
+  <string name="developed_by_full">polar v1.7\ndeveloped by rezzt.dev</string>
   <!-- Tutorial -->
   <string name="tutorial_title_1">welcome to polar.</string>
-  <string name="tutorial_desc_1">the minimalist app meticulously designed to organize your tasks and reminders as elegantly as possible.\n\ndiscover how to boost your daily productivity while staying in control, without distractions and with exceptional performance.</string>
+  <string name="tutorial_desc_1">a minimalist app to organize your tasks and reminders without distractions.\n\neverything you need, nothing you don\'t.</string>
   <string name="tutorial_title_2">task management</string>
-  <string name="tutorial_desc_2">group your responsibilities by creating dedicated lists for work, home or special projects, and organize everything with tags.\n\nbreak down big goals by adding unlimited subtasks and see your progress in a completely visual and satisfying way.</string>
-  <string name="tutorial_title_3">smart creation</string>
-  <string name="tutorial_desc_3">write completely naturally: "buy bread at 5pm on tuesday" or "meeting tomorrow morning".\n\nour powerful smart engine will detect and extract the date and time automatically, scheduling the task for you.</string>
-  <string name="tutorial_title_4">quick actions</string>
-  <string name="tutorial_desc_4">smoothly swipe a task to the right on the list to immediately mark it as completed.\n\nmade a mistake or no longer need to do something? swipe left to delete it without opening any menus.</string>
-  <string name="tutorial_title_5">calendar and notifications</string>
-  <string name="tutorial_desc_5">visualize all your routines grouped month by month or by weeks in our premium-designed calendar.\n\nreceive accurate notifications just on time so you never miss a meeting, delivery or important detail again.</string>
-  <string name="tutorial_title_6">total personalization</string>
-  <string name="tutorial_desc_6">adapt the app to your own style with our 6 visual themes: light, dark, multicolor light, multicolor dark, soft pastel, dark neon and onyx.\n\nplus, you can pick the typography, checkbox style and font size that suit you best.</string>
+  <string name="tutorial_desc_2">group your tasks into lists for work, home or your projects, and organize them with tags.\n\nbreak big goals into subtasks and follow your progress at a glance.</string>
+  <string name="tutorial_title_3">quick actions</string>
+  <string name="tutorial_desc_3">swipe a task to the right to complete it instantly.\n\nswipe left to move it to the trash. touch and hold any task to see all its options.</string>
+  <string name="tutorial_title_4">images</string>
+  <string name="tutorial_desc_4">attach an image to any task to keep a visual reference. you\'ll find it in the task details.</string>
+  <string name="tutorial_title_5">calendar and reminders</string>
+  <string name="tutorial_desc_5">check your tasks and reminders day by day in the calendar.\n\ncreate reminders with a date, time and location to get notified exactly when you need it.</string>
+  <string name="tutorial_title_6">your way</string>
+  <string name="tutorial_desc_6">choose from seven themes: light, dark, multicolor light, multicolor dark, pastel, neon and onyx.\n\nyou can also adjust the font, the checkbox style and the text size.</string>
   <string name="tutorial_title_7">statistics and progress</string>
-  <string name="tutorial_desc_7">keep an exhaustive log of your day to day, viewing completed, overdue tasks and your best productive day.\n\nmaintain long streaks of completion to outdo yourself and achieve everything you set out to do with polar\'s data.</string>
-  
+  <string name="tutorial_desc_7">track your completed and overdue tasks, your completion rate and your weekly activity.\n\nkeep your daily streak going and find out which day you\'re most productive.</string>
   <string name="action_next">next</string>
-  <string name="action_back">back</string>
-  <string name="action_finish">start</string>
+  <string name="action_finish">get started</string>
   <string name="action_skip">skip</string>
-  <string name="action_view_tutorial">view tutorial</string>
-
   <!-- CSV Import -->
   <string name="import_csv">import csv</string>
-  <string name="import_csv_desc">load tasks from .csv file</string>
-
-
+  <string name="import_csv_desc">load tasks from a .csv file</string>
     <!-- Settings navigation -->
-    <string name="settings_intro">make polar yours</string>
-    <string name="settings_intro_desc">everything you need, organized by category.</string>
-    <string name="settings_back">back to settings</string>
-    <string name="settings_appearance_desc">theme, font, text size and language.</string>
-    <string name="settings_notifications">notifications</string>
-    <string name="settings_notifications_desc">permissions and daily summary schedule.</string>
-    <string name="settings_data">data and backups</string>
-    <string name="settings_data_desc">export, restore or import your tasks.</string>
-    <string name="settings_help">help</string>
-    <string name="settings_help_desc">discover how to get more from polar.</string>
-    <string name="settings_appearance">appearance</string>
-
+  <string name="settings_intro">make polar yours</string>
+  <string name="settings_intro_desc">everything you need, organized by category.</string>
+  <string name="settings_back">back to settings</string>
+  <string name="settings_appearance_desc">theme, font, text size and language.</string>
+  <string name="settings_notifications">notifications</string>
+  <string name="settings_notifications_desc">permissions and daily alert time.</string>
+  <string name="settings_data">data and backups</string>
+  <string name="settings_data_desc">export, restore or import your tasks.</string>
+  <string name="settings_help">help</string>
+  <string name="settings_help_desc">learn how to get more out of polar.</string>
+  <string name="settings_appearance">appearance</string>
   <!-- Task details, sorting and settings -->
   <string name="task_blocked">blocked</string>
-  <string name="no_due_date">no due date</string>
+  <string name="no_due_date">no date</string>
   <string name="select_date_title">select date</string>
   <string name="recurrence_summary_none">does not repeat</string>
-  <string name="recurrence_summary_daily">repeats daily</string>
-  <string name="recurrence_summary_weekly">repeats weekly</string>
-  <string name="recurrence_summary_monthly">repeats monthly</string>
+  <string name="recurrence_summary_daily">every day</string>
+  <string name="recurrence_summary_weekly">every week</string>
+  <string name="recurrence_summary_monthly">every month</string>
   <string name="recurrence_summary_mon_wed">every monday and wednesday</string>
-  <string name="recurrence_summary_first_day_month">first day of the month</string>
+  <string name="recurrence_summary_first_day_month">the first day of every month</string>
   <string name="priority_label_none">no priority</string>
   <string name="priority_label_low">low priority</string>
   <string name="priority_label_medium">medium priority</string>
   <string name="priority_label_high">high priority</string>
-  <string name="time_estimate_hint">time estimate (minutes)</string>
-  <string name="color_accent_label">accent color</string>
-  <string name="hex_label">hex</string>
-  <string name="sort_by">sort by</string>
-  <string name="sort_default">default</string>
-  <string name="sort_unmark_first">incomplete first</string>
-  <string name="completed_tasks_header">completed tasks (%d)</string>
-  <string name="all_tags">all tags</string>
+  <string name="time_estimate_hint">estimate in minutes</string>
+  <string name="color_accent_label">color</string>
+  <string name="sort_by">sort</string>
+  <string name="sort_default">manual order</string>
+  <string name="sort_unmark_first">pending first</string>
+  <string name="completed_tasks_header">completed (%d)</string>
+  <string name="all_tags">tags</string>
   <string name="eisenhower_matrix">eisenhower matrix</string>
-  <string name="dialog_select_theme">select theme</string>
-  <string name="dialog_select_font">select font</string>
+  <string name="dialog_select_theme">theme</string>
+  <string name="dialog_select_font">font</string>
   <string name="dialog_select_checkbox_style">checkbox style</string>
-  <string name="checkbox_square">square (material)</string>
-  <string name="checkbox_circular">circular (modern)</string>
-  <string name="dialog_select_language">select language</string>
+  <string name="checkbox_square">square</string>
+  <string name="checkbox_circular">round</string>
+  <string name="dialog_select_language">language</string>
   <string name="imported_tasks_list_name">imported tasks</string>
-  <string name="tasks_imported_ok">tasks imported successfully</string>
-  <string name="error_importing_csv">error importing the csv file</string>
-  <string name="share_task_as_image">share task as an image</string>
+  <string name="tasks_imported_ok">tasks imported</string>
+  <string name="error_importing_csv">couldn\'t import the csv file</string>
+  <string name="share_task_as_image">share as image</string>
   <string name="attach_image">attach image</string>
   <string name="dependency_chain_label">dependency chain</string>
   <string name="dependency_chain_desc">tasks unlock in order</string>
-
     <!-- Agenda de recordatorios -->
-    <string name="reminders_heading">a little peace of mind</string>
-    <string name="reminders_summary">%1$s · %2$s</string>
-    <string name="reminders_next">up next · %1$s · %2$s</string>
-    <string name="reminders_filter_all">all</string>
-    <string name="reminders_filter_pending">pending</string>
-    <string name="reminders_filter_completed">completed</string>
-    <string name="reminders_overdue">overdue</string>
-    <string name="reminders_upcoming">later</string>
-    <string name="reminders_section_count">%1$s · %2$d</string>
-    <string name="reminder_complete">complete</string>
-    <string name="reminder_reactivate">reactivate</string>
-    <string name="reminder_complete_named">complete: %1$s</string>
-    <string name="reminder_reactivate_named">reactivate: %1$s</string>
-    <string name="reminder_options">reminder options</string>
-    <string name="reminder_options_named">options: %1$s</string>
-    <string name="reminder_no_maps">no maps app available</string>
-    <string name="reminders_empty_title">make room for what matters</string>
-    <string name="reminders_empty_description">tap + to create your first reminder. we will let you know when it is time.</string>
-    <string name="reminders_empty_completed">your achievements go here</string>
-    <string name="reminders_empty_completed_description">mark a reminder as completed and it will appear here.</string>
-    <string name="reminders_empty_pending">all caught up</string>
-    <string name="reminders_empty_pending_description">you have no pending reminders. enjoy the peace of mind.</string>
-    <string name="reminder_completed">completed</string>
-    <plurals name="reminders_pending_count">
-        <item quantity="one">%d pending</item>
-        <item quantity="other">%d pending</item>
-    </plurals>
-    <plurals name="reminders_overdue_count">
-        <item quantity="one">%d overdue</item>
-        <item quantity="other">%d overdue</item>
-    </plurals>
-
+  <string name="reminders_heading">your schedule, calm</string>
+  <string name="reminders_summary">%1$s · %2$s</string>
+  <string name="reminders_next">up next · %1$s · %2$s</string>
+  <string name="reminders_filter_all">all</string>
+  <string name="reminders_filter_pending">pending</string>
+  <string name="reminders_filter_completed">completed</string>
+  <string name="reminders_overdue">overdue</string>
+  <string name="reminders_upcoming">later</string>
+  <string name="reminders_section_count">%1$s · %2$d</string>
+  <string name="reminder_complete">complete</string>
+  <string name="reminder_reactivate">reactivate</string>
+  <string name="reminder_complete_named">complete: %1$s</string>
+  <string name="reminder_reactivate_named">reactivate: %1$s</string>
+  <string name="reminder_options">reminder options</string>
+  <string name="reminder_options_named">options: %1$s</string>
+  <string name="reminder_no_maps">no maps app available</string>
+  <string name="reminders_empty_title">make room for what matters</string>
+  <string name="reminders_empty_description">tap + to create your first reminder. we\'ll let you know when it\'s time.</string>
+  <string name="reminders_empty_completed">your achievements go here</string>
+  <string name="reminders_empty_completed_description">mark a reminder as completed and it will appear here.</string>
+  <string name="reminders_empty_pending">all caught up</string>
+  <string name="reminders_empty_pending_description">you have no pending reminders. enjoy the calm.</string>
+  <string name="reminder_completed">completed</string>
+  <plurals name="reminders_pending_count">
+    <item quantity="one">%d pending</item>
+    <item quantity="other">%d pending</item>
+  </plurals>
+  <plurals name="reminders_overdue_count">
+    <item quantity="one">%d overdue</item>
+    <item quantity="other">%d overdue</item>
+  </plurals>
     <!-- Notificaciones, widget e importacion -->
-    <string name="notification_channel_name">task reminders</string>
-    <string name="notification_channel_desc">alerts for task, subtask and reminder deadlines</string>
-    <string name="notification_action_complete">complete</string>
-    <string name="notification_action_snooze">snooze 1 h</string>
-    <string name="notification_reminder_title">reminder: %1$s</string>
-    <string name="notification_subtask_of">subtask of %1$s</string>
-    <string name="reminder_created_title">reminder created</string>
-    <string name="reminder_created_message">a reminder has been set for %1$s at %2$s for:</string>
-    <string name="widget_title">today\'s tasks</string>
-    <string name="widget_empty">no tasks for today</string>
-    <string name="widget_refresh">refresh</string>
-    <string name="csv_import_empty">the file contains no tasks to import</string>
+  <string name="notification_channel_name">task reminders</string>
+  <string name="notification_channel_desc">due alerts for tasks, subtasks and reminders</string>
+  <string name="notification_action_complete">complete</string>
+  <string name="notification_action_snooze">snooze 1 h</string>
+  <string name="notification_reminder_title">reminder: %1$s</string>
+  <string name="notification_subtask_of">subtask of %1$s</string>
+  <string name="reminder_created_title">reminder created</string>
+  <string name="reminder_created_message">we\'ll remind you on %1$s at %2$s:</string>
+  <string name="widget_title">today\'s tasks</string>
+  <string name="widget_empty">nothing due today</string>
+  <string name="widget_refresh">refresh</string>
+  <string name="csv_import_empty">the file contains no tasks to import</string>
+  <string name="font_inter">inter</string>
+  <string name="open_menu">open menu</string>
+  <string name="lists">lists</string>
+  <string name="more_options">more options</string>
+  <plurals name="home_pending_summary">
+    <item quantity="one">%d pending task</item>
+    <item quantity="other">%d pending tasks</item>
+  </plurals>
+  <plurals name="home_overdue_count">
+    <item quantity="one">%d overdue</item>
+    <item quantity="other">%d overdue</item>
+  </plurals>
+  <string name="home_all_done">all caught up</string>
+  <string name="home_empty_title">nothing pending</string>
+  <string name="home_empty_body">pending tasks from your lists will show up here.</string>
+  <string name="progress_summary">%1$d of %2$d completed</string>
+  <string name="percent_value">%d%%</string>
+  <string name="add_tag">add tag</string>
+  <string name="created_on">created on %1$s</string>
+  <string name="mark_completed">mark as completed</string>
+  <string name="back">back</string>
+  <string name="no_reminder">no reminder</string>
+  <string name="rename">rename</string>
+  <string name="custom_color">custom color</string>
+  <string name="color_option">color %1$s</string>
+  <string name="invalid_coordinates">enter valid coordinates</string>
+  <string name="reminder_title_hint">what do you want to remember?</string>
+  <string name="location_name_hint">place name (e.g. home)</string>
+  <string name="latitude">latitude</string>
+  <string name="longitude">longitude</string>
+  <string name="previous_month">previous month</string>
+  <string name="next_month">next month</string>
+  <string name="tasks">tasks</string>
+  <string name="no_reminders_for_date">no reminders for this day</string>
+  <plurals name="stats_insight_more_count">
+    <item quantity="one">you\'re on the rise! this week you completed %1$d task, %2$d%% more than last week.</item>
+    <item quantity="other">you\'re on the rise! this week you completed %1$d tasks, %2$d%% more than last week.</item>
+  </plurals>
+  <plurals name="stats_insight_less_count">
+    <item quantity="one">this week you completed %1$d task, %2$d%% fewer than last week.</item>
+    <item quantity="other">this week you completed %1$d tasks, %2$d%% fewer than last week.</item>
+  </plurals>
+  <string name="tag_tasks_title">#%1$s</string>
+  <plurals name="tasks_count">
+    <item quantity="one">%d task</item>
+    <item quantity="other">%d tasks</item>
+  </plurals>
+  <string name="task_completed">task completed</string>
+  <string name="eisenhower_subtitle">organize your tasks by urgency and importance</string>
+  <string name="eisenhower_q1_title">do now</string>
+  <string name="eisenhower_q1_desc">urgent and important</string>
+  <string name="eisenhower_q2_title">schedule</string>
+  <string name="eisenhower_q2_desc">important, not urgent</string>
+  <string name="eisenhower_q3_title">delegate</string>
+  <string name="eisenhower_q3_desc">urgent, not important</string>
+  <string name="eisenhower_q4_title">eliminate</string>
+  <string name="eisenhower_q4_desc">neither urgent nor important</string>
+  <string name="search_query_title">“%1$s”</string>
+  <plurals name="search_results_count">
+    <item quantity="one">%d result</item>
+    <item quantity="other">%d results</item>
+  </plurals>
+  <string name="clipboard_date_line">date: %1$s</string>
+  <string name="font_size_value">%d sp</string>
 </resources>

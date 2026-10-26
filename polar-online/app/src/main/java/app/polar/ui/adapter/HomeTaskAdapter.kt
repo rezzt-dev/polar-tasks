@@ -144,6 +144,7 @@ class HomeTaskAdapter(
         // Theme colors resolved once in init{} — theme does not change during adapter lifetime
         private val colorPrimary: Int
         private val colorOnSurface: Int
+        private val colorOnSurfaceVariant: Int
         private val colorPriorityHigh: Int
         private val colorPriorityMedium: Int
         private val colorPriorityLow: Int
@@ -164,6 +165,7 @@ class HomeTaskAdapter(
             }
             colorPrimary = resolve(android.R.attr.colorPrimary)
             colorOnSurface = resolve(com.google.android.material.R.attr.colorOnSurface)
+            colorOnSurfaceVariant = resolve(com.google.android.material.R.attr.colorOnSurfaceVariant)
             colorPriorityHigh = resolve(R.attr.colorPriorityHigh)
             colorPriorityMedium = resolve(R.attr.colorPriorityMedium)
             colorPriorityLow = resolve(R.attr.colorPriorityLow)
@@ -187,23 +189,23 @@ class HomeTaskAdapter(
             if (task.dueDate != null) {
                 var dateStr = app.polar.util.DateUtils.formatTaskDate(itemView.context, task.dueDate)
                 if (task.timeEstimate > 0) {
-                    dateStr += " • ${app.polar.util.DateUtils.formatTimeEstimate(task.timeEstimate)}"
+                    dateStr += " · ${app.polar.util.DateUtils.formatTimeEstimate(task.timeEstimate)}"
                 }
                 binding.tvTaskDate.text = dateStr
                 binding.tvTaskDate.visibility = View.VISIBLE
 
                 when {
                     !task.completed && app.polar.util.DateUtils.isOverdue(task.dueDate) ->
-                        binding.tvTaskDate.setTextColor(colorDateOverdue)
+                        setDateColor(colorDateOverdue)
                     app.polar.util.DateUtils.isToday(task.dueDate) ->
-                        binding.tvTaskDate.setTextColor(colorPrimary)
+                        setDateColor(colorPrimary)
                     else ->
-                        binding.tvTaskDate.setTextColor(colorOnSurface)
+                        setDateColor(colorOnSurfaceVariant)
                 }
             } else if (task.timeEstimate > 0) {
                 binding.tvTaskDate.text = app.polar.util.DateUtils.formatTimeEstimate(task.timeEstimate)
                 binding.tvTaskDate.visibility = View.VISIBLE
-                binding.tvTaskDate.setTextColor(colorOnSurface)
+                setDateColor(colorOnSurfaceVariant)
             } else {
                 binding.tvTaskDate.visibility = View.GONE
             }
@@ -231,9 +233,9 @@ class HomeTaskAdapter(
             }
             binding.cbTaskComplete.buttonTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
-            // Sin prioridad la franja no desaparece: adopta el color de texto del tema activo
-            binding.viewPriorityStripe.visibility = View.VISIBLE
-            binding.viewPriorityStripe.setBackgroundColor(priorityColor)
+            // La marca lateral solo aparece con prioridad; sin ella basta la casilla neutra
+            binding.viewPriorityStripe.visibility = if (task.priority > 0) View.VISIBLE else View.GONE
+            binding.viewPriorityStripe.backgroundTintList = android.content.res.ColorStateList.valueOf(priorityColor)
 
             updateVisuals(task.completed)
 
@@ -280,6 +282,15 @@ class HomeTaskAdapter(
                 binding.tvTaskTitle.paintFlags = binding.tvTaskTitle.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 binding.tvTaskTitle.alpha = 1.0f
             }
+        }
+
+        /** Color de la fecha y de su icono: vencida, hoy o neutra. */
+        private fun setDateColor(color: Int) {
+            binding.tvTaskDate.setTextColor(color)
+            androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(
+                binding.tvTaskDate,
+                android.content.res.ColorStateList.valueOf(color)
+            )
         }
 
         fun resetVisuals() {

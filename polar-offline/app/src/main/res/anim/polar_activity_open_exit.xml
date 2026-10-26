@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- la pantalla anterior se desplaza un poco y se atenua por detras -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@anim/polar_emphasized_decelerate"
+    android:zAdjustment="normal">
+    <translate
+        android:duration="320"
+        android:fromXDelta="0"
+        android:toXDelta="-4%" />
+    <alpha
+        android:duration="320"
+        android:fromAlpha="1"
+        android:toAlpha="0.6" />
+</set>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- borde de los campos de texto: discreto en reposo y del color del texto al enfocarlos -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorOnSurface" android:state_focused="true" />
+    <item android:color="?attr/colorOnSurface" android:state_hovered="true" />
+    <item android:alpha="0.38" android:color="?attr/colorOnSurface" android:state_enabled="false" />
+    <item android:color="?attr/colorOutline" />
+</selector>

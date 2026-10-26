@@ -240,16 +240,21 @@ class CalendarFragment : Fragment() {
         }
         
         // Update "Tasks for [Date]" title
-        val format = java.text.SimpleDateFormat("EEEE, d MMMM", Locale.getDefault())
-        val dateString = format.format(java.util.Date(selectedDate))
-        // We can just set it to the date
-        binding.tvSelectedDateTasks.text = dateString
+        val locale = Locale.getDefault()
+        val format = java.text.SimpleDateFormat(
+            android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM"), locale
+        )
+        // En minúsculas como el resto de la interfaz (en alemán los meses van en mayúscula).
+        binding.tvSelectedDateTasks.text = format.format(java.util.Date(selectedDate)).lowercase(locale)
     }
 
     private fun updateCalendar() {
         // Update Title (Spanish/Locale respected)
-        val dateFormat = java.text.SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-        binding.tvMonthYear.text = dateFormat.format(currentCalendar.time)
+        val locale = Locale.getDefault()
+        val dateFormat = java.text.SimpleDateFormat(
+            android.text.format.DateFormat.getBestDateTimePattern(locale, "LLLLy"), locale
+        )
+        binding.tvMonthYear.text = dateFormat.format(currentCalendar.time).lowercase(locale)
 
         // Generate Days
         daysList = generateMonthDays(currentCalendar)

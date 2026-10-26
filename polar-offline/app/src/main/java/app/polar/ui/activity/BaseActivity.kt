@@ -34,6 +34,10 @@ abstract class BaseActivity : AppCompatActivity() {
             setTheme(themeRes)
         }
         
+        // Sistema de diseño común (tipografía, formas, componentes, animaciones) sobre cualquier
+        // tema de color; los overlays de fuente y casilla van después para poder sobrescribirlo.
+        theme.applyStyle(app.polar.R.style.ThemeOverlay_Polar_Foundation, true)
+
         // Apply font overlay on top of any theme
         theme.applyStyle(themeManager.getFontOverlayStyle(), true)
         

@@ -11,6 +11,13 @@ class IconAdapter(
 ) : RecyclerView.Adapter<IconAdapter.IconViewHolder>() {
   
   private var selectedPosition = 0
+  private var accentColor: Int? = null
+
+  /** Color con el que se pinta el icono seleccionado (el color elegido para la lista). */
+  fun setAccentColor(color: Int) {
+    accentColor = color
+    notifyItemChanged(selectedPosition)
+  }
   
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IconViewHolder {
     val binding = ItemIconBinding.inflate(
@@ -37,6 +44,12 @@ class IconAdapter(
     }
   }
   
+  private fun IconViewHolder.resolve(attr: Int): Int {
+    val value = android.util.TypedValue()
+    itemView.context.theme.resolveAttribute(attr, value, true)
+    return value.data
+  }
+
   inner class IconViewHolder(
     private val binding: ItemIconBinding
   ) : RecyclerView.ViewHolder(binding.root) {
@@ -52,9 +65,20 @@ class IconAdapter(
         binding.ivIcon.setImageResource(iconResId)
       }
       
-      // Highlight selected icon
-      binding.root.alpha = if (isSelected) 1.0f else 0.5f
-      binding.root.strokeWidth = if (isSelected) 4 else 0
+      // Seleccionado: relleno más marcado, borde fino y el icono en el color de la lista
+      val ctx = binding.root.context
+      val density = ctx.resources.displayMetrics.density
+      binding.root.strokeWidth = if (isSelected) (1.5f * density).toInt() else 0
+      binding.root.setCardBackgroundColor(
+        resolve(
+          if (isSelected) com.google.android.material.R.attr.colorSurfaceContainerHighest
+          else com.google.android.material.R.attr.colorSurfaceContainer
+        )
+      )
+      val tint = if (isSelected) accentColor ?: resolve(com.google.android.material.R.attr.colorOnSurface)
+        else resolve(com.google.android.material.R.attr.colorOnSurfaceVariant)
+      binding.ivIcon.imageTintList = android.content.res.ColorStateList.valueOf(tint)
+      binding.root.isSelected = isSelected
       
       binding.root.setOnClickListener {
         val position = bindingAdapterPosition

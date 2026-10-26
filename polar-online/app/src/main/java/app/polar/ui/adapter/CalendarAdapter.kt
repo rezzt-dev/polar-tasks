@@ -85,53 +85,45 @@ class CalendarAdapter(
             theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, typedValue, true)
             val colorOnPrimary = typedValue.data
 
-            // Reset styles
+            // Seleccionado: círculo relleno. Hoy sin seleccionar: anillo y número en negrita.
+            // El tipo de letra se conserva (solo cambia el estilo) para respetar la fuente elegida.
+            val baseTypeface = android.graphics.Typeface.create(binding.tvDay.typeface, android.graphics.Typeface.NORMAL)
             binding.bgDay.visibility = View.INVISIBLE
-            binding.tvDay.setTextColor(colorOnSurface) // Set correctly for Light/Dark
+            binding.bgDay.alpha = 1.0f
             binding.tvDay.alpha = 1.0f
-            binding.tvDay.typeface = android.graphics.Typeface.DEFAULT
+            binding.tvDay.setTextColor(colorOnSurface)
+            binding.tvDay.setTypeface(baseTypeface, android.graphics.Typeface.NORMAL)
 
-            if (isToday) {
-                 binding.bgDay.visibility = View.VISIBLE
-                 binding.bgDay.background.setTint(colorPrimary)
-                 binding.bgDay.alpha = 1.0f
-                 
-                 binding.tvDay.setTextColor(colorOnPrimary)
-                 binding.tvDay.typeface = android.graphics.Typeface.DEFAULT_BOLD
-            } else if (isSelected) {
-                 binding.bgDay.visibility = View.VISIBLE
-                 binding.bgDay.background.setTint(colorPrimary)
-                 binding.bgDay.alpha = 0.2f 
-                 binding.tvDay.setTextColor(colorPrimary) // Colored text for selection
-                 binding.tvDay.typeface = android.graphics.Typeface.DEFAULT_BOLD
-            } else {
-                 // Normal day
-                 binding.tvDay.alpha = 0.8f
+            when {
+                isSelected -> {
+                    binding.bgDay.setBackgroundResource(R.drawable.bg_calendar_circle)
+                    binding.bgDay.background.setTint(colorPrimary)
+                    binding.bgDay.visibility = View.VISIBLE
+                    binding.tvDay.setTextColor(colorOnPrimary)
+                    binding.tvDay.setTypeface(baseTypeface, android.graphics.Typeface.BOLD)
+                }
+                isToday -> {
+                    binding.bgDay.setBackgroundResource(R.drawable.bg_calendar_ring)
+                    binding.bgDay.background.setTint(colorPrimary)
+                    binding.bgDay.visibility = View.VISIBLE
+                    binding.tvDay.setTextColor(colorPrimary)
+                    binding.tvDay.setTypeface(baseTypeface, android.graphics.Typeface.BOLD)
+                }
             }
 
-            // Dots
+            // Punto de actividad: tenue si todo lo del día está completado
             val dayTasks = tasks[getStartOfDay(date)]
             val dayReminders = reminders[getStartOfDay(date)]
-            
+
             if (!dayTasks.isNullOrEmpty() || !dayReminders.isNullOrEmpty()) {
                 binding.dotIndicator.visibility = View.VISIBLE
-                
-                // Dot color should match text color usually, or be accent
-                if (isToday) {
-                     binding.dotIndicator.background.setTint(colorOnPrimary)
-                } else if (isSelected) {
-                     binding.dotIndicator.background.setTint(colorPrimary)
-                } else {
-                     binding.dotIndicator.background.setTint(colorOnSurface)
-                }
-                
+                binding.dotIndicator.background.setTint(colorOnSurface)
+
                 val allTasksCompleted = dayTasks?.all { it.completed } ?: true
                 val allRemindersCompleted = dayReminders?.all { it.isCompleted } ?: true
-                val allCompleted = allTasksCompleted && allRemindersCompleted
-                
-                binding.dotIndicator.alpha = if (allCompleted) 0.3f else 1.0f
+                binding.dotIndicator.alpha = if (allTasksCompleted && allRemindersCompleted) 0.3f else 0.9f
             } else {
-                binding.dotIndicator.visibility = View.GONE
+                binding.dotIndicator.visibility = View.INVISIBLE
             }
 
             binding.root.setOnClickListener {
