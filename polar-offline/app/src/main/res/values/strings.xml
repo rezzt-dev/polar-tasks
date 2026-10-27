@@ -358,4 +358,6 @@
   </plurals>
   <string name="clipboard_date_line">fecha: %1$s</string>
   <string name="font_size_value">%d sp</string>
+  <string name="smart_parser_hint">prueba: «el viernes a las 10 !alta #casa @lista»</string>
+  <string name="smart_parser_unknown_list">no hay ninguna lista «%1$s»</string>
 </resources>

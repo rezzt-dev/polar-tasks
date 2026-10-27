@@ -2,7 +2,8 @@
 <!--
   dialogo de crear / editar tarea.
   titulo y descripcion sin caja, como un editor; debajo, filas de propiedades uniformes
-  (fecha, repeticion, prioridad, estimacion, etiquetas y subtareas). la botonera queda fija.
+  (fecha, repeticion, prioridad, lista, estimacion, etiquetas y subtareas). la botonera queda fija.
+  el titulo se analiza mientras se escribe (SmartParser) y las filas muestran lo que se detecta.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -47,6 +48,20 @@
         android:hint="@string/task_title_hint"
         android:inputType="textCapSentences|textMultiLine"
         android:maxLines="3" />
+
+      <!-- Ejemplo de lenguaje natural al crear, o aviso si "@lista" no existe -->
+      <TextView
+        android:id="@+id/tvSmartHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        tools:text="@string/smart_parser_hint"
+        tools:visibility="visible" />
 
       <EditText
         android:id="@+id/etTaskDescription"
@@ -118,6 +133,26 @@
           android:id="@+id/tvPriority"
           style="@style/Polar.FormRow.Text"
           tools:text="@string/priority_label_none" />
+      </LinearLayout>
+
+      <!-- Lista (solo si hay mas de una a la que mover la tarea) -->
+      <LinearLayout
+        android:id="@+id/containerList"
+        style="@style/Polar.FormRow"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+          android:id="@+id/ivListIcon"
+          style="@style/Polar.FormRow.Icon"
+          android:src="@drawable/ic_list" />
+
+        <TextView
+          android:id="@+id/tvList"
+          style="@style/Polar.FormRow.Text"
+          tools:text="@string/no_list" />
       </LinearLayout>
 
       <!-- Estimacion -->

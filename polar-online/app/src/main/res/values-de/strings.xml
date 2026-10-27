@@ -414,4 +414,6 @@
   </plurals>
   <string name="clipboard_date_line">datum: %1$s</string>
   <string name="font_size_value">%d sp</string>
+  <string name="smart_parser_hint">probier: „freitag um 10 uhr !hoch #zuhause @liste“</string>
+  <string name="smart_parser_unknown_list">es gibt keine liste „%1$s“</string>
 </resources>

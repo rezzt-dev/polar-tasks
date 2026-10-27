@@ -72,6 +72,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### CORREGIDO
 
+- corregir `SmartParser`: una fecha escrita en el titulo se ignoraba al editar una tarea que ya tenia fecha, y "a las 17" no se reconocia si antes habia otro numero ("comprar 2 panes a las 17").
 - corregir el contraste del texto de los menus emergentes en todos los temas, alargar la barra lateral de prioridad a la altura del contenido y centrar verticalmente la casilla y el boton de opciones de las tareas en inicio y listas, sin linea separadora y con mas espacio entre la barra y la casilla.
 - corregir las tareas recurrentes: al llegar el dia de la siguiente ocurrencia `RecurrenceWorker` reabre la tarea con nueva fecha de vencimiento y nueva fecha de creacion, desmarca sus subtareas y reprograma la alarma.
 - corregir las tareas recurrentes completadas con retraso o tras varios dias sin abrir la app: se ajustan a la ocurrencia vigente (`RecurrenceUtils`) en lugar de reaparecer una a una con fechas ya pasadas.
@@ -131,6 +132,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - anadir `THIRD_PARTY_NOTICES.md` con las licencias de inter (sil ofl 1.1) y lucide (isc).
 - redisenar el selector de tema como una hoja inferior (`ThemePickerDialog`) con una vista previa de cada tema pintada con sus propios colores, agrupada en temas claros y oscuros, y mostrar en ajustes una muestra de color del tema activo.
 - anadir tres temas claros (arena, salvia y cerezo) y tres oscuros (bosque, amatista y brasa).
+- ampliar `SmartParser` a los cinco idiomas de la app (castellano, ingles, frances y aleman) con dias de la semana ("el viernes"), fechas relativas ("en 3 dias", "la proxima semana", "este fin de semana"), repeticiones "los lunes y miercoles" y "el primer dia de cada mes", prioridad (`!`, `!!`, `!!!`, `!alta`, "prioridad alta") y lista (`@nombre`); el vocabulario de cada idioma vive en `SmartParserLexicon`.
+- analizar el titulo del formulario de tarea mientras se escribe para que las filas de fecha, repeticion, prioridad y la nueva fila de lista muestren lo detectado, con un ejemplo de uso al crear y un aviso si `@nombre` no coincide con ninguna lista; lo elegido a mano sigue teniendo preferencia.
+- permitir mover una tarea a otra lista desde su formulario, colocandola al final de la lista de destino.
 
 #### ELIMINADO
 
@@ -197,6 +201,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### FIXED
 
+- fix `SmartParser`: a date written in the title was ignored when editing a task that already had a date, and "a las 17" was missed when another number came first ("comprar 2 panes a las 17").
 - fix popup menu text contrast across all themes, extend the priority stripe to the content height and vertically center task checkboxes and overflow buttons on the home screen and in lists, without a divider line and with more space between the stripe and the checkbox.
 - fix recurring tasks: when the day of the next occurrence arrives `RecurrenceWorker` reopens the task with a new due date and a new creation date, unchecks its subtasks and reschedules the alarm.
 - fix recurring tasks completed late or after several days without opening the app: they are moved to the current occurrence (`RecurrenceUtils`) instead of reappearing one by one with past dates.
@@ -256,6 +261,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - add `THIRD_PARTY_NOTICES.md` with the inter (sil ofl 1.1) and lucide (isc) licences.
 - redesign the theme picker as a bottom sheet (`ThemePickerDialog`) with a preview of each theme painted in its own colours, grouped into light and dark themes, and show a colour swatch of the active theme in settings.
 - add three light themes (sand, sage and blossom) and three dark themes (forest, amethyst and ember).
+- extend `SmartParser` to the app's five languages (spanish, english, french and german) with weekdays ("on friday"), relative dates ("in 3 days", "next week", "this weekend"), "every monday and wednesday" and "first day of every month" repeats, priority (`!`, `!!`, `!!!`, `!high`, "high priority") and list (`@name`); each language's vocabulary lives in `SmartParserLexicon`.
+- parse the task form title while typing so the date, repeat, priority and new list rows show what was detected, with a usage example when creating and a warning when `@name` matches no list; manual choices still take precedence.
+- allow moving a task to another list from its form, placing it at the end of the target list.
 
 #### REMOVED
 

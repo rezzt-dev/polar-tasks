@@ -362,4 +362,6 @@
   </plurals>
   <string name="clipboard_date_line">date : %1$s</string>
   <string name="font_size_value">%d sp</string>
+  <string name="smart_parser_hint">essayez : « vendredi à 10h !haute #maison @liste »</string>
+  <string name="smart_parser_unknown_list">aucune liste ne s’appelle « %1$s »</string>
 </resources>

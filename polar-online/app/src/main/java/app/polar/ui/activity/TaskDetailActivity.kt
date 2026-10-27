@@ -357,20 +357,8 @@ class TaskDetailActivity : BaseActivity() {
               TaskDialog(
                   task = task,
                   existingSubtasks = subtasks,
-                  onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate, touchedCompletedIds ->
-                      viewModel.updateTask(
-                          task.copy(
-                              title = title,
-                              description = description,
-                              tags = tags,
-                              dueDate = dueDate,
-                              recurrence = recurrence,
-                              priority = priority,
-                              timeEstimate = timeEstimate
-                          ),
-                          subtaskList,
-                          touchedCompletedIds
-                      )
+                  onSave = { result ->
+                      viewModel.updateTask(result.applyTo(task), result.subtasks, result.touchedCompletedIds)
                   }
               ).show(supportFragmentManager, "EditTaskDialog")
           }

@@ -337,8 +337,13 @@ class MainActivity : BaseActivity() {
     TaskDialog(
       task = null,
       existingSubtasks = emptyList(),
-      onSave = { title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate, _ ->
-        taskViewModel.insertTask(listId, title, description, tags, subtaskList, dueDate, recurrence, priority, timeEstimate)
+      listId = listId,
+      onSave = { result ->
+        // "@lista" en el título puede crear la tarea en otra lista
+        taskViewModel.insertTask(
+          result.listId ?: listId, result.title, result.description, result.tags, result.subtasks,
+          result.dueDate, result.recurrence, result.priority, result.timeEstimate
+        )
       }
     ).show(supportFragmentManager, "CreateTaskDialog")
   }

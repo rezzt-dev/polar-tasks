@@ -280,7 +280,7 @@ class TaskViewModel @Inject constructor(
   }
 
   fun updateTask(task: Task, subtasks: List<Subtask>? = null, touchedCompletedSubtaskIds: Set<Long> = emptySet()) = safeLaunch {
-    repository.updateTask(task)
+    repository.updateTask(placedInItsList(task))
 
     if (subtasks != null) {
         repository.replaceSubtasksForTask(task.id, subtasks, touchedCompletedSubtaskIds)
@@ -295,6 +295,13 @@ class TaskViewModel @Inject constructor(
   }
 
   fun updateTaskWithSubtasks(task: Task, newSubtasks: List<Subtask>) = updateTask(task, newSubtasks)
+
+  // Una tarea que cambia de lista (p. ej. con "@lista" al editarla) pasa al final de la nueva
+  private suspend fun placedInItsList(task: Task): Task {
+    val stored = repository.getTaskById(task.id) ?: return task
+    return if (stored.listId == task.listId) task
+    else task.copy(orderIndex = repository.getNextTaskOrderIndex(task.listId))
+  }
 
   // La imagen se guarda como la URI local elegida por el usuario; el permiso de lectura
   // persistente lo toma TaskDetailActivity al seleccionarla.

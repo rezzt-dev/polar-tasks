@@ -2,22 +2,67 @@ package app.polar.ui.dialog
 
 import android.app.Dialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.polar.R
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
+import app.polar.data.entity.TaskList
 import app.polar.databinding.DialogTaskBinding
+import app.polar.domain.util.ParsedTask
+import app.polar.domain.util.SmartParser
 import app.polar.ui.adapter.SubtaskAdapter
+import app.polar.ui.viewmodel.TaskListViewModel
+import app.polar.util.RecurrenceUtils
+import app.polar.util.ThemeManager
 
+/**
+ * Diálogo de crear / editar tarea. El título se analiza con [SmartParser] mientras se escribe: las
+ * filas de fecha, repetición, prioridad y lista muestran lo detectado, salvo las que el usuario haya
+ * elegido a mano, que siempre tienen preferencia.
+ *
+ * @param listId lista en la que se crea la tarea, o la de [task] al editar.
+ */
 class TaskDialog(
   private val task: Task? = null,
   private val existingSubtasks: List<Subtask> = emptyList(),
-  private val onSave: (String, String, String, List<Subtask>, Long?, String, Int, Int, Set<Long>) -> Unit
+  private val listId: Long? = task?.listId,
+  private val onSave: (Result) -> Unit
 ) : DialogFragment() {
+
+  /** Valores que se guardan; [listId] es null si el diálogo no conoce la lista de la tarea. */
+  data class Result(
+    val title: String,
+    val description: String,
+    val tags: String,
+    val subtasks: List<Subtask>,
+    val dueDate: Long?,
+    val recurrence: String,
+    val priority: Int,
+    val timeEstimate: Int,
+    val touchedCompletedIds: Set<Long>,
+    val listId: Long?
+  ) {
+    /** [task] con los campos editados en el diálogo. */
+    fun applyTo(task: Task): Task = task.copy(
+      listId = listId ?: task.listId,
+      title = title,
+      description = description,
+      tags = tags,
+      dueDate = dueDate,
+      recurrence = recurrence,
+      priority = priority,
+      timeEstimate = timeEstimate
+    )
+  }
+
+  private val taskListViewModel: TaskListViewModel by activityViewModels()
 
   private var _binding: DialogTaskBinding? = null
   private val binding get() = _binding!!
@@ -34,6 +79,12 @@ class TaskDialog(
   private var selectedRecurrence: String = "NONE"
   private var isRecurrenceExplicitlySet: Boolean = false
   private var selectedPriority: Int = 0
+  private var isPriorityExplicitlySet: Boolean = false
+  private var selectedListId: Long? = listId
+  private var isListExplicitlySet: Boolean = false
+  private var taskLists: List<TaskList> = emptyList()
+  // Resultado del último análisis del título; se rehace al escribir y al cargar las listas
+  private var parsed: ParsedTask? = null
   
   private lateinit var subtaskAdapter: SubtaskAdapter
   
@@ -62,10 +113,7 @@ class TaskDialog(
       binding.tvDialogTitle.text = getString(R.string.create_task)
     }
     
-    updateDateText()
-    updateRecurrenceText()
-    updatePriorityText()
-    
+    setupSmartParsing()
     setupSubtaskList()
     setupTagList()
     
@@ -74,7 +122,7 @@ class TaskDialog(
         com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
           .setTitleText(getString(R.string.select_date_title))
           .setSelection(
-            selectedDate
+            effectiveDate()?.let(::toPickerSelection)
               ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds()
           )
           .build()
@@ -103,7 +151,7 @@ class TaskDialog(
         
         selectedDate = localCalendar.timeInMillis
         isDateExplicitlySet = true
-        updateDateText()
+        refreshParsedRows()
       }
       
       datePicker.show(parentFragmentManager, "DATE_PICKER")
@@ -128,13 +176,8 @@ class TaskDialog(
           else -> "NONE"
         }
         isRecurrenceExplicitlySet = true
-        // Una recurrente necesita fecha de vencimiento: sin ella nunca llegaría a repetirse
-        if (selectedRecurrence != "NONE" && selectedDate == null) {
-          selectedDate = defaultDueDate()
-          isDateExplicitlySet = true
-          updateDateText()
-        }
-        updateRecurrenceText()
+        // Sin fecha, la recurrente empieza hoy (ver effectiveDate)
+        refreshParsedRows()
         true
       }
       popup.show()
@@ -149,7 +192,20 @@ class TaskDialog(
       
       popup.setOnMenuItemClickListener { item ->
         selectedPriority = item.itemId
-        updatePriorityText()
+        isPriorityExplicitlySet = true
+        refreshParsedRows()
+        true
+      }
+      popup.show()
+    }
+    
+    binding.containerList.setOnClickListener {
+      val popup = androidx.appcompat.widget.PopupMenu(requireContext(), it)
+      taskLists.forEachIndexed { index, list -> popup.menu.add(0, index, index, list.title) }
+      popup.setOnMenuItemClickListener { item ->
+        selectedListId = taskLists[item.itemId].id
+        isListExplicitlySet = true
+        refreshParsedRows()
         true
       }
       popup.show()
@@ -197,62 +253,30 @@ class TaskDialog(
     
     binding.btnSave.setOnClickListener {
       val rawTitle = binding.etTaskTitle.text.toString()
-      val description = binding.etTaskDescription.text.toString().trim()
-      
-      // Parse natural language from title
-      val sharedPrefs =
-        requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
-      val defaultHour = sharedPrefs.getInt("default_notification_hour", 7)
-      val defaultMinute = sharedPrefs.getInt("default_notification_minute", 30)
-      val parsedInfo =
-        app.polar.domain.util.SmartParser.parse(rawTitle, selectedDate, defaultHour, defaultMinute)
-      
-      // Add newly parsed tags to our tagList (prevent duplicates)
+      if (rawTitle.isBlank()) return@setOnClickListener
+      val parsedInfo = parseTitle()
+
+      // Añadir las etiquetas escritas en el título a las de los chips (sin duplicados)
       parsedInfo.tags.forEach { tag ->
         if (!tagList.contains(tag)) tagList.add(tag)
       }
-      
-      val tagsString = tagList.joinToString(",")
-      
-      // Prioritize explicit Date selection
-      var finalDate = if (isDateExplicitlySet) selectedDate else parsedInfo.dueDate
-      
-      // Prioritize explicit Recurrence selection
-      val finalRecurrence = if (isRecurrenceExplicitlySet) selectedRecurrence
-      else if (parsedInfo.recurrence != "NONE") parsedInfo.recurrence
-      else selectedRecurrence
-      
-      if (finalRecurrence != "NONE" && finalDate == null) finalDate = defaultDueDate()
 
-      val timeEstimate = binding.etTimeEstimate.text.toString().toIntOrNull() ?: 0
-
-      if (parsedInfo.title.isNotEmpty()) {
-        onSave(
-          parsedInfo.title,
-          description,
-          tagsString,
-          subtaskList.toList(),
-          finalDate,
-          finalRecurrence,
-          selectedPriority,
-          timeEstimate,
-          touchedCompletedIds.toSet()
+      onSave(
+        Result(
+          // Si el título solo tenía expresiones ("mañana"), se guarda tal cual
+          title = parsedInfo.title.ifEmpty { rawTitle.trim() },
+          description = binding.etTaskDescription.text.toString().trim(),
+          tags = tagList.joinToString(","),
+          subtasks = subtaskList.toList(),
+          dueDate = effectiveDate(),
+          recurrence = effectiveRecurrence(),
+          priority = effectivePriority(),
+          timeEstimate = binding.etTimeEstimate.text.toString().toIntOrNull() ?: 0,
+          touchedCompletedIds = touchedCompletedIds.toSet(),
+          listId = effectiveListId()
         )
-        dismiss()
-      } else if (rawTitle.trim().isNotEmpty()) {
-        onSave(
-          rawTitle.trim(),
-          description,
-          tagsString,
-          subtaskList.toList(),
-          finalDate,
-          finalRecurrence,
-          selectedPriority,
-          timeEstimate,
-          touchedCompletedIds.toSet()
-        )
-        dismiss()
-      }
+      )
+      dismiss()
     }
     
     return AlertDialog.Builder(requireContext())
@@ -291,12 +315,125 @@ class TaskDialog(
     }.timeInMillis
   }
 
+  // ---------------------------------------------------------------------------------------------
+  // Lenguaje natural en el título
+  // ---------------------------------------------------------------------------------------------
+
+  private fun setupSmartParsing() {
+    binding.etTaskTitle.addTextChangedListener(object : TextWatcher {
+      override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+      override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+      override fun afterTextChanged(s: Editable?) = refreshParsedRows()
+    })
+    // Las listas llegan de Room de forma asíncrona: hasta entonces "@lista" no se resuelve
+    taskListViewModel.allTaskLists.observe(this) { lists ->
+      taskLists = lists
+      refreshParsedRows()
+    }
+    refreshParsedRows()
+  }
+
+  private fun parseTitle(): ParsedTask {
+    val sharedPrefs =
+      requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+    return SmartParser.parse(
+      input = binding.etTaskTitle.text.toString(),
+      defaultDate = selectedDate,
+      defaultHour = sharedPrefs.getInt("default_notification_hour", 7),
+      defaultMinute = sharedPrefs.getInt("default_notification_minute", 30),
+      language = ThemeManager.loadAppLocale(requireContext()).language,
+      lists = taskLists.associate { it.id to it.title }
+    )
+  }
+
+  /** Vuelve a analizar el título y pinta las filas con los valores que se guardarían. */
+  private fun refreshParsedRows() {
+    val binding = _binding ?: return
+    parsed = parseTitle()
+    updateDateText()
+    updateRecurrenceText()
+    updatePriorityText()
+    updateListRow()
+    updateSmartHint()
+    binding.btnSave.isEnabled = binding.etTaskTitle.text.isNotBlank()
+  }
+
+  // Lo elegido a mano manda; si no, lo escrito en el título; si no, el valor actual de la tarea.
+  // El parser ya devuelve selectedDate cuando el título no indica fecha ni hora.
+  private fun effectiveDate(): Long? {
+    val parsedDate = parsed?.dueDate
+    val date = when {
+      !isDateExplicitlySet -> parsedDate ?: selectedDate
+      // Con fecha elegida a mano, del título solo se aplica la hora ("a las 17") de ese mismo día
+      parsedDate != null &&
+        selectedDate?.let(RecurrenceUtils::startOfDay) == RecurrenceUtils.startOfDay(parsedDate) -> parsedDate
+      else -> selectedDate
+    }
+    // Una recurrente necesita fecha de vencimiento: sin ella nunca llegaría a repetirse
+    return date ?: if (effectiveRecurrence() != "NONE") defaultDueDate() else null
+  }
+
+  private fun effectiveRecurrence(): String =
+    if (isRecurrenceExplicitlySet) selectedRecurrence
+    else parsed?.recurrence?.takeIf { it != "NONE" } ?: selectedRecurrence
+
+  private fun effectivePriority(): Int =
+    if (isPriorityExplicitlySet) selectedPriority else parsed?.priority ?: selectedPriority
+
+  private fun effectiveListId(): Long? =
+    if (isListExplicitlySet) selectedListId else parsed?.listId ?: selectedListId
+
+  /** Fecha local -> medianoche UTC del mismo día, que es lo que espera MaterialDatePicker. */
+  private fun toPickerSelection(localMillis: Long): Long {
+    val local = java.util.Calendar.getInstance().apply { timeInMillis = localMillis }
+    return java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
+      clear()
+      set(
+        local.get(java.util.Calendar.YEAR),
+        local.get(java.util.Calendar.MONTH),
+        local.get(java.util.Calendar.DAY_OF_MONTH)
+      )
+    }.timeInMillis
+  }
+
+  // Al crear, un ejemplo mientras el título está vacío; si "@lista" no existe, el aviso
+  private fun updateSmartHint() {
+    val unknownList = parsed?.unknownList
+    val hint = binding.tvSmartHint
+    when {
+      unknownList != null -> {
+        hint.text = getString(R.string.smart_parser_unknown_list, unknownList)
+        hint.setTextColor(resolveColorAttr(R.attr.colorError))
+        hint.visibility = View.VISIBLE
+      }
+      task == null && binding.etTaskTitle.text.isEmpty() -> {
+        hint.text = getString(R.string.smart_parser_hint)
+        hint.setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant))
+        hint.visibility = View.VISIBLE
+      }
+      else -> hint.visibility = View.GONE
+    }
+  }
+
+  private fun updateListRow() {
+    val list = taskLists.find { it.id == effectiveListId() }
+    // Solo tiene sentido elegir lista si hay otra a la que mover la tarea
+    binding.containerList.visibility =
+      if (list != null && taskLists.size > 1) View.VISIBLE else View.GONE
+    if (list == null) return
+    binding.tvList.text = list.title
+    val iconRes = resources.getIdentifier(list.icon, "drawable", requireContext().packageName)
+    binding.ivListIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_list)
+    setRowValueState(binding.tvList, isSet = true)
+  }
+
   private fun updateDateText() {
-    if (selectedDate != null) {
+    val date = effectiveDate()
+    if (date != null) {
       val locale = java.util.Locale.getDefault()
       val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEdMMMy")
       binding.tvDueDate.text = java.text.SimpleDateFormat(pattern, locale)
-        .format(java.util.Date(selectedDate!!))
+        .format(java.util.Date(date))
         .lowercase(locale)
       setRowValueState(binding.tvDueDate, isSet = true)
     } else {
@@ -306,7 +443,8 @@ class TaskDialog(
   }
   
   private fun updateRecurrenceText() {
-    val text = when (selectedRecurrence) {
+    val recurrence = effectiveRecurrence()
+    val text = when (recurrence) {
       "DAILY" -> getString(R.string.recurrence_summary_daily)
       "WEEKLY" -> getString(R.string.recurrence_summary_weekly)
       "MONTHLY" -> getString(R.string.recurrence_summary_monthly)
@@ -315,11 +453,12 @@ class TaskDialog(
       else -> getString(R.string.recurrence_summary_none)
     }
     binding.tvRecurrence.text = text
-    setRowValueState(binding.tvRecurrence, isSet = selectedRecurrence != "NONE")
+    setRowValueState(binding.tvRecurrence, isSet = recurrence != "NONE")
   }
   
   private fun updatePriorityText() {
-    val text = when (selectedPriority) {
+    val priority = effectivePriority()
+    val text = when (priority) {
       3 -> getString(R.string.priority_label_high)
       2 -> getString(R.string.priority_label_medium)
       1 -> getString(R.string.priority_label_low)
@@ -327,7 +466,7 @@ class TaskDialog(
     }
     binding.tvPriority.text = text
 
-    val priorityColorAttr = when (selectedPriority) {
+    val priorityColorAttr = when (priority) {
       3 -> R.attr.colorPriorityHigh
       2 -> R.attr.colorPriorityMedium
       1 -> R.attr.colorPriorityLow
