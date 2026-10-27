@@ -38,7 +38,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - redisenar recordatorios con resumen del proximo aviso, filtros por estado, grupos por fecha y tarjetas con descripcion, hora, ubicacion y acciones accesibles; mostrar fondo, icono y texto al deslizar para completar, reactivar o enviar a la papelera con deshacer.
 - organizar los ajustes en categorias con vistas dedicadas, navegacion de vuelta y valores legibles bajo cada preferencia; en la version online, las opciones avanzadas de nube van en una categoria aparte.
 - dar feedback visual al deslizar elementos de la papelera reutilizando `TaskSwipeHelper`: fondo de color e icono al restablecer a la lista (derecha) o eliminar permanentemente (izquierda), igual que el swipe de la lista de tareas.
-- anadir una barra lateral izquierda con extremos redondos (`bg_trash_stripe`) y el color de foreground del tema (`colorOnSurface`) a las tarjetas de la papelera en `item_trash.xml` para distinguirlas mejor.
+- redisenar la papelera con una tarjeta distinta para tareas (`item_trash_task.xml`: baldosa cuadrada con el icono de su lista, nombre de la lista, fecha y prioridad) y para recordatorios (`item_trash_reminder.xml`: baldosa circular tonal con campana, hora, fecha y ubicacion), agrupadas en secciones con contador, para que se sepa de un vistazo que se va a restaurar o eliminar; sustituye a `item_trash.xml` y `bg_trash_stripe`.
+- anadir a cada tarjeta de la papelera un menu (al tocarla o con el boton de opciones) para restaurar o eliminar para siempre, etiquetas en el deslizamiento y mensajes que nombran el tipo de elemento.
+- pedir confirmacion antes de eliminar para siempre un elemento de la papelera, tambien al deslizar, indicando si es una tarea o un recordatorio y su titulo.
 - mover `agent-docs/` dentro de `.docs/` y dejar las skills al mismo nivel que `agent-docs`.
 - crear `claude.md` con el contexto de trabajo para claude code y enlace a `agents.md`.
 - anadir a `agents.md` y `claude.md` la seccion de redaccion de commits, replica de `.docs/commit-guidelines.md`.
@@ -161,7 +163,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - redesign reminders with an upcoming alert summary, status filters, date groups and cards with description, time, location and accessible actions; reveal a background, icon and label when swiping to complete, reactivate or move to trash with undo.
 - organize settings into categories with dedicated views, back navigation and readable values below each preference; in the online version, the advanced cloud options live in a separate category.
 - give visual feedback when swiping trash items by reusing `TaskSwipeHelper`: colored background and icon when restoring to the list (right) or deleting permanently (left), matching the task list swipe.
-- add a left side bar with rounded ends (`bg_trash_stripe`) using the theme foreground color (`colorOnSurface`) to the trash cards in `item_trash.xml` so they are easier to tell apart.
+- redesign the trash with a different card for tasks (`item_trash_task.xml`: square tile with the list icon, list name, date and priority) and for reminders (`item_trash_reminder.xml`: round tonal tile with a bell, time, date and location), grouped in sections with a counter, so it is clear at a glance what is going to be restored or deleted; replaces `item_trash.xml` and `bg_trash_stripe`.
+- add a menu to each trash card (on tap or from the options button) to restore or delete forever, labels on the swipe and messages that name the item type.
+- ask for confirmation before deleting a trash item forever, also when swiping, stating whether it is a task or a reminder and its title.
 - move `agent-docs/` into `.docs/` and keep the skills at the same level as `agent-docs`.
 - create `claude.md` with the working context for claude code and a link to `agents.md`.
 - add the commit writing section to `agents.md` and `claude.md`, mirroring `.docs/commit-guidelines.md`.
