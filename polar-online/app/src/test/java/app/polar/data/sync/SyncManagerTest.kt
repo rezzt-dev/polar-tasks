@@ -7,6 +7,7 @@ import app.polar.data.dao.TaskListDao
 import app.polar.data.entity.Task
 import app.polar.data.entity.TaskList
 import app.polar.util.AlarmManagerHelper
+import app.polar.util.GeofenceHelper
 import app.polar.util.FakePostgrestRouter
 import app.polar.util.MainDispatcherRule
 import app.polar.util.fakeSupabaseClient
@@ -52,6 +53,7 @@ class SyncManagerTest {
     private val reminderDao = mockk<ReminderDao>()
     private val syncPrefs = mockk<SyncPrefs>(relaxed = true)
     private val alarmHelper = mockk<AlarmManagerHelper>(relaxed = true)
+    private val geofenceHelper = mockk<GeofenceHelper>(relaxed = true)
     private val router = FakePostgrestRouter()
 
     private lateinit var syncManager: SyncManager
@@ -76,7 +78,7 @@ class SyncManagerTest {
 
         val supabaseClient = fakeSupabaseClient(router.engine())
         supabaseClient.signInWithFakeSession(userId)
-        syncManager = SyncManager(supabaseClient, taskListDao, taskDao, subtaskDao, reminderDao, syncPrefs, alarmHelper)
+        syncManager = SyncManager(supabaseClient, taskListDao, taskDao, subtaskDao, reminderDao, syncPrefs, alarmHelper, geofenceHelper)
     }
 
     @After

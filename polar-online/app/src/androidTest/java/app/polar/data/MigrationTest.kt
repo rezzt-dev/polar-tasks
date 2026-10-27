@@ -147,4 +147,44 @@ class MigrationTest {
 
         db.close()
     }
+
+    // 17 -> 18 adds the device-only alert columns with defaults that keep the previous behaviour:
+    // alert at the due time, nothing snoozed and no arrival alert. The sync columns are untouched.
+    @Test
+    fun migrate17To18_addsAlertColumnsWithDefaults() {
+        val dbName = "migration-17-18-test-db"
+        var db = helper.createDatabase(dbName, 17)
+        db.execSQL(
+            "INSERT INTO task_lists (id, title, icon, createdAt, orderIndex, homeOrderIndex, isDependencyChain, color, " +
+                "uuid, updatedAt, deletedAt, dirty) VALUES (1, 'Casa', 'ic_list', 1000, 0, 0, 0, '#7F52FF', 'list-1', 1000, NULL, 0)"
+        )
+        db.execSQL(
+            "INSERT INTO tasks (id, listId, title, description, completed, tags, createdAt, dueDate, orderIndex, " +
+                "recurrence, isDeleted, priority, imageUri, timeEstimate, uuid, updatedAt, deletedAt, dirty, imagePath) " +
+                "VALUES (10, 1, 'Pagar la luz', '', 0, '', 1000, 5000, 0, 'NONE', 0, 0, NULL, 0, 'task-10', 1000, NULL, 0, NULL)"
+        )
+        db.execSQL(
+            "INSERT INTO reminders (id, title, description, dateTime, isCompleted, createdAt, isDeleted, " +
+                "latitude, longitude, radius, locationName, uuid, updatedAt, deletedAt, dirty) " +
+                "VALUES (200, 'Recuerdame', '', 1000, 0, 1000, 0, 40.4, -3.7, 100.0, 'Casa', 'r-200', 1000, NULL, 0)"
+        )
+        db.close()
+
+        db = helper.runMigrationsAndValidate(dbName, 18, true, AppDatabase.MIGRATION_17_18)
+
+        db.query("SELECT reminderOffset, snoozedUntil, dueDate, dirty FROM tasks WHERE id = 10").use {
+            assertTrue(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+            assertTrue(it.isNull(1))
+            assertEquals(5000L, it.getLong(2))
+            // Local-only columns: adding them must not mark the row for upload.
+            assertEquals(0, it.getInt(3))
+        }
+        db.query("SELECT notifyOnArrival, radius FROM reminders WHERE id = 200").use {
+            assertTrue(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+            assertEquals(100.0, it.getDouble(1), 0.0)
+        }
+        db.close()
+    }
 }

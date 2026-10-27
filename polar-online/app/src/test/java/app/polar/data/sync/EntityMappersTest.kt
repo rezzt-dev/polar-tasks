@@ -68,9 +68,38 @@ class EntityMappersTest {
             updatedAt = 2000L
         )
 
-        val entity = dto.toEntity(localListId = 1L, localId = 5L, localImageUri = "content://local/cache.jpg")
+        val local = Task(id = 5, listId = 1, title = "Con imagen", imageUri = "content://local/cache.jpg")
+        val entity = dto.toEntity(localListId = 1L, localId = 5L, local = local)
 
         assertEquals("content://local/cache.jpg", entity.imageUri)
+    }
+
+    @Test
+    fun `TaskDto toEntity preserves the device-only alert settings`() {
+        val dto = app.polar.data.sync.dto.TaskDto(
+            id = taskUuid, userId = userId, listId = listUuid, title = "Pagar la luz",
+            dueDate = 9000L, createdAt = 1000L, updatedAt = 2000L
+        )
+        val local = Task(id = 5, listId = 1, title = "Pagar la luz", dueDate = 9000L, reminderOffset = 1440, snoozedUntil = 8000L)
+
+        val entity = dto.toEntity(localListId = 1L, localId = 5L, local = local)
+
+        assertEquals(1440, entity.reminderOffset)
+        assertEquals(8000L, entity.snoozedUntil)
+    }
+
+    @Test
+    fun `TaskDto toEntity drops a snooze made for a due date the server has changed`() {
+        val dto = app.polar.data.sync.dto.TaskDto(
+            id = taskUuid, userId = userId, listId = listUuid, title = "Pagar la luz",
+            dueDate = 20_000L, createdAt = 1000L, updatedAt = 2000L
+        )
+        val local = Task(id = 5, listId = 1, title = "Pagar la luz", dueDate = 9000L, reminderOffset = 60, snoozedUntil = 8000L)
+
+        val entity = dto.toEntity(localListId = 1L, localId = 5L, local = local)
+
+        assertEquals(60, entity.reminderOffset)
+        assertNull(entity.snoozedUntil)
     }
 
     @Test
@@ -116,5 +145,15 @@ class EntityMappersTest {
         assertEquals(50f, backToEntity.radius)
         assertEquals("Casa", backToEntity.locationName)
         assertNull(backToEntity.deletedAt)
+    }
+
+    @Test
+    fun `ReminderDto toEntity preserves the device-only arrival alert`() {
+        val local = Reminder(id = 1, title = "Comprar pan", dateTime = 1000L, latitude = 40.4, longitude = -3.7, notifyOnArrival = true)
+
+        val backToEntity = local.toDto(userId).toEntity(localId = 1L, local = local)
+
+        assertTrue(backToEntity.notifyOnArrival)
+        assertFalse(local.toDto(userId).toEntity().notifyOnArrival)
     }
 }

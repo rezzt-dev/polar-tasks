@@ -22,6 +22,7 @@ import app.polar.ui.viewmodel.TaskListViewModel
 import app.polar.util.RecurrenceFormatter
 import app.polar.util.RecurrenceRule
 import app.polar.util.RecurrenceUtils
+import app.polar.util.TaskAlert
 import app.polar.util.ThemeManager
 
 /**
@@ -48,19 +49,24 @@ class TaskDialog(
     val recurrence: String,
     val priority: Int,
     val timeEstimate: Int,
+    val reminderOffset: Int,
     val touchedCompletedIds: Set<Long>,
     val listId: Long?
   ) {
     /** [task] con los campos editados en el diálogo. */
-    fun applyTo(task: Task): Task = task.copy(
-      listId = listId ?: task.listId,
-      title = title,
-      description = description,
-      tags = tags,
-      dueDate = dueDate,
-      recurrence = recurrence,
-      priority = priority,
-      timeEstimate = timeEstimate
+    fun applyTo(task: Task): Task = TaskAlert.edited(
+      original = task,
+      edited = task.copy(
+        listId = listId ?: task.listId,
+        title = title,
+        description = description,
+        tags = tags,
+        dueDate = dueDate,
+        recurrence = recurrence,
+        priority = priority,
+        timeEstimate = timeEstimate,
+        reminderOffset = reminderOffset
+      )
     )
   }
 
@@ -84,6 +90,7 @@ class TaskDialog(
   private var isPriorityExplicitlySet: Boolean = false
   private var selectedListId: Long? = listId
   private var isListExplicitlySet: Boolean = false
+  private var selectedAlert: Int = TaskAlert.AT_DUE_TIME
   private var taskLists: List<TaskList> = emptyList()
   // Resultado del último análisis del título; se rehace al escribir y al cargar las listas
   private var parsed: ParsedTask? = null
@@ -111,6 +118,7 @@ class TaskDialog(
       selectedDate = task.dueDate
       selectedRecurrence = task.recurrence
       selectedPriority = task.priority
+      selectedAlert = task.reminderOffset
     } else {
       binding.tvDialogTitle.text = getString(R.string.create_task)
     }
@@ -189,6 +197,19 @@ class TaskDialog(
       popup.show()
     }
     
+    binding.containerAlert.setOnClickListener {
+      val popup = androidx.appcompat.widget.PopupMenu(requireContext(), it)
+      TaskAlert.PRESETS.forEachIndexed { index, offset ->
+        popup.menu.add(0, index, index, TaskAlert.describe(requireContext(), offset))
+      }
+      popup.setOnMenuItemClickListener { item ->
+        selectedAlert = TaskAlert.PRESETS[item.itemId]
+        refreshParsedRows()
+        true
+      }
+      popup.show()
+    }
+
     binding.containerPriority.setOnClickListener {
       val popup = androidx.appcompat.widget.PopupMenu(requireContext(), it)
       popup.menu.add(0, 0, 0, getString(R.string.priority_label_none))
@@ -278,6 +299,7 @@ class TaskDialog(
           recurrence = effectiveRecurrence(),
           priority = effectivePriority(),
           timeEstimate = binding.etTimeEstimate.text.toString().toIntOrNull() ?: 0,
+          reminderOffset = selectedAlert,
           touchedCompletedIds = touchedCompletedIds.toSet(),
           listId = effectiveListId()
         )
@@ -374,6 +396,7 @@ class TaskDialog(
     val binding = _binding ?: return
     parsed = parseTitle()
     updateDateText()
+    updateAlertText()
     updateRecurrenceText()
     updatePriorityText()
     updateListRow()
@@ -468,6 +491,13 @@ class TaskDialog(
     }
   }
   
+  // Sin fecha no hay nada de lo que avisar: la fila solo aparece cuando la tarea vence.
+  private fun updateAlertText() {
+    binding.containerAlert.visibility = if (effectiveDate() != null) View.VISIBLE else View.GONE
+    binding.tvAlert.text = TaskAlert.describe(requireContext(), selectedAlert)
+    setRowValueState(binding.tvAlert, isSet = selectedAlert != TaskAlert.AT_DUE_TIME)
+  }
+
   private fun updateRecurrenceText() {
     val recurrence = effectiveRecurrence()
     binding.tvRecurrence.text = RecurrenceFormatter.describe(requireContext(), recurrence)

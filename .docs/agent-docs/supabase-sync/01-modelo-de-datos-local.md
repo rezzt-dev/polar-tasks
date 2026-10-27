@@ -68,7 +68,9 @@ data class Task(
   val isDeleted: Boolean = false,      // soft-delete (papelera)
   val priority: Int = 0,               // 0=Ninguna, 1=Baja, 2=Media, 3=Alta
   val imageUri: String? = null,        // URI local content:// del dispositivo — NO portable, ver doc 03/04
-  val timeEstimate: Int = 0            // minutos estimados para completar la tarea
+  val timeEstimate: Int = 0,           // minutos estimados para completar la tarea
+  val reminderOffset: Int = 0,         // minutos antes de dueDate a los que avisa (-1 = sin aviso) — local, ver doc 04
+  val snoozedUntil: Long? = null       // aviso pospuesto desde la notificación, sin tocar dueDate — local, ver doc 04
 )
 ```
 
@@ -132,8 +134,9 @@ data class Reminder(
     val isDeleted: Boolean = false,     // soft-delete (papelera)
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val radius: Float? = null,          // metros — hoy NO se usa como geofence real, ver doc 02
-    val locationName: String? = null    // nombre legible del lugar (ej. "Casa", "Oficina")
+    val radius: Float? = null,          // metros — radio del aviso al llegar si notifyOnArrival
+    val locationName: String? = null,   // nombre legible del lugar (ej. "Casa", "Oficina")
+    val notifyOnArrival: Boolean = false // además de a su hora, avisa al entrar en el radio — local, ver doc 04
 )
 ```
 
@@ -157,6 +160,7 @@ data class Reminder(
 | 11→12 | `tasks.timeEstimate` |
 | 12→13 | `reminders.latitude/longitude/radius/locationName` |
 | 13→14 | `task_lists.color` |
+| 17→18 (online) / 18→19 (offline) | `tasks.reminderOffset`, `tasks.snoozedUntil`, `reminders.notifyOnArrival` (locales, no se sincronizan) |
 
 La app usa `fallbackToDestructiveMigration()` como red de seguridad, pero todas las migraciones reales
 están escritas a mano con `ALTER TABLE ... ADD COLUMN`. **La migración a sincronización (v15) debe

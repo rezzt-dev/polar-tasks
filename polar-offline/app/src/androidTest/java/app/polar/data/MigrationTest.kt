@@ -157,6 +157,42 @@ class MigrationTest {
         db.close()
     }
 
+    // 18 -> 19 adds the reminder columns with defaults that keep the previous behaviour: alert at
+    // the due time, nothing snoozed and no arrival alert.
+    @Test
+    fun migrate18To19_addsAlertColumnsWithDefaults() {
+        val dbName = "migration-18-19-test-db"
+        var db = helper.createDatabase(dbName, 18)
+        db.execSQL(
+            "INSERT INTO task_lists (id, title, icon, createdAt, orderIndex, homeOrderIndex, isDependencyChain, color) " +
+                "VALUES (1, 'Casa', 'ic_list', 1000, 0, 0, 0, '#7F52FF')"
+        )
+        db.execSQL(
+            "INSERT INTO tasks (id, listId, title, description, completed, tags, createdAt, dueDate, orderIndex, recurrence, isDeleted, priority, imageUri, timeEstimate) " +
+                "VALUES (10, 1, 'Pagar la luz', '', 0, '', 1000, 5000, 0, 'NONE', 0, 0, NULL, 0)"
+        )
+        db.execSQL(
+            "INSERT INTO reminders (id, title, description, dateTime, isCompleted, createdAt, isDeleted, latitude, longitude, radius, locationName) " +
+                "VALUES (200, 'Recuerdame', '', 1000, 0, 1000, 0, 40.4, -3.7, 100.0, 'Casa')"
+        )
+        db.close()
+
+        db = helper.runMigrationsAndValidate(dbName, 19, true, AppDatabase.MIGRATION_18_19)
+
+        db.query("SELECT reminderOffset, snoozedUntil, dueDate FROM tasks WHERE id = 10").use {
+            assertTrue(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+            assertTrue(it.isNull(1))
+            assertEquals(5000L, it.getLong(2))
+        }
+        db.query("SELECT notifyOnArrival, radius FROM reminders WHERE id = 200").use {
+            assertTrue(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+            assertEquals(100.0, it.getDouble(1), 0.0)
+        }
+        db.close()
+    }
+
     private fun insertList(db: SupportSQLiteDatabase, id: Long, title: String, deletedAt: Long?) {
         db.execSQL(
             "INSERT INTO task_lists (id, title, icon, createdAt, orderIndex, homeOrderIndex, isDependencyChain, color, " +

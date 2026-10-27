@@ -244,10 +244,12 @@ todos los temas:
 - Tags se almacenan como cadena separada por comas en `Task.tags`.
 - Recurrencia: campo `recurrence` con `"NONE"`, uno de los valores fijos (`"DAILY"`, `"WEEKLY"`, `"MONTHLY"`, `"MON_WED"`, `"FIRST_DAY_MONTH"`) o una regla personalizada `RRULE:FREQ=...` (cada n días/semanas/meses/años, días concretos de la semana o del mes, o "n después de completarla" con `X-FROM=COMPLETION`). `RecurrenceRule` (`util/`) la lee y la escribe, y guarda con el valor fijo cualquier regla equivalente; `RecurrenceFormatter` genera su texto de interfaz. No compares `recurrence` con literales: usa `RecurrenceUtils.isRecurring()`. Al añadir una regla nueva no hace falta migración, pero sí actualizar el `CHECK` de `tasks.recurrence` en Supabase (`.docs/agent-docs/supabase-sync/03-esquema-supabase.md`).
 - Prioridad: entero `0=None, 1=Low, 2=Medium, 3=High`.
+- Avisos de tarea: `Task.reminderOffset` son los minutos antes de `dueDate` a los que suena (`0` a la hora, `TaskAlert.OFF` sin aviso) y `Task.snoozedUntil` el aviso pospuesto desde la notificación, que sustituye al normal **sin tocar `dueDate`**. La hora real la calcula `TaskAlert.triggerAt()`; programa siempre con `AlarmManagerHelper.syncTaskAlarm(task)` (y `syncReminderAlarm`) en lugar de llamar a `scheduleTaskAlarm` con `dueDate`.
+- Aviso al llegar: `Reminder.notifyOnArrival` activa, además del aviso a su hora, una alerta de proximidad sobre `latitude`/`longitude` con `radius` en metros (`GeofenceHelper`). En `polar-online/` estos tres campos son locales del dispositivo: no van en los DTO y `EntityMappers` los conserva en cada pull.
 
 ### Migraciones
 
-`AppDatabase` define migraciones manuales de la 6→7 hasta la 13→14. La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
+`AppDatabase` define migraciones manuales desde la 6→7 (versión actual: 19 en `polar-offline/`, 18 en `polar-online/`; cada proyecto numera las suyas). La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
 
 > Si alteras el esquema, **aumenta la versión** y proporciona una `Migration` explícita. No confíes únicamente en `fallbackToDestructiveMigration`.
 
@@ -260,8 +262,10 @@ todos los temas:
 Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`.
 - `AlarmReceiver` — dispara la notificación cuando suena la alarma.
 - `AlarmReceiver` — dispara la notificación cuando suena la alarma, tras comprobar en la base de datos que el elemento sigue pendiente y fuera de la papelera.
-- `BootReceiver` — reconstruye todas las alarmas con `AlarmRescheduler` tras reiniciar el dispositivo y al conceder el permiso de alarmas exactas.
-- `NotificationActionReceiver` — maneja acciones sobre notificaciones (completar, posponer); no hace nada si la tarea ya se completó o se borró.
+- `BootReceiver` — reconstruye todas las alarmas y avisos por llegada con `AlarmRescheduler` tras reiniciar el dispositivo, al actualizar la app y al conceder el permiso de alarmas exactas.
+- `NotificationActionReceiver` — botón "completar" de las notificaciones de tareas y recordatorios; delega en `AlertActions`, que no hace nada si el elemento ya se completó o se borró.
+- `SnoozeActivity` + `SnoozeSheet` — botón "posponer": activity transparente que muestra la hoja de opciones (15 min, 1 h, 3 h, esta tarde, mañana, a medida) sin abrir la app. La misma hoja se usa desde el menú de cada recordatorio. Las opciones rápidas se calculan en `SnoozeOption`.
+- `GeofenceHelper` (`util/`) — registra el aviso al llegar con `LocationManager.addProximityAlert` (sin Google Play Services); el aviso llega a `AlarmReceiver` como `TYPE_REMINDER_ARRIVAL`.
 - `AlarmRescheduler` (`util/`) — única fuente para reprogramar o cancelar en bloque las alarmas desde la base de datos. Úsalo siempre que los ids dejen de ser válidos (por ejemplo, al restaurar una copia) en lugar de recorrer tablas a mano.
 - Los textos de notificaciones y widget se generan con `ThemeManager.localizedContext()`: el contexto de aplicación no lleva el idioma elegido en ajustes.
 
@@ -343,6 +347,7 @@ La suite de tests unitarios es pequeña pero representativa:
 
 - **Sin permisos de red:** La app no declara `INTERNET`. Es completamente offline.
 - **Almacenamiento externo limitado:** Solo lectura de imágenes (`READ_MEDIA_IMAGES`, `READ_EXTERNAL_STORAGE` hasta API 32). Usa `FileProvider` para compartir archivos de backup de forma segura.
+- **Ubicación (opcional):** `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` y `ACCESS_BACKGROUND_LOCATION` solo se piden al activar el aviso al llegar de un recordatorio (`ReminderDialog` explica antes el acceso "todo el tiempo"). La ubicación no sale del dispositivo. No pidas estos permisos desde ningún otro punto.
 - **Alarmas exactas:** Requiere `SCHEDULE_EXACT_ALARM` y `USE_EXACT_ALARM`. En Android 12+ (API 31), el sistema puede restringir el uso; la app debe manejar la posibilidad de que el permiso sea revocado por el usuario.
 - **Backup:** Habilitado (`android:allowBackup="true"`) con reglas de extracción declaradas en `data_extraction_rules.xml` y `backup_rules.xml`.
 - **No hay cifrado de base de datos:** Room usa SQLite estándar. No se implementa SQLCipher ni cifrado a nivel de archivo.

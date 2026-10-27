@@ -8,6 +8,7 @@ import app.polar.data.sync.dto.ReminderDto
 import app.polar.data.sync.dto.SubtaskDto
 import app.polar.data.sync.dto.TaskDto
 import app.polar.data.sync.dto.TaskListDto
+import app.polar.util.TaskAlert
 
 // Translates between Room entities (camelCase, local Long id + uuid) and the Supabase wire DTOs
 // (snake_case, uuid-only) per agent-docs/supabase-sync/05-contrato-interoperabilidad.md. Foreign
@@ -70,10 +71,12 @@ fun Task.toDto(userId: String, listUuid: String): TaskDto = TaskDto(
     updatedAt = updatedAt
 )
 
-// `localImageUri` must be threaded through from the row being replaced: it's the on-device
-// content:// cache (never synced, see doc 04 "qué NO se sincroniza"), so a pull must not wipe it
-// out just because every other field came from the server.
-fun TaskDto.toEntity(localListId: Long, localId: Long = 0, localImageUri: String? = null): Task = Task(
+// `local` is the row being replaced, if any: its device-only fields (never synced, see doc 04
+// "qué NO se sincroniza") must survive a pull or a lost conflict instead of being wiped out just
+// because every other field came from the server — the content:// image cache and the alert
+// settings (reminderOffset, snoozedUntil). A snooze belongs to the due date it was made for, so
+// it's dropped when the server brings a different one.
+fun TaskDto.toEntity(localListId: Long, localId: Long = 0, local: Task? = null): Task = Task(
     id = localId,
     listId = localListId,
     title = title,
@@ -86,9 +89,11 @@ fun TaskDto.toEntity(localListId: Long, localId: Long = 0, localImageUri: String
     recurrence = recurrence,
     isDeleted = isDeleted,
     priority = priority,
-    imageUri = localImageUri,
+    imageUri = local?.imageUri,
     imagePath = imagePath,
     timeEstimate = timeEstimate,
+    reminderOffset = local?.reminderOffset ?: TaskAlert.AT_DUE_TIME,
+    snoozedUntil = local?.snoozedUntil?.takeIf { local.dueDate == dueDate },
     uuid = id,
     updatedAt = updatedAt,
     deletedAt = deletedAt,
@@ -140,7 +145,9 @@ fun Reminder.toDto(userId: String): ReminderDto = ReminderDto(
     updatedAt = updatedAt
 )
 
-fun ReminderDto.toEntity(localId: Long = 0): Reminder = Reminder(
+// Same as tasks: the arrival alert is device-only (geofences are registered per device), so it
+// survives whatever comes from the server.
+fun ReminderDto.toEntity(localId: Long = 0, local: Reminder? = null): Reminder = Reminder(
     id = localId,
     title = title,
     description = description,
@@ -152,6 +159,7 @@ fun ReminderDto.toEntity(localId: Long = 0): Reminder = Reminder(
     longitude = longitude,
     radius = radius,
     locationName = locationName,
+    notifyOnArrival = local?.notifyOnArrival ?: false,
     uuid = id,
     updatedAt = updatedAt,
     deletedAt = deletedAt,

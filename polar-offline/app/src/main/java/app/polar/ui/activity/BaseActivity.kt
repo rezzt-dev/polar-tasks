@@ -46,6 +46,9 @@ abstract class BaseActivity : AppCompatActivity() {
         if (checkboxOverlay != 0) {
             theme.applyStyle(checkboxOverlay, true)
         }
+
+        // Ajustes de ventana propios de la activity (p. ej. transparente), sobre todo lo anterior
+        windowStyleOverlay().takeIf { it != 0 }?.let { theme.applyStyle(it, true) }
         
         super.onCreate(savedInstanceState)
 
@@ -54,6 +57,9 @@ abstract class BaseActivity : AppCompatActivity() {
         setLightStatusBar(themeManager.isLightTheme())
     }
     
+    /** Overlay de estilo de ventana que se aplica después del tema elegido; 0 si no hace falta. */
+    protected open fun windowStyleOverlay(): Int = 0
+
     override fun onResume() {
         super.onResume()
         // Re-aplicar por si el modo noche cambió mientras la activity estaba pausada.

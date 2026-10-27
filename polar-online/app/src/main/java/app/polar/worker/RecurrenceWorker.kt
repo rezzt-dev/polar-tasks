@@ -7,6 +7,7 @@ import app.polar.data.AppDatabase
 import app.polar.data.sync.touched
 import app.polar.di.AlarmHelperEntryPoint
 import app.polar.util.RecurrenceUtils
+import app.polar.util.syncTaskAlarm
 import app.polar.widget.TaskWidgetProvider
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,7 @@ class RecurrenceWorker(
                     val touchedTask = reopened.touched()
                     taskDao.update(touchedTask)
                     subtaskDao.resetSubtasksForTask(task.id, touchedTask.updatedAt)
-                    alarmHelper.scheduleTaskAlarm(task.id, reopened.dueDate!!)
+                    alarmHelper.syncTaskAlarm(reopened)
                     reopenedAny = true
                 } catch (e: Exception) {
                     e.printStackTrace()

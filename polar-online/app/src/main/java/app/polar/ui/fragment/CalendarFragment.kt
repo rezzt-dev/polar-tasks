@@ -117,18 +117,7 @@ class CalendarFragment : Fragment() {
             onItemClick = { reminder -> 
                 val fragment = app.polar.ui.dialog.ReminderDialog(
                     reminder = reminder,
-                    onSaveWithLocation = { title, desc, time, lat, lon, radius, locationName ->
-                        val updated = reminder.copy(
-                            title = title,
-                            description = desc,
-                            dateTime = time,
-                            latitude = lat,
-                            longitude = lon,
-                            radius = radius,
-                            locationName = locationName
-                        )
-                        remindersViewModel.update(updated)
-                    }
+                    onSave = remindersViewModel::save
                 )
                 fragment.show(parentFragmentManager, "ReminderDialog")
             }

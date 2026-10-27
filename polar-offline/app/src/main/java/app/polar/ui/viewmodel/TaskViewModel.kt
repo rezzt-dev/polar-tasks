@@ -11,6 +11,8 @@ import app.polar.data.AppDatabase
 import app.polar.data.entity.Subtask
 import app.polar.data.entity.Task
 import app.polar.util.RecurrenceUtils
+import app.polar.util.TaskAlert
+import app.polar.util.syncTaskAlarm
 import app.polar.data.entity.TaskList
 import app.polar.data.repository.TaskRepository
 import app.polar.domain.usecase.GetFilteredTasksUseCase
@@ -244,7 +246,7 @@ class TaskViewModel @Inject constructor(
     return repository.getSubtasksForTask(taskId)
   }
 
-  fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<Subtask> = emptyList(), dueDate: Long? = null, recurrence: String = "NONE", priority: Int = 0, timeEstimate: Int = 0) = safeLaunch {
+  fun insertTask(listId: Long, title: String, description: String, tags: String = "", subtasks: List<Subtask> = emptyList(), dueDate: Long? = null, recurrence: String = "NONE", priority: Int = 0, timeEstimate: Int = 0, reminderOffset: Int = TaskAlert.AT_DUE_TIME) = safeLaunch {
     val task = Task(
       listId = listId,
       title = title,
@@ -254,6 +256,7 @@ class TaskViewModel @Inject constructor(
       recurrence = recurrence,
       priority = priority,
       timeEstimate = timeEstimate,
+      reminderOffset = reminderOffset,
       orderIndex = repository.getNextTaskOrderIndex(listId)
     )
     val taskId = repository.insertTask(task)
@@ -262,9 +265,7 @@ class TaskViewModel @Inject constructor(
         subtasks.mapIndexed { index, subtask -> subtask.copy(id = 0, taskId = taskId, orderIndex = index) }
     )
 
-    if (dueDate != null) {
-        alarmHelper.scheduleTaskAlarm(taskId, dueDate)
-    }
+    alarmHelper.syncTaskAlarm(task.copy(id = taskId))
   }
 
   suspend fun getTasksBetweenDates(start: Long, end: Long): List<Task> {
@@ -287,11 +288,7 @@ class TaskViewModel @Inject constructor(
     }
 
     // Una tarea completada (p. ej. recurrente esperando su siguiente ocurrencia) no debe sonar.
-    if (task.dueDate != null && !task.completed) {
-        alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
-    } else {
-        alarmHelper.cancelTaskAlarm(task.id)
-    }
+    alarmHelper.syncTaskAlarm(task)
   }
 
   fun updateTaskWithSubtasks(task: Task, newSubtasks: List<Subtask>) = updateTask(task, newSubtasks)
@@ -323,7 +320,7 @@ class TaskViewModel @Inject constructor(
         alarmHelper.cancelTaskAlarm(task.id)
     } else {
         repository.resetSubtasksForTask(task.id)
-        updated.dueDate?.let { alarmHelper.scheduleTaskAlarm(task.id, it) }
+        alarmHelper.syncTaskAlarm(updated)
     }
   }
 
@@ -431,10 +428,7 @@ class TaskViewModel @Inject constructor(
 
   fun restoreFromTrash(task: Task) = safeLaunch {
       repository.restoreTask(task)
-      // Reschedule alarm if needed?
-      if (task.dueDate != null && !task.completed) {
-          alarmHelper.scheduleTaskAlarm(task.id, task.dueDate)
-      }
+      alarmHelper.syncTaskAlarm(task.copy(isDeleted = false))
   }
 
   fun permanentDelete(task: Task) = safeLaunch {

@@ -151,6 +151,23 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/rowAlert"
+                    style="@style/Polar.FormRow"
+                    android:background="@null"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <ImageView
+                        style="@style/Polar.FormRow.Icon"
+                        android:src="@drawable/ic_notifications" />
+
+                    <TextView
+                        android:id="@+id/tvDetailAlert"
+                        style="@style/Polar.FormRow.Text"
+                        tools:text="avisar 1 día antes" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/rowPriority"
                     style="@style/Polar.FormRow"
                     android:background="@null"

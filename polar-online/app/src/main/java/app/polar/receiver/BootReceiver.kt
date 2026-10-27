@@ -11,8 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Reconstruye las alarmas de tareas, subtareas y recordatorios tras reiniciar el dispositivo y
- * cuando el usuario concede el permiso de alarmas exactas (las programadas sin él eran inexactas).
+ * Reconstruye las alarmas de tareas, subtareas y recordatorios, y los avisos por llegada, tras
+ * reiniciar el dispositivo o actualizar la app y cuando el usuario concede el permiso de alarmas
+ * exactas (las programadas sin él eran inexactas).
  */
 @AndroidEntryPoint
 class BootReceiver : BroadcastReceiver() {
@@ -22,6 +23,7 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED &&
+            intent.action != Intent.ACTION_MY_PACKAGE_REPLACED &&
             intent.action != ACTION_EXACT_ALARM_PERMISSION_CHANGED
         ) return
 

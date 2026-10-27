@@ -13,6 +13,9 @@ import app.polar.data.sync.dto.SubtaskDto
 import app.polar.data.sync.dto.TaskDto
 import app.polar.data.sync.dto.TaskListDto
 import app.polar.util.AlarmManagerHelper
+import app.polar.util.GeofenceHelper
+import app.polar.util.syncReminderAlarm
+import app.polar.util.syncTaskAlarm
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
@@ -63,7 +66,8 @@ class SyncManager @Inject constructor(
     private val subtaskDao: SubtaskDao,
     private val reminderDao: ReminderDao,
     private val syncPrefs: SyncPrefs,
-    private val alarmHelper: AlarmManagerHelper
+    private val alarmHelper: AlarmManagerHelper,
+    private val geofenceHelper: GeofenceHelper
 ) {
     private val realtimeScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var realtimeChannel: RealtimeChannel? = null
@@ -400,7 +404,7 @@ class SyncManager @Inject constructor(
                 PushOutcome.WON -> won += local.copy(dirty = false)
                 PushOutcome.LOST -> {
                     val localListId = taskListDao.getByUuid(winner.listId)?.id ?: local.listId
-                    lost += winner.toEntity(localListId = localListId, localId = local.id, localImageUri = local.imageUri)
+                    lost += winner.toEntity(localListId = localListId, localId = local.id, local = local)
                     lostConflicts++
                 }
             }
@@ -451,7 +455,7 @@ class SyncManager @Inject constructor(
             when (resolvePushOutcome(local.updatedAt, winner.updatedAt)) {
                 PushOutcome.WON -> won += local.copy(dirty = false)
                 PushOutcome.LOST -> {
-                    lost += winner.toEntity(localId = local.id)
+                    lost += winner.toEntity(localId = local.id, local = local)
                     lostConflicts++
                 }
             }
@@ -579,21 +583,15 @@ class SyncManager @Inject constructor(
         // later pull/event once task_lists catches up.
         val localListId = taskListDao.getByUuid(dto.listId)?.id ?: return
         val local = taskDao.getByUuid(dto.id)
-        val localId = when (resolvePullAction(local?.updatedAt, dto.updatedAt)) {
-            PullAction.INSERT -> taskDao.insert(dto.toEntity(localListId = localListId))
-            PullAction.UPDATE -> {
-                taskDao.update(dto.toEntity(localListId = localListId, localId = local!!.id, localImageUri = local.imageUri))
-                local.id
-            }
+        val applied = when (resolvePullAction(local?.updatedAt, dto.updatedAt)) {
+            PullAction.INSERT -> dto.toEntity(localListId = localListId).let { it.copy(id = taskDao.insert(it)) }
+            PullAction.UPDATE -> dto.toEntity(localListId = localListId, localId = local!!.id, local = local)
+                .also { taskDao.update(it) }
             PullAction.SKIP -> null
         } ?: return
         // A task created/edited from the other app/device only notifies on this device once
-        // its alarm is (re)scheduled here (doc 06, punto 9).
-        if (dto.isDeleted || dto.completed || dto.dueDate == null) {
-            alarmHelper.cancelTaskAlarm(localId)
-        } else {
-            alarmHelper.scheduleTaskAlarm(localId, dto.dueDate)
-        }
+        // its alarm is (re)scheduled here (doc 06, punto 9), with this device's alert settings.
+        alarmHelper.syncTaskAlarm(applied)
     }
 
     private suspend fun applySubtaskDto(dto: SubtaskDto) {
@@ -616,18 +614,13 @@ class SyncManager @Inject constructor(
 
     private suspend fun applyReminderDto(dto: ReminderDto) {
         val local = reminderDao.getByUuid(dto.id)
-        val localId = when (resolvePullAction(local?.updatedAt, dto.updatedAt)) {
-            PullAction.INSERT -> reminderDao.insert(dto.toEntity())
-            PullAction.UPDATE -> {
-                reminderDao.update(dto.toEntity(localId = local!!.id))
-                local.id
-            }
+        val applied = when (resolvePullAction(local?.updatedAt, dto.updatedAt)) {
+            PullAction.INSERT -> dto.toEntity().let { it.copy(id = reminderDao.insert(it)) }
+            PullAction.UPDATE -> dto.toEntity(localId = local!!.id, local = local).also { reminderDao.update(it) }
             PullAction.SKIP -> null
         } ?: return
-        if (dto.isDeleted || dto.isCompleted) {
-            alarmHelper.cancelReminderAlarm(localId)
-        } else {
-            alarmHelper.scheduleReminderAlarm(localId, dto.dateTime)
-        }
+        alarmHelper.syncReminderAlarm(applied)
+        // Completado, borrado o movido en otro dispositivo: el aviso al llegar se actualiza igual.
+        geofenceHelper.sync(applied)
     }
 }

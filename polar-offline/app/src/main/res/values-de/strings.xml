@@ -281,7 +281,6 @@
   <string name="notification_channel_name">aufgabenerinnerungen</string>
   <string name="notification_channel_desc">fälligkeitshinweise für aufgaben, teilaufgaben und erinnerungen</string>
   <string name="notification_action_complete">erledigen</string>
-  <string name="notification_action_snooze">1 std. später</string>
   <string name="notification_reminder_title">erinnerung: %1$s</string>
   <string name="notification_subtask_of">teilaufgabe von %1$s</string>
   <string name="reminder_created_title">erinnerung erstellt</string>
@@ -412,5 +411,61 @@
   <plurals name="recurrence_after_year">
     <item quantity="one">%d jahr nach erledigung</item>
     <item quantity="other">%d jahre nach erledigung</item>
+  </plurals>
+
+  <!-- recordatorios más completos: aviso relativo, posponer y aviso al llegar -->
+  <string name="snooze">später</string>
+  <string name="notification_task_due">fällig %1$s</string>
+  <string name="notification_arrived_at">du bist bei %1$s angekommen</string>
+  <string name="notification_arrived">du bist am ort der erinnerung angekommen</string>
+  <string name="snooze_title">verschieben bis …</string>
+  <string name="snooze_this_evening">heute abend</string>
+  <string name="snooze_pick">datum und uhrzeit wählen</string>
+  <string name="snooze_pick_past">wähle einen zeitpunkt in der zukunft</string>
+  <string name="snoozed_until">verschoben bis %1$s</string>
+  <string name="snooze_not_pending">das ist nicht mehr offen</string>
+  <string name="task_alert_at_due">zur fälligkeit erinnern</string>
+  <string name="task_alert_off">keine erinnerung</string>
+  <string name="task_alert_snoozed">erinnerung verschoben bis %1$s</string>
+  <string name="reminder_title_required">gib einen titel ein</string>
+  <string name="reminder_arrival">bei ankunft erinnern</string>
+  <string name="reminder_arrival_hint">wir erinnern dich, sobald du diesen bereich betrittst, und zur gewählten uhrzeit.</string>
+  <string name="reminder_arrival_radius">radius des bereichs</string>
+  <string name="reminder_arrival_needs_coordinates">füge die koordinaten des ortes hinzu, um bei ankunft erinnert zu werden</string>
+  <string name="distance_meters">%d m</string>
+  <string name="distance_kilometers">%d km</string>
+  <string name="location_permission_title">standort im hintergrund</string>
+  <string name="location_permission_message">damit wir dich bei ankunft erinnern können, auch wenn polar geschlossen ist, erlaube den standortzugriff „immer“. dein standort verlässt nie dein gerät.</string>
+  <string name="location_permission_allow">erlauben</string>
+  <string name="not_now">nicht jetzt</string>
+  <string name="location_permission_denied">ohne standortzugriff können wir dich nicht bei ankunft erinnern</string>
+  <string name="reminder_arrival_permission_missing">der standortzugriff „immer“ fehlt. tippe, um ihn zu prüfen.</string>
+  <string name="reminder_arrival_location_off">der gerätestandort ist deaktiviert. tippe, um ihn zu aktivieren.</string>
+  <string name="reminder_arrival_at">bei ankunft: %1$s</string>
+  <string name="reminder_arrival_place">bei ankunft</string>
+  <string name="reminder_arrival_no_permission">%1$s · kein standortzugriff</string>
+  <plurals name="snooze_in_minutes">
+    <item quantity="one">in %d minute</item>
+    <item quantity="other">in %d minuten</item>
+  </plurals>
+  <plurals name="snooze_in_hours">
+    <item quantity="one">in %d stunde</item>
+    <item quantity="other">in %d stunden</item>
+  </plurals>
+  <plurals name="task_alert_minutes_before">
+    <item quantity="one">%d min vorher erinnern</item>
+    <item quantity="other">%d min vorher erinnern</item>
+  </plurals>
+  <plurals name="task_alert_hours_before">
+    <item quantity="one">%d std. vorher erinnern</item>
+    <item quantity="other">%d std. vorher erinnern</item>
+  </plurals>
+  <plurals name="task_alert_days_before">
+    <item quantity="one">%d tag vorher erinnern</item>
+    <item quantity="other">%d tage vorher erinnern</item>
+  </plurals>
+  <plurals name="task_alert_weeks_before">
+    <item quantity="one">%d woche vorher erinnern</item>
+    <item quantity="other">%d wochen vorher erinnern</item>
   </plurals>
 </resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- opcion de la hoja de posponer: icono, texto y hora resultante -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  style="@style/Polar.FormRow"
+  android:minHeight="52dp"
+  android:clickable="true"
+  android:focusable="true">
+
+  <ImageView
+    android:id="@+id/ivSnoozeOptionIcon"
+    style="@style/Polar.FormRow.Icon"
+    tools:src="@drawable/ic_schedule" />
+
+  <TextView
+    android:id="@+id/tvSnoozeOptionLabel"
+    style="@style/Polar.FormRow.Text"
+    tools:text="en 1 hora" />
+
+  <TextView
+    android:id="@+id/tvSnoozeOptionTime"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:fontFeatureSettings="tnum"
+    android:textAppearance="?attr/textAppearanceLabelLarge"
+    android:textColor="?attr/colorOnSurfaceVariant"
+    tools:text="17:45" />
+</LinearLayout>

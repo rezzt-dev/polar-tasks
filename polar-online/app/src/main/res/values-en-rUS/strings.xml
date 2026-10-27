@@ -341,7 +341,6 @@
   <string name="notification_channel_name">task reminders</string>
   <string name="notification_channel_desc">due alerts for tasks, subtasks and reminders</string>
   <string name="notification_action_complete">complete</string>
-  <string name="notification_action_snooze">snooze 1 h</string>
   <string name="notification_reminder_title">reminder: %1$s</string>
   <string name="notification_subtask_of">subtask of %1$s</string>
   <string name="reminder_created_title">reminder created</string>
@@ -472,5 +471,61 @@
   <plurals name="recurrence_after_year">
     <item quantity="one">%d year after completion</item>
     <item quantity="other">%d years after completion</item>
+  </plurals>
+
+  <!-- recordatorios más completos: aviso relativo, posponer y aviso al llegar -->
+  <string name="snooze">snooze</string>
+  <string name="notification_task_due">due %1$s</string>
+  <string name="notification_arrived_at">you\'ve arrived at %1$s</string>
+  <string name="notification_arrived">you\'ve arrived at the reminder\'s place</string>
+  <string name="snooze_title">snooze until…</string>
+  <string name="snooze_this_evening">this evening</string>
+  <string name="snooze_pick">pick date and time</string>
+  <string name="snooze_pick_past">pick a time in the future</string>
+  <string name="snoozed_until">snoozed until %1$s</string>
+  <string name="snooze_not_pending">it\'s no longer pending</string>
+  <string name="task_alert_at_due">remind at due time</string>
+  <string name="task_alert_off">no reminder</string>
+  <string name="task_alert_snoozed">reminder snoozed until %1$s</string>
+  <string name="reminder_title_required">write a title</string>
+  <string name="reminder_arrival">remind me when i arrive</string>
+  <string name="reminder_arrival_hint">you\'ll get a reminder when you enter this area, as well as at the chosen time.</string>
+  <string name="reminder_arrival_radius">area radius</string>
+  <string name="reminder_arrival_needs_coordinates">add the place\'s coordinates to be reminded when you arrive</string>
+  <string name="distance_meters">%d m</string>
+  <string name="distance_kilometers">%d km</string>
+  <string name="location_permission_title">background location</string>
+  <string name="location_permission_message">to remind you when you arrive even when polar is closed, allow location access “all the time”. your location never leaves your device.</string>
+  <string name="location_permission_allow">allow</string>
+  <string name="not_now">not now</string>
+  <string name="location_permission_denied">without location access we can\'t remind you when you arrive</string>
+  <string name="reminder_arrival_permission_missing">location access “all the time” is missing. tap to review it.</string>
+  <string name="reminder_arrival_location_off">device location is turned off. tap to turn it on.</string>
+  <string name="reminder_arrival_at">on arrival at %1$s</string>
+  <string name="reminder_arrival_place">on arrival</string>
+  <string name="reminder_arrival_no_permission">%1$s · no location access</string>
+  <plurals name="snooze_in_minutes">
+    <item quantity="one">in %d minute</item>
+    <item quantity="other">in %d minutes</item>
+  </plurals>
+  <plurals name="snooze_in_hours">
+    <item quantity="one">in %d hour</item>
+    <item quantity="other">in %d hours</item>
+  </plurals>
+  <plurals name="task_alert_minutes_before">
+    <item quantity="one">remind %d min before</item>
+    <item quantity="other">remind %d min before</item>
+  </plurals>
+  <plurals name="task_alert_hours_before">
+    <item quantity="one">remind %d h before</item>
+    <item quantity="other">remind %d h before</item>
+  </plurals>
+  <plurals name="task_alert_days_before">
+    <item quantity="one">remind %d day before</item>
+    <item quantity="other">remind %d days before</item>
+  </plurals>
+  <plurals name="task_alert_weeks_before">
+    <item quantity="one">remind %d week before</item>
+    <item quantity="other">remind %d weeks before</item>
   </plurals>
 </resources>

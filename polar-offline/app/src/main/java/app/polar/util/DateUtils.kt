@@ -45,6 +45,12 @@ object DateUtils {
         }
     }
 
+    /** "hoy · 10:30", "mañana · 7:30", "5 nov · 18:00": día como [formatTaskDate] y hora del sistema (12/24 h). */
+    fun formatDateTime(context: Context, millis: Long): String {
+        val time = android.text.format.DateFormat.getTimeFormat(context).format(Date(millis))
+        return "${formatTaskDate(context, millis)} · $time".lowercase(Locale.getDefault())
+    }
+
     fun isOverdue(dueDateMs: Long): Boolean {
         val now = calendarCache.get()!!
         now.timeInMillis = System.currentTimeMillis()

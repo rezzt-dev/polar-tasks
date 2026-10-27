@@ -69,6 +69,12 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - documentar el sistema de diseno en `agents.md` (seccion 4.7) y `claude.md`.
 - aclarar el tema oscuro (fondo `#1C1C1F`) y llevar el tema onix a un gris neutro con base `#121212` para que los dos se distingan.
 - centralizar en `ThemeManager.THEME_OPTIONS` la lista de temas con su estilo y si son oscuros, y mover el tema oscuro a `Base.Theme.Polar.Dark` para poder previsualizarlo desde cualquier tema.
+- calcular la hora de la alarma de una tarea en un unico sitio (`TaskAlert` y `AlarmManagerHelper.syncTaskAlarm`) en lugar de repetirlo en viewmodels, workers y receptores, y reconstruir tambien los avisos por llegada en `AlarmRescheduler` al reiniciar el dispositivo y tras actualizar la app.
+- compartir en `AlertActions` las acciones de completar y posponer de las notificaciones y de la hoja de posponer.
+- pasar a `ReminderDialog` un callback `onSave` que recibe el `Reminder` editado y hacer que el formulario se desplace cuando no cabe en pantalla.
+- [offline] subir la base de datos a la version 19 con `MIGRATION_18_19`, que anade `tasks.reminderOffset`, `tasks.snoozedUntil` y `reminders.notifyOnArrival`.
+- [online] subir la base de datos a la version 18 con `MIGRATION_17_18`, que anade `tasks.reminderOffset`, `tasks.snoozedUntil` y `reminders.notifyOnArrival` e indexa `tasks.listId` y `subtasks.taskId` como en la version offline.
+- [online] mantener el aviso relativo, el aviso pospuesto y el aviso al llegar como datos del dispositivo: no viajan a supabase, un pull o un conflicto perdido los conserva (`EntityMappers`) y un aviso pospuesto se descarta si otro dispositivo cambia la fecha de la tarea.
 
 #### CORREGIDO
 
@@ -114,6 +120,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - usar plurales en el analisis semanal de estadisticas (decia `1 tareas`).
 - [online] mostrar `v1.7` en el pie de ajustes, que seguia indicando `v1.5`.
 - centrar verticalmente la casilla, el icono de lista y sus textos en el detalle de tarea, eliminando el espacio tipografico que los desalineaba.
+- posponer desde la notificacion ya no reescribe la fecha de vencimiento de la tarea, que se perdia al posponer.
+- abrir la ubicacion de un recordatorio con cualquier app de mapas instalada y no solo con google maps.
+- traducir el aviso de titulo obligatorio del formulario de recordatorio, que estaba fijo en castellano.
 
 #### NUEVO
 
@@ -140,6 +149,13 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - reconocer en `SmartParser` "cada 2 semanas", "cada tres dias", "cada 6 meses" o "cada 2 anos" (y "cada 2 semanas los lunes") en los cuatro idiomas.
 - mostrar las reglas personalizadas en el formulario y en el detalle de la tarea con `RecurrenceFormatter` y hacer que una tarea con dias concretos empiece en el primero de ellos.
 - [online] permitir los valores `RRULE:` en el `CHECK` de `tasks.recurrence` de supabase (migracion sql en `03-esquema-supabase.md`), necesario antes de publicar para que la subida de tareas no falle.
+- anadir "posponer" con eleccion a las notificaciones de tareas y recordatorios: abre sobre la pantalla actual, sin entrar en la app (`SnoozeActivity`), una hoja inferior (`SnoozeSheet`) con 15 minutos, 1 hora, 3 horas, esta tarde, manana a la hora de aviso por defecto o una fecha y hora a medida, y muestra la hora resultante de cada opcion.
+- anadir la fila "aviso" al formulario de tarea para avisar a la hora del vencimiento, de 5 minutos a 1 semana antes o no avisar; la notificacion anticipada indica cuando vence la tarea.
+- posponer el aviso de una tarea sin cambiar su fecha de vencimiento (`tasks.snoozedUntil`) y mostrar en el detalle el aviso elegido o hasta cuando esta pospuesto.
+- anadir a los recordatorios el aviso al llegar a su lugar, ademas de a su hora, con un radio de 100 m a 1 km, usando las alertas de proximidad del sistema (`GeofenceHelper`) sin google play services ni red.
+- pedir la ubicacion solo al activar el aviso al llegar, explicar antes el acceso "todo el tiempo" e indicar en el formulario y en la tarjeta del recordatorio si falta el permiso o la ubicacion del dispositivo esta desactivada.
+- anadir "completar" y "posponer" a las notificaciones de recordatorios y "posponer" al menu de cada recordatorio pendiente, con deshacer.
+- anadir `TaskAlertTest` y `SnoozeOptionTest`, casos de aviso relativo en `TaskViewModelTest` y de campos locales en `EntityMappersTest`, y tests de migracion de las columnas nuevas.
 
 #### ELIMINADO
 
@@ -152,6 +168,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 #### SEGURIDAD
 
 - [offline] quitar los permisos `INTERNET` y `ACCESS_NETWORK_STATE` que declaraba la app: polar no se conecta a ningun servidor ni envia datos fuera del dispositivo.
+- declarar los permisos de ubicacion (`ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` y `ACCESS_BACKGROUND_LOCATION`), que solo se piden al activar el aviso al llegar de un recordatorio; la ubicacion nunca sale del dispositivo.
 
 ### ENGLISH
 
@@ -203,6 +220,12 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - document the design system in `agents.md` (section 4.7) and `claude.md`.
 - lighten the dark theme (`#1C1C1F` background) and move the onyx theme to a neutral grey based on `#121212` so the two are easy to tell apart.
 - centralise the theme list with each style and whether it is dark in `ThemeManager.THEME_OPTIONS`, and move the dark theme to `Base.Theme.Polar.Dark` so it can be previewed from any theme.
+- compute a task's alarm time in a single place (`TaskAlert` and `AlarmManagerHelper.syncTaskAlarm`) instead of repeating it in viewmodels, workers and receivers, and also rebuild arrival alerts in `AlarmRescheduler` after a device restart and after an app update.
+- share the complete and snooze actions of notifications and of the snooze sheet in `AlertActions`.
+- give `ReminderDialog` an `onSave` callback that receives the edited `Reminder` and make the form scroll when it does not fit on screen.
+- [offline] bump the database to version 19 with `MIGRATION_18_19`, which adds `tasks.reminderOffset`, `tasks.snoozedUntil` and `reminders.notifyOnArrival`.
+- [online] bump the database to version 18 with `MIGRATION_17_18`, which adds `tasks.reminderOffset`, `tasks.snoozedUntil` and `reminders.notifyOnArrival` and indexes `tasks.listId` and `subtasks.taskId` as in the offline version.
+- [online] keep the relative alert, the snoozed alert and the arrival alert as device data: they do not travel to supabase, a pull or a lost conflict keeps them (`EntityMappers`) and a snoozed alert is dropped if another device changes the task date.
 
 #### FIXED
 
@@ -248,6 +271,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - use plurals in the weekly statistics insight (it said `1 tasks`).
 - [online] show `v1.7` in the settings footer, which still said `v1.5`.
 - vertically centre the checkbox, list icon and their labels in the task details, removing the font padding that misaligned them.
+- snoozing from the notification no longer rewrites the task due date, which was lost when snoozing.
+- open a reminder's location with any installed maps app, not only google maps.
+- translate the required title warning of the reminder form, which was hardcoded in spanish.
 
 #### ADDED
 
@@ -274,6 +300,13 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - recognise "every 2 weeks", "every three days", "every 6 months" or "every 2 years" (and "every 2 weeks on mondays") in `SmartParser` in the four languages.
 - show custom rules in the task form and details with `RecurrenceFormatter` and make a task with specific days start on the first of them.
 - [online] allow `RRULE:` values in the supabase `tasks.recurrence` `CHECK` (sql migration in `03-esquema-supabase.md`), required before release so the task upload does not fail.
+- add "snooze" with a choice to task and reminder notifications: it opens over the current screen, without entering the app (`SnoozeActivity`), a bottom sheet (`SnoozeSheet`) with 15 minutes, 1 hour, 3 hours, this evening, tomorrow at the default reminder time or a custom date and time, and shows the resulting time of each option.
+- add the "reminder" row to the task form to remind at the due time, from 5 minutes to 1 week before or not at all; an early notification shows when the task is due.
+- snooze a task's alert without changing its due date (`tasks.snoozedUntil`) and show in the details the chosen alert or until when it is snoozed.
+- add an arrival alert to reminders, on top of their time, with a 100 m to 1 km radius, using the system proximity alerts (`GeofenceHelper`) without google play services or network.
+- ask for location only when the arrival alert is turned on, explain "all the time" access first and show in the form and in the reminder card when the permission is missing or device location is off.
+- add "complete" and "snooze" to reminder notifications and "snooze" to the menu of each pending reminder, with undo.
+- add `TaskAlertTest` and `SnoozeOptionTest`, relative alert cases in `TaskViewModelTest` and device-only field cases in `EntityMappersTest`, and migration tests for the new columns.
 
 #### REMOVED
 
@@ -286,3 +319,4 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 #### SECURITY
 
 - [offline] drop the `INTERNET` and `ACCESS_NETWORK_STATE` permissions declared by the app: polar never connects to a server or sends data off the device.
+- declare the location permissions (`ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` and `ACCESS_BACKGROUND_LOCATION`), which are only requested when a reminder's arrival alert is turned on; location never leaves the device.

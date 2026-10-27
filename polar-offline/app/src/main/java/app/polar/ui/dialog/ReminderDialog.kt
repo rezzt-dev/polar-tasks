@@ -1,37 +1,67 @@
 package app.polar.ui.dialog
 
+import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
-import app.polar.R
-import app.polar.databinding.DialogReminderBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.datepicker.MaterialDatePicker
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
+import androidx.core.view.isVisible
+import app.polar.R
+import app.polar.data.entity.Reminder
+import app.polar.databinding.DialogReminderBinding
+import app.polar.util.GeofenceHelper
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.chip.Chip
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+/**
+ * Hoja de crear / editar recordatorio: título, descripción, fecha y hora y, opcionalmente, un lugar
+ * con aviso al llegar. [onSave] recibe [reminder] (o uno nuevo, con id 0) con los campos editados.
+ */
 class ReminderDialog(
-    private val reminder: app.polar.data.entity.Reminder? = null,
-    private val onSave: ((String, String, Long) -> Unit)? = null,
-    private val onSaveWithLocation: ((String, String, Long, Double?, Double?, Float?, String?) -> Unit)? = null
+    private val reminder: Reminder? = null,
+    private val onSave: ((Reminder) -> Unit)? = null
 ) : BottomSheetDialogFragment() {
 
     private var _binding: DialogReminderBinding? = null
     private val binding get() = _binding!!
 
     private var selectedDate: Long = System.currentTimeMillis()
+
+    // Ubicación "mientras se usa la app": imprescindible para registrar el aviso.
+    private val foregroundLocationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { granted ->
+        if (_binding == null) return@registerForActivityResult
+        if (granted.values.any { it }) {
+            requestBackgroundLocationIfNeeded()
+        } else {
+            binding.switchArrival.isChecked = false
+            Toast.makeText(requireContext(), R.string.location_permission_denied, Toast.LENGTH_LONG).show()
+        }
+        updateArrivalStatus()
+    }
+
+    // Ubicación "todo el tiempo" (Android 10+): sin ella el aviso solo llega con la app abierta.
+    // Desde Android 11 la petición abre directamente los ajustes del permiso.
+    private val backgroundLocationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { updateArrivalStatus() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,11 +88,10 @@ class ReminderDialog(
             val hasLocation = reminder.latitude != null || reminder.longitude != null || !reminder.locationName.isNullOrBlank()
             binding.switchLocation.isChecked = hasLocation
             binding.layoutLocationSection.isVisible = hasLocation
-
-            updateDateDisplay()
-        } else {
-            updateDateDisplay()
+            binding.switchArrival.isChecked = reminder.notifyOnArrival
         }
+        updateDateDisplay()
+        setupArrival()
 
         binding.switchLocation.setOnCheckedChangeListener { _, isChecked ->
             binding.layoutLocationSection.isVisible = isChecked
@@ -71,6 +100,7 @@ class ReminderDialog(
                 binding.etLocationName.text?.clear()
                 binding.etLatitude.text?.clear()
                 binding.etLongitude.text?.clear()
+                binding.switchArrival.isChecked = false
             }
         }
 
@@ -82,38 +112,7 @@ class ReminderDialog(
             openLocationInMaps()
         }
 
-        binding.btnSave.setOnClickListener {
-            val title = binding.etTitle.text.toString()
-            if (title.isBlank()) {
-                binding.etTitle.error = "obligatorio"
-                return@setOnClickListener
-            }
-            val description = binding.etDescription.text.toString()
-
-            val lat: Double?
-            val lng: Double?
-            val radius: Float?
-            val locName: String?
-
-            if (binding.switchLocation.isChecked) {
-                lat = binding.etLatitude.text.toString().trim().toDoubleOrNull()
-                lng = binding.etLongitude.text.toString().trim().toDoubleOrNull()
-                radius = if (lat != null && lng != null) 100f else null
-                locName = binding.etLocationName.text.toString().trim().takeIf { it.isNotEmpty() }
-            } else {
-                lat = null
-                lng = null
-                radius = null
-                locName = null
-            }
-
-            if (onSaveWithLocation != null) {
-                onSaveWithLocation.invoke(title, description, selectedDate, lat, lng, radius, locName)
-            } else {
-                onSave?.invoke(title, description, selectedDate)
-            }
-            dismiss()
-        }
+        binding.btnSave.setOnClickListener { save() }
 
         binding.btnCancel.setOnClickListener { dismiss() }
 
@@ -121,6 +120,144 @@ class ReminderDialog(
             showDateTimePicker()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // El permiso o la ubicación del dispositivo pueden haber cambiado en los ajustes del sistema.
+        updateArrivalStatus()
+    }
+
+    private fun save() {
+        val title = binding.etTitle.text.toString()
+        if (title.isBlank()) {
+            binding.etTitle.error = getString(R.string.reminder_title_required)
+            return
+        }
+        val description = binding.etDescription.text.toString()
+
+        val withLocation = binding.switchLocation.isChecked
+        val lat = binding.etLatitude.text.toString().trim().toDoubleOrNull().takeIf { withLocation }
+        val lng = binding.etLongitude.text.toString().trim().toDoubleOrNull().takeIf { withLocation }
+        val hasCoordinates = lat != null && lng != null
+        val notifyOnArrival = withLocation && binding.switchArrival.isChecked
+        if (notifyOnArrival && !hasCoordinates) {
+            Toast.makeText(requireContext(), R.string.reminder_arrival_needs_coordinates, Toast.LENGTH_LONG).show()
+            return
+        }
+        val radius = when {
+            !hasCoordinates -> null
+            notifyOnArrival -> selectedRadius()
+            else -> reminder?.radius ?: LOCATION_ONLY_RADIUS
+        }
+        val locName = binding.etLocationName.text.toString().trim().takeIf { withLocation && it.isNotEmpty() }
+
+        val base = reminder ?: Reminder(title = title, dateTime = selectedDate)
+        onSave?.invoke(
+            base.copy(
+                title = title,
+                description = description,
+                dateTime = selectedDate,
+                latitude = lat,
+                longitude = lng,
+                radius = radius,
+                locationName = locName,
+                notifyOnArrival = notifyOnArrival
+            )
+        )
+        dismiss()
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Aviso al llegar
+    // ---------------------------------------------------------------------------------------------
+
+    private fun setupArrival() {
+        val selected = reminder?.radius?.takeIf { reminder.notifyOnArrival && it in GeofenceHelper.RADIUS_OPTIONS }
+            ?: GeofenceHelper.DEFAULT_RADIUS_METERS
+        GeofenceHelper.RADIUS_OPTIONS.forEach { meters ->
+            val chip = Chip(requireContext()).apply {
+                id = View.generateViewId()
+                tag = meters
+                text = if (meters >= 1000f) getString(R.string.distance_kilometers, (meters / 1000f).toInt())
+                else getString(R.string.distance_meters, meters.toInt())
+                isCheckable = true
+                isChecked = meters == selected
+            }
+            binding.chipGroupRadius.addView(chip)
+        }
+
+        binding.layoutArrivalOptions.isVisible = binding.switchArrival.isChecked
+        binding.switchArrival.setOnCheckedChangeListener { _, isChecked ->
+            binding.layoutArrivalOptions.isVisible = isChecked
+            if (isChecked) requestLocationIfNeeded()
+            updateArrivalStatus()
+        }
+        binding.tvArrivalStatus.setOnClickListener { fixArrivalProblem() }
+    }
+
+    private fun selectedRadius(): Float =
+        binding.chipGroupRadius.findViewById<Chip>(binding.chipGroupRadius.checkedChipId)?.tag as? Float
+            ?: GeofenceHelper.DEFAULT_RADIUS_METERS
+
+    private fun requestLocationIfNeeded() {
+        if (!GeofenceHelper.hasLocationPermission(requireContext())) {
+            foregroundLocationPermission.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        } else {
+            requestBackgroundLocationIfNeeded()
+        }
+    }
+
+    // El permiso "todo el tiempo" se pide aparte y después de explicar para qué sirve.
+    private fun requestBackgroundLocationIfNeeded() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || GeofenceHelper.hasBackgroundPermission(requireContext())) return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.location_permission_title)
+            .setMessage(R.string.location_permission_message)
+            .setNegativeButton(R.string.not_now, null)
+            .setPositiveButton(R.string.location_permission_allow) { _, _ ->
+                backgroundLocationPermission.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            }
+            .show()
+    }
+
+    /** Explica, debajo del radio, por qué el aviso al llegar no podría funcionar ahora. */
+    private fun updateArrivalStatus() {
+        val binding = _binding ?: return
+        val context = requireContext()
+        val problem = when {
+            !binding.switchArrival.isChecked -> null
+            !GeofenceHelper.canNotifyOnArrival(context) -> R.string.reminder_arrival_permission_missing
+            !GeofenceHelper.isLocationEnabled(context) -> R.string.reminder_arrival_location_off
+            else -> null
+        }
+        binding.tvArrivalStatus.isVisible = problem != null
+        problem?.let(binding.tvArrivalStatus::setText)
+    }
+
+    private fun fixArrivalProblem() {
+        val context = requireContext()
+        when {
+            !GeofenceHelper.hasLocationPermission(context) -> requestLocationIfNeeded()
+            !GeofenceHelper.hasBackgroundPermission(context) -> requestBackgroundLocationIfNeeded()
+            else -> openSettings(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }
+    }
+
+    private fun openSettings(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            startActivity(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", requireContext().packageName, null))
+            )
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Ubicación
+    // ---------------------------------------------------------------------------------------------
 
     private fun extractCoordinatesFromLink() {
         val link = binding.etMapsLink.text.toString().trim()
@@ -171,19 +308,15 @@ class ReminderDialog(
         }
 
         val uri = if (name.isNotEmpty()) {
-            Uri.parse("geo:$lat,$lng?q=$lat,$lng($name)")
+            "geo:$lat,$lng?q=$lat,$lng(${Uri.encode(name)})".toUri()
         } else {
-            Uri.parse("geo:$lat,$lng?q=$lat,$lng")
+            "geo:$lat,$lng?q=$lat,$lng".toUri()
         }
 
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        intent.setPackage("com.google.android.apps.maps")
-        if (intent.resolveActivity(requireContext().packageManager) != null) {
-            startActivity(intent)
-        } else {
-            // Fallback to any maps app
-            val genericIntent = Intent(Intent.ACTION_VIEW, uri)
-            startActivity(genericIntent)
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), R.string.reminder_no_maps, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -233,6 +366,9 @@ class ReminderDialog(
     }
 
     companion object {
+        // Radio que se guardaba siempre con unas coordenadas, antes de existir el aviso al llegar.
+        private const val LOCATION_ONLY_RADIUS = 100f
+
         /**
          * Parses common Google Maps URL formats to extract latitude and longitude.
          * Works entirely offline using regex patterns.

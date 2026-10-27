@@ -295,11 +295,8 @@ class MainActivity : BaseActivity() {
   private fun setupFab() {
     binding.fabAddTask.setOnClickListener {
       if (currentListId == REMINDERS_LIST_ID) {
-          app.polar.ui.dialog.ReminderDialog(
-              onSaveWithLocation = { title, desc, time, lat, lng, radius, locName ->
-                   remindersViewModel.insert(title, desc, time, lat, lng, radius, locName)
-              }
-          ).show(supportFragmentManager, "CreateReminderDialog")
+          app.polar.ui.dialog.ReminderDialog(onSave = remindersViewModel::save)
+              .show(supportFragmentManager, "CreateReminderDialog")
       } else {
           currentListId?.let { listId ->
             showCreateTaskDialog(listId)
@@ -342,7 +339,7 @@ class MainActivity : BaseActivity() {
         // "@lista" en el título puede crear la tarea en otra lista
         taskViewModel.insertTask(
           result.listId ?: listId, result.title, result.description, result.tags, result.subtasks,
-          result.dueDate, result.recurrence, result.priority, result.timeEstimate
+          result.dueDate, result.recurrence, result.priority, result.timeEstimate, result.reminderOffset
         )
       }
     ).show(supportFragmentManager, "CreateTaskDialog")

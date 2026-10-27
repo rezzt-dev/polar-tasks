@@ -65,15 +65,16 @@ object RecurrenceUtils {
      * Estado persistido al completar [task]. En una recurrente que se cumple con retraso (o tras
      * saltarse ocurrencias) la fecha se ajusta a la ocurrencia vigente, de modo que la siguiente se
      * calcule desde ella y no reaparezca al instante una ocurrencia ya pasada. Si la regla cuenta
-     * desde que se completa, la fecha pasa a ser hoy, conservando la hora.
+     * desde que se completa, la fecha pasa a ser hoy, conservando la hora. Un aviso pospuesto
+     * deja de tener sentido al completarla.
      */
     fun complete(task: Task, now: Long): Task {
         val due = task.dueDate
         val rule = RecurrenceRule.parse(task.recurrence)
-        if (rule == null || due == null) return task.copy(completed = true)
+        if (rule == null || due == null) return task.copy(completed = true, snoozedUntil = null)
         val fulfilled = if (rule.fromCompletion) onDayOf(now, keepingTimeOf = due)
         else latestOccurrenceStarted(due, task.recurrence, now)
-        return task.copy(completed = true, dueDate = fulfilled)
+        return task.copy(completed = true, dueDate = fulfilled, snoozedUntil = null)
     }
 
     /**

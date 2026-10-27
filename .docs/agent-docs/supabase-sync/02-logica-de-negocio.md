@@ -74,17 +74,24 @@ Fuente: `util/AlarmManagerHelper.kt`, `receiver/AlarmReceiver.kt`, `receiver/Boo
   alarmas locales a partir del dato ya sincronizado (ver doc 04, sección "qué NO se sincroniza").
 - `BootReceiver` reprograma todas las alarmas activas al reiniciar el dispositivo (porque
   `AlarmManager` no persiste alarmas a través de reinicios).
-- La notificación de una tarea permite "completar" o "posponer 1h" directamente desde la notificación
-  (`NotificationActionReceiver`), lo cual dispara los mismos flujos de `TaskViewModel`/`ViewModel` que
-  completar desde la UI (y por tanto debe disparar sync igual que cualquier otra edición).
+- El aviso de una tarea suena `reminderOffset` minutos antes de `dueDate` (0 = a la hora, -1 = sin
+  aviso) o en `snoozedUntil` si se pospuso; lo calcula `TaskAlert.triggerAt()`. Ambos campos son
+  locales del dispositivo (doc 04).
+- Las notificaciones de tareas y recordatorios permiten "completar" (`NotificationActionReceiver`) y
+  "posponer" (`SnoozeActivity`, que deja elegir hasta cuándo). Ambas pasan por `AlertActions`.
+  Completar dispara sync igual que cualquier otra edición; posponer una **tarea** solo cambia
+  `snoozedUntil` (local, no toca `dueDate` ni sincroniza) y posponer un **recordatorio** mueve su
+  `dateTime`, que sí se sincroniza.
 - Al completar una tarea con fecha, la alarma se **cancela** (no se dispara notificación de una tarea
   ya hecha). Al descompletarla, se **reprograma**.
 - Las notificaciones de recordatorio con `latitude`/`longitude` presentes muestran una acción "ver
-  ubicación" que abre Google Maps con esas coordenadas. **Importante:** hoy `latitude/longitude/radius`
-  son puramente informativos — **no existe geofencing real** (no hay `GeofencingClient` ni receiver de
-  entrada/salida de zona). El campo `radius` está guardado pero no se usa para disparar nada por
-  proximidad; solo se ofrece un botón para abrir el mapa. Cualquier compatibilidad con la otra app debe
-  preservar estos campos como datos, sin asumir que Polar dispara alarmas por geolocalización.
+  ubicación" que abre cualquier app de mapas con esas coordenadas.
+- Si `notifyOnArrival` está activo, el recordatorio avisa también al entrar en el círculo de
+  `latitude`/`longitude` con `radius` metros: `GeofenceHelper` registra una alerta de proximidad del
+  sistema (`LocationManager.addProximityAlert`, sin Google Play Services) en cada dispositivo, y
+  `AlarmRescheduler` la reconstruye tras reiniciar o actualizar la app. `notifyOnArrival` es local
+  (doc 04): la otra app solo ve `latitude/longitude/radius/location_name` como datos y no debe asumir
+  que Polar avisa por geolocalización en todos los dispositivos del usuario.
 
 ## Listas encadenadas (`isDependencyChain`)
 

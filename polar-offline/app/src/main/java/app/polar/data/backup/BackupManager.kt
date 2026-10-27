@@ -10,6 +10,7 @@ import app.polar.data.entity.Subtask
 import app.polar.data.entity.Reminder
 import app.polar.util.AlarmManagerHelper
 import app.polar.util.AlarmRescheduler
+import app.polar.util.GeofenceHelper
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -32,7 +33,7 @@ class BackupManager(private val context: Context) {
 
     private val gson = Gson()
     private val database = AppDatabase.getDatabase(context)
-    private val alarmRescheduler = AlarmRescheduler(database, AlarmManagerHelper(context))
+    private val alarmRescheduler = AlarmRescheduler(database, AlarmManagerHelper(context), GeofenceHelper(context))
 
     suspend fun exportBackup(uri: Uri): Result<Boolean> = withContext(Dispatchers.IO) {
         try {

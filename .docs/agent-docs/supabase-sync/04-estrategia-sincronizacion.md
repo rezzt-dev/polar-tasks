@@ -117,6 +117,12 @@ Cuando un usuario inicia sesión por primera vez en un dispositivo con datos loc
 - Caché local de imagen (`imageUri` con `content://`) — se reemplaza por descarga desde Storage usando
   `image_path` (ver doc 03).
 - Estado de "expandido/colapsado" de secciones de UI, tutoriales vistos, etc.
+- Configuración de avisos: `Task.reminderOffset` (antelación del aviso), `Task.snoozedUntil` (aviso
+  pospuesto desde la notificación) y `Reminder.notifyOnArrival` (aviso al llegar, una alerta de
+  proximidad registrada en cada dispositivo). No van en los DTO y `EntityMappers` los conserva al
+  aplicar un pull o un conflicto perdido; un `snoozedUntil` se descarta si la tarea llega con otra
+  `due_date`. Si algún día deben viajar, hay que añadir columnas en Supabase (doc 03) y en el
+  contrato (doc 05) antes de tocar los DTO, o la subida fallará.
 
 ## Manejo de borrado en cascada (listas → tareas → subtareas)
 

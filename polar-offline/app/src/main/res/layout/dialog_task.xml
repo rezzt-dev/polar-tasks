@@ -100,6 +100,25 @@
           tools:text="@string/no_due_date" />
       </LinearLayout>
 
+      <!-- Aviso (solo con fecha): a la hora, con antelacion o sin aviso -->
+      <LinearLayout
+        android:id="@+id/containerAlert"
+        style="@style/Polar.FormRow"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+          style="@style/Polar.FormRow.Icon"
+          android:src="@drawable/ic_notifications" />
+
+        <TextView
+          android:id="@+id/tvAlert"
+          style="@style/Polar.FormRow.Text"
+          tools:text="@string/task_alert_at_due" />
+      </LinearLayout>
+
       <!-- Repeticion -->
       <LinearLayout
         android:id="@+id/containerRecurrence"

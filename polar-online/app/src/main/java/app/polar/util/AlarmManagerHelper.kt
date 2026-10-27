@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import app.polar.data.entity.Reminder
+import app.polar.data.entity.Task
 import app.polar.receiver.AlarmReceiver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -88,4 +90,16 @@ class AlarmManagerHelper @Inject constructor(
         const val REMINDER_REQUEST_OFFSET = 1_000_000
         const val SUBTASK_REQUEST_OFFSET = 2_000_000
     }
+}
+
+/** Programa la alarma de [task] según su aviso ([TaskAlert]), o la cancela si ya no debe sonar. */
+fun AlarmManagerHelper.syncTaskAlarm(task: Task) {
+    val triggerAt = TaskAlert.triggerAt(task)
+    if (triggerAt != null) scheduleTaskAlarm(task.id, triggerAt) else cancelTaskAlarm(task.id)
+}
+
+/** Programa la alarma de [reminder] si sigue pendiente; si no, la cancela. */
+fun AlarmManagerHelper.syncReminderAlarm(reminder: Reminder) {
+    if (!reminder.isCompleted && !reminder.isDeleted) scheduleReminderAlarm(reminder.id, reminder.dateTime)
+    else cancelReminderAlarm(reminder.id)
 }

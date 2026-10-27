@@ -95,6 +95,29 @@ class TaskViewModelTest {
     }
 
     @Test
+    fun `insertTask schedules a relative alert before the due date`() = runTest {
+        setupViewModel()
+        val dueDate = 2 * 24 * 60 * 60_000L
+        coEvery { repository.insertTask(any()) } returns 1L
+
+        viewModel.insertTask(1L, "Pagar la luz", "", dueDate = dueDate, reminderOffset = 24 * 60)
+
+        coVerify { repository.insertTask(match { it.reminderOffset == 24 * 60 && it.dueDate == dueDate }) }
+        verify { alarmHelper.scheduleTaskAlarm(1L, dueDate - 24 * 60 * 60_000L) }
+    }
+
+    @Test
+    fun `insertTask without alert never schedules it`() = runTest {
+        setupViewModel()
+        coEvery { repository.insertTask(any()) } returns 1L
+
+        viewModel.insertTask(1L, "Sin aviso", "", dueDate = 5000L, reminderOffset = app.polar.util.TaskAlert.OFF)
+
+        verify(exactly = 0) { alarmHelper.scheduleTaskAlarm(any(), any()) }
+        verify { alarmHelper.cancelTaskAlarm(1L) }
+    }
+
+    @Test
     fun `insertTask appends the task at the end of its list`() = runTest {
         setupViewModel()
         coEvery { repository.getNextTaskOrderIndex(7L) } returns 4

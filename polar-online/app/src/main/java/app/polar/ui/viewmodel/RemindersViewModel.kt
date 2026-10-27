@@ -10,7 +10,11 @@ import app.polar.data.entity.Reminder
 import app.polar.data.repository.ReminderRepository
 import app.polar.data.sync.SyncManager
 import app.polar.data.sync.touched
-import app.polar.receiver.AlarmReceiver
+import app.polar.util.AlarmManagerHelper
+import app.polar.util.AlarmRescheduler
+import app.polar.util.GeofenceHelper
+import app.polar.util.NotificationHelper
+import app.polar.util.syncReminderAlarm
 import kotlinx.coroutines.launch
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,8 +32,10 @@ import kotlinx.coroutines.flow.flowOf
 class RemindersViewModel @Inject constructor(
     application: Application,
     private val repository: ReminderRepository,
-    private val alarmHelper: app.polar.util.AlarmManagerHelper,
-    private val syncManager: SyncManager
+    private val alarmHelper: AlarmManagerHelper,
+    private val syncManager: SyncManager,
+    private val geofenceHelper: GeofenceHelper,
+    private val alarmRescheduler: AlarmRescheduler
 ) : AndroidViewModel(application) {
 
     val allReminders: StateFlow<List<Reminder>> = repository.allRemindersFlow
@@ -82,50 +88,47 @@ class RemindersViewModel @Inject constructor(
         }
     }
 
-    fun insert(
-        title: String, 
-        description: String, 
-        dateTime: Long, 
-        latitude: Double? = null, 
-        longitude: Double? = null, 
-        radius: Float? = null, 
-        locationName: String? = null
-    ) = safeLaunch {
-        val reminder = Reminder(
-            title = title, 
-            description = description, 
-            dateTime = dateTime,
-            latitude = latitude,
-            longitude = longitude,
-            radius = radius,
-            locationName = locationName
-        )
+    /** Crea el recordatorio si es nuevo (id 0) o guarda los cambios del existente. */
+    fun save(reminder: Reminder) = if (reminder.id == 0L) insert(reminder) else update(reminder)
+
+    private fun insert(reminder: Reminder) = safeLaunch {
         val id = repository.insert(reminder)
-        alarmHelper.scheduleReminderAlarm(id, dateTime)
+        syncAlerts(reminder.copy(id = id))
         
         // Show confirmation notification immediately
-        app.polar.util.NotificationHelper.showCreationConfirmation(getApplication(), title, dateTime)
+        NotificationHelper.showCreationConfirmation(getApplication(), reminder.title, reminder.dateTime)
     }
 
     fun update(reminder: Reminder) = safeLaunch {
         repository.update(reminder.touched())
-        if (!reminder.isCompleted) {
-            alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
-        } else {
-            alarmHelper.cancelReminderAlarm(reminder.id)
-        }
+        syncAlerts(reminder)
     }
+
+    /** Posponer desde la lista: un recordatorio no tiene más fecha que la de su aviso. */
+    fun snooze(reminder: Reminder, until: Long) = update(reminder.copy(dateTime = until, isCompleted = false))
 
     fun moveToTrash(reminder: Reminder) = safeLaunch {
         repository.softDelete(reminder)
-        alarmHelper.cancelReminderAlarm(reminder.id)
+        syncAlerts(reminder.copy(isDeleted = true))
     }
 
     fun restoreFromTrash(reminder: Reminder) = safeLaunch {
         repository.restore(reminder)
-        if (!reminder.isCompleted) {
-            alarmHelper.scheduleReminderAlarm(reminder.id, reminder.dateTime)
-        }
+        syncAlerts(reminder.copy(isDeleted = false))
+    }
+
+    /**
+     * Vuelve a registrar los avisos por llegada: se pierden al reiniciar y no se pueden registrar
+     * mientras falta el permiso de ubicación, que el usuario puede conceder desde los ajustes.
+     */
+    fun refreshArrivalAlerts() = viewModelScope.launch {
+        // Sin escrituras: no hace falta la sincronización que lanza safeLaunch.
+        runCatching { alarmRescheduler.rescheduleArrivalAlerts() }.onFailure { it.printStackTrace() }
+    }
+
+    private fun syncAlerts(reminder: Reminder) {
+        alarmHelper.syncReminderAlarm(reminder)
+        geofenceHelper.sync(reminder)
     }
     
     // Forces a sync attempt first so as many trashed reminders as possible have their tombstone
@@ -158,6 +161,7 @@ class RemindersViewModel @Inject constructor(
                 purged = repository.permanentDelete(reminder.id, force = true)
             }
             alarmHelper.cancelReminderAlarm(reminder.id)
+            geofenceHelper.cancel(reminder.id)
             if (!purged) {
                 _errorMessage.value = getApplication<Application>().getString(R.string.trash_item_purge_pending_sync)
             }

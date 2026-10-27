@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
       onDelete = ForeignKey.CASCADE
     )
   ],
-  indices = [Index(value = ["uuid"], unique = true)]
+  indices = [Index(value = ["uuid"], unique = true), Index(value = ["listId"])]
 )
 data class Task(
   @PrimaryKey(autoGenerate = true)
@@ -34,6 +34,11 @@ data class Task(
   @ColumnInfo(name = "priority") val priority: Int = 0, // 0: None, 1: Low, 2: Medium, 3: High
   @ColumnInfo(name = "imageUri") val imageUri: String? = null,
   @ColumnInfo(name = "timeEstimate") val timeEstimate: Int = 0,
+  // Minutos antes de dueDate a los que suena el aviso (0, a la hora; TaskAlert.OFF, sin aviso).
+  // Local de cada dispositivo: no viaja a Supabase (ver EntityMappers).
+  @ColumnInfo(name = "reminderOffset") val reminderOffset: Int = 0,
+  // Aviso pospuesto desde la notificación: sustituye al aviso normal sin cambiar dueDate. Local.
+  @ColumnInfo(name = "snoozedUntil") val snoozedUntil: Long? = null,
   val uuid: String = java.util.UUID.randomUUID().toString(),
   val updatedAt: Long = System.currentTimeMillis(),
   val deletedAt: Long? = null,

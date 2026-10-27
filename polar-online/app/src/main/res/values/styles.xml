@@ -520,6 +520,27 @@
         <item name="android:windowMinWidthMinor">@dimen/dialog_min_width</item>
     </style>
 
+    <!-- Activity sin ventana propia que solo muestra una hoja inferior (posponer desde la
+         notificacion). El tema del manifiesto decide que la app de debajo siga visible; el overlay
+         lo reaplica sobre el tema de color que elige BaseActivity. -->
+    <style name="Theme.Polar.Transparent" parent="Theme.Polar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.Polar.Transparent" parent="">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <style name="ThemeOverlay.Polar.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.Polar.BottomSheet</item>
         <item name="android:backgroundDimAmount">0.32</item>

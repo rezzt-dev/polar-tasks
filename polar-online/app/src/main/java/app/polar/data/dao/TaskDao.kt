@@ -103,8 +103,9 @@ interface TaskDao {
   @Query("SELECT COALESCE(MAX(orderIndex), -1) + 1 FROM tasks WHERE listId = :listId")
   suspend fun getNextOrderIndex(listId: Long): Int
 
-  // Tareas que deben sonar: pendientes, fuera de la papelera y con vencimiento futuro.
-  @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 0 AND dueDate > :now")
+  // Tareas que pueden sonar: pendientes, fuera de la papelera y con vencimiento o aviso pospuesto
+  // futuros. La hora exacta del aviso la decide TaskAlert.
+  @Query("SELECT * FROM tasks WHERE isDeleted = 0 AND completed = 0 AND (dueDate > :now OR snoozedUntil > :now)")
   suspend fun getAlarmableTasks(now: Long): List<Task>
 
   @Query("SELECT id FROM tasks")

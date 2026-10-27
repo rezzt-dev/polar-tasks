@@ -20,6 +20,9 @@ data class Reminder(
     val longitude: Double? = null,
     val radius: Float? = null,
     val locationName: String? = null,
+    // Además de a su hora, avisa al entrar en el radio de las coordenadas (ver GeofenceHelper).
+    // Local de cada dispositivo: no viaja a Supabase (ver EntityMappers).
+    val notifyOnArrival: Boolean = false,
     val uuid: String = java.util.UUID.randomUUID().toString(),
     val updatedAt: Long = System.currentTimeMillis(),
     val deletedAt: Long? = null,

@@ -16,7 +16,7 @@ import app.polar.data.entity.Reminder
 
 @Database(
   entities = [TaskList::class, Task::class, Subtask::class, Reminder::class],
-  version = 18,
+  version = 19,
   exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -295,6 +295,16 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
+    // Avisos más completos: aviso relativo a la fecha de la tarea, posponer sin tocar la fecha y
+    // aviso al llegar al lugar de un recordatorio.
+    val MIGRATION_18_19 = object : androidx.room.migration.Migration(18, 19) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE tasks ADD COLUMN reminderOffset INTEGER NOT NULL DEFAULT 0")
+            database.execSQL("ALTER TABLE tasks ADD COLUMN snoozedUntil INTEGER DEFAULT NULL")
+            database.execSQL("ALTER TABLE reminders ADD COLUMN notifyOnArrival INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
     @Volatile
     private var INSTANCE: AppDatabase? = null
 
@@ -305,7 +315,7 @@ abstract class AppDatabase : RoomDatabase() {
           AppDatabase::class.java,
           "polar_database"
         )
-        .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18)
+        .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19)
         .fallbackToDestructiveMigration()
         // WAL allows concurrent reads + writes without blocking the UI thread
         .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)

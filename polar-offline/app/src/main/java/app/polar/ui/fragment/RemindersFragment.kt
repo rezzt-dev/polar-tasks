@@ -20,10 +20,12 @@ import app.polar.data.entity.Reminder
 import app.polar.databinding.FragmentRemindersBinding
 import app.polar.ui.adapter.ReminderAdapter
 import app.polar.ui.dialog.ReminderDialog
+import app.polar.ui.dialog.SnoozeSheet
 import app.polar.ui.model.ReminderFilter
 import app.polar.ui.model.ReminderPresentation
 import app.polar.ui.model.ReminderRow
 import app.polar.ui.viewmodel.RemindersViewModel
+import app.polar.util.DateUtils
 import app.polar.util.TaskSwipeHelper
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +43,8 @@ class RemindersFragment : Fragment() {
     private var itemTouchHelper: ItemTouchHelper? = null
     private var reminders: List<Reminder> = emptyList()
     private var selectedFilter = ReminderFilter.ALL
+    // Recordatorio cuya hoja de posponer está abierta (sobrevive a la recreación de la vista)
+    private var snoozingReminderId: Long? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRemindersBinding.inflate(inflater, container, false)
@@ -52,6 +56,7 @@ class RemindersFragment : Fragment() {
         selectedFilter = savedInstanceState?.getString(FILTER_KEY)?.let { name ->
             ReminderFilter.entries.firstOrNull { it.name == name }
         } ?: selectedFilter
+        snoozingReminderId = savedInstanceState?.getLong(SNOOZING_KEY, -1L)?.takeIf { it != -1L } ?: snoozingReminderId
         adapter = ReminderAdapter(
             onCheckChanged = { reminder, checked, _ -> viewModel.update(reminder.copy(isCompleted = checked)) },
             onItemClick = ::showEditReminderDialog,
@@ -76,6 +81,18 @@ class RemindersFragment : Fragment() {
         }
         setupSwipeGestures()
         observeReminders()
+        childFragmentManager.setFragmentResultListener(SnoozeSheet.REQUEST_KEY, viewLifecycleOwner) { _, result ->
+            val reminder = reminders.find { it.id == snoozingReminderId }
+            snoozingReminderId = null
+            val until = SnoozeSheet.untilFrom(result) ?: return@setFragmentResultListener
+            if (reminder != null) snooze(reminder, until)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Al volver de los ajustes del sistema puede haberse concedido el permiso de ubicación.
+        viewModel.refreshArrivalAlerts()
     }
 
     private fun setupSwipeGestures() {
@@ -130,23 +147,32 @@ class RemindersFragment : Fragment() {
             .setAction(R.string.undo) { viewModel.restoreFromTrash(reminder) }.show()
     }
 
+    private fun showSnoozeSheet(reminder: Reminder) {
+        snoozingReminderId = reminder.id
+        SnoozeSheet.newInstance(reminder.title).show(childFragmentManager, SnoozeSheet.TAG)
+    }
+
+    private fun snooze(reminder: Reminder, until: Long) {
+        viewModel.snooze(reminder, until)
+        Snackbar.make(binding.root, getString(R.string.snoozed_until, DateUtils.formatDateTime(requireContext(), until)), Snackbar.LENGTH_LONG)
+            .setAnchorView((activity as? app.polar.MainActivity)?.snackbarAnchor)
+            .setAction(R.string.undo) { viewModel.update(reminder) }.show()
+    }
+
     private fun showEditReminderDialog(reminder: Reminder) {
-        ReminderDialog(
-            reminder = reminder,
-            onSaveWithLocation = { title, desc, time, lat, lng, radius, locName ->
-                viewModel.update(reminder.copy(title = title, description = desc, dateTime = time,
-                    latitude = lat, longitude = lng, radius = radius, locationName = locName))
-            }
-        ).show(parentFragmentManager, "EditReminderDialog")
+        ReminderDialog(reminder = reminder, onSave = viewModel::save)
+            .show(parentFragmentManager, "EditReminderDialog")
     }
 
     private fun showReminderPopupMenu(reminder: Reminder, anchor: View) {
         PopupMenu(requireContext(), anchor).apply {
-            // Los recordatorios solo admiten editar y eliminar.
-            menuInflater.inflate(R.menu.menu_task_list, menu)
+            menuInflater.inflate(R.menu.menu_reminder, menu)
+            // Posponer solo tiene sentido mientras está pendiente.
+            menu.findItem(R.id.action_snooze).isVisible = !reminder.isCompleted
             applyPolarStyle(requireContext())
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
+                    R.id.action_snooze -> { showSnoozeSheet(reminder); true }
                     R.id.action_edit -> { showEditReminderDialog(reminder); true }
                     R.id.action_delete -> { moveToTrash(reminder); true }
                     else -> false
@@ -220,6 +246,7 @@ class RemindersFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(FILTER_KEY, selectedFilter.name)
+        snoozingReminderId?.let { outState.putLong(SNOOZING_KEY, it) }
     }
 
     override fun onDestroyView() {
@@ -230,5 +257,8 @@ class RemindersFragment : Fragment() {
         super.onDestroyView()
     }
 
-    companion object { private const val FILTER_KEY = "reminders_filter" }
+    companion object {
+        private const val FILTER_KEY = "reminders_filter"
+        private const val SNOOZING_KEY = "reminders_snoozing_id"
+    }
 }

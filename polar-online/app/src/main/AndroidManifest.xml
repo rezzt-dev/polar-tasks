@@ -10,6 +10,19 @@
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+  <!-- Aviso al llegar al lugar de un recordatorio (opcional; se pide solo al activarlo) -->
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+  <uses-feature android:name="android.hardware.location" android:required="false" />
+
+  <!-- Abrir la ubicación de un recordatorio en cualquier app de mapas instalada -->
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="geo" />
+    </intent>
+  </queries>
 
   <application
     android:name=".PolarApplication"
@@ -43,6 +56,13 @@
     <activity
       android:name=".ui.activity.TutorialActivity"
       android:exported="false" />
+    <!-- Hoja de "posponer" que se abre desde la notificación, sobre lo que haya en pantalla -->
+    <activity
+      android:name=".ui.activity.SnoozeActivity"
+      android:excludeFromRecents="true"
+      android:exported="false"
+      android:taskAffinity=""
+      android:theme="@style/Theme.Polar.Transparent" />
     <activity
       android:name=".ui.activity.AuthActivity"
       android:exported="false"
@@ -52,6 +72,7 @@
     <receiver android:name=".receiver.BootReceiver" android:exported="false">
         <intent-filter>
             <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED"/>
         </intent-filter>
     </receiver>

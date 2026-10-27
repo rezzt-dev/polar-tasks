@@ -20,6 +20,7 @@ import app.polar.databinding.ItemReminderSectionBinding
 import app.polar.ui.model.ReminderPresentation
 import app.polar.ui.model.ReminderRow
 import app.polar.ui.model.ReminderSection
+import app.polar.util.GeofenceHelper
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import java.util.Date
@@ -68,6 +69,7 @@ class ReminderAdapter(
         private val overdue = MaterialColors.getColor(binding.root, R.attr.colorDateOverdue)
         private val success = MaterialColors.getColor(binding.root, R.attr.colorSuccess)
         private val primary = MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
+        private val error = MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorError)
 
         fun bind(reminder: Reminder) {
             // No cancelar el ViewPropertyAnimator: pertenece también al ItemAnimator.
@@ -100,8 +102,7 @@ class ReminderAdapter(
             binding.tvReminderTime.text = DateFormat.getTimeFormat(context).format(date)
             binding.tvReminderTime.setTextColor(if (section == ReminderSection.OVERDUE) overdue else foreground)
             binding.tvReminderDate.text = DateFormat.getMediumDateFormat(context).format(date)
-            binding.tvReminderLocation.text = reminder.locationName
-            binding.tvReminderLocation.isVisible = !reminder.locationName.isNullOrBlank()
+            bindLocation(reminder)
             binding.tvReminderLocation.setOnClickListener(null)
             val hasCoordinates = reminder.latitude != null && reminder.longitude != null
             binding.tvReminderLocation.isClickable = hasCoordinates
@@ -121,6 +122,28 @@ class ReminderAdapter(
             binding.btnReminderMenu.visibility = if (showMenu) View.VISIBLE else View.INVISIBLE
             binding.btnReminderMenu.setOnClickListener { onItemLongClick(reminder, it) }
             binding.btnReminderMenu.contentDescription = context.getString(R.string.reminder_options_named, reminder.title)
+        }
+
+        // Con aviso al llegar, la línea lo indica; si falta el permiso de ubicación, en color de error.
+        private fun bindLocation(reminder: Reminder) {
+            val place = reminder.locationName?.takeIf { it.isNotBlank() }
+            val arrivalBlocked = reminder.notifyOnArrival && !reminder.isCompleted &&
+                !GeofenceHelper.canNotifyOnArrival(context)
+            val text = when {
+                !reminder.notifyOnArrival -> place
+                else -> {
+                    val arrival = place?.let { context.getString(R.string.reminder_arrival_at, it) }
+                        ?: context.getString(R.string.reminder_arrival_place)
+                    if (arrivalBlocked) context.getString(R.string.reminder_arrival_no_permission, arrival) else arrival
+                }
+            }
+            binding.tvReminderLocation.text = text
+            binding.tvReminderLocation.isVisible = text != null
+            val color = if (arrivalBlocked) error else secondary
+            binding.tvReminderLocation.setTextColor(color)
+            androidx.core.widget.TextViewCompat.setCompoundDrawableTintList(
+                binding.tvReminderLocation, android.content.res.ColorStateList.valueOf(color)
+            )
         }
 
         private fun openLocation(reminder: Reminder) {

@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
       onDelete = ForeignKey.CASCADE
     )
   ],
-  indices = [Index(value = ["uuid"], unique = true)]
+  indices = [Index(value = ["uuid"], unique = true), Index(value = ["taskId"])]
 )
 data class Subtask(
   @PrimaryKey(autoGenerate = true)

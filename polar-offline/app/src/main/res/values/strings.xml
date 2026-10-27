@@ -285,7 +285,6 @@
   <string name="notification_channel_name">recordatorios de tareas</string>
   <string name="notification_channel_desc">avisos de vencimiento de tareas, subtareas y recordatorios</string>
   <string name="notification_action_complete">completar</string>
-  <string name="notification_action_snooze">posponer 1 h</string>
   <string name="notification_reminder_title">recordatorio: %1$s</string>
   <string name="notification_subtask_of">subtarea de %1$s</string>
   <string name="reminder_created_title">recordatorio creado</string>
@@ -416,5 +415,61 @@
   <plurals name="recurrence_after_year">
     <item quantity="one">%d año después de completarla</item>
     <item quantity="other">%d años después de completarla</item>
+  </plurals>
+
+  <!-- recordatorios más completos: aviso relativo, posponer y aviso al llegar -->
+  <string name="snooze">posponer</string>
+  <string name="notification_task_due">vence %1$s</string>
+  <string name="notification_arrived_at">has llegado a %1$s</string>
+  <string name="notification_arrived">has llegado al lugar del recordatorio</string>
+  <string name="snooze_title">posponer hasta…</string>
+  <string name="snooze_this_evening">esta tarde</string>
+  <string name="snooze_pick">elegir fecha y hora</string>
+  <string name="snooze_pick_past">elige un momento futuro</string>
+  <string name="snoozed_until">pospuesto hasta %1$s</string>
+  <string name="snooze_not_pending">ya no está pendiente</string>
+  <string name="task_alert_at_due">avisar a la hora</string>
+  <string name="task_alert_off">sin aviso</string>
+  <string name="task_alert_snoozed">aviso pospuesto hasta %1$s</string>
+  <string name="reminder_title_required">escribe un título</string>
+  <string name="reminder_arrival">avisar al llegar</string>
+  <string name="reminder_arrival_hint">te avisaremos al entrar en esta zona, además de a la hora elegida.</string>
+  <string name="reminder_arrival_radius">radio de la zona</string>
+  <string name="reminder_arrival_needs_coordinates">añade las coordenadas del lugar para avisarte al llegar</string>
+  <string name="distance_meters">%d m</string>
+  <string name="distance_kilometers">%d km</string>
+  <string name="location_permission_title">ubicación en segundo plano</string>
+  <string name="location_permission_message">para avisarte al llegar aunque polar esté cerrada, permite el acceso a la ubicación «todo el tiempo». tu ubicación nunca sale del dispositivo.</string>
+  <string name="location_permission_allow">permitir</string>
+  <string name="not_now">ahora no</string>
+  <string name="location_permission_denied">sin acceso a la ubicación no podemos avisarte al llegar</string>
+  <string name="reminder_arrival_permission_missing">falta permitir la ubicación «todo el tiempo». toca para revisarlo.</string>
+  <string name="reminder_arrival_location_off">la ubicación del dispositivo está desactivada. toca para activarla.</string>
+  <string name="reminder_arrival_at">al llegar a %1$s</string>
+  <string name="reminder_arrival_place">al llegar</string>
+  <string name="reminder_arrival_no_permission">%1$s · sin permiso de ubicación</string>
+  <plurals name="snooze_in_minutes">
+    <item quantity="one">en %d minuto</item>
+    <item quantity="other">en %d minutos</item>
+  </plurals>
+  <plurals name="snooze_in_hours">
+    <item quantity="one">en %d hora</item>
+    <item quantity="other">en %d horas</item>
+  </plurals>
+  <plurals name="task_alert_minutes_before">
+    <item quantity="one">avisar %d min antes</item>
+    <item quantity="other">avisar %d min antes</item>
+  </plurals>
+  <plurals name="task_alert_hours_before">
+    <item quantity="one">avisar %d h antes</item>
+    <item quantity="other">avisar %d h antes</item>
+  </plurals>
+  <plurals name="task_alert_days_before">
+    <item quantity="one">avisar %d día antes</item>
+    <item quantity="other">avisar %d días antes</item>
+  </plurals>
+  <plurals name="task_alert_weeks_before">
+    <item quantity="one">avisar %d semana antes</item>
+    <item quantity="other">avisar %d semanas antes</item>
   </plurals>
 </resources>

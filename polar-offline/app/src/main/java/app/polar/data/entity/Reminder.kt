@@ -15,5 +15,7 @@ data class Reminder(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val radius: Float? = null,
-    val locationName: String? = null
+    val locationName: String? = null,
+    // Además de a su hora, avisa al entrar en el radio de las coordenadas (ver GeofenceHelper)
+    val notifyOnArrival: Boolean = false
 )

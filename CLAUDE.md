@@ -233,8 +233,11 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
 - **Activities:** extienden `BaseActivity` y se anotan con `@AndroidEntryPoint`.
 - **Colores:** usa atributos de tema (`?attr/...`), nunca hex hardcodeados.
 - **Alarmas:** se programan desde ViewModels/receivers con `AlarmManagerHelper`, nunca desde la UI;
-  para reconstruirlas o cancelarlas en bloque usa `AlarmRescheduler`. Los textos generados fuera
-  de una activity (notificaciones, widget) usan `ThemeManager.localizedContext()`.
+  para reconstruirlas o cancelarlas en bloque usa `AlarmRescheduler`. La hora del aviso de una
+  tarea la decide `TaskAlert` (antelación `reminderOffset`, aviso pospuesto `snoozedUntil`): usa
+  `syncTaskAlarm(task)` y nunca reescribas `dueDate` para posponer. El aviso al llegar de un
+  recordatorio va por `GeofenceHelper` y es el único uso de los permisos de ubicación. Los textos
+  generados fuera de una activity (notificaciones, widget) usan `ThemeManager.localizedContext()`.
 - **Recurrencia:** `Task.recurrence` guarda un valor fijo (`DAILY`, `MON_WED`...) o una regla
   `RRULE:...`; léela y escríbela con `RecurrenceRule`, muéstrala con `RecurrenceFormatter` y no la
   compares con literales (`RecurrenceUtils.isRecurring()`). Detalle en la sección 5 de `AGENTS.md`.

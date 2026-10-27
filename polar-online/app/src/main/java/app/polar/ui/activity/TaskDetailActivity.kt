@@ -18,6 +18,7 @@ import app.polar.ui.viewmodel.TaskViewModel
 import app.polar.util.DateUtils
 import app.polar.util.RecurrenceFormatter
 import app.polar.util.RecurrenceUtils
+import app.polar.util.TaskAlert
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -181,6 +182,16 @@ class TaskDetailActivity : BaseActivity() {
                 binding.tvDetailRecurrence.text = RecurrenceFormatter.describe(this, task.recurrence)
             } else {
                 binding.rowRecurrence.visibility = View.GONE
+            }
+
+            // Aviso: solo si no es el de siempre (a la hora) o está pospuesto desde la notificación
+            val snoozedUntil = task.snoozedUntil?.takeIf { !task.completed && it > System.currentTimeMillis() }
+            binding.rowAlert.visibility =
+                if (snoozedUntil != null || task.reminderOffset != TaskAlert.AT_DUE_TIME) View.VISIBLE else View.GONE
+            binding.tvDetailAlert.text = if (snoozedUntil != null) {
+                getString(R.string.task_alert_snoozed, DateUtils.formatDateTime(this, snoozedUntil))
+            } else {
+                TaskAlert.describe(this, task.reminderOffset)
             }
         } else {
             binding.cardDueDate.visibility = View.GONE

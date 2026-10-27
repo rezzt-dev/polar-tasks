@@ -283,7 +283,6 @@
   <string name="notification_channel_name">rappels de tâches</string>
   <string name="notification_channel_desc">alertes d\'échéance des tâches, sous-tâches et rappels</string>
   <string name="notification_action_complete">terminer</string>
-  <string name="notification_action_snooze">reporter d\'1 h</string>
   <string name="notification_reminder_title">rappel : %1$s</string>
   <string name="notification_subtask_of">sous-tâche de %1$s</string>
   <string name="reminder_created_title">rappel créé</string>
@@ -428,5 +427,67 @@
     <item quantity="one">%d an après l\'avoir terminée</item>
     <item quantity="other">%d ans après l\'avoir terminée</item>
     <item quantity="many">%d ans après l\'avoir terminée</item>
+  </plurals>
+
+  <!-- recordatorios más completos: aviso relativo, posponer y aviso al llegar -->
+  <string name="snooze">reporter</string>
+  <string name="notification_task_due">échéance %1$s</string>
+  <string name="notification_arrived_at">vous voici à %1$s</string>
+  <string name="notification_arrived">vous voici au lieu du rappel</string>
+  <string name="snooze_title">reporter jusqu\'à…</string>
+  <string name="snooze_this_evening">ce soir</string>
+  <string name="snooze_pick">choisir la date et l\'heure</string>
+  <string name="snooze_pick_past">choisissez un moment à venir</string>
+  <string name="snoozed_until">reporté jusqu\'à %1$s</string>
+  <string name="snooze_not_pending">ce n\'est plus en attente</string>
+  <string name="task_alert_at_due">rappeler à l\'échéance</string>
+  <string name="task_alert_off">aucun rappel</string>
+  <string name="task_alert_snoozed">rappel reporté jusqu\'à %1$s</string>
+  <string name="reminder_title_required">saisissez un titre</string>
+  <string name="reminder_arrival">me rappeler à l\'arrivée</string>
+  <string name="reminder_arrival_hint">vous recevrez un rappel en entrant dans cette zone, en plus de l\'heure choisie.</string>
+  <string name="reminder_arrival_radius">rayon de la zone</string>
+  <string name="reminder_arrival_needs_coordinates">ajoutez les coordonnées du lieu pour recevoir un rappel à l\'arrivée</string>
+  <string name="distance_meters">%d m</string>
+  <string name="distance_kilometers">%d km</string>
+  <string name="location_permission_title">localisation en arrière-plan</string>
+  <string name="location_permission_message">pour vous rappeler votre tâche à l\'arrivée même quand polar est fermée, autorisez l\'accès à la localisation « tout le temps ». votre position ne quitte jamais votre appareil.</string>
+  <string name="location_permission_allow">autoriser</string>
+  <string name="not_now">plus tard</string>
+  <string name="location_permission_denied">sans accès à la localisation, impossible de vous rappeler quoi que ce soit à l\'arrivée</string>
+  <string name="reminder_arrival_permission_missing">l\'accès à la localisation « tout le temps » manque. touchez pour le vérifier.</string>
+  <string name="reminder_arrival_location_off">la localisation de l\'appareil est désactivée. touchez pour l\'activer.</string>
+  <string name="reminder_arrival_at">à l\'arrivée à %1$s</string>
+  <string name="reminder_arrival_place">à l\'arrivée</string>
+  <string name="reminder_arrival_no_permission">%1$s · sans accès à la localisation</string>
+  <plurals name="snooze_in_minutes">
+    <item quantity="one">dans %d minute</item>
+    <item quantity="other">dans %d minutes</item>
+    <item quantity="many">dans %d minutes</item>
+  </plurals>
+  <plurals name="snooze_in_hours">
+    <item quantity="one">dans %d heure</item>
+    <item quantity="other">dans %d heures</item>
+    <item quantity="many">dans %d heures</item>
+  </plurals>
+  <plurals name="task_alert_minutes_before">
+    <item quantity="one">rappeler %d min avant</item>
+    <item quantity="other">rappeler %d min avant</item>
+    <item quantity="many">rappeler %d min avant</item>
+  </plurals>
+  <plurals name="task_alert_hours_before">
+    <item quantity="one">rappeler %d h avant</item>
+    <item quantity="other">rappeler %d h avant</item>
+    <item quantity="many">rappeler %d h avant</item>
+  </plurals>
+  <plurals name="task_alert_days_before">
+    <item quantity="one">rappeler %d jour avant</item>
+    <item quantity="other">rappeler %d jours avant</item>
+    <item quantity="many">rappeler %d jours avant</item>
+  </plurals>
+  <plurals name="task_alert_weeks_before">
+    <item quantity="one">rappeler %d semaine avant</item>
+    <item quantity="other">rappeler %d semaines avant</item>
+    <item quantity="many">rappeler %d semaines avant</item>
   </plurals>
 </resources>
