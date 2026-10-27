@@ -16,6 +16,8 @@ import app.polar.ui.adapter.SubtaskAdapter
 import app.polar.ui.dialog.TaskDialog
 import app.polar.ui.viewmodel.TaskViewModel
 import app.polar.util.DateUtils
+import app.polar.util.RecurrenceFormatter
+import app.polar.util.RecurrenceUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -173,17 +175,9 @@ class TaskDetailActivity : BaseActivity() {
             }
 
             // Recurrence info
-            if (task.recurrence != "NONE") {
+            if (RecurrenceUtils.isRecurring(task.recurrence)) {
                 binding.rowRecurrence.visibility = View.VISIBLE
-                val recText = when(task.recurrence) {
-                    "DAILY" -> getString(R.string.recurrence_daily)
-                    "WEEKLY" -> getString(R.string.recurrence_weekly)
-                    "MONTHLY" -> getString(R.string.recurrence_monthly)
-                    "MON_WED" -> getString(R.string.recurrence_summary_mon_wed)
-                    "FIRST_DAY_MONTH" -> getString(R.string.recurrence_summary_first_day_month)
-                    else -> ""
-                }
-                binding.tvDetailRecurrence.text = recText
+                binding.tvDetailRecurrence.text = RecurrenceFormatter.describe(this, task.recurrence)
             } else {
                 binding.rowRecurrence.visibility = View.GONE
             }

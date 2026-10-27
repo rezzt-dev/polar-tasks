@@ -364,4 +364,69 @@
   <string name="font_size_value">%d sp</string>
   <string name="smart_parser_hint">essayez : « vendredi à 10h !haute #maison @liste »</string>
   <string name="smart_parser_unknown_list">aucune liste ne s’appelle « %1$s »</string>
+  <!-- Repetición personalizada (RecurrenceDialog, RecurrenceFormatter) -->
+  <string name="recurrence_custom">personnaliser…</string>
+  <string name="recurrence_dialog_title">répétition personnalisée</string>
+  <string name="recurrence_section_interval">fréquence</string>
+  <string name="recurrence_section_weekdays">jours de la semaine</string>
+  <string name="recurrence_section_month_day">jour du mois</string>
+  <string name="recurrence_section_anchor">compter à partir de</string>
+  <string name="recurrence_interval_decrease">diminuer</string>
+  <string name="recurrence_interval_increase">augmenter</string>
+  <string name="recurrence_interval_error">choisissez un intervalle entre 1 et %d</string>
+  <string name="recurrence_month_day_number">le %d</string>
+  <string name="recurrence_month_day_first">le premier jour</string>
+  <string name="recurrence_month_day_last">le dernier jour</string>
+  <string name="recurrence_anchor_due">sa date</string>
+  <string name="recurrence_anchor_completion">quand vous la terminez</string>
+  <string name="recurrence_anchor_completion_hint">la prochaine date est calculée à partir du jour où vous la terminez.</string>
+  <string name="recurrence_weekdays_hint">sans jour sélectionné, elle se répète le même jour de la semaine que sa date.</string>
+  <string name="recurrence_upcoming">prochaines : %1$s</string>
+  <string name="recurrence_summary_yearly">tous les ans</string>
+  <string name="recurrence_summary_with_detail">%1$s : %2$s</string>
+  <string name="recurrence_apply">appliquer</string>
+  <string name="recurrence_unit_day">jours</string>
+  <string name="recurrence_unit_week">semaines</string>
+  <string name="recurrence_unit_month">mois</string>
+  <string name="recurrence_unit_year">ans</string>
+  <plurals name="recurrence_every_day">
+    <item quantity="one">tous les %d jour</item>
+    <item quantity="other">tous les %d jours</item>
+    <item quantity="many">tous les %d jours</item>
+  </plurals>
+  <plurals name="recurrence_every_week">
+    <item quantity="one">toutes les %d semaine</item>
+    <item quantity="other">toutes les %d semaines</item>
+    <item quantity="many">toutes les %d semaines</item>
+  </plurals>
+  <plurals name="recurrence_every_month">
+    <item quantity="one">tous les %d mois</item>
+    <item quantity="other">tous les %d mois</item>
+    <item quantity="many">tous les %d mois</item>
+  </plurals>
+  <plurals name="recurrence_every_year">
+    <item quantity="one">tous les %d an</item>
+    <item quantity="other">tous les %d ans</item>
+    <item quantity="many">tous les %d ans</item>
+  </plurals>
+  <plurals name="recurrence_after_day">
+    <item quantity="one">%d jour après l\'avoir terminée</item>
+    <item quantity="other">%d jours après l\'avoir terminée</item>
+    <item quantity="many">%d jours après l\'avoir terminée</item>
+  </plurals>
+  <plurals name="recurrence_after_week">
+    <item quantity="one">%d semaine après l\'avoir terminée</item>
+    <item quantity="other">%d semaines après l\'avoir terminée</item>
+    <item quantity="many">%d semaines après l\'avoir terminée</item>
+  </plurals>
+  <plurals name="recurrence_after_month">
+    <item quantity="one">%d mois après l\'avoir terminée</item>
+    <item quantity="other">%d mois après l\'avoir terminée</item>
+    <item quantity="many">%d mois après l\'avoir terminée</item>
+  </plurals>
+  <plurals name="recurrence_after_year">
+    <item quantity="one">%d an après l\'avoir terminée</item>
+    <item quantity="other">%d ans après l\'avoir terminée</item>
+    <item quantity="many">%d ans après l\'avoir terminée</item>
+  </plurals>
 </resources>

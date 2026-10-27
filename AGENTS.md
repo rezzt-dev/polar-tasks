@@ -242,7 +242,7 @@ todos los temas:
 - `Task` tiene una Foreign Key a `TaskList` con `onDelete = CASCADE`.
 - Soft-delete: los campos `isDeleted` en `Task` y `Reminder` marcan elementos en papelera en lugar de borrarlos físicamente.
 - Tags se almacenan como cadena separada por comas en `Task.tags`.
-- Recurrencia: campo `recurrence` con valores `"NONE"`, `"DAILY"`, `"WEEKLY"`, `"MONTHLY"`.
+- Recurrencia: campo `recurrence` con `"NONE"`, uno de los valores fijos (`"DAILY"`, `"WEEKLY"`, `"MONTHLY"`, `"MON_WED"`, `"FIRST_DAY_MONTH"`) o una regla personalizada `RRULE:FREQ=...` (cada n días/semanas/meses/años, días concretos de la semana o del mes, o "n después de completarla" con `X-FROM=COMPLETION`). `RecurrenceRule` (`util/`) la lee y la escribe, y guarda con el valor fijo cualquier regla equivalente; `RecurrenceFormatter` genera su texto de interfaz. No compares `recurrence` con literales: usa `RecurrenceUtils.isRecurring()`. Al añadir una regla nueva no hace falta migración, pero sí actualizar el `CHECK` de `tasks.recurrence` en Supabase (`.docs/agent-docs/supabase-sync/03-esquema-supabase.md`).
 - Prioridad: entero `0=None, 1=Low, 2=Medium, 3=High`.
 
 ### Migraciones
@@ -267,7 +267,7 @@ Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXA
 
 ### WorkManager (`worker/`)
 
-- `RecurrenceWorker` — se ejecuta cada hora y al abrir la app para reabrir las tareas recurrentes completadas cuya siguiente ocurrencia ya ha empezado (reglas de fechas en `RecurrenceUtils`).
+- `RecurrenceWorker` — se ejecuta cada hora y al abrir la app para reabrir las tareas recurrentes completadas cuya siguiente ocurrencia ya ha empezado (reglas de fechas en `RecurrenceUtils` y `RecurrenceRule`).
 
 ### Widget (`widget/`)
 

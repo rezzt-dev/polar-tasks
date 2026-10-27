@@ -95,6 +95,51 @@ class RecurrenceUtilsTest {
     }
 
     @Test
+    fun customRule_isRecurringAndAdvances() {
+        val everyTwoWeeks = "RRULE:FREQ=WEEKLY;INTERVAL=2"
+        assertTrue(RecurrenceUtils.isRecurring(everyTwoWeeks))
+        assertFalse(RecurrenceUtils.isRecurring("RRULE:FREQ=SECONDLY"))
+        assertEquals(at(2026, 1, 28), RecurrenceUtils.nextOccurrence(at(2026, 1, 14), everyTwoWeeks))
+    }
+
+    @Test
+    fun firstOccurrence_movesToAllowedDay() {
+        // martes 13 con "lunes y miércoles" -> miércoles 14; un día permitido se queda igual
+        assertEquals(at(2026, 1, 14), RecurrenceUtils.firstOccurrence(at(2026, 1, 13), "MON_WED"))
+        assertEquals(at(2026, 1, 14), RecurrenceUtils.firstOccurrence(at(2026, 1, 14), "MON_WED"))
+        assertEquals(at(2026, 1, 13), RecurrenceUtils.firstOccurrence(at(2026, 1, 13), "DAILY"))
+        assertEquals(at(2026, 1, 13), RecurrenceUtils.firstOccurrence(at(2026, 1, 13), "NONE"))
+    }
+
+    @Test
+    fun complete_fromCompletionMovesDateToCompletionDay() {
+        val rule = "RRULE:FREQ=DAILY;INTERVAL=3;X-FROM=COMPLETION"
+        // vencía el 20 a las 7:30; se completa antes, el 14 a las 18:00 -> cuenta desde el 14 a las 7:30
+        val early = RecurrenceUtils.complete(task(at(2026, 1, 20), rule, completed = false), at(2026, 1, 14, 18, 0))
+        assertEquals(at(2026, 1, 14), early.dueDate)
+        val late = RecurrenceUtils.complete(task(at(2026, 1, 2), rule, completed = false), at(2026, 1, 14, 18, 0))
+        assertEquals(at(2026, 1, 14), late.dueDate)
+    }
+
+    @Test
+    fun startNextOccurrence_fromCompletionWaitsTheWholeInterval() {
+        val rule = "RRULE:FREQ=DAILY;INTERVAL=3;X-FROM=COMPLETION"
+        val done = task(at(2026, 1, 14), rule)
+        assertNull(RecurrenceUtils.startNextOccurrence(done, at(2026, 1, 16, 23, 0)))
+        assertEquals(at(2026, 1, 17), RecurrenceUtils.startNextOccurrence(done, at(2026, 1, 17, 0, 5))!!.dueDate)
+        // reabierta tarde: vence igualmente 3 días después de completarla, sin saltar a hoy
+        assertEquals(at(2026, 1, 17), RecurrenceUtils.startNextOccurrence(done, at(2026, 1, 25))!!.dueDate)
+    }
+
+    @Test
+    fun startNextOccurrence_customWeekdaysCatchUp() {
+        // martes y jueves cada 2 semanas, completada el jueves 15; se abre el viernes 30
+        val rule = "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH"
+        val reopened = RecurrenceUtils.startNextOccurrence(task(at(2026, 1, 15), rule), at(2026, 1, 30, 9, 0))
+        assertEquals(at(2026, 1, 29), reopened!!.dueDate)
+    }
+
+    @Test
     fun startNextOccurrence_ignoresInvalidTasks() {
         val now = at(2026, 2, 1)
         assertNull(RecurrenceUtils.startNextOccurrence(task(at(2026, 1, 14), completed = false), now))

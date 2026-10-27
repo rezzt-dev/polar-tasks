@@ -29,7 +29,7 @@ data class Task(
   val createdAt: Long = System.currentTimeMillis(),
   @ColumnInfo(name = "dueDate") val dueDate: Long? = null,
   @ColumnInfo(name = "orderIndex") val orderIndex: Int = 0,
-  @ColumnInfo(name = "recurrence") val recurrence: String = "NONE", // NONE, DAILY, WEEKLY, MONTHLY
+  @ColumnInfo(name = "recurrence") val recurrence: String = "NONE", // "NONE" o un valor de RecurrenceRule (DAILY, RRULE:...)
   @ColumnInfo(name = "isDeleted") val isDeleted: Boolean = false,
   @ColumnInfo(name = "priority") val priority: Int = 0, // 0: None, 1: Low, 2: Medium, 3: High
   @ColumnInfo(name = "imageUri") val imageUri: String? = null,

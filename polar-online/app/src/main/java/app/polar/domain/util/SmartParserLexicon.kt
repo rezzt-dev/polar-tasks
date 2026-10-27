@@ -20,11 +20,14 @@ internal class SmartParserLexicon(
   val daily: String,
   val weekly: String,
   val monthly: String,
+  /** Inicio de "cada 2 semanas"; la cantidad y la unidad las añade el parser. */
+  val everyAmount: String,
   /** Preposición de "en 3 días"; la cantidad y la unidad las añade el parser. */
   val inAmount: String,
   val dayUnit: String,
   val weekUnit: String,
   val monthUnit: String,
+  val yearUnit: String,
   val numberWords: Map<String, Int>,
   val nextWeek: String,
   val nextMonth: String,
@@ -52,10 +55,12 @@ internal class SmartParserLexicon(
       daily = """cada\s+d[ií]a|todos\s+los\s+d[ií]as|diariamente|a\s+diario""",
       weekly = """cada\s+semana|todas\s+las\s+semanas|semanalmente""",
       monthly = """cada\s+mes|todos\s+los\s+meses|mensualmente""",
+      everyAmount = """cada""",
       inAmount = """(?:en|dentro\s+de)""",
       dayUnit = """d[ií]as?""",
       weekUnit = """semanas?""",
       monthUnit = """mes(?:es)?""",
+      yearUnit = """a[nñ]os?""",
       numberWords = mapOf(
         "un" to 1, "uno" to 1, "una" to 1, "dos" to 2, "tres" to 3, "cuatro" to 4, "cinco" to 5,
         "seis" to 6, "siete" to 7, "ocho" to 8, "nueve" to 9, "diez" to 10, "quince" to 15
@@ -87,10 +92,12 @@ internal class SmartParserLexicon(
       daily = """every\s*day|each\s+day|daily(?=\s*$)""",
       weekly = """every\s+week|each\s+week|weekly(?=\s*$)""",
       monthly = """every\s+month|each\s+month|monthly(?=\s*$)""",
+      everyAmount = """every""",
       inAmount = """in""",
       dayUnit = """days?""",
       weekUnit = """weeks?""",
       monthUnit = """months?""",
+      yearUnit = """years?""",
       numberWords = mapOf(
         "a" to 1, "an" to 1, "one" to 1, "two" to 2, "three" to 3, "four" to 4, "five" to 5,
         "six" to 6, "seven" to 7, "eight" to 8, "nine" to 9, "ten" to 10
@@ -120,10 +127,12 @@ internal class SmartParserLexicon(
       daily = """chaque\s+jour|tous\s+les\s+jours|quotidiennement""",
       weekly = """chaque\s+semaine|toutes\s+les\s+semaines|hebdomadairement""",
       monthly = """chaque\s+mois|tous\s+les\s+mois|mensuellement""",
+      everyAmount = """tous\s+les|toutes\s+les""",
       inAmount = """dans""",
       dayUnit = """jours?""",
       weekUnit = """semaines?""",
       monthUnit = """mois""",
+      yearUnit = """ans|ann[ée]es""",
       numberWords = mapOf(
         "un" to 1, "une" to 1, "deux" to 2, "trois" to 3, "quatre" to 4, "cinq" to 5, "six" to 6,
         "sept" to 7, "huit" to 8, "neuf" to 9, "dix" to 10, "quinze" to 15
@@ -154,10 +163,12 @@ internal class SmartParserLexicon(
       daily = """jeden\s+tag|t[äa]glich|taeglich""",
       weekly = """jede\s+woche|w[öo]chentlich|woechentlich""",
       monthly = """jeden\s+monat|monatlich""",
+      everyAmount = """alle""",
       inAmount = """in""",
-      dayUnit = """tag(?:en)?""",
+      dayUnit = """tag(?:e|en)?""",
       weekUnit = """wochen?""",
-      monthUnit = """monat(?:en)?""",
+      monthUnit = """monat(?:e|en)?""",
+      yearUnit = """jahr(?:e|en)?""",
       numberWords = mapOf(
         "ein" to 1, "einem" to 1, "einer" to 1, "eins" to 1, "zwei" to 2, "drei" to 3, "vier" to 4,
         "fünf" to 5, "sechs" to 6, "sieben" to 7, "acht" to 8, "neun" to 9, "zehn" to 10, "vierzehn" to 14

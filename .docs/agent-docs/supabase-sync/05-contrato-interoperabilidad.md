@@ -74,7 +74,7 @@ default", sin perder el string original.
 | `tags` | array de strings | no (default `[]`) | En Postgres es `text[]`. **Importante:** Polar internamente guarda esto como CSV (`"trabajo,urgente"`) en su columna Room; la capa de sync de Polar debe convertir CSV ↔ array en el borde (nunca exponer el CSV crudo a la red). Cualquier app debe enviar/recibir siempre array, no CSV. |
 | `due_date` | bigint | sí | `null` = sin fecha límite |
 | `order_index` | integer | no (default 0) | |
-| `recurrence` | string enum | no (default `"NONE"`) | Valores válidos exactos: `NONE`, `DAILY`, `WEEKLY`, `MONTHLY`, `MON_WED`, `FIRST_DAY_MONTH`. Ver doc 02 para el algoritmo exacto de próxima fecha — si la otra app calcula recurrencia por su cuenta (en vez de depender del motor centralizado del doc 03), **debe** implementar la tabla de reglas exactamente igual o las fechas divergirán entre apps. |
+| `recurrence` | string enum | no (default `"NONE"`) | Valores válidos: `NONE`, `DAILY`, `WEEKLY`, `MONTHLY`, `MON_WED`, `FIRST_DAY_MONTH` o una regla personalizada `RRULE:...` (gramática en doc 02; una app que no la entienda debe conservar el valor tal cual y tratar la tarea como no recurrente, nunca reescribirlo). Ver doc 02 para el algoritmo exacto de próxima fecha — si la otra app calcula recurrencia por su cuenta (en vez de depender del motor centralizado del doc 03), **debe** implementar la tabla de reglas exactamente igual o las fechas divergirán entre apps. |
 | `priority` | integer 0-3 | no (default 0) | `0`=Ninguna, `1`=Baja, `2`=Media, `3`=Alta. Si la otra app tiene más niveles de prioridad, debe mapear a esta escala de 4 valores al escribir aquí (no inventar valores fuera de 0-3). |
 | `image_path` | string | sí | Ruta dentro del bucket `task-images` de Supabase Storage (`{user_id}/{task_uuid}.jpg`), **no** una URI local de ningún dispositivo. `null` = sin imagen. Ver doc 03/04. |
 | `time_estimate` | integer | no (default 0) | Minutos estimados |
@@ -169,7 +169,7 @@ suelto".
 - [ ] Preserva campos que no usa/entiende (icon, color, is_dependency_chain, radius, etc.) tal cual los
       recibió.
 - [ ] `tags` siempre como array, nunca CSV, en la red.
-- [ ] `recurrence` solo usa los 6 valores exactos listados arriba.
+- [ ] `recurrence` solo usa los 6 valores fijos o una regla `RRULE:` con la gramática del doc 02, y conserva sin tocar las reglas que no entienda.
 - [ ] `priority` solo usa `0`-`3`.
 - [ ] Convierte `image_path` (ruta de Storage) en vez de depender de URIs locales del dispositivo.
 - [ ] Respeta `is_deleted`/`deleted_at` como tombstone — nunca hace `DELETE` físico directo salvo el

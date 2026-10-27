@@ -135,6 +135,11 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - ampliar `SmartParser` a los cinco idiomas de la app (castellano, ingles, frances y aleman) con dias de la semana ("el viernes"), fechas relativas ("en 3 dias", "la proxima semana", "este fin de semana"), repeticiones "los lunes y miercoles" y "el primer dia de cada mes", prioridad (`!`, `!!`, `!!!`, `!alta`, "prioridad alta") y lista (`@nombre`); el vocabulario de cada idioma vive en `SmartParserLexicon`.
 - analizar el titulo del formulario de tarea mientras se escribe para que las filas de fecha, repeticion, prioridad y la nueva fila de lista muestren lo detectado, con un ejemplo de uso al crear y un aviso si `@nombre` no coincide con ninguna lista; lo elegido a mano sigue teniendo preferencia.
 - permitir mover una tarea a otra lista desde su formulario, colocandola al final de la lista de destino.
+- anadir repeticion personalizada con la opcion "personalizar…" del formulario de tarea, que abre una hoja inferior (`RecurrenceDialog`) para repetir cada n dias, semanas, meses o anos, en dias concretos de la semana, el mismo dia, el primero o el ultimo del mes, y contando desde su fecha o desde el dia en que se completa ("3 dias despues de completarla"), con un resumen y las proximas fechas en vivo.
+- guardar las reglas personalizadas en `tasks.recurrence` como un subconjunto de rrule (`RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE`) leido y escrito por `RecurrenceRule`, conservando los valores fijos de siempre para las reglas equivalentes, de modo que no hace falta migracion de base de datos y las copias anteriores siguen siendo validas.
+- reconocer en `SmartParser` "cada 2 semanas", "cada tres dias", "cada 6 meses" o "cada 2 anos" (y "cada 2 semanas los lunes") en los cuatro idiomas.
+- mostrar las reglas personalizadas en el formulario y en el detalle de la tarea con `RecurrenceFormatter` y hacer que una tarea con dias concretos empiece en el primero de ellos.
+- [online] permitir los valores `RRULE:` en el `CHECK` de `tasks.recurrence` de supabase (migracion sql en `03-esquema-supabase.md`), necesario antes de publicar para que la subida de tareas no falle.
 
 #### ELIMINADO
 
@@ -264,6 +269,11 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - extend `SmartParser` to the app's five languages (spanish, english, french and german) with weekdays ("on friday"), relative dates ("in 3 days", "next week", "this weekend"), "every monday and wednesday" and "first day of every month" repeats, priority (`!`, `!!`, `!!!`, `!high`, "high priority") and list (`@name`); each language's vocabulary lives in `SmartParserLexicon`.
 - parse the task form title while typing so the date, repeat, priority and new list rows show what was detected, with a usage example when creating and a warning when `@name` matches no list; manual choices still take precedence.
 - allow moving a task to another list from its form, placing it at the end of the target list.
+- add custom repeat through the "custom…" option of the task form, which opens a bottom sheet (`RecurrenceDialog`) to repeat every n days, weeks, months or years, on specific weekdays, on the same, first or last day of the month, and counting from its date or from the day it is completed ("3 days after completion"), with a live summary and upcoming dates.
+- store custom rules in `tasks.recurrence` as an rrule subset (`RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE`) read and written by `RecurrenceRule`, keeping the usual fixed values for equivalent rules, so no database migration is needed and older backups stay valid.
+- recognise "every 2 weeks", "every three days", "every 6 months" or "every 2 years" (and "every 2 weeks on mondays") in `SmartParser` in the four languages.
+- show custom rules in the task form and details with `RecurrenceFormatter` and make a task with specific days start on the first of them.
+- [online] allow `RRULE:` values in the supabase `tasks.recurrence` `CHECK` (sql migration in `03-esquema-supabase.md`), required before release so the task upload does not fail.
 
 #### REMOVED
 

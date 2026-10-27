@@ -265,6 +265,40 @@ class SmartParserTest {
         assertEquals("MONTHLY", parse("revisar facturas cada mes").recurrence)
     }
 
+    @Test
+    fun testParse_EveryAmount() {
+        val result = parse("regar plantas cada 2 semanas")
+        assertEquals("regar plantas", result.title)
+        assertEquals("RRULE:FREQ=WEEKLY;INTERVAL=2", result.recurrence)
+        assertNull(result.dueDate)
+
+        assertEquals("RRULE:FREQ=DAILY;INTERVAL=3", parse("cambiar agua cada tres días").recurrence)
+        assertEquals("RRULE:FREQ=MONTHLY;INTERVAL=6", parse("revisión cada 6 meses").recurrence)
+        assertEquals("RRULE:FREQ=YEARLY;INTERVAL=2", parse("pasaporte cada 2 años").recurrence)
+        // una sola unidad es la regla de siempre
+        assertEquals("WEEKLY", parse("limpiar cada 1 semana").recurrence)
+        // la cantidad no se toma como hora
+        assertNull(parse("pastilla cada 8 días").dueDate)
+    }
+
+    @Test
+    fun testParse_EveryAmountWithWeekday() {
+        val result = parse("reunión cada 2 semanas los lunes")
+        assertEquals("reunión", result.title)
+        assertEquals("RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO", result.recurrence)
+        assertEquals(at(2026, Calendar.NOVEMBER, 2), result.dueDate)
+    }
+
+    @Test
+    fun testParse_EveryAmountOtherLanguages() {
+        assertEquals("RRULE:FREQ=WEEKLY;INTERVAL=2", parse("water plants every 2 weeks", language = "en").recurrence)
+        assertEquals("RRULE:FREQ=DAILY;INTERVAL=3", parse("feed fish every three days", language = "en").recurrence)
+        assertEquals("RRULE:FREQ=WEEKLY;INTERVAL=2", parse("arroser toutes les 2 semaines", language = "fr").recurrence)
+        assertEquals("RRULE:FREQ=MONTHLY;INTERVAL=3", parse("payer tous les 3 mois", language = "fr").recurrence)
+        assertEquals("RRULE:FREQ=WEEKLY;INTERVAL=2", parse("gießen alle 2 Wochen", language = "de").recurrence)
+        assertEquals("RRULE:FREQ=DAILY;INTERVAL=3", parse("lüften alle drei Tage", language = "de").recurrence)
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Prioridad y lista
     // ---------------------------------------------------------------------------------------------

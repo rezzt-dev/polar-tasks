@@ -235,6 +235,9 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
 - **Alarmas:** se programan desde ViewModels/receivers con `AlarmManagerHelper`, nunca desde la UI;
   para reconstruirlas o cancelarlas en bloque usa `AlarmRescheduler`. Los textos generados fuera
   de una activity (notificaciones, widget) usan `ThemeManager.localizedContext()`.
+- **Recurrencia:** `Task.recurrence` guarda un valor fijo (`DAILY`, `MON_WED`...) o una regla
+  `RRULE:...`; léela y escríbela con `RecurrenceRule`, muéstrala con `RecurrenceFormatter` y no la
+  compares con literales (`RecurrenceUtils.isRecurring()`). Detalle en la sección 5 de `AGENTS.md`.
 - **Commits:** aplica la sección "Redacción de commits" antes de proponer título o descripción.
 - **`changelog.md`:** registra los cambios según la sección "Formato de las secciones de `changelog.md`".
 - **Pull requests, merges y releases:** aplica la sección "Pull requests, merges y releases" antes de redactar cualquiera de los tres.

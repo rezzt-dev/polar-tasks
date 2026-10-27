@@ -19,6 +19,8 @@ import app.polar.domain.util.ParsedTask
 import app.polar.domain.util.SmartParser
 import app.polar.ui.adapter.SubtaskAdapter
 import app.polar.ui.viewmodel.TaskListViewModel
+import app.polar.util.RecurrenceFormatter
+import app.polar.util.RecurrenceRule
 import app.polar.util.RecurrenceUtils
 import app.polar.util.ThemeManager
 
@@ -76,7 +78,7 @@ class TaskDialog(
   private val tagList = mutableListOf<String>()
   private var selectedDate: Long? = null
   private var isDateExplicitlySet: Boolean = false
-  private var selectedRecurrence: String = "NONE"
+  private var selectedRecurrence: String = RecurrenceUtils.NONE
   private var isRecurrenceExplicitlySet: Boolean = false
   private var selectedPriority: Int = 0
   private var isPriorityExplicitlySet: Boolean = false
@@ -165,19 +167,23 @@ class TaskDialog(
       popup.menu.add(0, 3, 3, getString(R.string.recurrence_monthly))
       popup.menu.add(0, 4, 4, getString(R.string.recurrence_summary_mon_wed))
       popup.menu.add(0, 5, 5, getString(R.string.recurrence_summary_first_day_month))
+      popup.menu.add(0, RECURRENCE_CUSTOM_ITEM, 6, getString(R.string.recurrence_custom))
       
       popup.setOnMenuItemClickListener { item ->
-        selectedRecurrence = when (item.itemId) {
-          1 -> "DAILY"
-          2 -> "WEEKLY"
-          3 -> "MONTHLY"
-          4 -> "MON_WED"
-          5 -> "FIRST_DAY_MONTH"
-          else -> "NONE"
+        if (item.itemId == RECURRENCE_CUSTOM_ITEM) {
+          showCustomRecurrence()
+          return@setOnMenuItemClickListener true
         }
-        isRecurrenceExplicitlySet = true
-        // Sin fecha, la recurrente empieza hoy (ver effectiveDate)
-        refreshParsedRows()
+        setRecurrence(
+          when (item.itemId) {
+            1 -> RecurrenceUtils.DAILY
+            2 -> RecurrenceUtils.WEEKLY
+            3 -> RecurrenceUtils.MONTHLY
+            4 -> RecurrenceUtils.MON_WED
+            5 -> RecurrenceUtils.FIRST_DAY_MONTH
+            else -> RecurrenceUtils.NONE
+          }
+        )
         true
       }
       popup.show()
@@ -303,6 +309,23 @@ class TaskDialog(
     }
   }
   
+  private fun setRecurrence(recurrence: String) {
+    selectedRecurrence = recurrence
+    isRecurrenceExplicitlySet = true
+    // Sin fecha, la recurrente empieza hoy (ver effectiveDate)
+    refreshParsedRows()
+  }
+
+  // El editor parte de la regla actual (elegida o escrita en el título) y de la fecha que tendría
+  private fun showCustomRecurrence() {
+    RecurrenceDialog(
+      context = requireContext(),
+      initial = RecurrenceRule.parse(effectiveRecurrence()),
+      anchorDate = effectiveDate() ?: defaultDueDate(),
+      onApply = { rule -> if (_binding != null) setRecurrence(rule.encode()) }
+    ).show()
+  }
+
   // Hoy a la hora de notificación por defecto
   private fun defaultDueDate(): Long {
     val sharedPrefs =
@@ -369,13 +392,16 @@ class TaskDialog(
         selectedDate?.let(RecurrenceUtils::startOfDay) == RecurrenceUtils.startOfDay(parsedDate) -> parsedDate
       else -> selectedDate
     }
-    // Una recurrente necesita fecha de vencimiento: sin ella nunca llegaría a repetirse
-    return date ?: if (effectiveRecurrence() != "NONE") defaultDueDate() else null
+    // Una recurrente necesita fecha de vencimiento: sin ella nunca llegaría a repetirse. Si la
+    // regla fija días ("lunes y miércoles", "el último día del mes"), empieza en el primero de ellos.
+    val recurrence = effectiveRecurrence()
+    if (!RecurrenceUtils.isRecurring(recurrence)) return date
+    return RecurrenceUtils.firstOccurrence(date ?: defaultDueDate(), recurrence)
   }
 
   private fun effectiveRecurrence(): String =
     if (isRecurrenceExplicitlySet) selectedRecurrence
-    else parsed?.recurrence?.takeIf { it != "NONE" } ?: selectedRecurrence
+    else parsed?.recurrence?.takeIf { it != RecurrenceUtils.NONE } ?: selectedRecurrence
 
   private fun effectivePriority(): Int =
     if (isPriorityExplicitlySet) selectedPriority else parsed?.priority ?: selectedPriority
@@ -444,16 +470,8 @@ class TaskDialog(
   
   private fun updateRecurrenceText() {
     val recurrence = effectiveRecurrence()
-    val text = when (recurrence) {
-      "DAILY" -> getString(R.string.recurrence_summary_daily)
-      "WEEKLY" -> getString(R.string.recurrence_summary_weekly)
-      "MONTHLY" -> getString(R.string.recurrence_summary_monthly)
-      "MON_WED" -> getString(R.string.recurrence_summary_mon_wed)
-      "FIRST_DAY_MONTH" -> getString(R.string.recurrence_summary_first_day_month)
-      else -> getString(R.string.recurrence_summary_none)
-    }
-    binding.tvRecurrence.text = text
-    setRowValueState(binding.tvRecurrence, isSet = recurrence != "NONE")
+    binding.tvRecurrence.text = RecurrenceFormatter.describe(requireContext(), recurrence)
+    setRowValueState(binding.tvRecurrence, isSet = RecurrenceUtils.isRecurring(recurrence))
   }
   
   private fun updatePriorityText() {
@@ -559,5 +577,9 @@ class TaskDialog(
   override fun onDestroyView() {
     super.onDestroyView()
     _binding = null
+  }
+
+  private companion object {
+    const val RECURRENCE_CUSTOM_ITEM = 6
   }
 }

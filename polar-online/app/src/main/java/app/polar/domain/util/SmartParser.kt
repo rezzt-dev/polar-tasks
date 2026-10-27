@@ -1,5 +1,6 @@
 package app.polar.domain.util
 
+import app.polar.util.RecurrenceRule
 import app.polar.util.RecurrenceUtils
 import java.text.Normalizer
 import java.util.Calendar
@@ -9,7 +10,7 @@ data class ParsedTask(
     val title: String,
     val dueDate: Long?,
     val tags: List<String>,
-    val recurrence: String, // valores de RecurrenceUtils: "NONE", "DAILY", "WEEKLY", "MONTHLY", "MON_WED", "FIRST_DAY_MONTH"
+    val recurrence: String, // "NONE" o un valor de RecurrenceRule.encode() ("DAILY", "RRULE:FREQ=WEEKLY;INTERVAL=2"...)
     val priority: Int? = null, // 1: baja, 2: media, 3: alta; null si el texto no la indica
     val listId: Long? = null, // lista indicada con "@nombre" que existe en [SmartParser.parse]
     val unknownList: String? = null // "@nombre" que no coincide con ninguna lista (se queda en el título)
@@ -20,7 +21,7 @@ data class ParsedTask(
  * [SmartParserLexicon]): etiquetas (`#casa`), lista (`@trabajo`), prioridad (`!`, `!!`, `!!!`,
  * `!alta`, "prioridad alta"), fechas (hoy, mañana, pasado mañana, "el viernes", "en 3 días",
  * "la próxima semana", "este fin de semana"), hora ("a las 17", "5:30pm") y repetición ("cada día",
- * "cada lunes", "los lunes y miércoles", "el primer día de cada mes").
+ * "cada 2 semanas", "cada lunes", "los lunes y miércoles", "el primer día de cada mes").
  *
  * Cada expresión reconocida se quita del título. Sin dependencias de Android para probarlo en JVM.
  */
@@ -90,7 +91,16 @@ object SmartParser {
                 val everyWeekday = grammar.everyWeekday.firstNotNullOfOrNull { (day, regex) ->
                     text.take(regex)?.let { day }
                 }
+                val everyAmount = extractEveryAmount(text, grammar)
                 when {
+                    everyAmount != null -> {
+                        // "cada 2 semanas los lunes": el día fija la regla semanal y la primera fecha
+                        val rule = if (everyWeekday != null && everyAmount.frequency == RecurrenceRule.Frequency.WEEKLY) {
+                            everyAmount.copy(weekdays = setOf(everyWeekday))
+                        } else everyAmount
+                        recurrence = rule.encode()
+                        everyWeekday?.let { date = nextWeekday(today, listOf(it), includeToday = true) }
+                    }
                     everyWeekday != null -> {
                         recurrence = RecurrenceUtils.WEEKLY
                         date = nextWeekday(today, listOf(everyWeekday), includeToday = true)
@@ -152,6 +162,24 @@ object SmartParser {
         return null to unknown
     }
 
+    /** "cada 2 semanas", "cada tres días"... */
+    private fun extractEveryAmount(text: Remaining, grammar: Grammar): RecurrenceRule? {
+        val match = grammar.everyAmount.find(text.value) ?: return null
+        val amount = amountOf(match.groupValues[1], grammar)
+            ?.takeIf { it in 1..RecurrenceRule.MAX_INTERVAL } ?: return null
+        val frequency = when {
+            match.groupValues[2].isNotEmpty() -> RecurrenceRule.Frequency.DAILY
+            match.groupValues[3].isNotEmpty() -> RecurrenceRule.Frequency.WEEKLY
+            match.groupValues[4].isNotEmpty() -> RecurrenceRule.Frequency.MONTHLY
+            else -> RecurrenceRule.Frequency.YEARLY
+        }
+        text.remove(match)
+        return RecurrenceRule(frequency, interval = amount)
+    }
+
+    private fun amountOf(value: String, grammar: Grammar): Int? =
+        value.toIntOrNull() ?: grammar.numberWords[value.lowercase()]
+
     private fun extractPriority(text: Remaining, grammar: Grammar): Int? {
         text.take(prioritySymbolRegex)?.let { return it.groupValues[1].length }
         grammar.priorityWords.forEach { (level, regex) -> if (text.take(regex) != null) return level }
@@ -166,7 +194,7 @@ object SmartParser {
         if (text.take(grammar.tomorrow) != null) return copyOf(today).addDays(1)
 
         text.take(grammar.inAmount)?.let { match ->
-            val amount = match.groupValues[1].let { it.toIntOrNull() ?: grammar.numberWords[it.lowercase()] }
+            val amount = amountOf(match.groupValues[1], grammar)
             if (amount != null) {
                 val field = when {
                     match.groupValues[2].isNotEmpty() -> Calendar.DAY_OF_YEAR
@@ -326,6 +354,12 @@ object SmartParser {
         val inAmount = word(
             "${lexicon.inAmount}\\s+(\\d{1,3}|${alternatives(lexicon.numberWords.keys)})\\s+" +
                 "(?:(${lexicon.dayUnit})|(${lexicon.weekUnit})|(${lexicon.monthUnit}))"
+        )
+
+        // Grupos: 1 cantidad, 2 días, 3 semanas, 4 meses, 5 años ("cada 2 semanas")
+        val everyAmount = word(
+            "(?:${lexicon.everyAmount})\\s+(\\d{1,3}|${alternatives(lexicon.numberWords.keys)})\\s+" +
+                "(?:(${lexicon.dayUnit})|(${lexicon.weekUnit})|(${lexicon.monthUnit})|(${lexicon.yearUnit}))"
         )
 
         // Grupos: 1 preposición, 2 hora, 3 minutos, 4 sufijo ("17:30", "17.30", "17h30", "5pm", "17 uhr")

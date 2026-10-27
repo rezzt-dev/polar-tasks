@@ -759,6 +759,15 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <!-- Titulo de seccion dentro de un dialogo u hoja inferior -->
+    <style name="Polar.SectionLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Polar.Section</item>
+    </style>
+
     <!-- Fila de propiedad de un formulario: icono, texto y ripple redondeado -->
     <style name="Polar.FormRow">
         <item name="android:layout_width">match_parent</item>

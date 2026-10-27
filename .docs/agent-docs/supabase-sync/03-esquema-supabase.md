@@ -73,7 +73,8 @@ create table public.tasks (
   due_date       bigint,
   order_index    integer not null default 0,
   recurrence     text not null default 'NONE'
-                   check (recurrence in ('NONE','DAILY','WEEKLY','MONTHLY','MON_WED','FIRST_DAY_MONTH')),
+                   check (recurrence in ('NONE','DAILY','WEEKLY','MONTHLY','MON_WED','FIRST_DAY_MONTH')
+                          or recurrence ~ '^RRULE:FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)(;[A-Z-]+=[A-Z0-9,-]+)*$'),
   priority       smallint not null default 0 check (priority between 0 and 3),
   image_path     text,          -- ruta en Supabase Storage (bucket task-images), NO una content:// URI
   time_estimate  integer not null default 0,
@@ -220,6 +221,24 @@ select cron.schedule('purge-tombstones-daily', '0 4 * * *', $$select public.purg
 (Requiere la extensión `pg_cron`, disponible en proyectos Supabase.) 30 días es el valor sugerido; se
 puede ajustar. Ambas apps deben interpretar "la fila ya no existe en el servidor" como "bórrala también
 localmente si aún la tienes", en el flujo de `pull` (ver doc 04).
+
+### Migración: repetición personalizada (`RRULE:`)
+
+Las versiones con repetición personalizada envían valores `RRULE:...` en `tasks.recurrence` (doc 02).
+Con el `CHECK` original, el `upsert` por lotes de `SyncManager.pushTasks` falla entero en cuanto una
+tarea lleva una regla personalizada y **ninguna tarea se sube**. Antes de publicar esa versión de
+`polar-online/` hay que ejecutar en el proyecto de Supabase:
+
+```sql
+alter table public.tasks drop constraint if exists tasks_recurrence_check;
+alter table public.tasks add constraint tasks_recurrence_check
+  check (recurrence in ('NONE','DAILY','WEEKLY','MONTHLY','MON_WED','FIRST_DAY_MONTH')
+         or recurrence ~ '^RRULE:FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)(;[A-Z-]+=[A-Z0-9,-]+)*$');
+```
+
+Si existe `roll_recurring_tasks()` (abajo) y su `calculate_next_due_date` no implementa la gramática
+`RRULE:`, añade `and recurrence not like 'RRULE:%'` a su `where`: esas tareas las reabre el
+`RecurrenceWorker` local de cada dispositivo, que sí conoce las reglas.
 
 ## Motor de recurrencia centralizado (recomendado)
 

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  hoja inferior de repeticion personalizada (RecurrenceDialog).
+  arriba, el resumen de la regla y sus proximas fechas; debajo, intervalo y unidad, dias de la
+  semana o dia del mes segun la unidad, y desde cuando se cuenta. la botonera queda fija.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+    style="@style/Widget.Polar.BottomSheet.DragHandle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+  <TextView
+    style="@style/Polar.DialogTitle"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:text="@string/recurrence_dialog_title" />
+
+  <androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:overScrollMode="ifContentScrolls"
+    android:scrollbars="none">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingStart="24dp"
+      android:paddingEnd="24dp">
+
+      <!-- Resumen en vivo y proximas fechas (o el error del intervalo) -->
+      <TextView
+        android:id="@+id/tvRecurrenceSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:accessibilityLiveRegion="polite"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="cada 2 semanas: lun, mié" />
+
+      <TextView
+        android:id="@+id/tvRecurrenceUpcoming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="próximas: mié 28 oct · lun 9 nov · mié 11 nov" />
+
+      <!-- Intervalo y unidad -->
+      <TextView
+        android:id="@+id/tvIntervalLabel"
+        style="@style/Polar.SectionLabel"
+        android:labelFor="@+id/etInterval"
+        android:text="@string/recurrence_section_interval" />
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/btnIntervalDecrease"
+          style="@style/Widget.Polar.Button.IconTonal"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:contentDescription="@string/recurrence_interval_decrease"
+          android:insetTop="0dp"
+          android:insetBottom="0dp"
+          app:icon="@drawable/ic_minus"
+          app:iconSize="18dp" />
+
+        <EditText
+          android:id="@+id/etInterval"
+          style="@style/Polar.InlineInput"
+          android:layout_width="64dp"
+          android:gravity="center"
+          android:imeOptions="actionDone"
+          android:inputType="number"
+          android:maxLength="3"
+          android:maxLines="1"
+          android:selectAllOnFocus="true"
+          tools:text="2" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/btnIntervalIncrease"
+          style="@style/Widget.Polar.Button.IconTonal"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:contentDescription="@string/recurrence_interval_increase"
+          android:insetTop="0dp"
+          android:insetBottom="0dp"
+          app:icon="@drawable/ic_add"
+          app:iconSize="18dp" />
+      </LinearLayout>
+
+      <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupUnit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+          android:id="@+id/chipUnitDay"
+          style="@style/Widget.Polar.Chip.Filter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checkable="true"
+          tools:text="días" />
+
+        <com.google.android.material.chip.Chip
+          android:id="@+id/chipUnitWeek"
+          style="@style/Widget.Polar.Chip.Filter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checkable="true"
+          tools:text="semanas" />
+
+        <com.google.android.material.chip.Chip
+          android:id="@+id/chipUnitMonth"
+          style="@style/Widget.Polar.Chip.Filter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checkable="true"
+          tools:text="meses" />
+
+        <com.google.android.material.chip.Chip
+          android:id="@+id/chipUnitYear"
+          style="@style/Widget.Polar.Chip.Filter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checkable="true"
+          tools:text="años" />
+      </com.google.android.material.chip.ChipGroup>
+
+      <!-- Dias de la semana (solo semanal y contando desde su fecha) -->
+      <LinearLayout
+        android:id="@+id/groupWeekdays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+          style="@style/Polar.SectionLabel"
+          android:text="@string/recurrence_section_weekdays" />
+
+        <!-- Los siete dias en una fila de ancho repartido (RecurrenceDialog.setupWeekdays) -->
+        <LinearLayout
+          android:id="@+id/rowWeekdays"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal" />
+
+        <TextView
+          android:id="@+id/tvWeekdaysHint"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/recurrence_weekdays_hint"
+          android:textAppearance="?attr/textAppearanceBodySmall"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+      </LinearLayout>
+
+      <!-- Dia del mes (solo mensual y contando desde su fecha) -->
+      <LinearLayout
+        android:id="@+id/groupMonthDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+          style="@style/Polar.SectionLabel"
+          android:text="@string/recurrence_section_month_day" />
+
+        <com.google.android.material.chip.ChipGroup
+          android:id="@+id/chipGroupMonthDay"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:chipSpacingHorizontal="8dp"
+          app:selectionRequired="true"
+          app:singleSelection="true" />
+      </LinearLayout>
+
+      <!-- Desde cuando se cuenta el intervalo -->
+      <TextView
+        style="@style/Polar.SectionLabel"
+        android:text="@string/recurrence_section_anchor" />
+
+      <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupAnchor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:chipSpacingHorizontal="8dp"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+          android:id="@+id/chipAnchorDue"
+          style="@style/Widget.Polar.Chip.Filter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checkable="true"
+          android:text="@string/recurrence_anchor_due" />
+
+        <com.google.android.material.chip.Chip
+          android:id="@+id/chipAnchorCompletion"
+          style="@style/Widget.Polar.Chip.Filter"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checkable="true"
+          android:text="@string/recurrence_anchor_completion" />
+      </com.google.android.material.chip.ChipGroup>
+
+      <TextView
+        android:id="@+id/tvAnchorHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/recurrence_anchor_completion_hint"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        tools:visibility="visible" />
+    </LinearLayout>
+  </androidx.core.widget.NestedScrollView>
+
+  <!-- Botonera -->
+  <LinearLayout
+    style="@style/Polar.DialogActions"
+    android:layout_marginTop="12dp">
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnCancel"
+      style="@style/Widget.Polar.Button.Text.Neutral"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:text="@string/cancel" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnApply"
+      style="@style/Widget.Polar.Button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:minWidth="112dp"
+      android:text="@string/recurrence_apply" />
+  </LinearLayout>
+</LinearLayout>

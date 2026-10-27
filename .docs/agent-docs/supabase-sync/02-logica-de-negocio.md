@@ -28,7 +28,21 @@ WEEKLY           -> currentDueDate + 1 semana calendario
 MONTHLY          -> currentDueDate + 1 mes calendario (usa Calendar.add(MONTH, 1): ajusta overflow de días igual que java.util.Calendar)
 MON_WED          -> avanza día a día desde currentDueDate hasta caer en lunes o miércoles (el próximo que sea)
 FIRST_DAY_MONTH  -> fija día=1 del mes de currentDueDate, luego suma 1 mes (es decir: el día 1 del MES SIGUIENTE)
+RRULE:FREQ=F;INTERVAL=n           -> currentDueDate + n unidades de F (DAILY/WEEKLY/MONTHLY/YEARLY)
+RRULE:...;BYDAY=d1,d2             -> siguiente día de la lista en la misma semana (lunes a domingo);
+                                     si no queda ninguno, el primero de la lista n semanas después
+RRULE:...;BYMONTHDAY=d            -> día d de este mes si aún no ha llegado; si no, del mes n meses
+                                     después; -1 es el último día y un día que el mes no tiene cae en el último
+RRULE:...;X-FROM=COMPLETION       -> al completar, dueDate pasa a ser el día de la compleción (misma hora);
+                                     la siguiente es dueDate + n unidades, sin ponerse al día después
 ```
+
+**Reglas personalizadas (`RRULE:`):** además de los seis valores fijos, `recurrence` admite un
+subconjunto de RRULE (RFC 5545) generado por `RecurrenceRule.encode()` (`util/RecurrenceRule.kt`):
+`RRULE:FREQ=<DAILY|WEEKLY|MONTHLY|YEARLY>[;INTERVAL=n][;BYDAY=MO,WE...][;BYMONTHDAY=d|-1][;X-FROM=COMPLETION]`.
+Una regla equivalente a un valor fijo se guarda siempre con ese valor (`FREQ=WEEKLY;BYDAY=MO,WE` →
+`MON_WED`), así que los datos antiguos no cambian. Un valor que no se entiende se trata como no
+recurrente, nunca como error.
 
 Notas de exactitud:
 - La suma es siempre relativa a la `dueDate` **anterior**, no a "hoy". Si el usuario no abre la app

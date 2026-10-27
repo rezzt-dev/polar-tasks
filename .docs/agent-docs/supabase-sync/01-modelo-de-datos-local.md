@@ -82,6 +82,7 @@ data class Task(
 | `MONTHLY` | Se repite cada mes (mismo día del mes) |
 | `MON_WED` | Se repite lunes y miércoles |
 | `FIRST_DAY_MONTH` | Se repite el día 1 de cada mes |
+| `RRULE:...` | Regla personalizada: cada n días/semanas/meses/años, días concretos o "n después de completarla" (ver doc 02) |
 
 El algoritmo exacto de cálculo de "próxima fecha" para cada valor está en el documento
 [02-logica-de-negocio.md](02-logica-de-negocio.md#motor-de-recurrencia) — es crítico reproducirlo
