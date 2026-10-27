@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Widget de la pantalla de inicio en modo oscuro -->
-    <color name="widget_background">#F2121214</color>
+    <color name="widget_background">#F2232327</color>
     <color name="widget_foreground">#FAFAFA</color>
     <color name="widget_foreground_variant">#A1A1AA</color>
-    <color name="widget_divider">#26262A</color>
+    <color name="widget_divider">#333339</color>
 </resources>

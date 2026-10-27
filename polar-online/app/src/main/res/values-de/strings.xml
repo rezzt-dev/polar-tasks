@@ -74,6 +74,15 @@
   <string name="theme_pastel">pastell</string>
   <string name="theme_neon">neon</string>
   <string name="theme_onyx">onyx</string>
+  <string name="theme_sand">sand</string>
+  <string name="theme_sage">salbei</string>
+  <string name="theme_blossom">kirschblüte</string>
+  <string name="theme_forest">wald</string>
+  <string name="theme_amethyst">amethyst</string>
+  <string name="theme_ember">glut</string>
+  <string name="theme_group_light">helle designs</string>
+  <string name="theme_group_dark">dunkle designs</string>
+  <string name="theme_option_description">design %1$s</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
   <string name="font_figtree">figtree</string>

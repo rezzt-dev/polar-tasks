@@ -74,6 +74,15 @@
   <string name="theme_pastel">pastel</string>
   <string name="theme_neon">neon</string>
   <string name="theme_onyx">onyx</string>
+  <string name="theme_sand">sand</string>
+  <string name="theme_sage">sage</string>
+  <string name="theme_blossom">blossom</string>
+  <string name="theme_forest">forest</string>
+  <string name="theme_amethyst">amethyst</string>
+  <string name="theme_ember">ember</string>
+  <string name="theme_group_light">light themes</string>
+  <string name="theme_group_dark">dark themes</string>
+  <string name="theme_option_description">%1$s theme</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
   <string name="font_figtree">figtree</string>

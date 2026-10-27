@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Opcion del selector de tema: miniatura de una pantalla pintada con los colores del propio tema
+  (fondo, tarjeta de tarea, prioridades y boton de accion) y su nombre debajo. Los colores se
+  asignan desde ThemePickerDialog, que los resuelve del estilo de cada tema.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/themeOption"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/bg_form_row"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="6dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardThemePreview"
+        style="@style/Widget.Polar.Card"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no">
+
+        <FrameLayout
+            android:id="@+id/themePreviewCanvas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:id="@+id/themePreviewTask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <View
+                    android:id="@+id/themePreviewCheck"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <View
+                        android:id="@+id/themePreviewTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp" />
+
+                    <View
+                        android:id="@+id/themePreviewSubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="3dp"
+                        android:layout_marginEnd="14dp"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/themePreviewDotHigh"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp" />
+
+                <View
+                    android:id="@+id/themePreviewDotMedium"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginStart="4dp" />
+
+                <View
+                    android:id="@+id/themePreviewDotLow"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/themePreviewFab"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="bottom|end" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/ivThemeSelected"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:importantForAccessibility="no"
+            android:padding="3dp"
+            android:src="@drawable/ic_check"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvThemeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="arena" />
+</LinearLayout>

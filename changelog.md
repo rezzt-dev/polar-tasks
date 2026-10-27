@@ -65,6 +65,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - sustituir los atributos `paddingHorizontal` / `layout_marginHorizontal` (api 26) por sus equivalentes compatibles con android 7, donde se ignoraban.
 - poner en minusculas el prefijo `error:` de los mensajes de error de los viewmodels.
 - documentar el sistema de diseno en `agents.md` (seccion 4.7) y `claude.md`.
+- aclarar el tema oscuro (fondo `#1C1C1F`) y llevar el tema onix a un gris neutro con base `#121212` para que los dos se distingan.
+- centralizar en `ThemeManager.THEME_OPTIONS` la lista de temas con su estilo y si son oscuros, y mover el tema oscuro a `Base.Theme.Polar.Dark` para poder previsualizarlo desde cualquier tema.
 
 #### CORREGIDO
 
@@ -125,6 +127,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - abrir el detalle al tocar un resultado de busqueda y mostrar el numero de resultados.
 - anadir iconos a los menus emergentes y destacar en rojo la accion de eliminar.
 - anadir `THIRD_PARTY_NOTICES.md` con las licencias de inter (sil ofl 1.1) y lucide (isc).
+- redisenar el selector de tema como una hoja inferior (`ThemePickerDialog`) con una vista previa de cada tema pintada con sus propios colores, agrupada en temas claros y oscuros, y mostrar en ajustes una muestra de color del tema activo.
+- anadir tres temas claros (arena, salvia y cerezo) y tres oscuros (bosque, amatista y brasa).
 
 #### ELIMINADO
 
@@ -184,6 +188,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - replace the `paddingHorizontal` / `layout_marginHorizontal` attributes (api 26) with their android 7 compatible equivalents, where they were ignored.
 - lowercase the `error:` prefix of the viewmodel error messages.
 - document the design system in `agents.md` (section 4.7) and `claude.md`.
+- lighten the dark theme (`#1C1C1F` background) and move the onyx theme to a neutral grey based on `#121212` so the two are easy to tell apart.
+- centralise the theme list with each style and whether it is dark in `ThemeManager.THEME_OPTIONS`, and move the dark theme to `Base.Theme.Polar.Dark` so it can be previewed from any theme.
 
 #### FIXED
 
@@ -244,6 +250,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - open the details when tapping a search result and show the number of results.
 - add icons to popup menus and highlight the delete action in red.
 - add `THIRD_PARTY_NOTICES.md` with the inter (sil ofl 1.1) and lucide (isc) licences.
+- redesign the theme picker as a bottom sheet (`ThemePickerDialog`) with a preview of each theme painted in its own colours, grouped into light and dark themes, and show a colour swatch of the active theme in settings.
+- add three light themes (sand, sage and blossom) and three dark themes (forest, amethyst and ember).
 
 #### REMOVED
 

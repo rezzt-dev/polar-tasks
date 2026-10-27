@@ -13,7 +13,7 @@
   <color name="black">#000000</color>
   <color name="white">#FFFFFF</color>
 
-  <!-- Semanticos compartidos por los temas de color (multicolor, pastel, neon, onyx) -->
+  <!-- Semanticos compartidos por los temas de color (multicolor, pastel, neon, onyx, arena...) -->
   <color name="priority_high">#E5484D</color>
   <color name="priority_medium">#F59E0B</color>
   <color name="priority_low">#3B82F6</color>
@@ -50,17 +50,17 @@
   <color name="light_priority_low">#2563EB</color>
 
   <!-- Polar oscuro -->
-  <color name="dark_background">#0B0B0D</color>
-  <color name="dark_surface">#121214</color>
-  <color name="dark_surface_container_lowest">#0B0B0D</color>
-  <color name="dark_surface_container_low">#161618</color>
-  <color name="dark_surface_container">#1A1A1D</color>
-  <color name="dark_surface_container_high">#222226</color>
-  <color name="dark_surface_container_highest">#2A2A2E</color>
+  <color name="dark_background">#1C1C1F</color>
+  <color name="dark_surface">#232327</color>
+  <color name="dark_surface_container_lowest">#18181B</color>
+  <color name="dark_surface_container_low">#202024</color>
+  <color name="dark_surface_container">#27272B</color>
+  <color name="dark_surface_container_high">#2F2F34</color>
+  <color name="dark_surface_container_highest">#38383E</color>
   <color name="dark_foreground">#FAFAFA</color>
   <color name="dark_foreground_variant">#A1A1AA</color>
-  <color name="dark_outline">#3F3F46</color>
-  <color name="dark_outline_variant">#26262A</color>
+  <color name="dark_outline">#4E4E56</color>
+  <color name="dark_outline_variant">#333339</color>
   <color name="dark_primary">#FAFAFA</color>
   <color name="dark_on_primary">#18181B</color>
   <color name="dark_inverse_surface">#F4F4F5</color>
@@ -171,10 +171,10 @@
   <color name="neon_success">#00E676</color>
 
   <!-- Onyx (oscuro, minimo) -->
-  <color name="onyx_background">#0D0D0D</color>
-  <color name="onyx_surface">#141414</color>
-  <color name="onyx_surface_container_low">#171717</color>
-  <color name="onyx_surface_container">#1B1B1B</color>
+  <color name="onyx_background">#121212</color>
+  <color name="onyx_surface">#181818</color>
+  <color name="onyx_surface_container_low">#151515</color>
+  <color name="onyx_surface_container">#1C1C1C</color>
   <color name="onyx_surface_container_high">#232323</color>
   <color name="onyx_surface_container_highest">#2B2B2B</color>
   <color name="onyx_primary">#ECECEC</color>
@@ -190,9 +190,153 @@
   <color name="onyx_outline">#383838</color>
   <color name="onyx_outline_variant">#242424</color>
   <color name="onyx_inverse_surface">#ECECEC</color>
-  <color name="onyx_inverse_on_surface">#141414</color>
+  <color name="onyx_inverse_on_surface">#181818</color>
   <color name="onyx_error">#E5737F</color>
   <color name="onyx_success">#6CC070</color>
+
+  <!-- Arena: beige calido con acento terracota -->
+  <color name="sand_background">#F7F3EC</color>
+  <color name="sand_surface">#FFFDF9</color>
+  <color name="sand_surface_container_low">#FBF7F0</color>
+  <color name="sand_surface_container">#F3EDE3</color>
+  <color name="sand_surface_container_high">#ECE4D7</color>
+  <color name="sand_surface_container_highest">#E3D9C9</color>
+  <color name="sand_primary">#B8562F</color>
+  <color name="sand_on_primary">#FFFFFF</color>
+  <color name="sand_primary_container">#F8DFD3</color>
+  <color name="sand_on_primary_container">#5C2414</color>
+  <color name="sand_secondary">#8A7A5C</color>
+  <color name="sand_on_secondary">#FFFFFF</color>
+  <color name="sand_secondary_container">#EDE6D6</color>
+  <color name="sand_on_secondary_container">#3D3424</color>
+  <color name="sand_foreground">#2B2520</color>
+  <color name="sand_foreground_variant">#7D7166</color>
+  <color name="sand_outline">#DCD1C0</color>
+  <color name="sand_outline_variant">#EBE3D6</color>
+  <color name="sand_inverse_surface">#3A322B</color>
+  <color name="sand_inverse_on_surface">#F7F3EC</color>
+  <color name="sand_error">#C0392B</color>
+  <color name="sand_success">#4E8A4A</color>
+
+  <!-- Salvia: verde grisaceo suave -->
+  <color name="sage_background">#F3F6F2</color>
+  <color name="sage_surface">#FFFFFF</color>
+  <color name="sage_surface_container_low">#F7F9F6</color>
+  <color name="sage_surface_container">#EDF2EB</color>
+  <color name="sage_surface_container_high">#E4EBE2</color>
+  <color name="sage_surface_container_highest">#D9E2D6</color>
+  <color name="sage_primary">#4A7656</color>
+  <color name="sage_on_primary">#FFFFFF</color>
+  <color name="sage_primary_container">#D6E8D9</color>
+  <color name="sage_on_primary_container">#173A22</color>
+  <color name="sage_secondary">#5F7F86</color>
+  <color name="sage_on_secondary">#FFFFFF</color>
+  <color name="sage_secondary_container">#DBE8EA</color>
+  <color name="sage_on_secondary_container">#1C3A40</color>
+  <color name="sage_foreground">#1F2620</color>
+  <color name="sage_foreground_variant">#66736A</color>
+  <color name="sage_outline">#CED9CF</color>
+  <color name="sage_outline_variant">#E2E9E1</color>
+  <color name="sage_inverse_surface">#2C352E</color>
+  <color name="sage_inverse_on_surface">#F3F6F2</color>
+  <color name="sage_error">#C2453D</color>
+  <color name="sage_success">#3E8E50</color>
+
+  <!-- Cerezo: rosa palido con acento frambuesa -->
+  <color name="blossom_background">#FCF5F7</color>
+  <color name="blossom_surface">#FFFFFF</color>
+  <color name="blossom_surface_container_low">#FDF8F9</color>
+  <color name="blossom_surface_container">#F9ECF0</color>
+  <color name="blossom_surface_container_high">#F3E1E7</color>
+  <color name="blossom_surface_container_highest">#EBD3DC</color>
+  <color name="blossom_primary">#C2477A</color>
+  <color name="blossom_on_primary">#FFFFFF</color>
+  <color name="blossom_primary_container">#FBD9E6</color>
+  <color name="blossom_on_primary_container">#5A1235</color>
+  <color name="blossom_secondary">#8E6BB0</color>
+  <color name="blossom_on_secondary">#FFFFFF</color>
+  <color name="blossom_secondary_container">#ECE0F7</color>
+  <color name="blossom_on_secondary_container">#321B4D</color>
+  <color name="blossom_foreground">#2A1F24</color>
+  <color name="blossom_foreground_variant">#85707A</color>
+  <color name="blossom_outline">#E8D3DB</color>
+  <color name="blossom_outline_variant">#F3E5EA</color>
+  <color name="blossom_inverse_surface">#3A2C33</color>
+  <color name="blossom_inverse_on_surface">#FCF5F7</color>
+  <color name="blossom_error">#C62F3E</color>
+  <color name="blossom_success">#3F9A5E</color>
+
+  <!-- Bosque: verde profundo con acento esmeralda -->
+  <color name="forest_background">#0F1712</color>
+  <color name="forest_surface">#152019</color>
+  <color name="forest_surface_container_low">#131C16</color>
+  <color name="forest_surface_container">#1A261E</color>
+  <color name="forest_surface_container_high">#213026</color>
+  <color name="forest_surface_container_highest">#293A2F</color>
+  <color name="forest_primary">#6FCF97</color>
+  <color name="forest_on_primary">#06301A</color>
+  <color name="forest_primary_container">#1D4A30</color>
+  <color name="forest_on_primary_container">#C4F0D4</color>
+  <color name="forest_secondary">#C9B26B</color>
+  <color name="forest_on_secondary">#2E2405</color>
+  <color name="forest_secondary_container">#4A3F1C</color>
+  <color name="forest_on_secondary_container">#F3E6B8</color>
+  <color name="forest_foreground">#E6EFE8</color>
+  <color name="forest_foreground_variant">#93A698</color>
+  <color name="forest_outline">#34463A</color>
+  <color name="forest_outline_variant">#223028</color>
+  <color name="forest_inverse_surface">#E6EFE8</color>
+  <color name="forest_inverse_on_surface">#152019</color>
+  <color name="forest_error">#FF7A70</color>
+  <color name="forest_success">#8BE0A4</color>
+
+  <!-- Amatista: violeta nocturno con acento lavanda -->
+  <color name="amethyst_background">#120F1A</color>
+  <color name="amethyst_surface">#191523</color>
+  <color name="amethyst_surface_container_low">#16121F</color>
+  <color name="amethyst_surface_container">#1E1A2A</color>
+  <color name="amethyst_surface_container_high">#262133</color>
+  <color name="amethyst_surface_container_highest">#2F293E</color>
+  <color name="amethyst_primary">#B794F6</color>
+  <color name="amethyst_on_primary">#2A1157</color>
+  <color name="amethyst_primary_container">#42306B</color>
+  <color name="amethyst_on_primary_container">#EBDDFF</color>
+  <color name="amethyst_secondary">#F28FB8</color>
+  <color name="amethyst_on_secondary">#4A0E28</color>
+  <color name="amethyst_secondary_container">#6B2445</color>
+  <color name="amethyst_on_secondary_container">#FFD9E7</color>
+  <color name="amethyst_foreground">#EEEAF6</color>
+  <color name="amethyst_foreground_variant">#A39CB5</color>
+  <color name="amethyst_outline">#3E3651</color>
+  <color name="amethyst_outline_variant">#2A2438</color>
+  <color name="amethyst_inverse_surface">#EEEAF6</color>
+  <color name="amethyst_inverse_on_surface">#191523</color>
+  <color name="amethyst_error">#FF7B8A</color>
+  <color name="amethyst_success">#6EDC9A</color>
+
+  <!-- Brasa: marron tostado con acento naranja -->
+  <color name="ember_background">#17120F</color>
+  <color name="ember_surface">#1E1814</color>
+  <color name="ember_surface_container_low">#1B1511</color>
+  <color name="ember_surface_container">#241D18</color>
+  <color name="ember_surface_container_high">#2D241E</color>
+  <color name="ember_surface_container_highest">#372C25</color>
+  <color name="ember_primary">#FF9F5A</color>
+  <color name="ember_on_primary">#3D1C00</color>
+  <color name="ember_primary_container">#5C3014</color>
+  <color name="ember_on_primary_container">#FFDCC2</color>
+  <color name="ember_secondary">#F2C76B</color>
+  <color name="ember_on_secondary">#3A2A00</color>
+  <color name="ember_secondary_container">#574316</color>
+  <color name="ember_on_secondary_container">#FFE9B3</color>
+  <color name="ember_foreground">#F3ECE6</color>
+  <color name="ember_foreground_variant">#AD9F94</color>
+  <color name="ember_outline">#4A3C33</color>
+  <color name="ember_outline_variant">#30271F</color>
+  <color name="ember_inverse_surface">#F3ECE6</color>
+  <color name="ember_inverse_on_surface">#1E1814</color>
+  <color name="ember_error">#FF6B6B</color>
+  <color name="ember_success">#7ED491</color>
 
   <!-- Widget de la pantalla de inicio (sin atributos de tema: los RemoteViews no los resuelven) -->
   <color name="widget_background">#F2FFFFFF</color>

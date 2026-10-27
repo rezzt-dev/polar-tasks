@@ -8,6 +8,18 @@ import app.polar.R
 class ThemeManager(private val context: Context) {
   private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
   
+  /**
+   * Temas que se pueden elegir, en el orden en que aparecen en el selector.
+   * `previewStyleRes` es el estilo explicito del tema (tambien para claro/oscuro, que en la app
+   * se resuelven con DayNight) para pintar su vista previa sea cual sea el tema activo.
+   */
+  data class ThemeOption(
+    val key: String,
+    val labelRes: Int,
+    val previewStyleRes: Int,
+    val isDark: Boolean
+  )
+
   companion object {
     private const val PREFS_NAME = "polar_prefs"
     private const val KEY_THEME = "theme"
@@ -21,6 +33,12 @@ class ThemeManager(private val context: Context) {
     const val THEME_PASTEL = "pastel"
     const val THEME_NEON = "neon"
     const val THEME_ONYX = "onyx"
+    const val THEME_SAND = "sand"
+    const val THEME_SAGE = "sage"
+    const val THEME_BLOSSOM = "blossom"
+    const val THEME_FOREST = "forest"
+    const val THEME_AMETHYST = "amethyst"
+    const val THEME_EMBER = "ember"
     const val THEME_SYSTEM = "system"
     
     const val FONT_INTER = "inter"
@@ -34,6 +52,26 @@ class ThemeManager(private val context: Context) {
     const val CHECKBOX_SQUARE = "square"
     const val CHECKBOX_CIRCULAR = "circular"
     
+    val THEME_OPTIONS = listOf(
+      ThemeOption(THEME_LIGHT, R.string.theme_light, R.style.Base_Theme_Polar, false),
+      ThemeOption(THEME_MULTICOLOR_LIGHT, R.string.theme_multicolor_light, R.style.Theme_Polar_MulticolorLight, false),
+      ThemeOption(THEME_PASTEL, R.string.theme_pastel, R.style.Theme_Polar_Pastel, false),
+      ThemeOption(THEME_SAND, R.string.theme_sand, R.style.Theme_Polar_Sand, false),
+      ThemeOption(THEME_SAGE, R.string.theme_sage, R.style.Theme_Polar_Sage, false),
+      ThemeOption(THEME_BLOSSOM, R.string.theme_blossom, R.style.Theme_Polar_Blossom, false),
+      ThemeOption(THEME_DARK, R.string.theme_dark, R.style.Base_Theme_Polar_Dark, true),
+      ThemeOption(THEME_ONYX, R.string.theme_onyx, R.style.Theme_Polar_Onyx, true),
+      ThemeOption(THEME_MULTICOLOR_DARK, R.string.theme_multicolor_dark, R.style.Theme_Polar_MulticolorDark, true),
+      ThemeOption(THEME_NEON, R.string.theme_neon, R.style.Theme_Polar_Neon, true),
+      ThemeOption(THEME_FOREST, R.string.theme_forest, R.style.Theme_Polar_Forest, true),
+      ThemeOption(THEME_AMETHYST, R.string.theme_amethyst, R.style.Theme_Polar_Amethyst, true),
+      ThemeOption(THEME_EMBER, R.string.theme_ember, R.style.Theme_Polar_Ember, true)
+    )
+
+    /** Opcion del tema guardado; el oscuro si la clave no existe. */
+    fun themeOption(key: String): ThemeOption =
+      THEME_OPTIONS.find { it.key == key } ?: THEME_OPTIONS.first { it.key == THEME_DARK }
+
     private const val KEY_FONT_SCALE = "font_scale"
     const val DEFAULT_FONT_SCALE = 1.0f
 
@@ -112,22 +150,19 @@ class ThemeManager(private val context: Context) {
   }
 
   fun getThemeStyleRes(): Int {
-      return when (loadTheme()) {
-          THEME_MULTICOLOR_LIGHT -> R.style.Theme_Polar_MulticolorLight
-          THEME_MULTICOLOR_DARK -> R.style.Theme_Polar_MulticolorDark
-          THEME_PASTEL -> R.style.Theme_Polar_Pastel
-          THEME_NEON -> R.style.Theme_Polar_Neon
-          THEME_ONYX -> R.style.Theme_Polar_Onyx
-          else -> 0 // Default light/dark handled by DayNight
+      return when (val theme = loadTheme()) {
+          THEME_LIGHT, THEME_DARK, THEME_SYSTEM -> 0 // Default light/dark handled by DayNight
+          else -> themeOption(theme).previewStyleRes
       }
   }
   
   fun applyTheme(theme: String) {
-    when (theme) {
-      THEME_LIGHT, THEME_MULTICOLOR_LIGHT, THEME_PASTEL -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-      THEME_DARK, THEME_MULTICOLOR_DARK, THEME_NEON, THEME_ONYX -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-      THEME_SYSTEM -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    val mode = when {
+      theme == THEME_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+      themeOption(theme).isDark -> AppCompatDelegate.MODE_NIGHT_YES
+      else -> AppCompatDelegate.MODE_NIGHT_NO
     }
+    AppCompatDelegate.setDefaultNightMode(mode)
   }
   
   fun toggleTheme() {
@@ -142,8 +177,7 @@ class ThemeManager(private val context: Context) {
 
   fun isLightTheme(): Boolean {
     val currentTheme = loadTheme()
-    return currentTheme == THEME_LIGHT || currentTheme == THEME_MULTICOLOR_LIGHT || currentTheme == THEME_PASTEL ||
-        (currentTheme == THEME_SYSTEM && !isSystemInDarkMode())
+    return if (currentTheme == THEME_SYSTEM) !isSystemInDarkMode() else !themeOption(currentTheme).isDark
   }
 
   private fun isSystemInDarkMode(): Boolean {

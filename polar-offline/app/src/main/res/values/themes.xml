@@ -66,7 +66,62 @@
 
   <style name="Theme.Polar" parent="Base.Theme.Polar" />
 
-  <!-- Theme.Polar oscuro vive en values-night/themes.xml para respetar el modo noche -->
+  <!-- Polar oscuro: values-night/themes.xml lo usa como Theme.Polar para respetar el modo noche -->
+  <style name="Base.Theme.Polar.Dark" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/dark_primary</item>
+    <item name="colorOnPrimary">@color/dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/dark_surface_container_high</item>
+    <item name="colorOnPrimaryContainer">@color/dark_foreground</item>
+    <item name="colorPrimaryInverse">@color/dark_inverse_primary</item>
+
+    <item name="colorSecondary">@color/dark_primary</item>
+    <item name="colorOnSecondary">@color/dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/dark_surface_container_high</item>
+    <item name="colorOnSecondaryContainer">@color/dark_foreground</item>
+    <item name="colorTertiary">@color/dark_primary</item>
+    <item name="colorOnTertiary">@color/dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/dark_surface_container_high</item>
+    <item name="colorOnTertiaryContainer">@color/dark_foreground</item>
+
+    <item name="colorError">@color/dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/dark_on_error_container</item>
+    <item name="colorSuccess">@color/dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/dark_priority_high</item>
+    <item name="colorPriorityMedium">@color/dark_priority_medium</item>
+    <item name="colorPriorityLow">@color/dark_priority_low</item>
+    <item name="colorDateOverdue">@color/dark_error</item>
+
+    <item name="android:colorBackground">@color/dark_background</item>
+    <item name="colorOnBackground">@color/dark_foreground</item>
+    <item name="colorSurface">@color/dark_surface</item>
+    <item name="colorOnSurface">@color/dark_foreground</item>
+    <item name="colorSurfaceVariant">@color/dark_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/dark_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/dark_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/dark_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/dark_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/dark_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/dark_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/dark_surface_container_highest</item>
+    <item name="colorSurfaceDim">@color/dark_background</item>
+    <item name="colorSurfaceInverse">@color/dark_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/dark_inverse_on_surface</item>
+    <item name="colorOutline">@color/dark_outline</item>
+    <item name="colorOutlineVariant">@color/dark_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+
+    <item name="taskBackground">@color/dark_surface</item>
+    <item name="taskBorder">@color/dark_outline_variant</item>
+    <item name="mainBorder">@color/dark_outline_variant</item>
+    <item name="buttonBackground">@color/dark_primary</item>
+  </style>
 
   <!-- Multicolor claro -->
   <style name="Theme.Polar.MulticolorLight" parent="Platform.Theme.Polar.Light">
@@ -351,5 +406,347 @@
     <item name="taskBorder">@color/onyx_outline_variant</item>
     <item name="mainBorder">@color/onyx_outline_variant</item>
     <item name="buttonBackground">@color/onyx_primary</item>
+  </style>
+
+  <!-- Arena: beige calido con acento terracota -->
+  <style name="Theme.Polar.Sand" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/sand_primary</item>
+    <item name="colorOnPrimary">@color/sand_on_primary</item>
+    <item name="colorPrimaryContainer">@color/sand_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/sand_on_primary_container</item>
+    <item name="colorPrimaryInverse">@color/sand_primary_container</item>
+
+    <item name="colorSecondary">@color/sand_secondary</item>
+    <item name="colorOnSecondary">@color/sand_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/sand_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/sand_on_secondary_container</item>
+    <item name="colorTertiary">@color/sand_secondary</item>
+    <item name="colorOnTertiary">@color/sand_on_secondary</item>
+    <item name="colorTertiaryContainer">@color/sand_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/sand_on_secondary_container</item>
+
+    <item name="colorError">@color/sand_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/light_error_container</item>
+    <item name="colorOnErrorContainer">@color/light_on_error_container</item>
+    <item name="colorSuccess">@color/sand_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/sand_error</item>
+
+    <item name="android:colorBackground">@color/sand_background</item>
+    <item name="colorOnBackground">@color/sand_foreground</item>
+    <item name="colorSurface">@color/sand_surface</item>
+    <item name="colorOnSurface">@color/sand_foreground</item>
+    <item name="colorSurfaceVariant">@color/sand_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/sand_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/sand_surface</item>
+    <item name="colorSurfaceContainerLow">@color/sand_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/sand_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/sand_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/sand_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/sand_surface</item>
+    <item name="colorSurfaceDim">@color/sand_surface_container_highest</item>
+    <item name="colorSurfaceInverse">@color/sand_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/sand_inverse_on_surface</item>
+    <item name="colorOutline">@color/sand_outline</item>
+    <item name="colorOutlineVariant">@color/sand_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+
+    <item name="taskBackground">@color/sand_surface</item>
+    <item name="taskBorder">@color/sand_outline_variant</item>
+    <item name="mainBorder">@color/sand_outline_variant</item>
+    <item name="buttonBackground">@color/sand_primary</item>
+  </style>
+
+  <!-- Salvia: verde grisaceo suave -->
+  <style name="Theme.Polar.Sage" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/sage_primary</item>
+    <item name="colorOnPrimary">@color/sage_on_primary</item>
+    <item name="colorPrimaryContainer">@color/sage_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/sage_on_primary_container</item>
+    <item name="colorPrimaryInverse">@color/sage_primary_container</item>
+
+    <item name="colorSecondary">@color/sage_secondary</item>
+    <item name="colorOnSecondary">@color/sage_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/sage_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/sage_on_secondary_container</item>
+    <item name="colorTertiary">@color/sage_secondary</item>
+    <item name="colorOnTertiary">@color/sage_on_secondary</item>
+    <item name="colorTertiaryContainer">@color/sage_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/sage_on_secondary_container</item>
+
+    <item name="colorError">@color/sage_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/light_error_container</item>
+    <item name="colorOnErrorContainer">@color/light_on_error_container</item>
+    <item name="colorSuccess">@color/sage_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/sage_error</item>
+
+    <item name="android:colorBackground">@color/sage_background</item>
+    <item name="colorOnBackground">@color/sage_foreground</item>
+    <item name="colorSurface">@color/sage_surface</item>
+    <item name="colorOnSurface">@color/sage_foreground</item>
+    <item name="colorSurfaceVariant">@color/sage_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/sage_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/sage_surface</item>
+    <item name="colorSurfaceContainerLow">@color/sage_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/sage_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/sage_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/sage_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/sage_surface</item>
+    <item name="colorSurfaceDim">@color/sage_surface_container_highest</item>
+    <item name="colorSurfaceInverse">@color/sage_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/sage_inverse_on_surface</item>
+    <item name="colorOutline">@color/sage_outline</item>
+    <item name="colorOutlineVariant">@color/sage_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+
+    <item name="taskBackground">@color/sage_surface</item>
+    <item name="taskBorder">@color/sage_outline_variant</item>
+    <item name="mainBorder">@color/sage_outline_variant</item>
+    <item name="buttonBackground">@color/sage_primary</item>
+  </style>
+
+  <!-- Cerezo: rosa palido con acento frambuesa -->
+  <style name="Theme.Polar.Blossom" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/blossom_primary</item>
+    <item name="colorOnPrimary">@color/blossom_on_primary</item>
+    <item name="colorPrimaryContainer">@color/blossom_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/blossom_on_primary_container</item>
+    <item name="colorPrimaryInverse">@color/blossom_primary_container</item>
+
+    <item name="colorSecondary">@color/blossom_secondary</item>
+    <item name="colorOnSecondary">@color/blossom_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/blossom_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/blossom_on_secondary_container</item>
+    <item name="colorTertiary">@color/blossom_secondary</item>
+    <item name="colorOnTertiary">@color/blossom_on_secondary</item>
+    <item name="colorTertiaryContainer">@color/blossom_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/blossom_on_secondary_container</item>
+
+    <item name="colorError">@color/blossom_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/light_error_container</item>
+    <item name="colorOnErrorContainer">@color/light_on_error_container</item>
+    <item name="colorSuccess">@color/blossom_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/blossom_error</item>
+
+    <item name="android:colorBackground">@color/blossom_background</item>
+    <item name="colorOnBackground">@color/blossom_foreground</item>
+    <item name="colorSurface">@color/blossom_surface</item>
+    <item name="colorOnSurface">@color/blossom_foreground</item>
+    <item name="colorSurfaceVariant">@color/blossom_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/blossom_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/blossom_surface</item>
+    <item name="colorSurfaceContainerLow">@color/blossom_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/blossom_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/blossom_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/blossom_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/blossom_surface</item>
+    <item name="colorSurfaceDim">@color/blossom_surface_container_highest</item>
+    <item name="colorSurfaceInverse">@color/blossom_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/blossom_inverse_on_surface</item>
+    <item name="colorOutline">@color/blossom_outline</item>
+    <item name="colorOutlineVariant">@color/blossom_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+
+    <item name="taskBackground">@color/blossom_surface</item>
+    <item name="taskBorder">@color/blossom_outline_variant</item>
+    <item name="mainBorder">@color/blossom_outline_variant</item>
+    <item name="buttonBackground">@color/blossom_primary</item>
+  </style>
+
+  <!-- Bosque: verde profundo con acento esmeralda -->
+  <style name="Theme.Polar.Forest" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/forest_primary</item>
+    <item name="colorOnPrimary">@color/forest_on_primary</item>
+    <item name="colorPrimaryContainer">@color/forest_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/forest_on_primary_container</item>
+    <item name="colorPrimaryInverse">@color/forest_primary_container</item>
+
+    <item name="colorSecondary">@color/forest_secondary</item>
+    <item name="colorOnSecondary">@color/forest_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/forest_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/forest_on_secondary_container</item>
+    <item name="colorTertiary">@color/forest_secondary</item>
+    <item name="colorOnTertiary">@color/forest_on_secondary</item>
+    <item name="colorTertiaryContainer">@color/forest_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/forest_on_secondary_container</item>
+
+    <item name="colorError">@color/forest_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/dark_on_error_container</item>
+    <item name="colorSuccess">@color/forest_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/forest_error</item>
+
+    <item name="android:colorBackground">@color/forest_background</item>
+    <item name="colorOnBackground">@color/forest_foreground</item>
+    <item name="colorSurface">@color/forest_surface</item>
+    <item name="colorOnSurface">@color/forest_foreground</item>
+    <item name="colorSurfaceVariant">@color/forest_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/forest_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/forest_background</item>
+    <item name="colorSurfaceContainerLow">@color/forest_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/forest_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/forest_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/forest_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/forest_surface_container_highest</item>
+    <item name="colorSurfaceDim">@color/forest_background</item>
+    <item name="colorSurfaceInverse">@color/forest_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/forest_inverse_on_surface</item>
+    <item name="colorOutline">@color/forest_outline</item>
+    <item name="colorOutlineVariant">@color/forest_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+
+    <item name="taskBackground">@color/forest_surface</item>
+    <item name="taskBorder">@color/forest_outline_variant</item>
+    <item name="mainBorder">@color/forest_outline_variant</item>
+    <item name="buttonBackground">@color/forest_primary</item>
+  </style>
+
+  <!-- Amatista: violeta nocturno con acento lavanda -->
+  <style name="Theme.Polar.Amethyst" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/amethyst_primary</item>
+    <item name="colorOnPrimary">@color/amethyst_on_primary</item>
+    <item name="colorPrimaryContainer">@color/amethyst_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/amethyst_on_primary_container</item>
+    <item name="colorPrimaryInverse">@color/amethyst_primary_container</item>
+
+    <item name="colorSecondary">@color/amethyst_secondary</item>
+    <item name="colorOnSecondary">@color/amethyst_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/amethyst_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/amethyst_on_secondary_container</item>
+    <item name="colorTertiary">@color/amethyst_secondary</item>
+    <item name="colorOnTertiary">@color/amethyst_on_secondary</item>
+    <item name="colorTertiaryContainer">@color/amethyst_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/amethyst_on_secondary_container</item>
+
+    <item name="colorError">@color/amethyst_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/dark_on_error_container</item>
+    <item name="colorSuccess">@color/amethyst_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/amethyst_error</item>
+
+    <item name="android:colorBackground">@color/amethyst_background</item>
+    <item name="colorOnBackground">@color/amethyst_foreground</item>
+    <item name="colorSurface">@color/amethyst_surface</item>
+    <item name="colorOnSurface">@color/amethyst_foreground</item>
+    <item name="colorSurfaceVariant">@color/amethyst_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/amethyst_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/amethyst_background</item>
+    <item name="colorSurfaceContainerLow">@color/amethyst_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/amethyst_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/amethyst_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/amethyst_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/amethyst_surface_container_highest</item>
+    <item name="colorSurfaceDim">@color/amethyst_background</item>
+    <item name="colorSurfaceInverse">@color/amethyst_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/amethyst_inverse_on_surface</item>
+    <item name="colorOutline">@color/amethyst_outline</item>
+    <item name="colorOutlineVariant">@color/amethyst_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+
+    <item name="taskBackground">@color/amethyst_surface</item>
+    <item name="taskBorder">@color/amethyst_outline_variant</item>
+    <item name="mainBorder">@color/amethyst_outline_variant</item>
+    <item name="buttonBackground">@color/amethyst_primary</item>
+  </style>
+
+  <!-- Brasa: marron tostado con acento naranja -->
+  <style name="Theme.Polar.Ember" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/ember_primary</item>
+    <item name="colorOnPrimary">@color/ember_on_primary</item>
+    <item name="colorPrimaryContainer">@color/ember_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/ember_on_primary_container</item>
+    <item name="colorPrimaryInverse">@color/ember_primary_container</item>
+
+    <item name="colorSecondary">@color/ember_secondary</item>
+    <item name="colorOnSecondary">@color/ember_on_secondary</item>
+    <item name="colorSecondaryContainer">@color/ember_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/ember_on_secondary_container</item>
+    <item name="colorTertiary">@color/ember_secondary</item>
+    <item name="colorOnTertiary">@color/ember_on_secondary</item>
+    <item name="colorTertiaryContainer">@color/ember_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/ember_on_secondary_container</item>
+
+    <item name="colorError">@color/ember_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/dark_on_error_container</item>
+    <item name="colorSuccess">@color/ember_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+
+    <item name="colorPriorityHigh">@color/priority_high</item>
+    <item name="colorPriorityMedium">@color/priority_medium</item>
+    <item name="colorPriorityLow">@color/priority_low</item>
+    <item name="colorDateOverdue">@color/ember_error</item>
+
+    <item name="android:colorBackground">@color/ember_background</item>
+    <item name="colorOnBackground">@color/ember_foreground</item>
+    <item name="colorSurface">@color/ember_surface</item>
+    <item name="colorOnSurface">@color/ember_foreground</item>
+    <item name="colorSurfaceVariant">@color/ember_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/ember_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/ember_background</item>
+    <item name="colorSurfaceContainerLow">@color/ember_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/ember_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/ember_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/ember_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/ember_surface_container_highest</item>
+    <item name="colorSurfaceDim">@color/ember_background</item>
+    <item name="colorSurfaceInverse">@color/ember_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/ember_inverse_on_surface</item>
+    <item name="colorOutline">@color/ember_outline</item>
+    <item name="colorOutlineVariant">@color/ember_outline_variant</item>
+
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+
+    <item name="taskBackground">@color/ember_surface</item>
+    <item name="taskBorder">@color/ember_outline_variant</item>
+    <item name="mainBorder">@color/ember_outline_variant</item>
+    <item name="buttonBackground">@color/ember_primary</item>
   </style>
 </resources>

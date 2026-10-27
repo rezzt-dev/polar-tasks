@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import app.polar.R
 import app.polar.databinding.FragmentSettingsBinding
+import app.polar.ui.dialog.ThemePickerDialog
 import app.polar.ui.activity.AuthActivity
 import app.polar.util.ThemeManager
 import androidx.lifecycle.Lifecycle
@@ -301,41 +302,15 @@ class SettingsFragment : Fragment() {
   }
 
   private fun setupThemeSelection() {
-    val themeEntries = linkedMapOf(
-      getString(R.string.theme_light) to ThemeManager.THEME_LIGHT,
-      getString(R.string.theme_dark) to ThemeManager.THEME_DARK,
-      getString(R.string.theme_multicolor_light) to ThemeManager.THEME_MULTICOLOR_LIGHT,
-      getString(R.string.theme_multicolor_dark) to ThemeManager.THEME_MULTICOLOR_DARK,
-      getString(R.string.theme_pastel) to ThemeManager.THEME_PASTEL,
-      getString(R.string.theme_neon) to ThemeManager.THEME_NEON,
-      getString(R.string.theme_onyx) to ThemeManager.THEME_ONYX
-    )
-    val themeLabels = themeEntries.keys.toTypedArray()
-    val themeValues = themeEntries.values.toList()
-
-    fun updateLabel() {
-        val currentTheme = themeManager.loadTheme()
-        val currentLabel = themeEntries.entries.find { it.value == currentTheme }?.key ?: themeLabels[1]
-        binding.tvThemeValue.text = currentLabel
-    }
-    updateLabel()
+    val currentOption = ThemeManager.themeOption(themeManager.loadTheme())
+    binding.tvThemeValue.setText(currentOption.labelRes)
+    binding.viewThemeSwatch.background = ThemePickerDialog.swatch(requireContext(), currentOption)
 
     binding.btnThemeSettings.setOnClickListener {
-      val currentTheme = themeManager.loadTheme()
-      val checkedItem = themeValues.indexOf(currentTheme).takeIf { it >= 0 } ?: 1
-
-      MaterialAlertDialogBuilder(requireContext())
-        .setTitle(getString(R.string.dialog_select_theme))
-        .setSingleChoiceItems(themeLabels, checkedItem) { dialog, which ->
-            val selectedTheme = themeValues[which]
-            if (currentTheme != selectedTheme) {
-                themeManager.saveTheme(selectedTheme)
-                requireActivity().recreate()
-            }
-            dialog.dismiss()
-        }
-        .setNegativeButton(getString(R.string.cancel), null)
-        .show()
+      ThemePickerDialog(requireContext(), themeManager.loadTheme()) { selectedTheme ->
+        themeManager.saveTheme(selectedTheme)
+        requireActivity().recreate()
+      }.show()
     }
   }
 

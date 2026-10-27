@@ -92,6 +92,15 @@
   <string name="theme_pastel">pastel</string>
   <string name="theme_neon">neón</string>
   <string name="theme_onyx">ónix</string>
+  <string name="theme_sand">arena</string>
+  <string name="theme_sage">salvia</string>
+  <string name="theme_blossom">cerezo</string>
+  <string name="theme_forest">bosque</string>
+  <string name="theme_amethyst">amatista</string>
+  <string name="theme_ember">brasa</string>
+  <string name="theme_group_light">temas claros</string>
+  <string name="theme_group_dark">temas oscuros</string>
+  <string name="theme_option_description">tema %1$s</string>
   <string name="font_poppins">poppins</string>
   <string name="font_comfortaa">comfortaa</string>
   <string name="font_figtree">figtree</string>

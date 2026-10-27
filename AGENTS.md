@@ -160,6 +160,10 @@ android:textColor="?attr/colorOnSurface"
 
 El `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idioma.
 
+Para añadir un tema: define su paleta en `colors.xml`, su estilo `Theme.Polar.*` en `themes.xml`
+y regístralo en `ThemeManager.THEME_OPTIONS` (clave, nombre, estilo y si es oscuro). El selector
+(`ThemePickerDialog`), el modo noche y la barra de estado se derivan de esa lista.
+
 ### 4.6 Textos de Interfaz (siempre en minúsculas)
 
 Toda la interfaz de Polar se escribe **en minúsculas**, en **todos los idiomas**
