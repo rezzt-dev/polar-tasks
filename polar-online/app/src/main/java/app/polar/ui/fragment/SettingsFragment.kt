@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import app.polar.R
 import app.polar.databinding.FragmentSettingsBinding
+import app.polar.ui.activity.CustomThemeActivity
 import app.polar.ui.dialog.ThemePickerDialog
 import app.polar.ui.activity.AuthActivity
 import app.polar.util.ThemeManager
@@ -28,6 +29,7 @@ class SettingsFragment : Fragment() {
   private var _binding: FragmentSettingsBinding? = null
   private val binding get() = _binding!!
   private lateinit var themeManager: ThemeManager
+  /** Firma del aspecto aplicado (`ThemeManager.themeSignature()`) para detectar cambios. */
   private var lastAppliedTheme: String = ""
   private var currentSection = "overview"
   private var overviewScrollY = 0
@@ -122,7 +124,7 @@ class SettingsFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     themeManager = ThemeManager(requireContext())
-    lastAppliedTheme = themeManager.loadTheme()
+    lastAppliedTheme = themeManager.themeSignature()
 
     androidx.core.view.ViewCompat.setAccessibilityHeading(binding.tvSettingsTitle, true)
     setupNavigation(savedInstanceState)
@@ -302,15 +304,30 @@ class SettingsFragment : Fragment() {
   }
 
   private fun setupThemeSelection() {
-    val currentOption = ThemeManager.themeOption(themeManager.loadTheme())
-    binding.tvThemeValue.setText(currentOption.labelRes)
-    binding.viewThemeSwatch.background = ThemePickerDialog.swatch(requireContext(), currentOption)
+    val currentTheme = themeManager.loadTheme()
+    val customTheme = themeManager.loadCustomTheme()
+    binding.tvThemeValue.setText(
+      if (currentTheme == ThemeManager.THEME_CUSTOM) R.string.theme_custom
+      else ThemeManager.themeOption(currentTheme).labelRes
+    )
+    binding.viewThemeSwatch.background = ThemePickerDialog.swatch(
+      ThemeManager.previewContext(requireContext(), currentTheme, customTheme)
+    )
 
     binding.btnThemeSettings.setOnClickListener {
-      ThemePickerDialog(requireContext(), themeManager.loadTheme()) { selectedTheme ->
-        themeManager.saveTheme(selectedTheme)
-        requireActivity().recreate()
-      }.show()
+      ThemePickerDialog(
+        context = requireContext(),
+        currentTheme = themeManager.loadTheme(),
+        customTheme = themeManager.loadCustomTheme(),
+        onThemeSelected = { selectedTheme ->
+          themeManager.saveTheme(selectedTheme)
+          lastAppliedTheme = themeManager.themeSignature()
+          requireActivity().recreate()
+        },
+        onEditCustomTheme = {
+          startActivity(CustomThemeActivity.intent(requireContext()))
+        }
+      ).show()
     }
   }
 
@@ -602,12 +619,13 @@ class SettingsFragment : Fragment() {
 
   override fun onResume() {
     super.onResume()
-    // Si el tema cambió mientras el fragmento no estaba visible, recrear la
-    // activity para aplicarlo en caliente sin que el usuario tenga que cerrar y
-    // volver a abrir la app.
-    val currentTheme = themeManager.loadTheme()
-    if (currentTheme != lastAppliedTheme) {
-      lastAppliedTheme = currentTheme
+    // Si el tema cambió mientras el fragmento no estaba visible (por ejemplo, al
+    // aplicar el tema personalizado desde su editor), aplicar su modo noche y
+    // recrear la activity para verlo en caliente sin cerrar y volver a abrir la app.
+    val signature = themeManager.themeSignature()
+    if (signature != lastAppliedTheme) {
+      lastAppliedTheme = signature
+      themeManager.applyTheme(themeManager.loadTheme())
       requireActivity().recreate()
     }
   }

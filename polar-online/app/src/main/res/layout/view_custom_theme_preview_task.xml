@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tarea de la vista previa del tema personalizado: misma gramatica que item_task.xml (marca de
+  prioridad a la izquierda y casilla del color de la prioridad). Colores en CustomThemePreview.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:layout_marginTop="6dp"
+    tools:ignore="MergeRootFrame">
+
+    <View
+        android:id="@+id/previewTaskStripe"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="9dp"
+        android:background="@drawable/bg_priority_marker" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="56dp">
+
+        <View
+            android:id="@+id/previewTaskCheck"
+            android:layout_width="16dp"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/previewTaskTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            tools:text="preparar la presentación" />
+    </LinearLayout>
+</FrameLayout>

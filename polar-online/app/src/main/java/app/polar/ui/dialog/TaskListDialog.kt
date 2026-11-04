@@ -15,6 +15,7 @@ import app.polar.R
 import app.polar.data.entity.TaskList
 import app.polar.databinding.DialogTaskListBinding
 import app.polar.ui.adapter.IconAdapter
+import app.polar.ui.widget.ColorSwatch
 
 class TaskListDialog(
   private val taskList: TaskList? = null,
@@ -144,32 +145,13 @@ class TaskListDialog(
 
   private fun refreshPresetSelection() {
     if (_binding == null) return
-    val density = resources.displayMetrics.density
     val ringColor = resolveColor(com.google.android.material.R.attr.colorOnSurface)
     val gapColor = resolveColor(com.google.android.material.R.attr.colorSurface)
     for (i in 0 until binding.colorPresets.childCount) {
       val swatch = binding.colorPresets.getChildAt(i)
       val hex = swatch.tag as? String ?: continue
       val selected = hex.equals(selectedColor, ignoreCase = true)
-      val fill = android.graphics.drawable.GradientDrawable().apply {
-        shape = android.graphics.drawable.GradientDrawable.OVAL
-        setColor(Color.parseColor(hex))
-        // El seleccionado se marca con un anillo separado por un hueco del color de fondo.
-        if (selected) setStroke((3 * density).toInt(), gapColor)
-      }
-      swatch.background = if (selected) {
-        android.graphics.drawable.LayerDrawable(
-          arrayOf(
-            android.graphics.drawable.GradientDrawable().apply {
-              shape = android.graphics.drawable.GradientDrawable.OVAL
-              setStroke((2 * density).toInt(), ringColor)
-            },
-            fill
-          )
-        ).apply { setLayerInset(1, (2 * density).toInt(), (2 * density).toInt(), (2 * density).toInt(), (2 * density).toInt()) }
-      } else {
-        fill
-      }
+      swatch.background = ColorSwatch.drawable(requireContext(), Color.parseColor(hex), selected, ringColor, gapColor)
       swatch.isSelected = selected
     }
   }

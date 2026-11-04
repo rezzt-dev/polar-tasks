@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  editor del tema personalizado en horizontal: vista previa y boton de aplicar a la izquierda y
+  opciones desplazables a la derecha, para que las paletas no queden sin espacio. mismos ids que
+  layout/activity_custom_theme.xml.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/colorBackground"
+        android:stateListAnimator="@null"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/menu_custom_theme"
+            app:navigationContentDescription="@string/back"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="@string/custom_theme_title" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Ultima hija: match_parent ocupa el alto que deja la barra superior -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/spacing_screen"
+                android:paddingEnd="@dimen/spacing_screen"
+                android:paddingTop="4dp"
+                android:paddingBottom="12dp">
+
+                <include
+                    android:id="@+id/preview"
+                    layout="@layout/view_custom_theme_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnApply"
+                    style="@style/Widget.Polar.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    tools:text="@string/custom_theme_apply" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="?attr/colorOutlineVariant" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollOptions"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:clipToPadding="false">
+
+            <include
+                android:id="@+id/options"
+                layout="@layout/view_custom_theme_options" />
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</LinearLayout>

@@ -25,6 +25,7 @@ class ThemeManager(private val context: Context) {
     private const val KEY_THEME = "theme"
     private const val KEY_FONT = "font"
     private const val KEY_CHECKBOX_STYLE = "checkbox_style"
+    private const val KEY_CUSTOM_THEME = "custom_theme"
     
     const val THEME_LIGHT = "light"
     const val THEME_DARK = "dark"
@@ -40,6 +41,8 @@ class ThemeManager(private val context: Context) {
     const val THEME_AMETHYST = "amethyst"
     const val THEME_EMBER = "ember"
     const val THEME_SYSTEM = "system"
+    /** Tema personalizado: fondo, acento y prioridades elegidos en `CustomThemeActivity`. */
+    const val THEME_CUSTOM = "custom_palette"
     
     const val FONT_INTER = "inter"
     const val FONT_POPPINS = "poppins"
@@ -68,9 +71,20 @@ class ThemeManager(private val context: Context) {
       ThemeOption(THEME_EMBER, R.string.theme_ember, R.style.Theme_Polar_Ember, true)
     )
 
-    /** Opcion del tema guardado; el oscuro si la clave no existe. */
+    /** Opcion del tema guardado; el oscuro si la clave no existe (o es el personalizado). */
     fun themeOption(key: String): ThemeOption =
       THEME_OPTIONS.find { it.key == key } ?: THEME_OPTIONS.first { it.key == THEME_DARK }
+
+    /**
+     * Contexto con los colores de un tema para pintar su vista previa sea cual sea el activo.
+     * El personalizado necesita su combinacion, porque sus colores no estan en un solo estilo.
+     */
+    fun previewContext(context: Context, key: String, customTheme: CustomTheme?): Context =
+      if (key == THEME_CUSTOM && customTheme != null) {
+        CustomThemePalette.themedContext(context, customTheme)
+      } else {
+        androidx.appcompat.view.ContextThemeWrapper(context, themeOption(key).previewStyleRes)
+      }
 
     private const val KEY_FONT_SCALE = "font_scale"
     const val DEFAULT_FONT_SCALE = 1.0f
@@ -94,10 +108,22 @@ class ThemeManager(private val context: Context) {
     }
   }
   
-  fun saveTheme(theme: String) {
+  /**
+   * Guarda el tema elegido. Con [applyNightMode] a `false` solo se guarda: lo usa el editor del
+   * tema personalizado para no recrear su propia pantalla, y ajustes lo aplica al volver.
+   */
+  fun saveTheme(theme: String, applyNightMode: Boolean = true) {
     prefs.edit().putString(KEY_THEME, theme).apply()
-    applyTheme(theme)
+    if (applyNightMode) applyTheme(theme)
   }
+
+  /** Guarda la combinacion del tema personalizado; no lo activa (eso lo hace [saveTheme]). */
+  fun saveCustomTheme(theme: CustomTheme) {
+    prefs.edit().putString(KEY_CUSTOM_THEME, theme.serialize()).apply()
+  }
+
+  /** Combinacion guardada del tema personalizado; `null` si aun no se ha creado. */
+  fun loadCustomTheme(): CustomTheme? = CustomTheme.parse(prefs.getString(KEY_CUSTOM_THEME, null))
   
   fun saveFont(font: String) {
       prefs.edit().putString(KEY_FONT, font).apply()
@@ -113,8 +139,26 @@ class ThemeManager(private val context: Context) {
   
   fun loadTheme(): String {
     val saved = prefs.getString(KEY_THEME, THEME_DARK) ?: THEME_DARK
-    // Migracion: el tema personalizado ya no existe; se fuerza al tema oscuro.
-    return if (saved == "custom") THEME_DARK else saved
+    return when {
+      // Migracion: el antiguo tema personalizado ("custom") se elimino; se fuerza al oscuro.
+      saved == "custom" -> THEME_DARK
+      // Personalizado sin combinacion guardada (preferencias incompletas): oscuro.
+      saved == THEME_CUSTOM && loadCustomTheme() == null -> THEME_DARK
+      else -> saved
+    }
+  }
+
+  /** Combinacion activa si el tema actual es el personalizado. */
+  private fun activeCustomTheme(): CustomTheme? =
+    if (loadTheme() == THEME_CUSTOM) loadCustomTheme() else null
+
+  /**
+   * Identifica el aspecto actual: cambia al elegir otro tema y tambien al editar la combinacion
+   * del personalizado, para saber cuando hay que recrear la activity.
+   */
+  fun themeSignature(): String {
+    val theme = loadTheme()
+    return activeCustomTheme()?.let { "$theme:${it.serialize()}" } ?: theme
   }
   
   fun loadFont(): String {
@@ -150,16 +194,24 @@ class ThemeManager(private val context: Context) {
   }
 
   fun getThemeStyleRes(): Int {
+      activeCustomTheme()?.let { return CustomThemePalette.baseStyle(it) }
       return when (val theme = loadTheme()) {
           THEME_LIGHT, THEME_DARK, THEME_SYSTEM -> 0 // Default light/dark handled by DayNight
           else -> themeOption(theme).previewStyleRes
       }
   }
+
+  /** Overlays de color que van sobre [getThemeStyleRes] (acento y prioridades del personalizado). */
+  fun getColorOverlayStyles(): List<Int> =
+      activeCustomTheme()?.let { CustomThemePalette.overlayStyles(it) } ?: emptyList()
+
+  private fun isDarkTheme(theme: String): Boolean =
+    if (theme == THEME_CUSTOM) loadCustomTheme()?.isDark ?: true else themeOption(theme).isDark
   
   fun applyTheme(theme: String) {
     val mode = when {
       theme == THEME_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-      themeOption(theme).isDark -> AppCompatDelegate.MODE_NIGHT_YES
+      isDarkTheme(theme) -> AppCompatDelegate.MODE_NIGHT_YES
       else -> AppCompatDelegate.MODE_NIGHT_NO
     }
     AppCompatDelegate.setDefaultNightMode(mode)
@@ -177,7 +229,7 @@ class ThemeManager(private val context: Context) {
 
   fun isLightTheme(): Boolean {
     val currentTheme = loadTheme()
-    return if (currentTheme == THEME_SYSTEM) !isSystemInDarkMode() else !themeOption(currentTheme).isDark
+    return if (currentTheme == THEME_SYSTEM) !isSystemInDarkMode() else !isDarkTheme(currentTheme)
   }
 
   private fun isSystemInDarkMode(): Boolean {

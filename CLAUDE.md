@@ -232,6 +232,11 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
   `safeLaunch`.
 - **Activities:** extienden `BaseActivity` y se anotan con `@AndroidEntryPoint`.
 - **Colores:** usa atributos de tema (`?attr/...`), nunca hex hardcodeados.
+- **Temas:** los predefinidos se registran en `ThemeManager.THEME_OPTIONS`. El personalizado
+  (`THEME_CUSTOM`, editor `CustomThemeActivity`) combina un tema de fondo y overlays de acento y
+  prioridades en tono claro y oscuro, sin colores en tiempo de ejecución; sus opciones viven en
+  `CustomThemePalette` y su XML (`colors_custom_theme.xml`, `themes_custom.xml`) se genera con
+  `.docs/agent-docs/tools/custom_theme_palette.py`, nunca a mano. Detalle en la sección 4.5 de `AGENTS.md`.
 - **Alarmas:** se programan desde ViewModels/receivers con `AlarmManagerHelper`, nunca desde la UI;
   para reconstruirlas o cancelarlas en bloque usa `AlarmRescheduler`. La hora del aviso de una
   tarea la decide `TaskAlert` (antelación `reminderOffset`, aviso pospuesto `snoozedUntil`): usa

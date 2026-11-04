@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- generado por .docs/agent-docs/tools/custom_theme_palette.py: no editar a mano -->
+
+  <!-- fondos -->
+  <color name="custom_bg_snow_background">#FAFAFA</color>
+  <color name="custom_bg_snow_surface">#FEFEFE</color>
+  <color name="custom_bg_snow_surface_container_low">#F7F7F7</color>
+  <color name="custom_bg_snow_surface_container">#F2F2F2</color>
+  <color name="custom_bg_snow_surface_container_high">#EBEBEC</color>
+  <color name="custom_bg_snow_surface_container_highest">#E3E3E4</color>
+  <color name="custom_bg_snow_foreground">#18181B</color>
+  <color name="custom_bg_snow_foreground_variant">#69696B</color>
+  <color name="custom_bg_snow_outline">#D6D6D6</color>
+  <color name="custom_bg_snow_outline_variant">#E9E9E9</color>
+  <color name="custom_bg_snow_inverse_surface">#2A2A2D</color>
+  <color name="custom_bg_snow_inverse_on_surface">#FAFAFA</color>
+  <color name="custom_bg_snow_surface_container_lowest">#FEFEFE</color>
+  <color name="custom_bg_snow_surface_bright">#FEFEFE</color>
+  <color name="custom_bg_snow_surface_dim">#E3E3E4</color>
+
+  <color name="custom_bg_ivory_background">#FBF8F1</color>
+  <color name="custom_bg_ivory_surface">#FEFDFC</color>
+  <color name="custom_bg_ivory_surface_container_low">#F8F5EE</color>
+  <color name="custom_bg_ivory_surface_container">#F3F0E9</color>
+  <color name="custom_bg_ivory_surface_container_high">#EDEAE3</color>
+  <color name="custom_bg_ivory_surface_container_highest">#E5E2DB</color>
+  <color name="custom_bg_ivory_foreground">#1F1B16</color>
+  <color name="custom_bg_ivory_foreground_variant">#6E6B65</color>
+  <color name="custom_bg_ivory_outline">#D8D5CE</color>
+  <color name="custom_bg_ivory_outline_variant">#EAE7E1</color>
+  <color name="custom_bg_ivory_inverse_surface">#312D28</color>
+  <color name="custom_bg_ivory_inverse_on_surface">#FBF8F1</color>
+  <color name="custom_bg_ivory_surface_container_lowest">#FEFDFC</color>
+  <color name="custom_bg_ivory_surface_bright">#FEFDFC</color>
+  <color name="custom_bg_ivory_surface_dim">#E5E2DB</color>
+
+  <color name="custom_bg_mist_background">#F4F6F9</color>
+  <color name="custom_bg_mist_surface">#FCFDFE</color>
+  <color name="custom_bg_mist_surface_container_low">#F1F3F6</color>
+  <color name="custom_bg_mist_surface_container">#ECEEF2</color>
+  <color name="custom_bg_mist_surface_container_high">#E5E8EB</color>
+  <color name="custom_bg_mist_surface_container_highest">#DEE0E4</color>
+  <color name="custom_bg_mist_foreground">#141A24</color>
+  <color name="custom_bg_mist_foreground_variant">#656971</color>
+  <color name="custom_bg_mist_outline">#D0D3D7</color>
+  <color name="custom_bg_mist_outline_variant">#E3E6E9</color>
+  <color name="custom_bg_mist_inverse_surface">#262C35</color>
+  <color name="custom_bg_mist_inverse_on_surface">#F4F6F9</color>
+  <color name="custom_bg_mist_surface_container_lowest">#FCFDFE</color>
+  <color name="custom_bg_mist_surface_bright">#FCFDFE</color>
+  <color name="custom_bg_mist_surface_dim">#DEE0E4</color>
+
+  <color name="custom_bg_mint_background">#F2F8F4</color>
+  <color name="custom_bg_mint_surface">#FCFDFC</color>
+  <color name="custom_bg_mint_surface_container_low">#EFF5F1</color>
+  <color name="custom_bg_mint_surface_container">#EAF0EC</color>
+  <color name="custom_bg_mint_surface_container_high">#E4EAE6</color>
+  <color name="custom_bg_mint_surface_container_highest">#DCE2DE</color>
+  <color name="custom_bg_mint_foreground">#13201A</color>
+  <color name="custom_bg_mint_foreground_variant">#636E68</color>
+  <color name="custom_bg_mint_outline">#CED5D1</color>
+  <color name="custom_bg_mint_outline_variant">#E1E8E4</color>
+  <color name="custom_bg_mint_inverse_surface">#25312B</color>
+  <color name="custom_bg_mint_inverse_on_surface">#F2F8F4</color>
+  <color name="custom_bg_mint_surface_container_lowest">#FCFDFC</color>
+  <color name="custom_bg_mint_surface_bright">#FCFDFC</color>
+  <color name="custom_bg_mint_surface_dim">#DCE2DE</color>
+
+  <color name="custom_bg_petal_background">#FBF4F5</color>
+  <color name="custom_bg_petal_surface">#FEFCFC</color>
+  <color name="custom_bg_petal_surface_container_low">#F8F1F2</color>
+  <color name="custom_bg_petal_surface_container">#F3ECED</color>
+  <color name="custom_bg_petal_surface_container_high">#EDE6E7</color>
+  <color name="custom_bg_petal_surface_container_highest">#E6DEDF</color>
+  <color name="custom_bg_petal_foreground">#241618</color>
+  <color name="custom_bg_petal_foreground_variant">#716668</color>
+  <color name="custom_bg_petal_outline">#D9D0D2</color>
+  <color name="custom_bg_petal_outline_variant">#EBE3E4</color>
+  <color name="custom_bg_petal_inverse_surface">#35282A</color>
+  <color name="custom_bg_petal_inverse_on_surface">#FBF4F5</color>
+  <color name="custom_bg_petal_surface_container_lowest">#FEFCFC</color>
+  <color name="custom_bg_petal_surface_bright">#FEFCFC</color>
+  <color name="custom_bg_petal_surface_dim">#E6DEDF</color>
+
+  <color name="custom_bg_lavender_background">#F6F4FB</color>
+  <color name="custom_bg_lavender_surface">#FDFCFE</color>
+  <color name="custom_bg_lavender_surface_container_low">#F3F1F8</color>
+  <color name="custom_bg_lavender_surface_container">#EEECF4</color>
+  <color name="custom_bg_lavender_surface_container_high">#E8E6ED</color>
+  <color name="custom_bg_lavender_surface_container_highest">#E0DEE6</color>
+  <color name="custom_bg_lavender_foreground">#1B1726</color>
+  <color name="custom_bg_lavender_foreground_variant">#6A6773</color>
+  <color name="custom_bg_lavender_outline">#D3D1D9</color>
+  <color name="custom_bg_lavender_outline_variant">#E6E3EB</color>
+  <color name="custom_bg_lavender_inverse_surface">#2D2937</color>
+  <color name="custom_bg_lavender_inverse_on_surface">#F6F4FB</color>
+  <color name="custom_bg_lavender_surface_container_lowest">#FDFCFE</color>
+  <color name="custom_bg_lavender_surface_bright">#FDFCFE</color>
+  <color name="custom_bg_lavender_surface_dim">#E0DEE6</color>
+
+  <color name="custom_bg_graphite_background">#1C1C1F</color>
+  <color name="custom_bg_graphite_surface">#232326</color>
+  <color name="custom_bg_graphite_surface_container_lowest">#18181A</color>
+  <color name="custom_bg_graphite_surface_container_low">#202023</color>
+  <color name="custom_bg_graphite_surface_container">#27272A</color>
+  <color name="custom_bg_graphite_surface_container_high">#2F2F32</color>
+  <color name="custom_bg_graphite_surface_container_highest">#38383A</color>
+  <color name="custom_bg_graphite_foreground">#FAFAFA</color>
+  <color name="custom_bg_graphite_foreground_variant">#A1A1A2</color>
+  <color name="custom_bg_graphite_outline">#4E4E50</color>
+  <color name="custom_bg_graphite_outline_variant">#323235</color>
+  <color name="custom_bg_graphite_inverse_surface">#F1F1F1</color>
+  <color name="custom_bg_graphite_inverse_on_surface">#18181A</color>
+  <color name="custom_bg_graphite_surface_bright">#38383A</color>
+  <color name="custom_bg_graphite_surface_dim">#1C1C1F</color>
+
+  <color name="custom_bg_black_background">#000000</color>
+  <color name="custom_bg_black_surface">#070707</color>
+  <color name="custom_bg_black_surface_container_lowest">#000000</color>
+  <color name="custom_bg_black_surface_container_low">#040404</color>
+  <color name="custom_bg_black_surface_container">#0C0C0C</color>
+  <color name="custom_bg_black_surface_container_high">#151515</color>
+  <color name="custom_bg_black_surface_container_highest">#1E1E1E</color>
+  <color name="custom_bg_black_foreground">#F2F2F2</color>
+  <color name="custom_bg_black_foreground_variant">#919191</color>
+  <color name="custom_bg_black_outline">#363636</color>
+  <color name="custom_bg_black_outline_variant">#181818</color>
+  <color name="custom_bg_black_inverse_surface">#E8E8E8</color>
+  <color name="custom_bg_black_inverse_on_surface">#000000</color>
+  <color name="custom_bg_black_surface_bright">#1E1E1E</color>
+  <color name="custom_bg_black_surface_dim">#000000</color>
+
+  <color name="custom_bg_midnight_background">#0F1520</color>
+  <color name="custom_bg_midnight_surface">#161C26</color>
+  <color name="custom_bg_midnight_surface_container_lowest">#0D121B</color>
+  <color name="custom_bg_midnight_surface_container_low">#131924</color>
+  <color name="custom_bg_midnight_surface_container">#1A202B</color>
+  <color name="custom_bg_midnight_surface_container_high">#222732</color>
+  <color name="custom_bg_midnight_surface_container_highest">#2A303B</color>
+  <color name="custom_bg_midnight_foreground">#E9EEF6</color>
+  <color name="custom_bg_midnight_foreground_variant">#9297A0</color>
+  <color name="custom_bg_midnight_outline">#404650</color>
+  <color name="custom_bg_midnight_outline_variant">#252B35</color>
+  <color name="custom_bg_midnight_inverse_surface">#E0E5ED</color>
+  <color name="custom_bg_midnight_inverse_on_surface">#0D121B</color>
+  <color name="custom_bg_midnight_surface_bright">#2A303B</color>
+  <color name="custom_bg_midnight_surface_dim">#0F1520</color>
+
+  <color name="custom_bg_pine_background">#0F1A15</color>
+  <color name="custom_bg_pine_surface">#15201B</color>
+  <color name="custom_bg_pine_surface_container_lowest">#0D1612</color>
+  <color name="custom_bg_pine_surface_container_low">#131E19</color>
+  <color name="custom_bg_pine_surface_container">#1A2520</color>
+  <color name="custom_bg_pine_surface_container_high">#212C27</color>
+  <color name="custom_bg_pine_surface_container_highest">#2A3530</color>
+  <color name="custom_bg_pine_foreground">#E6F0EA</color>
+  <color name="custom_bg_pine_foreground_variant">#909A95</color>
+  <color name="custom_bg_pine_outline">#3F4A45</color>
+  <color name="custom_bg_pine_outline_variant">#242F2A</color>
+  <color name="custom_bg_pine_inverse_surface">#DDE7E1</color>
+  <color name="custom_bg_pine_inverse_on_surface">#0D1612</color>
+  <color name="custom_bg_pine_surface_bright">#2A3530</color>
+  <color name="custom_bg_pine_surface_dim">#0F1A15</color>
+
+  <color name="custom_bg_plum_background">#1A1220</color>
+  <color name="custom_bg_plum_surface">#201826</color>
+  <color name="custom_bg_plum_surface_container_lowest">#160F1B</color>
+  <color name="custom_bg_plum_surface_container_low">#1E1624</color>
+  <color name="custom_bg_plum_surface_container">#251D2B</color>
+  <color name="custom_bg_plum_surface_container_high">#2C2432</color>
+  <color name="custom_bg_plum_surface_container_highest">#352D3A</color>
+  <color name="custom_bg_plum_foreground">#F1E9F4</color>
+  <color name="custom_bg_plum_foreground_variant">#9B939F</color>
+  <color name="custom_bg_plum_outline">#4A4250</color>
+  <color name="custom_bg_plum_outline_variant">#302835</color>
+  <color name="custom_bg_plum_inverse_surface">#E8E0EC</color>
+  <color name="custom_bg_plum_inverse_on_surface">#160F1B</color>
+  <color name="custom_bg_plum_surface_bright">#352D3A</color>
+  <color name="custom_bg_plum_surface_dim">#1A1220</color>
+
+  <color name="custom_bg_cocoa_background">#1C1714</color>
+  <color name="custom_bg_cocoa_surface">#221D1A</color>
+  <color name="custom_bg_cocoa_surface_container_lowest">#181411</color>
+  <color name="custom_bg_cocoa_surface_container_low">#201B18</color>
+  <color name="custom_bg_cocoa_surface_container">#27221E</color>
+  <color name="custom_bg_cocoa_surface_container_high">#2E2926</color>
+  <color name="custom_bg_cocoa_surface_container_highest">#37322E</color>
+  <color name="custom_bg_cocoa_foreground">#F3ECE6</color>
+  <color name="custom_bg_cocoa_foreground_variant">#9D9792</color>
+  <color name="custom_bg_cocoa_outline">#4C4743</color>
+  <color name="custom_bg_cocoa_outline_variant">#322C29</color>
+  <color name="custom_bg_cocoa_inverse_surface">#EAE3DE</color>
+  <color name="custom_bg_cocoa_inverse_on_surface">#181411</color>
+  <color name="custom_bg_cocoa_surface_bright">#37322E</color>
+  <color name="custom_bg_cocoa_surface_dim">#1C1714</color>
+
+  <!-- acentos (tono para fondo claro / oscuro) -->
+  <color name="custom_accent_ink_light_primary">#18181B</color>
+  <color name="custom_accent_ink_light_on_primary">#FAFAFA</color>
+  <color name="custom_accent_ink_light_container">#E4E4E7</color>
+  <color name="custom_accent_ink_light_on_container">#18181B</color>
+  <color name="custom_accent_ink_dark_primary">#FAFAFA</color>
+  <color name="custom_accent_ink_dark_on_primary">#18181B</color>
+  <color name="custom_accent_ink_dark_container">#38383E</color>
+  <color name="custom_accent_ink_dark_on_container">#FAFAFA</color>
+
+  <color name="custom_accent_blue_light_primary">#2563EB</color>
+  <color name="custom_accent_blue_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_blue_light_container">#DCE6FC</color>
+  <color name="custom_accent_blue_light_on_container">#123276</color>
+  <color name="custom_accent_blue_dark_primary">#60A5FA</color>
+  <color name="custom_accent_blue_dark_on_primary">#111E2D</color>
+  <color name="custom_accent_blue_dark_container">#2E425E</color>
+  <color name="custom_accent_blue_dark_on_container">#CFE4FE</color>
+
+  <color name="custom_accent_indigo_light_primary">#4F46E5</color>
+  <color name="custom_accent_indigo_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_indigo_light_container">#E3E1FB</color>
+  <color name="custom_accent_indigo_light_on_container">#282372</color>
+  <color name="custom_accent_indigo_dark_primary">#818CF8</color>
+  <color name="custom_accent_indigo_dark_on_primary">#17192D</color>
+  <color name="custom_accent_indigo_dark_container">#383B5D</color>
+  <color name="custom_accent_indigo_dark_on_container">#D9DCFD</color>
+
+  <color name="custom_accent_violet_light_primary">#7C3AED</color>
+  <color name="custom_accent_violet_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_violet_light_container">#EADFFC</color>
+  <color name="custom_accent_violet_light_on_container">#3E1D76</color>
+  <color name="custom_accent_violet_dark_primary">#A78BFA</color>
+  <color name="custom_accent_violet_dark_on_primary">#1E192D</color>
+  <color name="custom_accent_violet_dark_container">#433A5E</color>
+  <color name="custom_accent_violet_dark_on_container">#E5DCFE</color>
+
+  <color name="custom_accent_pink_light_primary">#DB2777</color>
+  <color name="custom_accent_pink_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_pink_light_container">#F9DCE9</color>
+  <color name="custom_accent_pink_light_on_container">#6E143C</color>
+  <color name="custom_accent_pink_dark_primary">#F472B6</color>
+  <color name="custom_accent_pink_dark_on_primary">#2C1521</color>
+  <color name="custom_accent_pink_dark_container">#5A334A</color>
+  <color name="custom_accent_pink_dark_on_container">#FCD5E9</color>
+
+  <color name="custom_accent_red_light_primary">#DC2626</color>
+  <color name="custom_accent_red_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_red_light_container">#F9DCDC</color>
+  <color name="custom_accent_red_light_on_container">#6E1313</color>
+  <color name="custom_accent_red_dark_primary">#F87171</color>
+  <color name="custom_accent_red_dark_on_primary">#2D1414</color>
+  <color name="custom_accent_red_dark_container">#5B3335</color>
+  <color name="custom_accent_red_dark_on_container">#FDD4D4</color>
+
+  <color name="custom_accent_orange_light_primary">#C2410C</color>
+  <color name="custom_accent_orange_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_orange_light_container">#F5E1D8</color>
+  <color name="custom_accent_orange_light_on_container">#612006</color>
+  <color name="custom_accent_orange_dark_primary">#FB923C</color>
+  <color name="custom_accent_orange_dark_on_primary">#2D1A0B</color>
+  <color name="custom_accent_orange_dark_container">#5C3D25</color>
+  <color name="custom_accent_orange_dark_on_container">#FEDEC4</color>
+
+  <color name="custom_accent_amber_light_primary">#B45309</color>
+  <color name="custom_accent_amber_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_amber_light_container">#F3E3D8</color>
+  <color name="custom_accent_amber_light_on_container">#5A2A04</color>
+  <color name="custom_accent_amber_dark_primary">#FBBF24</color>
+  <color name="custom_accent_amber_dark_on_primary">#2D2206</color>
+  <color name="custom_accent_amber_dark_container">#5C4A1E</color>
+  <color name="custom_accent_amber_dark_on_container">#FEECBD</color>
+
+  <color name="custom_accent_green_light_primary">#15803D</color>
+  <color name="custom_accent_green_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_green_light_container">#DAEBE0</color>
+  <color name="custom_accent_green_light_on_container">#0A401E</color>
+  <color name="custom_accent_green_dark_primary">#4ADE80</color>
+  <color name="custom_accent_green_dark_on_primary">#0D2817</color>
+  <color name="custom_accent_green_dark_container">#275339</color>
+  <color name="custom_accent_green_dark_on_container">#C9F5D9</color>
+
+  <color name="custom_accent_teal_light_primary">#0F766E</color>
+  <color name="custom_accent_teal_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_teal_light_container">#D9E9E8</color>
+  <color name="custom_accent_teal_light_on_container">#083B37</color>
+  <color name="custom_accent_teal_dark_primary">#2DD4BF</color>
+  <color name="custom_accent_teal_dark_on_primary">#082622</color>
+  <color name="custom_accent_teal_dark_container">#1E504C</color>
+  <color name="custom_accent_teal_dark_on_container">#C0F2EC</color>
+
+  <color name="custom_accent_cyan_light_primary">#0E7490</color>
+  <color name="custom_accent_cyan_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_cyan_light_container">#D8E9ED</color>
+  <color name="custom_accent_cyan_light_on_container">#073A48</color>
+  <color name="custom_accent_cyan_dark_primary">#22D3EE</color>
+  <color name="custom_accent_cyan_dark_on_primary">#06262B</color>
+  <color name="custom_accent_cyan_dark_container">#1B505A</color>
+  <color name="custom_accent_cyan_dark_on_container">#BDF2FA</color>
+
+  <color name="custom_accent_slate_light_primary">#475569</color>
+  <color name="custom_accent_slate_light_on_primary">#FFFFFF</color>
+  <color name="custom_accent_slate_light_container">#E2E4E7</color>
+  <color name="custom_accent_slate_light_on_container">#242A34</color>
+  <color name="custom_accent_slate_dark_primary">#94A3B8</color>
+  <color name="custom_accent_slate_dark_on_primary">#1B1D21</color>
+  <color name="custom_accent_slate_dark_container">#3D424A</color>
+  <color name="custom_accent_slate_dark_on_container">#DFE3EA</color>
+
+  <!-- prioridades (tono para fondo claro / oscuro) -->
+  <color name="custom_priority_red_light">#DC2626</color>
+  <color name="custom_priority_red_dark">#F87171</color>
+  <color name="custom_priority_orange_light">#EA580C</color>
+  <color name="custom_priority_orange_dark">#FB923C</color>
+  <color name="custom_priority_amber_light">#D97706</color>
+  <color name="custom_priority_amber_dark">#FBBF24</color>
+  <color name="custom_priority_green_light">#16A34A</color>
+  <color name="custom_priority_green_dark">#4ADE80</color>
+  <color name="custom_priority_teal_light">#0D9488</color>
+  <color name="custom_priority_teal_dark">#2DD4BF</color>
+  <color name="custom_priority_blue_light">#2563EB</color>
+  <color name="custom_priority_blue_dark">#60A5FA</color>
+  <color name="custom_priority_indigo_light">#4F46E5</color>
+  <color name="custom_priority_indigo_dark">#818CF8</color>
+  <color name="custom_priority_violet_light">#7C3AED</color>
+  <color name="custom_priority_violet_dark">#A78BFA</color>
+  <color name="custom_priority_pink_light">#DB2777</color>
+  <color name="custom_priority_pink_dark">#F472B6</color>
+  <color name="custom_priority_slate_light">#64748B</color>
+  <color name="custom_priority_slate_dark">#94A3B8</color>
+
+  <!-- estados comunes -->
+  <color name="custom_status_light_error">#DC2626</color>
+  <color name="custom_status_light_error_container">#FEE2E2</color>
+  <color name="custom_status_light_on_error_container">#7F1D1D</color>
+  <color name="custom_status_light_success">#16A34A</color>
+  <color name="custom_status_dark_error">#F87171</color>
+  <color name="custom_status_dark_error_container">#3B1416</color>
+  <color name="custom_status_dark_on_error_container">#FECACA</color>
+  <color name="custom_status_dark_success">#4ADE80</color>
+</resources>

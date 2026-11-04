@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- generado por .docs/agent-docs/tools/custom_theme_palette.py: no editar a mano -->
+  <!--
+    tema personalizado: el fondo es un tema completo (superficies, textos, contornos y
+    estados) y el acento y cada prioridad son overlays que `ThemeManager` aplica encima con
+    `Resources.Theme.applyStyle()`. cada overlay existe en tono claro y oscuro para mantener
+    el contraste con cualquier fondo.
+  -->
+
+  <style name="Theme.Polar.Custom.Snow" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+    <item name="colorError">@color/custom_status_light_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/custom_status_light_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_light_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+    <item name="colorDateOverdue">@color/custom_status_light_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_light</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_light</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_light</item>
+    <item name="android:colorBackground">@color/custom_bg_snow_background</item>
+    <item name="colorOnBackground">@color/custom_bg_snow_foreground</item>
+    <item name="colorSurface">@color/custom_bg_snow_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_snow_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_snow_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_snow_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_snow_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_snow_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_snow_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_snow_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_snow_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_snow_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_snow_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_snow_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_snow_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_snow_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_snow_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="taskBackground">@color/custom_bg_snow_surface</item>
+    <item name="taskBorder">@color/custom_bg_snow_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_snow_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Ivory" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+    <item name="colorError">@color/custom_status_light_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/custom_status_light_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_light_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+    <item name="colorDateOverdue">@color/custom_status_light_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_light</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_light</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_light</item>
+    <item name="android:colorBackground">@color/custom_bg_ivory_background</item>
+    <item name="colorOnBackground">@color/custom_bg_ivory_foreground</item>
+    <item name="colorSurface">@color/custom_bg_ivory_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_ivory_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_ivory_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_ivory_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_ivory_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_ivory_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_ivory_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_ivory_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_ivory_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_ivory_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_ivory_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_ivory_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_ivory_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_ivory_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_ivory_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="taskBackground">@color/custom_bg_ivory_surface</item>
+    <item name="taskBorder">@color/custom_bg_ivory_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_ivory_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Mist" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+    <item name="colorError">@color/custom_status_light_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/custom_status_light_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_light_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+    <item name="colorDateOverdue">@color/custom_status_light_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_light</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_light</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_light</item>
+    <item name="android:colorBackground">@color/custom_bg_mist_background</item>
+    <item name="colorOnBackground">@color/custom_bg_mist_foreground</item>
+    <item name="colorSurface">@color/custom_bg_mist_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_mist_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_mist_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_mist_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_mist_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_mist_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_mist_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_mist_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_mist_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_mist_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_mist_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_mist_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_mist_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_mist_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_mist_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="taskBackground">@color/custom_bg_mist_surface</item>
+    <item name="taskBorder">@color/custom_bg_mist_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_mist_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Mint" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+    <item name="colorError">@color/custom_status_light_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/custom_status_light_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_light_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+    <item name="colorDateOverdue">@color/custom_status_light_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_light</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_light</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_light</item>
+    <item name="android:colorBackground">@color/custom_bg_mint_background</item>
+    <item name="colorOnBackground">@color/custom_bg_mint_foreground</item>
+    <item name="colorSurface">@color/custom_bg_mint_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_mint_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_mint_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_mint_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_mint_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_mint_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_mint_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_mint_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_mint_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_mint_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_mint_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_mint_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_mint_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_mint_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_mint_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="taskBackground">@color/custom_bg_mint_surface</item>
+    <item name="taskBorder">@color/custom_bg_mint_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_mint_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Petal" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+    <item name="colorError">@color/custom_status_light_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/custom_status_light_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_light_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+    <item name="colorDateOverdue">@color/custom_status_light_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_light</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_light</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_light</item>
+    <item name="android:colorBackground">@color/custom_bg_petal_background</item>
+    <item name="colorOnBackground">@color/custom_bg_petal_foreground</item>
+    <item name="colorSurface">@color/custom_bg_petal_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_petal_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_petal_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_petal_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_petal_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_petal_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_petal_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_petal_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_petal_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_petal_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_petal_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_petal_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_petal_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_petal_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_petal_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="taskBackground">@color/custom_bg_petal_surface</item>
+    <item name="taskBorder">@color/custom_bg_petal_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_petal_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Lavender" parent="Platform.Theme.Polar.Light">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+    <item name="colorError">@color/custom_status_light_error</item>
+    <item name="colorOnError">@color/white</item>
+    <item name="colorErrorContainer">@color/custom_status_light_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_light_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_light_success</item>
+    <item name="colorOnSuccess">@color/white</item>
+    <item name="colorDateOverdue">@color/custom_status_light_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_light</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_light</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_light</item>
+    <item name="android:colorBackground">@color/custom_bg_lavender_background</item>
+    <item name="colorOnBackground">@color/custom_bg_lavender_foreground</item>
+    <item name="colorSurface">@color/custom_bg_lavender_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_lavender_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_lavender_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_lavender_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_lavender_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_lavender_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_lavender_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_lavender_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_lavender_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_lavender_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_lavender_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_lavender_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_lavender_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_lavender_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_lavender_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="taskBackground">@color/custom_bg_lavender_surface</item>
+    <item name="taskBorder">@color/custom_bg_lavender_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_lavender_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Graphite" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorError">@color/custom_status_dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/custom_status_dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_dark_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+    <item name="colorDateOverdue">@color/custom_status_dark_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_dark</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_dark</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_dark</item>
+    <item name="android:colorBackground">@color/custom_bg_graphite_background</item>
+    <item name="colorOnBackground">@color/custom_bg_graphite_foreground</item>
+    <item name="colorSurface">@color/custom_bg_graphite_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_graphite_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_graphite_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_graphite_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_graphite_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_graphite_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_graphite_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_graphite_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_graphite_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_graphite_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_graphite_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_graphite_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_graphite_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_graphite_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_graphite_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="taskBackground">@color/custom_bg_graphite_surface</item>
+    <item name="taskBorder">@color/custom_bg_graphite_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_graphite_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Black" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorError">@color/custom_status_dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/custom_status_dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_dark_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+    <item name="colorDateOverdue">@color/custom_status_dark_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_dark</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_dark</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_dark</item>
+    <item name="android:colorBackground">@color/custom_bg_black_background</item>
+    <item name="colorOnBackground">@color/custom_bg_black_foreground</item>
+    <item name="colorSurface">@color/custom_bg_black_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_black_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_black_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_black_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_black_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_black_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_black_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_black_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_black_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_black_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_black_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_black_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_black_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_black_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_black_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="taskBackground">@color/custom_bg_black_surface</item>
+    <item name="taskBorder">@color/custom_bg_black_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_black_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Midnight" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorError">@color/custom_status_dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/custom_status_dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_dark_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+    <item name="colorDateOverdue">@color/custom_status_dark_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_dark</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_dark</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_dark</item>
+    <item name="android:colorBackground">@color/custom_bg_midnight_background</item>
+    <item name="colorOnBackground">@color/custom_bg_midnight_foreground</item>
+    <item name="colorSurface">@color/custom_bg_midnight_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_midnight_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_midnight_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_midnight_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_midnight_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_midnight_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_midnight_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_midnight_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_midnight_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_midnight_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_midnight_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_midnight_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_midnight_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_midnight_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_midnight_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="taskBackground">@color/custom_bg_midnight_surface</item>
+    <item name="taskBorder">@color/custom_bg_midnight_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_midnight_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Pine" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorError">@color/custom_status_dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/custom_status_dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_dark_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+    <item name="colorDateOverdue">@color/custom_status_dark_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_dark</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_dark</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_dark</item>
+    <item name="android:colorBackground">@color/custom_bg_pine_background</item>
+    <item name="colorOnBackground">@color/custom_bg_pine_foreground</item>
+    <item name="colorSurface">@color/custom_bg_pine_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_pine_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_pine_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_pine_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_pine_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_pine_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_pine_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_pine_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_pine_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_pine_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_pine_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_pine_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_pine_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_pine_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_pine_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="taskBackground">@color/custom_bg_pine_surface</item>
+    <item name="taskBorder">@color/custom_bg_pine_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_pine_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Plum" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorError">@color/custom_status_dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/custom_status_dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_dark_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+    <item name="colorDateOverdue">@color/custom_status_dark_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_dark</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_dark</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_dark</item>
+    <item name="android:colorBackground">@color/custom_bg_plum_background</item>
+    <item name="colorOnBackground">@color/custom_bg_plum_foreground</item>
+    <item name="colorSurface">@color/custom_bg_plum_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_plum_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_plum_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_plum_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_plum_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_plum_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_plum_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_plum_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_plum_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_plum_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_plum_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_plum_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_plum_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_plum_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_plum_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="taskBackground">@color/custom_bg_plum_surface</item>
+    <item name="taskBorder">@color/custom_bg_plum_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_plum_outline_variant</item>
+  </style>
+
+  <style name="Theme.Polar.Custom.Cocoa" parent="Platform.Theme.Polar.Dark">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorError">@color/custom_status_dark_error</item>
+    <item name="colorOnError">@color/black</item>
+    <item name="colorErrorContainer">@color/custom_status_dark_error_container</item>
+    <item name="colorOnErrorContainer">@color/custom_status_dark_on_error_container</item>
+    <item name="colorSuccess">@color/custom_status_dark_success</item>
+    <item name="colorOnSuccess">@color/black</item>
+    <item name="colorDateOverdue">@color/custom_status_dark_error</item>
+    <item name="colorPriorityHigh">@color/custom_priority_red_dark</item>
+    <item name="colorPriorityMedium">@color/custom_priority_amber_dark</item>
+    <item name="colorPriorityLow">@color/custom_priority_blue_dark</item>
+    <item name="android:colorBackground">@color/custom_bg_cocoa_background</item>
+    <item name="colorOnBackground">@color/custom_bg_cocoa_foreground</item>
+    <item name="colorSurface">@color/custom_bg_cocoa_surface</item>
+    <item name="colorOnSurface">@color/custom_bg_cocoa_foreground</item>
+    <item name="colorSurfaceVariant">@color/custom_bg_cocoa_surface_container_high</item>
+    <item name="colorOnSurfaceVariant">@color/custom_bg_cocoa_foreground_variant</item>
+    <item name="colorSurfaceContainerLowest">@color/custom_bg_cocoa_surface_container_lowest</item>
+    <item name="colorSurfaceContainerLow">@color/custom_bg_cocoa_surface_container_low</item>
+    <item name="colorSurfaceContainer">@color/custom_bg_cocoa_surface_container</item>
+    <item name="colorSurfaceContainerHigh">@color/custom_bg_cocoa_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/custom_bg_cocoa_surface_container_highest</item>
+    <item name="colorSurfaceBright">@color/custom_bg_cocoa_surface_bright</item>
+    <item name="colorSurfaceDim">@color/custom_bg_cocoa_surface_dim</item>
+    <item name="colorSurfaceInverse">@color/custom_bg_cocoa_inverse_surface</item>
+    <item name="colorOnSurfaceInverse">@color/custom_bg_cocoa_inverse_on_surface</item>
+    <item name="colorOutline">@color/custom_bg_cocoa_outline</item>
+    <item name="colorOutlineVariant">@color/custom_bg_cocoa_outline_variant</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="taskBackground">@color/custom_bg_cocoa_surface</item>
+    <item name="taskBorder">@color/custom_bg_cocoa_outline_variant</item>
+    <item name="mainBorder">@color/custom_bg_cocoa_outline_variant</item>
+  </style>
+
+  <!-- acentos -->
+  <style name="ThemeOverlay.Polar.Custom.Accent.Ink.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Ink.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_ink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_ink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_ink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_ink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_ink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_ink_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Blue.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_blue_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_blue_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_blue_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_blue_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_blue_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_blue_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_blue_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_blue_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_blue_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_blue_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_blue_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_blue_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_blue_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_blue_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Blue.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_blue_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_blue_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_blue_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_blue_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_blue_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_blue_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_blue_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_blue_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_blue_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_blue_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_blue_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_blue_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_blue_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_blue_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Indigo.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_indigo_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_indigo_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_indigo_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_indigo_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_indigo_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_indigo_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_indigo_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_indigo_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_indigo_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_indigo_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_indigo_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_indigo_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_indigo_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_indigo_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Indigo.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_indigo_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_indigo_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_indigo_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_indigo_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_indigo_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_indigo_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_indigo_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_indigo_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_indigo_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_indigo_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_indigo_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_indigo_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_indigo_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_indigo_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Violet.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_violet_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_violet_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_violet_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_violet_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_violet_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_violet_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_violet_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_violet_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_violet_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_violet_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_violet_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_violet_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_violet_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_violet_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Violet.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_violet_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_violet_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_violet_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_violet_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_violet_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_violet_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_violet_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_violet_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_violet_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_violet_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_violet_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_violet_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_violet_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_violet_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Pink.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_pink_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_pink_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_pink_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_pink_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_pink_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_pink_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_pink_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_pink_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_pink_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_pink_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_pink_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_pink_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_pink_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_pink_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Pink.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_pink_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_pink_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_pink_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_pink_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_pink_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_pink_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_pink_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_pink_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_pink_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_pink_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_pink_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_pink_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_pink_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_pink_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Red.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_red_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_red_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_red_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_red_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_red_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_red_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_red_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_red_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_red_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_red_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_red_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_red_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_red_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_red_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Red.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_red_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_red_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_red_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_red_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_red_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_red_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_red_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_red_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_red_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_red_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_red_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_red_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_red_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_red_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Orange.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_orange_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_orange_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_orange_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_orange_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_orange_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_orange_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_orange_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_orange_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_orange_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_orange_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_orange_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_orange_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_orange_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_orange_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Orange.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_orange_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_orange_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_orange_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_orange_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_orange_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_orange_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_orange_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_orange_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_orange_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_orange_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_orange_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_orange_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_orange_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_orange_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Amber.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_amber_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_amber_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_amber_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_amber_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_amber_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_amber_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_amber_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_amber_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_amber_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_amber_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_amber_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_amber_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_amber_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_amber_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Amber.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_amber_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_amber_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_amber_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_amber_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_amber_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_amber_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_amber_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_amber_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_amber_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_amber_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_amber_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_amber_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_amber_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_amber_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Green.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_green_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_green_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_green_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_green_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_green_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_green_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_green_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_green_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_green_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_green_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_green_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_green_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_green_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_green_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Green.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_green_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_green_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_green_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_green_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_green_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_green_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_green_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_green_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_green_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_green_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_green_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_green_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_green_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_green_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Teal.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_teal_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_teal_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_teal_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_teal_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_teal_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_teal_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_teal_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_teal_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_teal_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_teal_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_teal_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_teal_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_teal_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_teal_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Teal.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_teal_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_teal_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_teal_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_teal_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_teal_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_teal_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_teal_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_teal_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_teal_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_teal_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_teal_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_teal_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_teal_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_teal_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Cyan.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_cyan_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_cyan_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_cyan_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_cyan_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_cyan_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_cyan_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_cyan_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_cyan_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_cyan_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_cyan_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_cyan_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_cyan_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_cyan_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_cyan_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Cyan.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_cyan_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_cyan_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_cyan_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_cyan_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_cyan_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_cyan_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_cyan_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_cyan_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_cyan_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_cyan_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_cyan_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_cyan_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_cyan_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_cyan_dark_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Slate.Light" parent="">
+    <item name="colorPrimary">@color/custom_accent_slate_light_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_slate_light_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_slate_light_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_slate_light_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_slate_dark_primary</item>
+    <item name="colorSecondary">@color/custom_accent_slate_light_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_slate_light_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_slate_light_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_slate_light_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_slate_light_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_slate_light_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_slate_light_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_slate_light_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_slate_light_primary</item>
+  </style>
+  <style name="ThemeOverlay.Polar.Custom.Accent.Slate.Dark" parent="">
+    <item name="colorPrimary">@color/custom_accent_slate_dark_primary</item>
+    <item name="colorOnPrimary">@color/custom_accent_slate_dark_on_primary</item>
+    <item name="colorPrimaryContainer">@color/custom_accent_slate_dark_container</item>
+    <item name="colorOnPrimaryContainer">@color/custom_accent_slate_dark_on_container</item>
+    <item name="colorPrimaryInverse">@color/custom_accent_slate_light_primary</item>
+    <item name="colorSecondary">@color/custom_accent_slate_dark_primary</item>
+    <item name="colorOnSecondary">@color/custom_accent_slate_dark_on_primary</item>
+    <item name="colorSecondaryContainer">@color/custom_accent_slate_dark_container</item>
+    <item name="colorOnSecondaryContainer">@color/custom_accent_slate_dark_on_container</item>
+    <item name="colorTertiary">@color/custom_accent_slate_dark_primary</item>
+    <item name="colorOnTertiary">@color/custom_accent_slate_dark_on_primary</item>
+    <item name="colorTertiaryContainer">@color/custom_accent_slate_dark_container</item>
+    <item name="colorOnTertiaryContainer">@color/custom_accent_slate_dark_on_container</item>
+    <item name="buttonBackground">@color/custom_accent_slate_dark_primary</item>
+  </style>
+
+  <!-- prioridades -->
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Red.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_red_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Red.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_red_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Orange.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_orange_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Orange.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_orange_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Amber.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_amber_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Amber.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_amber_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Green.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_green_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Green.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_green_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Teal.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_teal_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Teal.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_teal_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Blue.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_blue_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Blue.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_blue_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Indigo.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_indigo_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Indigo.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_indigo_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Violet.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_violet_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Violet.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_violet_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Pink.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_pink_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Pink.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_pink_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Slate.Light" parent=""><item name="colorPriorityHigh">@color/custom_priority_slate_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityHigh.Slate.Dark" parent=""><item name="colorPriorityHigh">@color/custom_priority_slate_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Red.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_red_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Red.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_red_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Orange.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_orange_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Orange.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_orange_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Amber.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_amber_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Amber.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_amber_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Green.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_green_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Green.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_green_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Teal.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_teal_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Teal.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_teal_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Blue.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_blue_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Blue.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_blue_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Indigo.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_indigo_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Indigo.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_indigo_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Violet.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_violet_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Violet.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_violet_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Pink.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_pink_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Pink.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_pink_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Slate.Light" parent=""><item name="colorPriorityMedium">@color/custom_priority_slate_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityMedium.Slate.Dark" parent=""><item name="colorPriorityMedium">@color/custom_priority_slate_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Red.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_red_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Red.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_red_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Orange.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_orange_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Orange.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_orange_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Amber.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_amber_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Amber.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_amber_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Green.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_green_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Green.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_green_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Teal.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_teal_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Teal.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_teal_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Blue.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_blue_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Blue.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_blue_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Indigo.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_indigo_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Indigo.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_indigo_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Violet.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_violet_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Violet.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_violet_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Pink.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_pink_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Pink.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_pink_dark</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Slate.Light" parent=""><item name="colorPriorityLow">@color/custom_priority_slate_light</item></style>
+  <style name="ThemeOverlay.Polar.Custom.PriorityLow.Slate.Dark" parent=""><item name="colorPriorityLow">@color/custom_priority_slate_dark</item></style>
+</resources>

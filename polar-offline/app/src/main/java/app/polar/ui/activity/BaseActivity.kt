@@ -33,7 +33,9 @@ abstract class BaseActivity : AppCompatActivity() {
         if (themeRes != 0) {
             setTheme(themeRes)
         }
-        
+        // Acento y prioridades del tema personalizado, sobre su tema de fondo
+        themeManager.getColorOverlayStyles().forEach { theme.applyStyle(it, true) }
+
         // Sistema de diseño común (tipografía, formas, componentes, animaciones) sobre cualquier
         // tema de color; los overlays de fuente y casilla van después para poder sobrescribirlo.
         theme.applyStyle(app.polar.R.style.ThemeOverlay_Polar_Foundation, true)

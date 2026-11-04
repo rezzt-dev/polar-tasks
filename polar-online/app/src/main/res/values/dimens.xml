@@ -13,4 +13,8 @@
 
   <!-- Ancho minimo de los dialogos propios -->
   <dimen name="dialog_min_width">320dp</dimen>
+
+  <!-- Muestras de color del editor de tema personalizado -->
+  <dimen name="custom_theme_swatch_size">40dp</dimen>
+  <dimen name="custom_theme_swatch_spacing">10dp</dimen>
 </resources>

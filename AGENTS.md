@@ -164,6 +164,19 @@ Para añadir un tema: define su paleta en `colors.xml`, su estilo `Theme.Polar.*
 y regístralo en `ThemeManager.THEME_OPTIONS` (clave, nombre, estilo y si es oscuro). El selector
 (`ThemePickerDialog`), el modo noche y la barra de estado se derivan de esa lista.
 
+**Tema personalizado** (`ThemeManager.THEME_CUSTOM`): el usuario combina un fondo, un color de
+acento y un color por prioridad en `CustomThemeActivity` (se abre desde el grupo "tu tema" del
+selector). No se generan colores en tiempo de ejecución: cada fondo es un tema completo
+(`Theme.Polar.Custom.*`) y el acento y cada prioridad son overlays con tono claro y oscuro
+(`ThemeOverlay.Polar.Custom.*`) que `BaseActivity` aplica sobre él con
+`ThemeManager.getColorOverlayStyles()`. La combinación se guarda en preferencias como claves
+(`CustomTheme`) y las opciones se registran en `CustomThemePalette`. `colors_custom_theme.xml` y
+`themes_custom.xml` se generan con `.docs/agent-docs/tools/custom_theme_palette.py`, que valida el
+contraste WCAG: no los edites a mano. Para añadir una opción, añádela al script, regístrala en
+`CustomThemePalette` y añade su texto en los cinco idiomas; no renombres las claves existentes.
+Ajustes recrea la app al volver si cambia `ThemeManager.themeSignature()`, que incluye la
+combinación del personalizado.
+
 ### 4.6 Textos de Interfaz (siempre en minúsculas)
 
 Toda la interfaz de Polar se escribe **en minúsculas**, en **todos los idiomas**
@@ -576,7 +589,7 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
 - **Al modificar Room:** Siempre actualiza la versión de la base de datos y considera una migración manual.
 - **Al crear nuevos ViewModels:** Usa `@HiltViewModel`, inyección por constructor, y el patrón `safeLaunch`.
 - **Al crear nuevas Activities:** Extiende `BaseActivity` y anota con `@AndroidEntryPoint`.
-- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados.
+- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados. Los temas predefinidos se registran en `ThemeManager.THEME_OPTIONS`; el personalizado combina estilos generados por `custom_theme_palette.py` desde `CustomThemePalette`, sin colores en tiempo de ejecución (sección 4.5).
 - **Colores semánticos dinámicos:** Se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorError`, `colorOnError`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). Todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de UI.
 - **Swipe en listas:** Usa `TaskSwipeHelper` para gestos bidireccionales en RecyclerViews (tareas y listas). Soporta configuración de colores/iconos por dirección y drag opcional. Los íconos de swipe se tinen con `colorOnSuccess` / `colorOnError` para respetar la paleta activa.
 - **View Binding obligatorio:** `HomeTaskAdapter` y `TaskListAdapter` usan View Binding; no usar `findViewById` en nuevos adapters.

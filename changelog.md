@@ -75,6 +75,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - [offline] subir la base de datos a la version 19 con `MIGRATION_18_19`, que anade `tasks.reminderOffset`, `tasks.snoozedUntil` y `reminders.notifyOnArrival`.
 - [online] subir la base de datos a la version 18 con `MIGRATION_17_18`, que anade `tasks.reminderOffset`, `tasks.snoozedUntil` y `reminders.notifyOnArrival` e indexa `tasks.listId` y `subtasks.taskId` como en la version offline.
 - [online] mantener el aviso relativo, el aviso pospuesto y el aviso al llegar como datos del dispositivo: no viajan a supabase, un pull o un conflicto perdido los conserva (`EntityMappers`) y un aviso pospuesto se descarta si otro dispositivo cambia la fecha de la tarea.
+- extraer la miniatura de tema a `view_theme_preview.xml` y los colores de las vistas previas a `ThemePreviewColors`, y compartir entre el selector de color de listas y el editor de tema la muestra circular `ColorSwatch` y la semantica de accesibilidad `setRadioSemantics()`.
+- recrear la app al volver a ajustes cuando cambia el aspecto (`ThemeManager.themeSignature()`), tambien al editar la combinacion del tema personalizado activo, y aplicar su modo noche.
+- documentar en `agents.md` y `claude.md` como funciona y como ampliar el tema personalizado.
 
 #### CORREGIDO
 
@@ -123,6 +126,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - posponer desde la notificacion ya no reescribe la fecha de vencimiento de la tarea, que se perdia al posponer.
 - abrir la ubicacion de un recordatorio con cualquier app de mapas instalada y no solo con google maps.
 - traducir el aviso de titulo obligatorio del formulario de recordatorio, que estaba fijo en castellano.
+- actualizar el texto del tutorial sobre los temas, que hablaba de siete cuando ya habia trece, y mencionar el tema personalizado.
 
 #### NUEVO
 
@@ -156,6 +160,10 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - pedir la ubicacion solo al activar el aviso al llegar, explicar antes el acceso "todo el tiempo" e indicar en el formulario y en la tarjeta del recordatorio si falta el permiso o la ubicacion del dispositivo esta desactivada.
 - anadir "completar" y "posponer" a las notificaciones de recordatorios y "posponer" al menu de cada recordatorio pendiente, con deshacer.
 - anadir `TaskAlertTest` y `SnoozeOptionTest`, casos de aviso relativo en `TaskViewModelTest` y de campos locales en `EntityMappersTest`, y tests de migracion de las columnas nuevas.
+- anadir el tema personalizado: se crea y se edita desde el grupo "tu tema" del selector de tema en `CustomThemeActivity`, que combina uno de 12 fondos (6 claros y 6 oscuros), uno de 12 colores de acento y un color entre 10 para cada prioridad (alta, media y baja), con vista previa en vivo que funde los cambios, restablecer con deshacer, confirmacion al salir con cambios sin aplicar, dos columnas en horizontal y el borrador conservado al girar la pantalla.
+- aplicar el tema personalizado sin generar colores en tiempo de ejecucion: cada fondo es un tema completo (`Theme.Polar.Custom.*`) y el acento y las prioridades son overlays en tono claro y oscuro (`ThemeOverlay.Polar.Custom.*`) que `BaseActivity` aplica con `ThemeManager.getColorOverlayStyles()`, de modo que mantienen el contraste con cualquier fondo y todos los `?attr/` de la app funcionan igual que en los temas predefinidos.
+- generar `colors_custom_theme.xml` y `themes_custom.xml` con `.docs/agent-docs/tools/custom_theme_palette.py`, que valida el contraste wcag de todas las combinaciones, y registrar las opciones en `CustomThemePalette`; la combinacion se guarda en preferencias como claves (`CustomTheme`) y las que ya no existan vuelven a las de por defecto.
+- anadir `CustomThemeTest` y `CustomThemeViewModelTest`, con `FakeSharedPreferences`, para la lectura y el saneado de la combinacion, los overlays, la firma del tema y el flujo del editor.
 
 #### ELIMINADO
 
@@ -226,6 +234,9 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - [offline] bump the database to version 19 with `MIGRATION_18_19`, which adds `tasks.reminderOffset`, `tasks.snoozedUntil` and `reminders.notifyOnArrival`.
 - [online] bump the database to version 18 with `MIGRATION_17_18`, which adds `tasks.reminderOffset`, `tasks.snoozedUntil` and `reminders.notifyOnArrival` and indexes `tasks.listId` and `subtasks.taskId` as in the offline version.
 - [online] keep the relative alert, the snoozed alert and the arrival alert as device data: they do not travel to supabase, a pull or a lost conflict keeps them (`EntityMappers`) and a snoozed alert is dropped if another device changes the task date.
+- extract the theme thumbnail to `view_theme_preview.xml` and the preview colours to `ThemePreviewColors`, and share the round `ColorSwatch` and the `setRadioSemantics()` accessibility semantics between the list colour picker and the theme editor.
+- recreate the app when returning to settings if the look changed (`ThemeManager.themeSignature()`), also after editing the active custom theme, and apply its night mode.
+- document in `agents.md` and `claude.md` how the custom theme works and how to extend it.
 
 #### FIXED
 
@@ -274,6 +285,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - snoozing from the notification no longer rewrites the task due date, which was lost when snoozing.
 - open a reminder's location with any installed maps app, not only google maps.
 - translate the required title warning of the reminder form, which was hardcoded in spanish.
+- update the tutorial text about themes, which mentioned seven when there were already thirteen, and mention the custom theme.
 
 #### ADDED
 
@@ -307,6 +319,10 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - ask for location only when the arrival alert is turned on, explain "all the time" access first and show in the form and in the reminder card when the permission is missing or device location is off.
 - add "complete" and "snooze" to reminder notifications and "snooze" to the menu of each pending reminder, with undo.
 - add `TaskAlertTest` and `SnoozeOptionTest`, relative alert cases in `TaskViewModelTest` and device-only field cases in `EntityMappersTest`, and migration tests for the new columns.
+- add the custom theme: it is created and edited from the "your theme" group of the theme picker in `CustomThemeActivity`, which combines one of 12 backgrounds (6 light and 6 dark), one of 12 accent colours and one of 10 colours for each priority (high, medium and low), with a live preview that blends the changes, reset with undo, confirmation when leaving with unapplied changes, two columns in landscape and the draft kept on rotation.
+- apply the custom theme without generating colours at runtime: each background is a full theme (`Theme.Polar.Custom.*`) and the accent and priorities are light and dark tone overlays (`ThemeOverlay.Polar.Custom.*`) that `BaseActivity` applies with `ThemeManager.getColorOverlayStyles()`, so they keep their contrast on any background and every `?attr/` in the app works as in the preset themes.
+- generate `colors_custom_theme.xml` and `themes_custom.xml` with `.docs/agent-docs/tools/custom_theme_palette.py`, which checks the wcag contrast of every combination, and register the options in `CustomThemePalette`; the combination is stored in preferences as keys (`CustomTheme`) and keys that no longer exist fall back to the defaults.
+- add `CustomThemeTest` and `CustomThemeViewModelTest`, with `FakeSharedPreferences`, for reading and sanitising the combination, the overlays, the theme signature and the editor flow.
 
 #### REMOVED
 

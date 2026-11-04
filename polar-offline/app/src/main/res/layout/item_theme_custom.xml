@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Fila del tema personalizado en el selector de tema: miniatura de la combinacion guardada (o un
+  hueco para crearla), nombre, resumen y boton para editarla. La miniatura ocupa una columna de
+  la cuadricula de temas para que quede alineada con ellas. Ver ThemePickerDialog.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/themeCustomOption"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_form_row"
+    android:baselineAligned="false"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <!-- Misma anchura y margenes que una columna de la cuadricula (item_theme_option.xml) -->
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <include
+            android:id="@+id/preview"
+            layout="@layout/view_theme_preview"
+            android:layout_width="match_parent"
+            android:layout_height="88dp" />
+
+        <!-- Hueco para crear el tema cuando todavia no existe -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardCustomPlaceholder"
+            style="@style/Widget.Polar.Card.Filled"
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:importantForAccessibility="no"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_add"
+                app:tint="?attr/colorOnSurfaceVariant" />
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/tvCustomName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/theme_custom"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="?attr/colorOnSurface" />
+
+        <TextView
+            android:id="@+id/tvCustomSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="grafito · acento azul" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCustomEdit"
+            style="@style/Widget.Polar.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-12dp"
+            android:minHeight="40dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:icon="@drawable/ic_edit"
+            app:iconSize="16dp"
+            tools:text="@string/edit" />
+    </LinearLayout>
+</LinearLayout>

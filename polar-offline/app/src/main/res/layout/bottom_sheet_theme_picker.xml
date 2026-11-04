@@ -29,6 +29,27 @@
             android:layout_marginBottom="8dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
+            android:text="@string/theme_group_custom"
+            android:textAppearance="@style/TextAppearance.Polar.Section" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <include
+                android:id="@+id/themeCustom"
+                layout="@layout/item_theme_custom" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             android:text="@string/theme_group_light"
             android:textAppearance="@style/TextAppearance.Polar.Section" />
 

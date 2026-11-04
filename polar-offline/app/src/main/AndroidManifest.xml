@@ -54,6 +54,10 @@
     <activity
       android:name=".ui.activity.TutorialActivity"
       android:exported="false" />
+    <activity
+      android:name=".ui.activity.CustomThemeActivity"
+      android:exported="false"
+      android:parentActivityName=".MainActivity" />
     <!-- Hoja de "posponer" que se abre desde la notificación, sobre lo que haya en pantalla -->
     <activity
       android:name=".ui.activity.SnoozeActivity"
