@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
+import app.polar.util.CustomColorResources
 import app.polar.util.ThemeManager
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -27,7 +28,11 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         themeManager = ThemeManager(this)
-        
+
+        // Colores a medida del tema personalizado: se cargan en los recursos antes del tema para
+        // que sus ?attr/ los resuelvan. Si no se puede, el tema se pinta con la paleta.
+        themeManager.getColorOverrides().takeIf { it.isNotEmpty() }?.let { CustomColorResources.apply(this, it) }
+
         // Apply explicit theme if selected (must be before super.onCreate)
         val themeRes = themeManager.getThemeStyleRes()
         if (themeRes != 0) {

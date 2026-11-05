@@ -26,6 +26,10 @@ class ThemeManager(private val context: Context) {
     private const val KEY_FONT = "font"
     private const val KEY_CHECKBOX_STYLE = "checkbox_style"
     private const val KEY_CUSTOM_THEME = "custom_theme"
+    private const val KEY_RECENT_CUSTOM_COLORS = "custom_theme_recent_colors"
+
+    /** Colores a medida recientes que recuerda el selector de color. */
+    const val MAX_RECENT_CUSTOM_COLORS = 8
     
     const val THEME_LIGHT = "light"
     const val THEME_DARK = "dark"
@@ -75,17 +79,6 @@ class ThemeManager(private val context: Context) {
     fun themeOption(key: String): ThemeOption =
       THEME_OPTIONS.find { it.key == key } ?: THEME_OPTIONS.first { it.key == THEME_DARK }
 
-    /**
-     * Contexto con los colores de un tema para pintar su vista previa sea cual sea el activo.
-     * El personalizado necesita su combinacion, porque sus colores no estan en un solo estilo.
-     */
-    fun previewContext(context: Context, key: String, customTheme: CustomTheme?): Context =
-      if (key == THEME_CUSTOM && customTheme != null) {
-        CustomThemePalette.themedContext(context, customTheme)
-      } else {
-        androidx.appcompat.view.ContextThemeWrapper(context, themeOption(key).previewStyleRes)
-      }
-
     private const val KEY_FONT_SCALE = "font_scale"
     const val DEFAULT_FONT_SCALE = 1.0f
 
@@ -124,6 +117,24 @@ class ThemeManager(private val context: Context) {
 
   /** Combinacion guardada del tema personalizado; `null` si aun no se ha creado. */
   fun loadCustomTheme(): CustomTheme? = CustomTheme.parse(prefs.getString(KEY_CUSTOM_THEME, null))
+
+  /** Colores a medida usados hace poco (`#RRGGBB`), el mas reciente primero. */
+  fun loadRecentCustomColors(): List<String> =
+    prefs.getString(KEY_RECENT_CUSTOM_COLORS, null)
+      ?.split(",")
+      ?.mapNotNull { CustomColors.parse(it)?.let(CustomColors::format) }
+      ?.distinct()
+      ?.take(MAX_RECENT_CUSTOM_COLORS)
+      .orEmpty()
+
+  /** Pone [color] (`#RRGGBB`) el primero de los recientes y devuelve la lista resultante. */
+  fun addRecentCustomColor(color: String): List<String> {
+    val normalized = CustomColors.parse(color)?.let(CustomColors::format) ?: return loadRecentCustomColors()
+    val recent = (listOf(normalized) + loadRecentCustomColors().filter { it != normalized })
+      .take(MAX_RECENT_CUSTOM_COLORS)
+    prefs.edit().putString(KEY_RECENT_CUSTOM_COLORS, recent.joinToString(",")).apply()
+    return recent
+  }
   
   fun saveFont(font: String) {
       prefs.edit().putString(KEY_FONT, font).apply()
@@ -204,6 +215,13 @@ class ThemeManager(private val context: Context) {
   /** Overlays de color que van sobre [getThemeStyleRes] (acento y prioridades del personalizado). */
   fun getColorOverlayStyles(): List<Int> =
       activeCustomTheme()?.let { CustomThemePalette.overlayStyles(it) } ?: emptyList()
+
+  /**
+   * Colores a medida del personalizado activo (id de recurso -> color) que `BaseActivity` carga
+   * con [CustomColorResources] antes de aplicar [getThemeStyleRes]; vacio si no hay ninguno.
+   */
+  fun getColorOverrides(): Map<Int, Int> =
+      activeCustomTheme()?.let { CustomThemePalette.colorOverrides(it) } ?: emptyMap()
 
   private fun isDarkTheme(theme: String): Boolean =
     if (theme == THEME_CUSTOM) loadCustomTheme()?.isDark ?: true else themeOption(theme).isDark

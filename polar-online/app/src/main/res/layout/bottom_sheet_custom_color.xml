@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  hoja inferior para elegir un color a medida del tema personalizado (CustomColorSheet): selector
+  hsv, codigo hex de 6 caracteres, aviso de contraste con el fondo y colores recientes. el cambio
+  se ve al momento en la vista previa del editor, que queda visible encima.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+    style="@style/Widget.Polar.BottomSheet.DragHandle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+  <TextView
+    android:id="@+id/tvCustomColorTitle"
+    style="@style/Polar.DialogTitle"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    tools:text="@string/custom_theme_accent" />
+
+  <androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:clipToPadding="false"
+    android:fillViewport="false">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingStart="24dp"
+      android:paddingEnd="24dp"
+      android:paddingTop="16dp"
+      android:paddingBottom="8dp">
+
+      <app.polar.ui.widget.ColorPickerView
+        android:id="@+id/colorPicker"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/custom_color_picker_height"
+        android:contentDescription="@string/custom_color_picker_description" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <View
+          android:id="@+id/viewColorPreview"
+          android:layout_width="@dimen/custom_color_preview_size"
+          android:layout_height="@dimen/custom_color_preview_size"
+          android:layout_marginTop="4dp"
+          android:focusable="true"
+          android:importantForAccessibility="yes" />
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/tilHex"
+          style="@style/Widget.Polar.TextInputLayout.OutlinedBox"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:layout_weight="1"
+          android:hint="@string/custom_color_hex_hint"
+          app:helperText="@string/custom_color_hex_helper"
+          app:prefixText="#">
+
+          <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etHex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="textCapCharacters|textNoSuggestions|textVisiblePassword"
+            android:maxLines="1"
+            tools:text="3A7BD5" />
+        </com.google.android.material.textfield.TextInputLayout>
+      </LinearLayout>
+
+      <LinearLayout
+        android:id="@+id/rowContrast"
+        android:layout_width="match_parent"
+        tools:ignore="UseCompoundDrawables"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <ImageView
+          android:id="@+id/ivContrast"
+          android:layout_width="18dp"
+          android:layout_height="18dp"
+          android:importantForAccessibility="no"
+          android:src="@drawable/ic_contrast"
+          app:tint="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+          android:id="@+id/tvContrast"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:layout_weight="1"
+          android:accessibilityLiveRegion="polite"
+          android:textAppearance="?attr/textAppearanceBodySmall"
+          android:textColor="?attr/colorOnSurfaceVariant"
+          tools:text="buen contraste con el fondo · 5,2:1" />
+      </LinearLayout>
+
+      <TextView
+        android:id="@+id/tvRecentColors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/custom_color_recent"
+        android:textAppearance="@style/TextAppearance.Polar.Section" />
+
+      <com.google.android.material.chip.ChipGroup
+        android:id="@+id/groupRecentColors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:chipSpacingHorizontal="@dimen/custom_theme_swatch_spacing"
+        app:chipSpacingVertical="@dimen/custom_theme_swatch_spacing" />
+    </LinearLayout>
+  </androidx.core.widget.NestedScrollView>
+
+  <LinearLayout style="@style/Polar.DialogActions">
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnCustomColorCancel"
+      style="@style/Widget.Polar.Button.Text.Neutral"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:text="@string/cancel" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/btnCustomColorDone"
+      style="@style/Widget.Polar.Button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/custom_color_done" />
+  </LinearLayout>
+</LinearLayout>

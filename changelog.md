@@ -78,6 +78,10 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - extraer la miniatura de tema a `view_theme_preview.xml` y los colores de las vistas previas a `ThemePreviewColors`, y compartir entre el selector de color de listas y el editor de tema la muestra circular `ColorSwatch` y la semantica de accesibilidad `setRadioSemantics()`.
 - recrear la app al volver a ajustes cuando cambia el aspecto (`ThemeManager.themeSignature()`), tambien al editar la combinacion del tema personalizado activo, y aplicar su modo noche.
 - documentar en `agents.md` y `claude.md` como funciona y como ampliar el tema personalizado.
+- generar con `custom_theme_palette.py` los estilos portadores de los colores a medida y compartir entre los fondos y los portadores la lista de atributos de tema.
+- sustituir `ThemeManager.previewContext()` por `ThemePreviewColors.forTheme()` y `forCustomTheme()`, que pintan las vistas previas con los colores a medida sin tocar los recursos.
+- anadir los iconos `ic_colorize`, `ic_warning` e `ic_contrast` de lucide con `lucide2vd.py`.
+- documentar en `agents.md` y `claude.md` como funcionan los colores a medida del tema personalizado.
 
 #### CORREGIDO
 
@@ -127,6 +131,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - abrir la ubicacion de un recordatorio con cualquier app de mapas instalada y no solo con google maps.
 - traducir el aviso de titulo obligatorio del formulario de recordatorio, que estaba fijo en castellano.
 - actualizar el texto del tutorial sobre los temas, que hablaba de siete cuando ya habia trece, y mencionar el tema personalizado.
+- arreglar `ColorPickerView` (tambien en el color de las listas): arrastrar dentro de una lista o una hoja inferior ya no la desplaza, los selectores no se recortan en los bordes, los grises conservan el tono elegido y el dibujo escala con la densidad de pantalla.
 
 #### NUEVO
 
@@ -164,6 +169,10 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - aplicar el tema personalizado sin generar colores en tiempo de ejecucion: cada fondo es un tema completo (`Theme.Polar.Custom.*`) y el acento y las prioridades son overlays en tono claro y oscuro (`ThemeOverlay.Polar.Custom.*`) que `BaseActivity` aplica con `ThemeManager.getColorOverlayStyles()`, de modo que mantienen el contraste con cualquier fondo y todos los `?attr/` de la app funcionan igual que en los temas predefinidos.
 - generar `colors_custom_theme.xml` y `themes_custom.xml` con `.docs/agent-docs/tools/custom_theme_palette.py`, que valida el contraste wcag de todas las combinaciones, y registrar las opciones en `CustomThemePalette`; la combinacion se guarda en preferencias como claves (`CustomTheme`) y las que ya no existan vuelven a las de por defecto.
 - anadir `CustomThemeTest` y `CustomThemeViewModelTest`, con `FakeSharedPreferences`, para la lectura y el saneado de la combinacion, los overlays, la firma del tema y el flujo del editor.
+- anadir colores a medida al tema personalizado: cada paleta (fondo, acento y las tres prioridades) termina con una muestra que abre `CustomColorSheet`, con selector de tono, saturacion y brillo, codigo hex de 6 caracteres (admite minusculas y pegar con `#`), aviso de contraste con el fondo, colores recientes y vista previa en vivo en el editor; "cancelar" devuelve el color anterior.
+- derivar de un fondo a medida su modo claro u oscuro, superficies, contornos y textos con el contraste wcag de la paleta (`CustomThemeScheme`), y de un acento a medida el texto encima, el contenedor y el tono inverso.
+- aplicar los colores a medida en toda la app sustituyendo en tiempo de ejecucion los colores `custom_hex_*` de los estilos portadores (`Theme.Polar.Custom.Hex.*`, `ThemeOverlay.Polar.Custom.*.Hex`) con un `ResourcesLoader` (`CustomColorResources`, android 11+); en android 10 o anterior el editor solo ofrece la paleta y un tema guardado con colores a medida usa los de por defecto.
+- anadir `CustomColorsTest`, `CustomThemeSchemeTest` y `ColorResourceTableTest`, y casos de colores a medida y recientes en `CustomThemeTest` y `CustomThemeViewModelTest`.
 
 #### ELIMINADO
 
@@ -237,6 +246,10 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - extract the theme thumbnail to `view_theme_preview.xml` and the preview colours to `ThemePreviewColors`, and share the round `ColorSwatch` and the `setRadioSemantics()` accessibility semantics between the list colour picker and the theme editor.
 - recreate the app when returning to settings if the look changed (`ThemeManager.themeSignature()`), also after editing the active custom theme, and apply its night mode.
 - document in `agents.md` and `claude.md` how the custom theme works and how to extend it.
+- generate the carrier styles of the custom colours with `custom_theme_palette.py` and share the theme attribute list between the backgrounds and the carriers.
+- replace `ThemeManager.previewContext()` with `ThemePreviewColors.forTheme()` and `forCustomTheme()`, which paint previews with custom colours without touching the resources.
+- add the lucide icons `ic_colorize`, `ic_warning` and `ic_contrast` with `lucide2vd.py`.
+- document in `agents.md` and `claude.md` how the custom colours of the custom theme work.
 
 #### FIXED
 
@@ -286,6 +299,7 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - open a reminder's location with any installed maps app, not only google maps.
 - translate the required title warning of the reminder form, which was hardcoded in spanish.
 - update the tutorial text about themes, which mentioned seven when there were already thirteen, and mention the custom theme.
+- fix `ColorPickerView` (also in the list colour): dragging inside a list or a bottom sheet no longer scrolls it, the handles are no longer clipped at the edges, greys keep the chosen hue and drawing scales with screen density.
 
 #### ADDED
 
@@ -323,6 +337,10 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 - apply the custom theme without generating colours at runtime: each background is a full theme (`Theme.Polar.Custom.*`) and the accent and priorities are light and dark tone overlays (`ThemeOverlay.Polar.Custom.*`) that `BaseActivity` applies with `ThemeManager.getColorOverlayStyles()`, so they keep their contrast on any background and every `?attr/` in the app works as in the preset themes.
 - generate `colors_custom_theme.xml` and `themes_custom.xml` with `.docs/agent-docs/tools/custom_theme_palette.py`, which checks the wcag contrast of every combination, and register the options in `CustomThemePalette`; the combination is stored in preferences as keys (`CustomTheme`) and keys that no longer exist fall back to the defaults.
 - add `CustomThemeTest` and `CustomThemeViewModelTest`, with `FakeSharedPreferences`, for reading and sanitising the combination, the overlays, the theme signature and the editor flow.
+- add custom colours to the custom theme: every palette (background, accent and the three priorities) ends with a swatch that opens `CustomColorSheet`, with a hue, saturation and brightness picker, a 6 character hex code (accepts lowercase and pasting with `#`), a contrast warning against the background, recent colours and a live preview in the editor; "cancel" restores the previous colour.
+- derive from a custom background its light or dark mode, surfaces, outlines and text with the palette's wcag contrast (`CustomThemeScheme`), and from a custom accent the text on top, the container and the inverse tone.
+- apply custom colours across the app by replacing at runtime the `custom_hex_*` colours of the carrier styles (`Theme.Polar.Custom.Hex.*`, `ThemeOverlay.Polar.Custom.*.Hex`) with a `ResourcesLoader` (`CustomColorResources`, android 11+); on android 10 or earlier the editor only offers the palette and a saved theme with custom colours uses the defaults.
+- add `CustomColorsTest`, `CustomThemeSchemeTest` and `ColorResourceTableTest`, and custom colour and recent colour cases in `CustomThemeTest` and `CustomThemeViewModelTest`.
 
 #### REMOVED
 

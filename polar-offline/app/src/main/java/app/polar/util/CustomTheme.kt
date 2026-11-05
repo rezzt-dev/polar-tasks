@@ -8,8 +8,9 @@ import app.polar.R
 
 /**
  * Combinacion elegida para el tema personalizado: un fondo, un color de acento y un color por
- * prioridad. Guarda solo claves de [CustomThemePalette]; los colores reales salen de los estilos
- * de `themes_custom.xml`, de modo que cada eleccion tiene tono claro y oscuro con buen contraste.
+ * prioridad. Cada valor es una clave de [CustomThemePalette] (sus colores salen de los estilos de
+ * `themes_custom.xml`, con tono claro y oscuro) o un color a medida `#RRGGBB` (ver
+ * [CustomColorResources]).
  */
 data class CustomTheme(
     val background: String,
@@ -19,7 +20,30 @@ data class CustomTheme(
     val priorityLow: String
 ) {
 
-    val isDark: Boolean get() = CustomThemePalette.background(background).isDark
+    /** Un fondo a medida es oscuro o claro segun su luminosidad. */
+    val isDark: Boolean
+        get() = CustomThemePalette.customColor(background)?.let(CustomColors::isDark)
+            ?: CustomThemePalette.background(background).isDark
+
+    /** Tiene algun color a medida. */
+    val hasCustomColors: Boolean
+        get() = CustomThemePalette.Slot.entries.any { CustomThemePalette.customColor(get(it)) != null }
+
+    operator fun get(slot: CustomThemePalette.Slot): String = when (slot) {
+        CustomThemePalette.Slot.BACKGROUND -> background
+        CustomThemePalette.Slot.ACCENT -> accent
+        CustomThemePalette.Slot.PRIORITY_HIGH -> priorityHigh
+        CustomThemePalette.Slot.PRIORITY_MEDIUM -> priorityMedium
+        CustomThemePalette.Slot.PRIORITY_LOW -> priorityLow
+    }
+
+    fun with(slot: CustomThemePalette.Slot, value: String): CustomTheme = when (slot) {
+        CustomThemePalette.Slot.BACKGROUND -> copy(background = value)
+        CustomThemePalette.Slot.ACCENT -> copy(accent = value)
+        CustomThemePalette.Slot.PRIORITY_HIGH -> copy(priorityHigh = value)
+        CustomThemePalette.Slot.PRIORITY_MEDIUM -> copy(priorityMedium = value)
+        CustomThemePalette.Slot.PRIORITY_LOW -> copy(priorityLow = value)
+    }
 
     fun priorityColor(priority: CustomThemePalette.Priority): String = when (priority) {
         CustomThemePalette.Priority.HIGH -> priorityHigh
@@ -33,7 +57,7 @@ data class CustomTheme(
         CustomThemePalette.Priority.LOW -> copy(priorityLow = key)
     }
 
-    /** Forma guardada en preferencias: `fondo,acento,alta,media,baja`. */
+    /** Forma guardada en preferencias: `fondo,acento,alta,media,baja` (claves o `#RRGGBB`). */
     fun serialize(): String = listOf(background, accent, priorityHigh, priorityMedium, priorityLow)
         .joinToString(SEPARATOR)
 
@@ -42,12 +66,13 @@ data class CustomTheme(
 
         /**
          * Lee una combinacion guardada; `null` si falta o esta mal formada. Las claves que ya no
-         * existan en la paleta se sustituyen por las de la combinacion por defecto de su modo.
+         * existan en la paleta (y los colores a medida si el dispositivo no los admite) se
+         * sustituyen por los de la combinacion por defecto de su modo.
          */
-        fun parse(value: String?): CustomTheme? {
+        fun parse(value: String?, allowCustomColors: Boolean = CustomColorResources.isSupported): CustomTheme? {
             val parts = value?.split(SEPARATOR)?.map { it.trim() } ?: return null
             if (parts.size != 5 || parts.any { it.isEmpty() }) return null
-            return CustomThemePalette.sanitize(CustomTheme(parts[0], parts[1], parts[2], parts[3], parts[4]))
+            return CustomThemePalette.sanitize(CustomTheme(parts[0], parts[1], parts[2], parts[3], parts[4]), allowCustomColors)
         }
     }
 }
@@ -56,10 +81,26 @@ data class CustomTheme(
  * Opciones del tema personalizado y los estilos que las aplican. El orden de cada lista es el
  * orden en que aparecen en el editor. Las claves se guardan en preferencias: no las renombres.
  * Los estilos y colores se generan con `.docs/agent-docs/tools/custom_theme_palette.py`.
+ *
+ * Ademas de las claves, cada hueco admite un color a medida `#RRGGBB`: se pinta con los estilos
+ * portadores (`*.Hex`) y sus tonos ([CustomThemeScheme]) se cargan con [CustomColorResources].
  */
 object CustomThemePalette {
 
     enum class Priority { HIGH, MEDIUM, LOW }
+
+    /** Cada eleccion de la combinacion: fondo, acento y un color por prioridad. */
+    enum class Slot(val priority: Priority? = null) {
+        BACKGROUND,
+        ACCENT,
+        PRIORITY_HIGH(Priority.HIGH),
+        PRIORITY_MEDIUM(Priority.MEDIUM),
+        PRIORITY_LOW(Priority.LOW);
+
+        companion object {
+            fun of(priority: Priority): Slot = entries.first { it.priority == priority }
+        }
+    }
 
     data class Background(
         val key: String,
@@ -192,21 +233,32 @@ object CustomThemePalette {
 
     fun defaultFor(dark: Boolean): CustomTheme = if (dark) DEFAULT_DARK else DEFAULT_LIGHT
 
+    /** Color de un valor a medida (`#RRGGBB`); `null` si es una clave de la paleta. */
+    fun customColor(value: String): Int? = if (value.startsWith("#")) CustomColors.parse(value) else null
+
     fun background(key: String): Background = BACKGROUNDS.find { it.key == key } ?: BACKGROUNDS.first()
 
     fun accent(key: String): Accent = ACCENTS.find { it.key == key } ?: ACCENTS.first { it.key == DEFAULT_LIGHT.accent }
 
     fun priorityColor(key: String): PriorityColor = PRIORITY_COLORS.find { it.key == key } ?: PRIORITY_COLORS.first()
 
-    /** Sustituye las claves desconocidas por las de la combinacion por defecto de su modo. */
-    fun sanitize(theme: CustomTheme): CustomTheme {
+    /**
+     * Normaliza una combinacion: los colores a medida pasan a `#RRGGBB` en mayusculas y las claves
+     * desconocidas, los codigos mal formados y (sin [allowCustomColors]) los colores a medida se
+     * sustituyen por los de la combinacion por defecto de su modo.
+     */
+    fun sanitize(theme: CustomTheme, allowCustomColors: Boolean = CustomColorResources.isSupported): CustomTheme {
         val background = BACKGROUNDS.find { it.key == theme.background }
-        val fallback = defaultFor(background?.isDark ?: false)
-        fun accentOr(key: String, default: String) = if (ACCENTS.any { it.key == key }) key else default
-        fun priorityOr(key: String, default: String) = if (PRIORITY_COLORS.any { it.key == key }) key else default
+        val customBackground = customColor(theme.background)
+        val fallback = defaultFor(customBackground?.let(CustomColors::isDark) ?: background?.isDark ?: false)
+        fun valueOr(value: String, default: String, isKey: (String) -> Boolean): String {
+            customColor(value)?.let { return if (allowCustomColors) CustomColors.format(it) else default }
+            return if (isKey(value)) value else default
+        }
+        fun priorityOr(value: String, default: String) = valueOr(value, default) { key -> PRIORITY_COLORS.any { it.key == key } }
         return CustomTheme(
-            background = background?.key ?: fallback.background,
-            accent = accentOr(theme.accent, fallback.accent),
+            background = valueOr(theme.background, fallback.background) { background != null },
+            accent = valueOr(theme.accent, fallback.accent) { key -> ACCENTS.any { it.key == key } },
             priorityHigh = priorityOr(theme.priorityHigh, fallback.priorityHigh),
             priorityMedium = priorityOr(theme.priorityMedium, fallback.priorityMedium),
             priorityLow = priorityOr(theme.priorityLow, fallback.priorityLow)
@@ -214,17 +266,89 @@ object CustomThemePalette {
     }
 
     /** Tema completo del fondo, que se aplica con `setTheme()`. */
-    @StyleRes fun baseStyle(theme: CustomTheme): Int = background(theme.background).styleRes
+    @StyleRes fun baseStyle(theme: CustomTheme): Int {
+        val custom = customColor(theme.background) ?: return background(theme.background).styleRes
+        return if (CustomColors.isDark(custom)) R.style.Theme_Polar_Custom_Hex_Dark else R.style.Theme_Polar_Custom_Hex_Light
+    }
 
     /** Overlays de acento y prioridades, en el tono del modo del fondo, para aplicar sobre [baseStyle]. */
     fun overlayStyles(theme: CustomTheme): List<Int> {
         val dark = theme.isDark
-        return listOf(accent(theme.accent).overlay(dark)) + Priority.entries.map { priority ->
-            priorityColor(theme.priorityColor(priority)).overlay(priority, dark)
+        val accentStyle = if (customColor(theme.accent) != null) {
+            R.style.ThemeOverlay_Polar_Custom_Accent_Hex
+        } else {
+            accent(theme.accent).overlay(dark)
+        }
+        return listOf(accentStyle) + Priority.entries.map { priority ->
+            val value = theme.priorityColor(priority)
+            if (customColor(value) != null) customPriorityOverlay(priority) else priorityColor(value).overlay(priority, dark)
         }
     }
 
-    /** Contexto con la combinacion aplicada, para resolver sus colores en vistas previas. */
+    /**
+     * Valores de los colores portadores (`custom_hex_*`) para los huecos a medida de [theme]: id de
+     * recurso -> color. Vacio si la combinacion solo usa la paleta.
+     */
+    fun colorOverrides(theme: CustomTheme): Map<Int, Int> = buildMap {
+        customColor(theme.background)?.let { color ->
+            val bg = CustomThemeScheme.background(color)
+            put(R.color.custom_hex_bg_background, bg.background)
+            put(R.color.custom_hex_bg_surface, bg.surface)
+            put(R.color.custom_hex_bg_surface_container_lowest, bg.surfaceContainerLowest)
+            put(R.color.custom_hex_bg_surface_container_low, bg.surfaceContainerLow)
+            put(R.color.custom_hex_bg_surface_container, bg.surfaceContainer)
+            put(R.color.custom_hex_bg_surface_container_high, bg.surfaceContainerHigh)
+            put(R.color.custom_hex_bg_surface_container_highest, bg.surfaceContainerHighest)
+            put(R.color.custom_hex_bg_surface_bright, bg.surfaceBright)
+            put(R.color.custom_hex_bg_surface_dim, bg.surfaceDim)
+            put(R.color.custom_hex_bg_foreground, bg.foreground)
+            put(R.color.custom_hex_bg_foreground_variant, bg.foregroundVariant)
+            put(R.color.custom_hex_bg_outline, bg.outline)
+            put(R.color.custom_hex_bg_outline_variant, bg.outlineVariant)
+            put(R.color.custom_hex_bg_inverse_surface, bg.inverseSurface)
+            put(R.color.custom_hex_bg_inverse_on_surface, bg.inverseOnSurface)
+        }
+        customColor(theme.accent)?.let { color ->
+            val accent = CustomThemeScheme.accent(color, theme.isDark)
+            put(R.color.custom_hex_accent_primary, accent.primary)
+            put(R.color.custom_hex_accent_on_primary, accent.onPrimary)
+            put(R.color.custom_hex_accent_container, accent.container)
+            put(R.color.custom_hex_accent_on_container, accent.onContainer)
+            put(R.color.custom_hex_accent_primary_inverse, accent.primaryInverse)
+        }
+        Priority.entries.forEach { priority ->
+            customColor(theme.priorityColor(priority))?.let { put(customPriorityColorRes(priority), it) }
+        }
+    }
+
+    /** Nombre de la eleccion de un hueco para la interfaz: el de la paleta o el codigo `#RRGGBB`. */
+    fun label(context: Context, slot: Slot, value: String): String {
+        customColor(value)?.let { return CustomColors.format(it) }
+        return context.getString(
+            when (slot) {
+                Slot.BACKGROUND -> background(value).labelRes
+                Slot.ACCENT -> accent(value).labelRes
+                else -> priorityColor(value).labelRes
+            }
+        )
+    }
+
+    @StyleRes private fun customPriorityOverlay(priority: Priority): Int = when (priority) {
+        Priority.HIGH -> R.style.ThemeOverlay_Polar_Custom_PriorityHigh_Hex
+        Priority.MEDIUM -> R.style.ThemeOverlay_Polar_Custom_PriorityMedium_Hex
+        Priority.LOW -> R.style.ThemeOverlay_Polar_Custom_PriorityLow_Hex
+    }
+
+    private fun customPriorityColorRes(priority: Priority): Int = when (priority) {
+        Priority.HIGH -> R.color.custom_hex_priority_high
+        Priority.MEDIUM -> R.color.custom_hex_priority_medium
+        Priority.LOW -> R.color.custom_hex_priority_low
+    }
+
+    /**
+     * Contexto con los estilos de la combinacion aplicados. Los huecos a medida resuelven ahi sus
+     * colores de respaldo: para vistas previas usa `ThemePreviewColors.forCustomTheme()`.
+     */
     fun themedContext(context: Context, theme: CustomTheme): Context =
         ContextThemeWrapper(context, baseStyle(theme)).apply {
             overlayStyles(theme).forEach { this.theme.applyStyle(it, true) }

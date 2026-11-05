@@ -4,7 +4,8 @@ import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import app.polar.util.CustomTheme
 import app.polar.util.CustomThemePalette
-import app.polar.util.CustomThemePalette.Priority
+import app.polar.util.CustomColorResources
+import app.polar.util.CustomThemePalette.Slot
 import app.polar.util.FakeSharedPreferences
 import app.polar.util.MainDispatcherRule
 import app.polar.util.ThemeManager
@@ -13,6 +14,7 @@ import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,8 +30,14 @@ class CustomThemeViewModelTest {
 
     @Before
     fun setUp() {
+        CustomColorResources.supportedOverride = true
         every { application.getSharedPreferences(any(), any()) } returns prefs
         themeManager = ThemeManager(application)
+    }
+
+    @After
+    fun tearDown() {
+        CustomColorResources.supportedOverride = null
     }
 
     private fun viewModel(savedState: SavedStateHandle = SavedStateHandle()) =
@@ -62,11 +70,11 @@ class CustomThemeViewModelTest {
         assertTrue(viewModel.uiState.value.isActive)
         assertFalse(viewModel.uiState.value.canApply)
 
-        viewModel.selectAccent("cyan")
+        viewModel.select(Slot.ACCENT, "cyan")
         assertTrue(viewModel.uiState.value.hasChanges)
         assertTrue(viewModel.uiState.value.canApply)
 
-        viewModel.selectAccent("pink")
+        viewModel.select(Slot.ACCENT, "pink")
         assertFalse(viewModel.uiState.value.canApply)
     }
 
@@ -75,9 +83,9 @@ class CustomThemeViewModelTest {
         val savedState = SavedStateHandle()
         val viewModel = viewModel(savedState)
 
-        viewModel.selectBackground("midnight")
-        viewModel.selectAccent("amber")
-        viewModel.selectPriorityColor(Priority.LOW, "teal")
+        viewModel.select(Slot.BACKGROUND, "midnight")
+        viewModel.select(Slot.ACCENT, "amber")
+        viewModel.select(Slot.PRIORITY_LOW, "teal")
 
         val expected = CustomThemePalette.DEFAULT_DARK.copy(background = "midnight", accent = "amber", priorityLow = "teal")
         assertEquals(expected, viewModel.uiState.value.draft)
@@ -90,8 +98,8 @@ class CustomThemeViewModelTest {
     @Test
     fun reset_goesBackToTheDefaultOfTheModeAndCanBeUndone() {
         val viewModel = viewModel()
-        viewModel.selectBackground("cocoa")
-        viewModel.selectAccent("red")
+        viewModel.select(Slot.BACKGROUND, "cocoa")
+        viewModel.select(Slot.ACCENT, "red")
 
         val previous = viewModel.reset()
         assertEquals(CustomThemePalette.DEFAULT_DARK, viewModel.uiState.value.draft)
@@ -106,7 +114,7 @@ class CustomThemeViewModelTest {
     fun apply_savesTheThemeAndActivatesIt() {
         themeManager.saveTheme(ThemeManager.THEME_SAGE, applyNightMode = false)
         val viewModel = viewModel()
-        viewModel.selectAccent("green")
+        viewModel.select(Slot.ACCENT, "green")
 
         viewModel.apply()
 
@@ -125,5 +133,58 @@ class CustomThemeViewModelTest {
         viewModel.apply()
 
         assertFalse(viewModel.applied.value)
+    }
+
+    @Test
+    fun customColors_areNormalizedSavedAndAvailableWhenSupported() {
+        val viewModel = viewModel()
+        assertTrue(viewModel.uiState.value.customColorsAvailable)
+
+        viewModel.select(Slot.ACCENT, "#3a7bd5")
+        viewModel.select(Slot.BACKGROUND, "#1e1e2e")
+        viewModel.select(Slot.PRIORITY_HIGH, "#F38BA8")
+
+        val draft = viewModel.uiState.value.draft
+        assertEquals("#3A7BD5", draft.accent)
+        assertEquals("#1E1E2E", draft.background)
+        assertEquals("#F38BA8", draft.priorityHigh)
+        assertTrue(draft.isDark)
+
+        viewModel.apply()
+        assertEquals(draft, themeManager.loadCustomTheme())
+    }
+
+    @Test
+    fun invalidCustomColors_fallBackToThePalette() {
+        val viewModel = viewModel()
+        viewModel.select(Slot.ACCENT, "#12345")
+        assertEquals(CustomThemePalette.DEFAULT_DARK.accent, viewModel.uiState.value.draft.accent)
+    }
+
+    @Test
+    fun customColors_areUnavailableOnOldDevices() {
+        CustomColorResources.supportedOverride = false
+        val viewModel = viewModel()
+        assertFalse(viewModel.uiState.value.customColorsAvailable)
+
+        viewModel.select(Slot.ACCENT, "#3A7BD5")
+        assertEquals(CustomThemePalette.DEFAULT_DARK.accent, viewModel.uiState.value.draft.accent)
+    }
+
+    @Test
+    fun recentColors_keepTheLatestFirstWithoutDuplicates() {
+        val viewModel = viewModel()
+        assertTrue(viewModel.recentColors.value.isEmpty())
+
+        viewModel.rememberRecentColor("#112233")
+        viewModel.rememberRecentColor("#aabbcc")
+        viewModel.rememberRecentColor("#112233")
+        assertEquals(listOf("#112233", "#AABBCC"), viewModel.recentColors.value)
+
+        repeat(ThemeManager.MAX_RECENT_CUSTOM_COLORS + 2) { i -> viewModel.rememberRecentColor("#0000%02X".format(i)) }
+        assertEquals(ThemeManager.MAX_RECENT_CUSTOM_COLORS, viewModel.recentColors.value.size)
+        assertEquals("#000009", viewModel.recentColors.value.first())
+        // Se recuerdan entre sesiones.
+        assertEquals(viewModel.recentColors.value, viewModel().recentColors.value)
     }
 }

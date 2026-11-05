@@ -9,9 +9,16 @@ escribe en cada `<dir_res>/values/`:
   - themes_custom.xml: un tema base por fondo y un overlay por acento y por color de
     prioridad, en version clara y oscura.
 
-el tema personalizado no crea colores en tiempo de ejecucion: combina estos estilos con
-`Resources.Theme.applyStyle()` (ver `CustomThemePalette.kt`), asi que todos los `?attr/`
-de layouts, drawables y selectores funcionan igual que en los temas predefinidos.
+el tema personalizado combina estos estilos con `Resources.Theme.applyStyle()` (ver
+`CustomThemePalette.kt`), asi que todos los `?attr/` de layouts, drawables y selectores
+funcionan igual que en los temas predefinidos.
+
+los colores a medida (hex) usan estilos "portadores" (`Theme.Polar.Custom.Hex.*`,
+`ThemeOverlay.Polar.Custom.*.Hex`) que apuntan a los colores `custom_hex_*`. su valor aqui
+es solo un respaldo: en android 11+ `CustomColorResources.kt` los sustituye en tiempo de
+ejecucion con los tonos que deriva `CustomThemeScheme.kt` (que replica `background_palette()`
+y `accent_palette()`). no renombres los colores `custom_hex_*` sin actualizar
+`CustomThemePalette.colorOverrides()`.
 
 cada acento y cada color de prioridad tiene un tono para fondos claros y otro para fondos
 oscuros; el script comprueba el contraste (wcag) de todas las combinaciones y falla si
@@ -204,6 +211,92 @@ def validate(backgrounds, accents):
     return errors
 
 
+# --- colores a medida -------------------------------------------------------------------
+# valores de respaldo de los portadores: nieve, acento azul y prioridades por defecto.
+HEX_FALLBACK_BACKGROUND = "snow"
+HEX_FALLBACK_ACCENT = "blue"
+HEX_FALLBACK_PRIORITIES = {"High": "red", "Medium": "amber", "Low": "blue"}
+
+
+def background_theme_items(c, mode):
+    """atributos de un tema de fondo; `c(role)` da la referencia de color de cada rol."""
+    dark = mode == "dark"
+    s = lambda role: f"@color/custom_status_{mode}_{role}"
+    on_status = "@color/black" if dark else "@color/white"
+    # acento por defecto (tinta) para que el tema base este completo aunque falte el overlay
+    a = lambda role: f"@color/custom_accent_ink_{mode}_{role}"
+    return [
+        ("colorPrimary", a("primary")),
+        ("colorOnPrimary", a("on_primary")),
+        ("colorPrimaryContainer", a("container")),
+        ("colorOnPrimaryContainer", a("on_container")),
+        ("colorPrimaryInverse", f"@color/custom_accent_ink_{'light' if dark else 'dark'}_primary"),
+        ("colorSecondary", a("primary")),
+        ("colorOnSecondary", a("on_primary")),
+        ("colorSecondaryContainer", a("container")),
+        ("colorOnSecondaryContainer", a("on_container")),
+        ("colorTertiary", a("primary")),
+        ("colorOnTertiary", a("on_primary")),
+        ("colorTertiaryContainer", a("container")),
+        ("colorOnTertiaryContainer", a("on_container")),
+        ("buttonBackground", a("primary")),
+        ("colorError", s("error")),
+        ("colorOnError", on_status),
+        ("colorErrorContainer", s("error_container")),
+        ("colorOnErrorContainer", s("on_error_container")),
+        ("colorSuccess", s("success")),
+        ("colorOnSuccess", on_status),
+        ("colorDateOverdue", s("error")),
+        ("colorPriorityHigh", f"@color/custom_priority_red_{mode}"),
+        ("colorPriorityMedium", f"@color/custom_priority_amber_{mode}"),
+        ("colorPriorityLow", f"@color/custom_priority_blue_{mode}"),
+        ("android:colorBackground", c("background")),
+        ("colorOnBackground", c("foreground")),
+        ("colorSurface", c("surface")),
+        ("colorOnSurface", c("foreground")),
+        ("colorSurfaceVariant", c("surface_container_high")),
+        ("colorOnSurfaceVariant", c("foreground_variant")),
+        ("colorSurfaceContainerLowest", c("surface_container_lowest")),
+        ("colorSurfaceContainerLow", c("surface_container_low")),
+        ("colorSurfaceContainer", c("surface_container")),
+        ("colorSurfaceContainerHigh", c("surface_container_high")),
+        ("colorSurfaceContainerHighest", c("surface_container_highest")),
+        ("colorSurfaceBright", c("surface_bright")),
+        ("colorSurfaceDim", c("surface_dim")),
+        ("colorSurfaceInverse", c("inverse_surface")),
+        ("colorOnSurfaceInverse", c("inverse_on_surface")),
+        ("colorOutline", c("outline")),
+        ("colorOutlineVariant", c("outline_variant")),
+        ("android:statusBarColor", "@android:color/transparent"),
+        ("android:navigationBarColor", "@android:color/transparent"),
+        ("android:windowLightStatusBar", "false" if dark else "true"),
+        ("taskBackground", c("surface")),
+        ("taskBorder", c("outline_variant")),
+        ("mainBorder", c("outline_variant")),
+    ]
+
+
+def accent_overlay_items(a, inverse):
+    """atributos de un overlay de acento; `a(role)` da la referencia de cada rol."""
+    return [
+        ("colorPrimary", a("primary")),
+        ("colorOnPrimary", a("on_primary")),
+        ("colorPrimaryContainer", a("container")),
+        ("colorOnPrimaryContainer", a("on_container")),
+        # la superficie inversa (snackbars) es del modo contrario
+        ("colorPrimaryInverse", inverse),
+        ("colorSecondary", a("primary")),
+        ("colorOnSecondary", a("on_primary")),
+        ("colorSecondaryContainer", a("container")),
+        ("colorOnSecondaryContainer", a("on_container")),
+        ("colorTertiary", a("primary")),
+        ("colorOnTertiary", a("on_primary")),
+        ("colorTertiaryContainer", a("container")),
+        ("colorOnTertiaryContainer", a("on_container")),
+        ("buttonBackground", a("primary")),
+    ]
+
+
 def style_name(*parts):
     return ".".join(parts)
 
@@ -242,6 +335,16 @@ def build():
     for mode, status in (("light", LIGHT_STATUS), ("dark", DARK_STATUS)):
         for role, value in status.items():
             colors.append(f'  <color name="custom_status_{mode}_{role}">{value}</color>')
+    colors.append("")
+    colors.append("  <!-- colores a medida: respaldo, se sustituyen en tiempo de ejecucion (android 11+) -->")
+    for role, value in backgrounds[HEX_FALLBACK_BACKGROUND].items():
+        colors.append(f'  <color name="custom_hex_bg_{role}">{value}</color>')
+    fallback_accent = accents[HEX_FALLBACK_ACCENT]
+    for role, value in fallback_accent["light"].items():
+        colors.append(f'  <color name="custom_hex_accent_{role}">{value}</color>')
+    colors.append(f'  <color name="custom_hex_accent_primary_inverse">{fallback_accent["dark"]["primary"]}</color>')
+    for priority, key in HEX_FALLBACK_PRIORITIES.items():
+        colors.append(f'  <color name="custom_hex_priority_{priority.lower()}">{PRIORITY_COLORS[key][0]}</color>')
     colors.append("</resources>\n")
 
     themes = ['<?xml version="1.0" encoding="utf-8"?>', "<resources>", header.rstrip("\n")]
@@ -257,60 +360,7 @@ def build():
         dark = BACKGROUNDS[key][2]
         mode = "dark" if dark else "light"
         parent = "Platform.Theme.Polar.Dark" if dark else "Platform.Theme.Polar.Light"
-        c = lambda role: f"@color/custom_bg_{key}_{role}"
-        s = lambda role: f"@color/custom_status_{mode}_{role}"
-        on_status = "@color/black" if dark else "@color/white"
-        # acento por defecto (tinta) para que el tema base este completo aunque falte el overlay
-        a = lambda role: f"@color/custom_accent_ink_{mode}_{role}"
-        items = [
-            ("colorPrimary", a("primary")),
-            ("colorOnPrimary", a("on_primary")),
-            ("colorPrimaryContainer", a("container")),
-            ("colorOnPrimaryContainer", a("on_container")),
-            ("colorPrimaryInverse", f"@color/custom_accent_ink_{'light' if dark else 'dark'}_primary"),
-            ("colorSecondary", a("primary")),
-            ("colorOnSecondary", a("on_primary")),
-            ("colorSecondaryContainer", a("container")),
-            ("colorOnSecondaryContainer", a("on_container")),
-            ("colorTertiary", a("primary")),
-            ("colorOnTertiary", a("on_primary")),
-            ("colorTertiaryContainer", a("container")),
-            ("colorOnTertiaryContainer", a("on_container")),
-            ("buttonBackground", a("primary")),
-            ("colorError", s("error")),
-            ("colorOnError", on_status),
-            ("colorErrorContainer", s("error_container")),
-            ("colorOnErrorContainer", s("on_error_container")),
-            ("colorSuccess", s("success")),
-            ("colorOnSuccess", on_status),
-            ("colorDateOverdue", s("error")),
-            ("colorPriorityHigh", f"@color/custom_priority_red_{mode}"),
-            ("colorPriorityMedium", f"@color/custom_priority_amber_{mode}"),
-            ("colorPriorityLow", f"@color/custom_priority_blue_{mode}"),
-            ("android:colorBackground", c("background")),
-            ("colorOnBackground", c("foreground")),
-            ("colorSurface", c("surface")),
-            ("colorOnSurface", c("foreground")),
-            ("colorSurfaceVariant", c("surface_container_high")),
-            ("colorOnSurfaceVariant", c("foreground_variant")),
-            ("colorSurfaceContainerLowest", c("surface_container_lowest")),
-            ("colorSurfaceContainerLow", c("surface_container_low")),
-            ("colorSurfaceContainer", c("surface_container")),
-            ("colorSurfaceContainerHigh", c("surface_container_high")),
-            ("colorSurfaceContainerHighest", c("surface_container_highest")),
-            ("colorSurfaceBright", c("surface_bright")),
-            ("colorSurfaceDim", c("surface_dim")),
-            ("colorSurfaceInverse", c("inverse_surface")),
-            ("colorOnSurfaceInverse", c("inverse_on_surface")),
-            ("colorOutline", c("outline")),
-            ("colorOutlineVariant", c("outline_variant")),
-            ("android:statusBarColor", "@android:color/transparent"),
-            ("android:navigationBarColor", "@android:color/transparent"),
-            ("android:windowLightStatusBar", "false" if dark else "true"),
-            ("taskBackground", c("surface")),
-            ("taskBorder", c("outline_variant")),
-            ("mainBorder", c("outline_variant")),
-        ]
+        items = background_theme_items(lambda role: f"@color/custom_bg_{key}_{role}", mode)
         themes.append(f'\n  <style name="{style_name("Theme.Polar.Custom", pascal(key))}" parent="{parent}">')
         themes += [f'    <item name="{name}">{value}</item>' for name, value in items]
         themes.append("  </style>")
@@ -319,24 +369,10 @@ def build():
     for key in accents:
         for mode in ("light", "dark"):
             other = "dark" if mode == "light" else "light"
-            a = lambda role: f"@color/custom_accent_{key}_{mode}_{role}"
-            items = [
-                ("colorPrimary", a("primary")),
-                ("colorOnPrimary", a("on_primary")),
-                ("colorPrimaryContainer", a("container")),
-                ("colorOnPrimaryContainer", a("on_container")),
-                # la superficie inversa (snackbars) es del modo contrario
-                ("colorPrimaryInverse", f"@color/custom_accent_{key}_{other}_primary"),
-                ("colorSecondary", a("primary")),
-                ("colorOnSecondary", a("on_primary")),
-                ("colorSecondaryContainer", a("container")),
-                ("colorOnSecondaryContainer", a("on_container")),
-                ("colorTertiary", a("primary")),
-                ("colorOnTertiary", a("on_primary")),
-                ("colorTertiaryContainer", a("container")),
-                ("colorOnTertiaryContainer", a("on_container")),
-                ("buttonBackground", a("primary")),
-            ]
+            items = accent_overlay_items(
+                lambda role: f"@color/custom_accent_{key}_{mode}_{role}",
+                f"@color/custom_accent_{key}_{other}_primary",
+            )
             themes.append(f'  <style name="ThemeOverlay.Polar.Custom.Accent.{pascal(key)}.{pascal(mode)}" parent="">')
             themes += [f'    <item name="{name}">{value}</item>' for name, value in items]
             themes.append("  </style>")
@@ -349,6 +385,23 @@ def build():
                     f'  <style name="ThemeOverlay.Polar.Custom.Priority{priority}.{pascal(key)}.{pascal(mode)}" parent="">'
                     f'<item name="colorPriority{priority}">@color/custom_priority_{key}_{mode}</item></style>'
                 )
+
+    themes.append("\n  <!-- colores a medida: portadores cuyos colores `custom_hex_*` se sustituyen en tiempo de ejecucion -->")
+    for mode in ("light", "dark"):
+        parent = "Platform.Theme.Polar.Dark" if mode == "dark" else "Platform.Theme.Polar.Light"
+        items = background_theme_items(lambda role: f"@color/custom_hex_bg_{role}", mode)
+        themes.append(f'  <style name="Theme.Polar.Custom.Hex.{pascal(mode)}" parent="{parent}">')
+        themes += [f'    <item name="{name}">{value}</item>' for name, value in items]
+        themes.append("  </style>")
+    items = accent_overlay_items(lambda role: f"@color/custom_hex_accent_{role}", "@color/custom_hex_accent_primary_inverse")
+    themes.append('  <style name="ThemeOverlay.Polar.Custom.Accent.Hex" parent="">')
+    themes += [f'    <item name="{name}">{value}</item>' for name, value in items]
+    themes.append("  </style>")
+    for priority in PRIORITIES:
+        themes.append(
+            f'  <style name="ThemeOverlay.Polar.Custom.Priority{priority}.Hex" parent="">'
+            f'<item name="colorPriority{priority}">@color/custom_hex_priority_{priority.lower()}</item></style>'
+        )
     themes.append("</resources>\n")
     return "\n".join(colors), "\n".join(themes)
 

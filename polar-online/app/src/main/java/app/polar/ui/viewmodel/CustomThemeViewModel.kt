@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import app.polar.util.CustomColorResources
 import app.polar.util.CustomTheme
 import app.polar.util.CustomThemePalette
 import app.polar.util.ThemeManager
@@ -18,7 +19,7 @@ import javax.inject.Inject
 /**
  * Estado del editor del tema personalizado. La combinacion en edicion ([UiState.draft]) vive en
  * [SavedStateHandle] para sobrevivir a giros y a la muerte del proceso; solo se guarda en
- * preferencias al aplicarla.
+ * preferencias al aplicarla. Lo comparten el editor y la hoja de color a medida (`CustomColorSheet`).
  */
 @HiltViewModel
 class CustomThemeViewModel @Inject constructor(
@@ -34,7 +35,9 @@ class CustomThemeViewModel @Inject constructor(
         /** El tema personalizado ya se habia creado antes de abrir el editor. */
         val isCreated: Boolean,
         /** El tema personalizado es el tema activo. */
-        val isActive: Boolean
+        val isActive: Boolean,
+        /** El dispositivo admite colores a medida (android 11+). */
+        val customColorsAvailable: Boolean
     ) {
         val hasChanges: Boolean get() = draft != baseline
 
@@ -56,6 +59,10 @@ class CustomThemeViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    /** Colores a medida usados hace poco (`#RRGGBB`), el mas reciente primero. */
+    private val _recentColors = MutableStateFlow(themeManager.loadRecentCustomColors())
+    val recentColors: StateFlow<List<String>> = _recentColors.asStateFlow()
+
     private var applying = false
 
     private fun initialState(): UiState {
@@ -66,7 +73,8 @@ class CustomThemeViewModel @Inject constructor(
             draft = CustomTheme.parse(savedStateHandle[KEY_DRAFT]) ?: baseline,
             baseline = baseline,
             isCreated = saved != null,
-            isActive = saved != null && themeManager.loadTheme() == ThemeManager.THEME_CUSTOM
+            isActive = saved != null && themeManager.loadTheme() == ThemeManager.THEME_CUSTOM,
+            customColorsAvailable = CustomColorResources.isSupported
         )
     }
 
@@ -79,12 +87,13 @@ class CustomThemeViewModel @Inject constructor(
         }
     }
 
-    fun selectBackground(key: String) = updateDraft { it.copy(background = key) }
+    /** Elige para [slot] una clave de la paleta o un color a medida `#RRGGBB`. */
+    fun select(slot: CustomThemePalette.Slot, value: String) = updateDraft { it.with(slot, value) }
 
-    fun selectAccent(key: String) = updateDraft { it.copy(accent = key) }
-
-    fun selectPriorityColor(priority: CustomThemePalette.Priority, key: String) =
-        updateDraft { it.withPriorityColor(priority, key) }
+    /** Recuerda un color a medida en los recientes del selector de color. */
+    fun rememberRecentColor(value: String) {
+        _recentColors.value = themeManager.addRecentCustomColor(value)
+    }
 
     /** Vuelve a la combinacion por defecto del modo actual; devuelve la anterior para deshacer. */
     fun reset(): CustomTheme {

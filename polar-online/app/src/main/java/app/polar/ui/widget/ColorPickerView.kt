@@ -1,11 +1,22 @@
 package app.polar.ui.widget
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 
+/**
+ * Selector de color hsv: un cuadro de saturacion (horizontal) y brillo (vertical) y debajo una
+ * barra de tono. Se arrastra dentro de listas y hojas inferiores sin que estas se desplacen.
+ *
+ * [onColorChanged] solo se llama al mover los controles, nunca al fijar el color con [setColor].
+ */
 class ColorPickerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -13,169 +24,157 @@ class ColorPickerView @JvmOverloads constructor(
 
     var onColorChanged: ((Int) -> Unit)? = null
 
-    private var hue = 200f   // nice teal default
+    private var hue = 200f
     private var sat = 0.8f
     private var bri = 0.9f
 
-    private val density get() = resources.displayMetrics.density
-    private val hueStripH get() = 40f * density
-    private val hueStripMargin get() = 12f * density
-    private val selectorR get() = 14f * density
-    private val hueSelectorR get() = 18f * density
-    private val hueBarRadius get() = 8f * density
+    private val density = resources.displayMetrics.density
+    private val hueStripHeight = 28f * density
+    private val hueStripMargin = 16f * density
+    private val areaRadius = 12f * density
+    private val hueRadius = hueStripHeight / 2f
+    private val selectorRadius = 12f * density
+    private val ringWidth = 3f * density
+    private val shadowRadius = 1.5f * density
 
-    private fun paddedLeft() = paddingLeft.toFloat()
-    private fun paddedTop() = paddingTop.toFloat()
-    private fun paddedRight() = (width - paddingRight).toFloat()
-    private fun paddedBottom() = (height - paddingBottom).toFloat()
-    private fun paddedW() = paddedRight() - paddedLeft()
-    private fun mainH() = (paddedBottom() - paddedTop() - hueStripMargin - hueStripH).coerceAtLeast(1f)
+    private val areaRect = RectF()
+    private val hueRect = RectF()
+    private val hsv = FloatArray(3)
 
-    // Main area shaders
     private val satPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val valPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        xfermode = null
-    }
+    private val valPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val huePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-
-    // Selector paints
     private val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = 0x44000000
-    }
-    private val whiteDiskPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = Color.WHITE
-    }
-    private val colorDiskPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-    private val hueSelectorBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
+        strokeWidth = ringWidth + 2 * shadowRadius
+        color = SHADOW
+    }
+    private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = ringWidth
         color = Color.WHITE
-        strokeWidth = 3f
     }
-    private val hueSelectorFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
+    private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    private enum class Drag { NONE, AREA, HUE }
+    private var drag = Drag.NONE
+
+    init {
+        isFocusable = true
     }
 
-    private val hueColors = intArrayOf(
-        Color.RED, Color.YELLOW, Color.GREEN,
-        Color.CYAN, Color.BLUE, Color.MAGENTA, Color.RED
-    )
-    private val huePositions = floatArrayOf(0f, 1f/6f, 2f/6f, 3f/6f, 4f/6f, 5f/6f, 1f)
+    /** Color actual (opaco). */
+    fun getColor(): Int = hsvColor(hue, sat, bri)
 
-    private var selectorX = 0f
-    private var selectorY = 0f
-    private var hueSelectorX = 0f
-
-    private var draggingHue = false
-    private var draggingMain = false
+    /**
+     * Mueve los controles a [color] sin avisar a [onColorChanged]. Los grises y el negro no tienen
+     * tono: se conserva el anterior para que la barra no salte al rojo.
+     */
+    fun setColor(color: Int) {
+        Color.colorToHSV(color, hsv)
+        if (hsv[1] > 0f && hsv[2] > 0f) hue = hsv[0]
+        if (hsv[2] > 0f) sat = hsv[1]
+        bri = hsv[2]
+        updateShaders()
+        invalidate()
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        rebuildShaders()
-        syncSelectorPositions()
+        // Margen para que los selectores no se recorten al llegar a los bordes.
+        val edge = selectorRadius + ringWidth
+        val left = paddingLeft + edge
+        val right = w - paddingRight - edge
+        val top = paddingTop + edge
+        // El selector de tono cabe dentro de la barra: abajo basta con el grosor del anillo.
+        val bottom = h - paddingBottom - ringWidth
+        hueRect.set(left, bottom - hueStripHeight, right, bottom)
+        areaRect.set(left, top, right, (hueRect.top - hueStripMargin).coerceAtLeast(top + 1f))
+        huePaint.shader = LinearGradient(hueRect.left, 0f, hueRect.right, 0f, HUE_COLORS, null, Shader.TileMode.CLAMP)
+        valPaint.shader = LinearGradient(0f, areaRect.top, 0f, areaRect.bottom, Color.TRANSPARENT, Color.BLACK, Shader.TileMode.CLAMP)
+        updateShaders()
     }
 
-    private fun rebuildShaders() {
-        if (width == 0) return
-        val pl = paddedLeft(); val pr = paddedRight()
-        val pt = paddedTop()
-        val mh = mainH()
-        val hueColor = Color.HSVToColor(floatArrayOf(hue, 1f, 1f))
-
-        satPaint.shader = LinearGradient(pl, 0f, pr, 0f, Color.WHITE, hueColor, Shader.TileMode.CLAMP)
-        valPaint.shader = LinearGradient(0f, pt, 0f, pt + mh, Color.TRANSPARENT, Color.BLACK, Shader.TileMode.CLAMP)
-        huePaint.shader = LinearGradient(pl, 0f, pr, 0f, hueColors, huePositions, Shader.TileMode.CLAMP)
-    }
-
-    private fun syncSelectorPositions() {
-        if (width == 0) return
-        val pl = paddedLeft(); val pr = paddedRight()
-        val pt = paddedTop()
-        val mh = mainH()
-        selectorX = (pl + sat * (pr - pl)).coerceIn(pl, pr)
-        selectorY = (pt + (1f - bri) * mh).coerceIn(pt, pt + mh)
-        hueSelectorX = (pl + (hue / 360f) * (pr - pl)).coerceIn(pl, pr)
+    private fun updateShaders() {
+        if (areaRect.isEmpty) return
+        satPaint.shader = LinearGradient(
+            areaRect.left, 0f, areaRect.right, 0f,
+            Color.WHITE, hsvColor(hue, 1f, 1f), Shader.TileMode.CLAMP
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
-        val pl = paddedLeft(); val pr = paddedRight()
-        val pt = paddedTop()
-        val mh = mainH()
-        val hueTop = pt + mh + hueStripMargin
+        if (areaRect.isEmpty) return
+        canvas.drawRoundRect(areaRect, areaRadius, areaRadius, satPaint)
+        canvas.drawRoundRect(areaRect, areaRadius, areaRadius, valPaint)
+        canvas.drawRoundRect(hueRect, hueRadius, hueRadius, huePaint)
 
-        // --- Main gradient ---
-        val mainRect = RectF(pl, pt, pr, pt + mh)
-        canvas.drawRoundRect(mainRect, 12f, 12f, satPaint)
-        canvas.drawRoundRect(mainRect, 12f, 12f, valPaint)
+        drawSelector(canvas, areaRect.left + sat * areaRect.width(), areaRect.top + (1f - bri) * areaRect.height(), getColor())
+        val hueX = (hueRect.left + hue / 360f * hueRect.width()).coerceIn(hueRect.left + hueRadius, hueRect.right - hueRadius)
+        drawSelector(canvas, hueX, hueRect.centerY(), hsvColor(hue, 1f, 1f))
+    }
 
-        // --- Main color selector ---
-        // Shadow
-        canvas.drawCircle(selectorX, selectorY, selectorR + 4f, shadowPaint)
-        // White disk
-        canvas.drawCircle(selectorX, selectorY, selectorR, whiteDiskPaint)
-        // Color disk (the actual selected color)
-        colorDiskPaint.color = getColor()
-        canvas.drawCircle(selectorX, selectorY, selectorR - 3.5f * density, colorDiskPaint)
-
-        // --- Hue strip ---
-        val hueRect = RectF(pl, hueTop, pr, hueTop + hueStripH)
-        canvas.drawRoundRect(hueRect, hueBarRadius, hueBarRadius, huePaint)
-
-        // --- Hue selector ---
-        val hx = hueSelectorX.coerceIn(pl + hueSelectorR / 2, pr - hueSelectorR / 2)
-        val hy = hueTop + hueStripH / 2
-        // shadow
-        canvas.drawCircle(hx, hy, hueSelectorR + 3f, shadowPaint)
-        // fill with hue color
-        hueSelectorFillPaint.color = Color.HSVToColor(floatArrayOf(hue, 1f, 1f))
-        canvas.drawCircle(hx, hy, hueSelectorR, hueSelectorFillPaint)
-        // white border
-        canvas.drawCircle(hx, hy, hueSelectorR, hueSelectorBorderPaint)
+    /** Circulo con el color elegido, anillo blanco y una sombra fina para verse sobre cualquier color. */
+    private fun drawSelector(canvas: Canvas, x: Float, y: Float, color: Int) {
+        fillPaint.color = color
+        canvas.drawCircle(x, y, selectorRadius, fillPaint)
+        canvas.drawCircle(x, y, selectorRadius, shadowPaint)
+        canvas.drawCircle(x, y, selectorRadius, ringPaint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val x = event.x
-        val y = event.y
-        val pt = paddedTop()
-        val hueTop = pt + mainH() + hueStripMargin
-
-        when (event.action) {
+        if (!isEnabled) return false
+        when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                draggingHue = y >= hueTop
-                draggingMain = y < hueTop
+                drag = if (event.y >= hueRect.top - hueStripMargin / 2) Drag.HUE else Drag.AREA
+                // Que la lista o la hoja inferior que nos contiene no se desplace mientras se arrastra.
+                parent?.requestDisallowInterceptTouchEvent(true)
+                update(event.x, event.y)
             }
-        }
-
-        val pl = paddedLeft(); val pr = paddedRight()
-
-        if (draggingHue) {
-            hueSelectorX = x.coerceIn(pl, pr)
-            hue = ((hueSelectorX - pl) / (pr - pl)) * 360f
-            rebuildShaders()
-            notifyColor()
-            invalidate()
-        } else if (draggingMain) {
-            selectorX = x.coerceIn(pl, pr)
-            selectorY = y.coerceIn(pt, pt + mainH())
-            sat = (selectorX - pl) / (pr - pl)
-            bri = 1f - (selectorY - pt) / mainH()
-            notifyColor()
-            invalidate()
+            MotionEvent.ACTION_MOVE -> update(event.x, event.y)
+            MotionEvent.ACTION_UP -> {
+                update(event.x, event.y)
+                drag = Drag.NONE
+                parent?.requestDisallowInterceptTouchEvent(false)
+                performClick()
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                drag = Drag.NONE
+                parent?.requestDisallowInterceptTouchEvent(false)
+            }
         }
         return true
     }
 
-    private fun notifyColor() = onColorChanged?.invoke(getColor())
+    override fun performClick(): Boolean = super.performClick()
 
-    fun getColor(): Int = Color.HSVToColor(floatArrayOf(hue, sat, bri))
+    private fun update(x: Float, y: Float) {
+        when (drag) {
+            Drag.HUE -> {
+                hue = ((x - hueRect.left) / hueRect.width()).coerceIn(0f, 1f) * 360f
+                updateShaders()
+            }
+            Drag.AREA -> {
+                sat = ((x - areaRect.left) / areaRect.width()).coerceIn(0f, 1f)
+                bri = 1f - ((y - areaRect.top) / areaRect.height()).coerceIn(0f, 1f)
+            }
+            Drag.NONE -> return
+        }
+        invalidate()
+        onColorChanged?.invoke(getColor())
+    }
 
-    fun setColor(color: Int) {
-        val hsv = FloatArray(3)
-        Color.colorToHSV(color, hsv)
-        hue = hsv[0]; sat = hsv[1]; bri = hsv[2]
-        if (width > 0) { rebuildShaders(); syncSelectorPositions(); invalidate() }
+    private fun hsvColor(h: Float, s: Float, v: Float): Int {
+        hsv[0] = h % 360f
+        hsv[1] = s
+        hsv[2] = v
+        return Color.HSVToColor(hsv)
+    }
+
+    private companion object {
+        const val SHADOW = 0x33000000
+        val HUE_COLORS = intArrayOf(
+            Color.RED, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA, Color.RED
+        )
     }
 }

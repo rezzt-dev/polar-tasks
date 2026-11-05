@@ -55,6 +55,8 @@ MAPPING = {
     "ic_text_format": "type",
     "ic_text_size": "a-large-small",
     "ic_colorize": "pipette",
+    "ic_warning": "triangle-alert",
+    "ic_contrast": "contrast",
     # ajustes
     "ic_settings_backup_export": "file-output",
     "ic_settings_backup_import": "file-input",

@@ -6,26 +6,30 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
-import androidx.core.graphics.ColorUtils
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import app.polar.R
 import app.polar.databinding.ActivityCustomThemeBinding
 import app.polar.databinding.ItemCustomThemePriorityBinding
+import app.polar.ui.dialog.CustomColorSheet
 import app.polar.ui.viewmodel.CustomThemeViewModel
 import app.polar.ui.widget.ColorSwatch
 import app.polar.ui.widget.CustomThemePreview
 import app.polar.ui.widget.ThemePreviewColors
 import app.polar.ui.widget.setRadioSemantics
+import app.polar.util.CustomColors
 import app.polar.util.CustomTheme
 import app.polar.util.CustomThemePalette
 import app.polar.util.CustomThemePalette.Priority
+import app.polar.util.CustomThemePalette.Slot
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -37,10 +41,11 @@ import com.google.android.material.R as MaterialR
 
 /**
  * Editor del tema personalizado: el usuario elige fondo, color de acento y un color por prioridad
- * y ve el resultado al momento en la vista previa. Nada se guarda hasta pulsar "aplicar"; al
- * volver con cambios sin aplicar se pide confirmacion. Al aplicar guarda la combinacion, la deja
- * como tema activo y se cierra con `RESULT_OK`; ajustes detecta el cambio al volver
- * (`ThemeManager.themeSignature()`) y recrea la app con el tema nuevo.
+ * (de la paleta o a medida, con [CustomColorSheet]) y ve el resultado al momento en la vista
+ * previa. Nada se guarda hasta pulsar "aplicar"; al volver con cambios sin aplicar se pide
+ * confirmacion. Al aplicar guarda la combinacion, la deja como tema activo y se cierra con
+ * `RESULT_OK`; ajustes detecta el cambio al volver (`ThemeManager.themeSignature()`) y recrea la
+ * app con el tema nuevo.
  */
 @AndroidEntryPoint
 class CustomThemeActivity : BaseActivity() {
@@ -49,10 +54,8 @@ class CustomThemeActivity : BaseActivity() {
     private val viewModel: CustomThemeViewModel by viewModels()
     private lateinit var preview: CustomThemePreview
 
-    /** Grupos de muestras y la clave elegida en cada uno para la combinacion en edicion. */
     private lateinit var swatchGroups: List<SwatchGroup>
     private lateinit var priorityRows: Map<Priority, ItemCustomThemePriorityBinding>
-    private lateinit var priorityColor: (key: String, dark: Boolean) -> Int
 
     private var renderedDraft: CustomTheme? = null
     private var discardDialog: androidx.appcompat.app.AlertDialog? = null
@@ -62,15 +65,18 @@ class CustomThemeActivity : BaseActivity() {
     }
 
     /**
-     * Muestras de una paleta. [color] da el color de cada opcion en el modo (claro u oscuro) del
-     * fondo elegido y [selectedKey] la opcion marcada en la combinacion.
+     * Muestras de un hueco: las claves de la paleta que contiene [group] ([color] da su tono en el
+     * modo claro u oscuro del fondo) y, si lo tiene, la muestra [custom] para elegir un color a
+     * medida. [rendered] evita repintar el grupo si su seleccion y el modo no han cambiado.
      */
     private class SwatchGroup(
+        val slot: Slot,
         val group: ChipGroup,
         val keys: List<String>,
         val color: (key: String, dark: Boolean) -> Int,
-        val selectedKey: (CustomTheme) -> String,
-        val alwaysOutlined: Boolean = false
+        val alwaysOutlined: Boolean = false,
+        var custom: ImageView? = null,
+        var rendered: Pair<String, Boolean>? = null
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +86,7 @@ class CustomThemeActivity : BaseActivity() {
 
         preview = CustomThemePreview(binding.preview)
         setupToolbar()
-        setupSwatches()
+        setupSwatches(viewModel.uiState.value.customColorsAvailable)
         binding.btnApply.setOnClickListener { viewModel.apply() }
         onBackPressedDispatcher.addCallback(this, backCallback)
 
@@ -129,7 +135,8 @@ class CustomThemeActivity : BaseActivity() {
         }
     }
 
-    private fun setupSwatches() {
+    private fun setupSwatches(customColors: Boolean) {
+        val options = binding.options
         val (lightBackgrounds, darkBackgrounds) = CustomThemePalette.BACKGROUNDS.partition { !it.isDark }
         val backgroundColors = CustomThemePalette.BACKGROUNDS.associate {
             it.key to styleColor(it.styleRes, android.R.attr.colorBackground)
@@ -146,50 +153,68 @@ class CustomThemeActivity : BaseActivity() {
                 (color.key to dark) to styleColor(color.overlay(Priority.HIGH, dark), R.attr.colorPriorityHigh)
             }
         }.toMap()
-        priorityColor = { key, dark -> priorityColors.getValue(key to dark) }
+        val priorityColor: (String, Boolean) -> Int = { key, dark -> priorityColors.getValue(key to dark) }
 
         priorityRows = mapOf(
-            Priority.HIGH to binding.options.priorityHigh,
-            Priority.MEDIUM to binding.options.priorityMedium,
-            Priority.LOW to binding.options.priorityLow
+            Priority.HIGH to options.priorityHigh,
+            Priority.MEDIUM to options.priorityMedium,
+            Priority.LOW to options.priorityLow
         )
         priorityRows.forEach { (priority, row) -> row.tvPriorityLabel.setText(priorityLabel(priority)) }
 
-        swatchGroups = listOf(
-            SwatchGroup(binding.options.groupBackgroundLight, lightBackgrounds.map { it.key }, backgroundColor, { it.background }, alwaysOutlined = true),
-            SwatchGroup(binding.options.groupBackgroundDark, darkBackgrounds.map { it.key }, backgroundColor, { it.background }, alwaysOutlined = true),
-            SwatchGroup(binding.options.groupAccent, CustomThemePalette.ACCENTS.map { it.key }, { key, dark -> accentColors.getValue(key to dark) }, { it.accent })
-        ) + priorityRows.map { (priority, row) ->
-            SwatchGroup(
-                row.groupPriorityColors,
-                CustomThemePalette.PRIORITY_COLORS.map { it.key },
-                priorityColor,
-                { it.priorityColor(priority) }
-            )
+        val backgroundLight = SwatchGroup(Slot.BACKGROUND, options.groupBackgroundLight, lightBackgrounds.map { it.key }, backgroundColor, alwaysOutlined = true)
+        val backgroundDark = SwatchGroup(Slot.BACKGROUND, options.groupBackgroundDark, darkBackgrounds.map { it.key }, backgroundColor, alwaysOutlined = true)
+        val backgroundCustom = SwatchGroup(Slot.BACKGROUND, options.groupBackgroundCustom, emptyList(), backgroundColor)
+        val accent = SwatchGroup(
+            Slot.ACCENT, options.groupAccent, CustomThemePalette.ACCENTS.map { it.key },
+            { key, dark -> accentColors.getValue(key to dark) }
+        )
+        val priorities = priorityRows.map { (priority, row) ->
+            SwatchGroup(Slot.of(priority), row.groupPriorityColors, CustomThemePalette.PRIORITY_COLORS.map { it.key }, priorityColor)
         }
+        swatchGroups = listOf(backgroundLight, backgroundDark, backgroundCustom, accent) + priorities
 
-        addSwatches(binding.options.groupBackgroundLight, lightBackgrounds.map { it.key to it.labelRes }, viewModel::selectBackground)
-        addSwatches(binding.options.groupBackgroundDark, darkBackgrounds.map { it.key to it.labelRes }, viewModel::selectBackground)
-        addSwatches(binding.options.groupAccent, CustomThemePalette.ACCENTS.map { it.key to it.labelRes }, viewModel::selectAccent)
-        priorityRows.forEach { (priority, row) ->
-            addSwatches(row.groupPriorityColors, CustomThemePalette.PRIORITY_COLORS.map { it.key to it.labelRes }) { key ->
-                viewModel.selectPriorityColor(priority, key)
-            }
+        addSwatches(backgroundLight, lightBackgrounds.map { it.labelRes })
+        addSwatches(backgroundDark, darkBackgrounds.map { it.labelRes })
+        addSwatches(accent, CustomThemePalette.ACCENTS.map { it.labelRes })
+        priorities.forEach { addSwatches(it, CustomThemePalette.PRIORITY_COLORS.map { color -> color.labelRes }) }
+
+        // Colores a medida: una muestra al final de cada paleta (y su propia fila para el fondo).
+        if (customColors) {
+            listOf(backgroundCustom, accent).plus(priorities).forEach(::addCustomSwatch)
         }
+        options.tvBackgroundCustom.isVisible = customColors
+        options.groupBackgroundCustom.isVisible = customColors
+        options.tvCustomColorsUnsupported.isVisible = !customColors
     }
 
-    private fun addSwatches(group: ChipGroup, options: List<Pair<String, Int>>, onSelect: (String) -> Unit) {
+    private fun addSwatches(swatches: SwatchGroup, labels: List<Int>) {
         val size = resources.getDimensionPixelSize(R.dimen.custom_theme_swatch_size)
-        options.forEach { (key, labelRes) ->
-            group.addView(View(this).apply {
+        swatches.keys.zip(labels).forEach { (key, labelRes) ->
+            swatches.group.addView(View(this).apply {
                 layoutParams = ChipGroup.LayoutParams(size, size)
                 tag = key
                 contentDescription = getString(labelRes)
                 isClickable = true
                 isFocusable = true
-                setOnClickListener { onSelect(key) }
+                setOnClickListener { viewModel.select(swatches.slot, key) }
             })
         }
+    }
+
+    private fun addCustomSwatch(swatches: SwatchGroup) {
+        val size = resources.getDimensionPixelSize(R.dimen.custom_theme_swatch_size)
+        val padding = resources.getDimensionPixelSize(R.dimen.custom_theme_swatch_icon_padding)
+        swatches.custom = ImageView(this).apply {
+            layoutParams = ChipGroup.LayoutParams(size, size)
+            setImageResource(R.drawable.ic_colorize)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setPadding(padding, padding, padding, padding)
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { openCustomColor(swatches.slot) }
+        }
+        swatches.group.addView(swatches.custom)
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -201,8 +226,9 @@ class CustomThemeActivity : BaseActivity() {
         if (draft != renderedDraft) {
             val first = renderedDraft == null
             renderedDraft = draft
-            preview.render(ThemePreviewColors.resolve(CustomThemePalette.themedContext(this, draft)), animate = !first)
-            renderSelection(draft)
+            val colors = ThemePreviewColors.forCustomTheme(this, draft)
+            preview.render(colors, animate = !first)
+            renderSelection(draft, colors)
         }
 
         binding.btnApply.isEnabled = state.canApply
@@ -214,43 +240,73 @@ class CustomThemeActivity : BaseActivity() {
         backCallback.isEnabled = state.hasChanges
     }
 
-    private fun renderSelection(draft: CustomTheme) {
+    private fun renderSelection(draft: CustomTheme, colors: ThemePreviewColors) {
         val dark = draft.isDark
         val ring = attrColor(MaterialR.attr.colorOnSurface)
         val gap = attrColor(android.R.attr.colorBackground)
         val outline = attrColor(MaterialR.attr.colorOutline)
 
         swatchGroups.forEach { swatches ->
-            val selected = swatches.selectedKey(draft)
+            val selected = draft[swatches.slot]
+            val signature = selected to dark
+            if (swatches.rendered == signature) return@forEach
+            swatches.rendered = signature
+
             for (i in 0 until swatches.group.childCount) {
                 val view = swatches.group.getChildAt(i)
                 val key = view.tag as? String ?: continue
                 val color = swatches.color(key, dark)
                 // Contorno fino si el color se confunde con el fondo de la pantalla.
-                val needsBorder = swatches.alwaysOutlined || ColorUtils.calculateContrast(color, opaque(gap)) < MIN_SWATCH_CONTRAST
+                val needsBorder = swatches.alwaysOutlined || CustomColors.contrast(color, opaque(gap)) < MIN_SWATCH_CONTRAST
                 view.background = ColorSwatch.drawable(this, color, key == selected, ring, gap, outline.takeIf { needsBorder })
                 view.isSelected = key == selected
                 view.setRadioSemantics(key == selected)
             }
+            swatches.custom?.let { renderCustomSwatch(it, CustomThemePalette.customColor(selected), ring, gap, outline) }
         }
 
-        val backgroundLabel = getString(CustomThemePalette.background(draft.background).labelRes)
-        val accentLabel = getString(CustomThemePalette.accent(draft.accent).labelRes)
+        val backgroundLabel = CustomThemePalette.label(this, Slot.BACKGROUND, draft.background)
+        val accentLabel = CustomThemePalette.label(this, Slot.ACCENT, draft.accent)
         binding.options.tvBackgroundValue.text = backgroundLabel
         binding.options.tvAccentValue.text = accentLabel
         binding.preview.previewCard.contentDescription =
             getString(R.string.custom_theme_preview_description, backgroundLabel, accentLabel)
 
         priorityRows.forEach { (priority, row) ->
-            val key = draft.priorityColor(priority)
-            row.tvPriorityValue.text = getString(CustomThemePalette.priorityColor(key).labelRes)
-            row.viewPriorityDot.backgroundTintList = ColorStateList.valueOf(priorityColor(key, dark))
+            val slot = Slot.of(priority)
+            row.tvPriorityValue.text = CustomThemePalette.label(this, slot, draft[slot])
+            row.viewPriorityDot.backgroundTintList = ColorStateList.valueOf(colors.colorOf(slot))
         }
+    }
+
+    /**
+     * Muestra "a medida": con un color elegido se pinta de ese color, marcada y con la pipeta para
+     * editarlo; si no, es un aro con todos los tonos que invita a elegir uno.
+     */
+    private fun renderCustomSwatch(view: ImageView, color: Int?, ring: Int, gap: Int, outline: Int) {
+        if (color != null) {
+            val needsBorder = CustomColors.contrast(color, opaque(gap)) < MIN_SWATCH_CONTRAST
+            view.background = ColorSwatch.drawable(this, color, true, ring, gap, outline.takeIf { needsBorder })
+            view.imageTintList = ColorStateList.valueOf(CustomColors.readableOn(color))
+            view.contentDescription = getString(R.string.custom_color_selected, CustomColors.format(color))
+        } else {
+            view.background = ColorSwatch.custom(this, gap)
+            view.imageTintList = ColorStateList.valueOf(attrColor(MaterialR.attr.colorOnSurfaceVariant))
+            view.contentDescription = getString(R.string.custom_color_pick)
+        }
+        view.isSelected = color != null
+        view.setRadioSemantics(color != null)
     }
 
     // ---------------------------------------------------------------------------------------------
     // Acciones
     // ---------------------------------------------------------------------------------------------
+
+    private fun openCustomColor(slot: Slot) {
+        if (supportFragmentManager.findFragmentByTag(CustomColorSheet.TAG) != null) return
+        CustomColorSheet.newInstance(slot, viewModel.uiState.value.draft[slot])
+            .show(supportFragmentManager, CustomColorSheet.TAG)
+    }
 
     private fun resetWithUndo() {
         val previous = viewModel.reset()
@@ -293,7 +349,7 @@ class CustomThemeActivity : BaseActivity() {
 
     private fun attrColor(@AttrRes attr: Int): Int = MaterialColors.getColor(this, attr, Color.GRAY)
 
-    private fun opaque(color: Int): Int = ColorUtils.setAlphaComponent(color, 255)
+    private fun opaque(color: Int): Int = color or Color.BLACK
 
     companion object {
         private const val ALPHA_ENABLED = 255

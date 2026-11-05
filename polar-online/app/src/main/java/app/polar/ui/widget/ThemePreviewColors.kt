@@ -3,8 +3,12 @@ package app.polar.ui.widget
 import android.content.Context
 import android.graphics.Color
 import androidx.annotation.AttrRes
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.graphics.ColorUtils
 import app.polar.R
+import app.polar.util.CustomTheme
+import app.polar.util.CustomThemePalette
+import app.polar.util.ThemeManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.R as MaterialR
 import androidx.appcompat.R as AppCompatR
@@ -28,6 +32,15 @@ data class ThemePreviewColors(
     val priorityMedium: Int,
     val priorityLow: Int
 ) {
+    /** Color con el que se ve un hueco del tema personalizado. */
+    fun colorOf(slot: CustomThemePalette.Slot): Int = when (slot) {
+        CustomThemePalette.Slot.BACKGROUND -> background
+        CustomThemePalette.Slot.ACCENT -> primary
+        CustomThemePalette.Slot.PRIORITY_HIGH -> priorityHigh
+        CustomThemePalette.Slot.PRIORITY_MEDIUM -> priorityMedium
+        CustomThemePalette.Slot.PRIORITY_LOW -> priorityLow
+    }
+
     /** Colores intermedios hacia [target] (`fraction` de 0 a 1), para animar el cambio de tema. */
     fun blend(target: ThemePreviewColors, fraction: Float): ThemePreviewColors {
         fun mix(from: Int, to: Int) = ColorUtils.blendARGB(from, to, fraction)
@@ -49,6 +62,42 @@ data class ThemePreviewColors(
     }
 
     companion object {
+        /** Colores de un tema (por clave) sea cual sea el activo; el personalizado necesita su combinacion. */
+        fun forTheme(context: Context, key: String, customTheme: CustomTheme?): ThemePreviewColors =
+            if (key == ThemeManager.THEME_CUSTOM && customTheme != null) {
+                forCustomTheme(context, customTheme)
+            } else {
+                resolve(ContextThemeWrapper(context, ThemeManager.themeOption(key).previewStyleRes))
+            }
+
+        /**
+         * Colores de una combinacion del tema personalizado. Los huecos de la paleta salen de sus
+         * estilos; los colores a medida se calculan aqui (los mismos que carga
+         * `CustomColorResources` en la app), sin tocar los recursos, para poder repintar la vista
+         * previa en cada movimiento del selector de color.
+         */
+        fun forCustomTheme(context: Context, theme: CustomTheme): ThemePreviewColors {
+            val resolved = resolve(CustomThemePalette.themedContext(context, theme))
+            val custom = CustomThemePalette.colorOverrides(theme)
+            if (custom.isEmpty()) return resolved
+            fun pick(colorRes: Int, fallback: Int) = custom[colorRes] ?: fallback
+            return ThemePreviewColors(
+                background = pick(R.color.custom_hex_bg_background, resolved.background),
+                surface = pick(R.color.custom_hex_bg_surface, resolved.surface),
+                surfaceContainerHighest = pick(R.color.custom_hex_bg_surface_container_highest, resolved.surfaceContainerHighest),
+                outlineVariant = pick(R.color.custom_hex_bg_outline_variant, resolved.outlineVariant),
+                primary = pick(R.color.custom_hex_accent_primary, resolved.primary),
+                onPrimary = pick(R.color.custom_hex_accent_on_primary, resolved.onPrimary),
+                primaryContainer = pick(R.color.custom_hex_accent_container, resolved.primaryContainer),
+                onPrimaryContainer = pick(R.color.custom_hex_accent_on_container, resolved.onPrimaryContainer),
+                onSurface = pick(R.color.custom_hex_bg_foreground, resolved.onSurface),
+                onSurfaceVariant = pick(R.color.custom_hex_bg_foreground_variant, resolved.onSurfaceVariant),
+                priorityHigh = pick(R.color.custom_hex_priority_high, resolved.priorityHigh),
+                priorityMedium = pick(R.color.custom_hex_priority_medium, resolved.priorityMedium),
+                priorityLow = pick(R.color.custom_hex_priority_low, resolved.priorityLow)
+            )
+        }
+
         fun resolve(themed: Context): ThemePreviewColors {
             fun color(@AttrRes attr: Int) = MaterialColors.getColor(themed, attr, Color.GRAY)
             return ThemePreviewColors(

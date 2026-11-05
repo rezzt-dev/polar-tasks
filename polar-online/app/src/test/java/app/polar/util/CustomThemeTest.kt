@@ -9,9 +9,21 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 class CustomThemeTest {
+
+    @Before
+    fun setUp() {
+        CustomColorResources.supportedOverride = true
+    }
+
+    @After
+    fun tearDown() {
+        CustomColorResources.supportedOverride = null
+    }
 
     @Test
     fun serialize_roundTrips() {
@@ -126,5 +138,85 @@ class CustomThemeTest {
         assertTrue(manager.getColorOverlayStyles().isEmpty())
         assertEquals(ThemeManager.THEME_SAND, manager.themeSignature())
         assertEquals("black", manager.loadCustomTheme()?.background)
+    }
+
+    @Test
+    fun customColors_roundTripNormalizedAndFollowTheirLuminance() {
+        val theme = CustomTheme("#1e1e2e", "#89b4fa", "#F38BA8", "amber", "#a6e3a1")
+        val parsed = CustomTheme.parse(theme.serialize())!!
+        assertEquals(CustomTheme("#1E1E2E", "#89B4FA", "#F38BA8", "amber", "#A6E3A1"), parsed)
+        assertTrue(parsed.isDark)
+        assertTrue(parsed.hasCustomColors)
+        assertFalse(CustomThemePalette.DEFAULT_LIGHT.hasCustomColors)
+        assertFalse(parsed.copy(background = "#F5F0E6").isDark)
+    }
+
+    @Test
+    fun customColors_withoutSupportFallBackToTheDefaultsOfTheirMode() {
+        val stored = "#101418,#89B4FA,#F38BA8,amber,blue"
+        assertEquals(
+            CustomTheme(
+                CustomThemePalette.DEFAULT_DARK.background, CustomThemePalette.DEFAULT_DARK.accent,
+                CustomThemePalette.DEFAULT_DARK.priorityHigh, "amber", "blue"
+            ),
+            CustomTheme.parse(stored, allowCustomColors = false)
+        )
+        assertEquals(CustomThemePalette.DEFAULT_LIGHT.background, CustomTheme.parse("#FAF7F2,ink,red,amber,blue", allowCustomColors = false)?.background)
+        // Codigos mal formados: como claves desconocidas.
+        assertEquals(CustomThemePalette.DEFAULT_LIGHT.accent, CustomTheme.parse("snow,#12G456,red,amber,blue")?.accent)
+    }
+
+    @Test
+    fun customColors_useTheCarrierStylesAndOverrideTheirColors() {
+        val theme = CustomTheme("#1E1E2E", "#89B4FA", "red", "#FAB387", "blue")
+
+        assertEquals(app.polar.R.style.Theme_Polar_Custom_Hex_Dark, CustomThemePalette.baseStyle(theme))
+        assertEquals(app.polar.R.style.Theme_Polar_Custom_Hex_Light, CustomThemePalette.baseStyle(theme.copy(background = "#FFFFFF")))
+        assertEquals(
+            listOf(
+                app.polar.R.style.ThemeOverlay_Polar_Custom_Accent_Hex,
+                CustomThemePalette.priorityColor("red").overlay(Priority.HIGH, dark = true),
+                app.polar.R.style.ThemeOverlay_Polar_Custom_PriorityMedium_Hex,
+                CustomThemePalette.priorityColor("blue").overlay(Priority.LOW, dark = true)
+            ),
+            CustomThemePalette.overlayStyles(theme)
+        )
+
+        val overrides = CustomThemePalette.colorOverrides(theme)
+        assertEquals(CustomColors.parse("#1E1E2E"), overrides[app.polar.R.color.custom_hex_bg_background])
+        assertEquals(CustomColors.parse("#89B4FA"), overrides[app.polar.R.color.custom_hex_accent_primary])
+        assertEquals(CustomColors.parse("#FAB387"), overrides[app.polar.R.color.custom_hex_priority_medium])
+        assertFalse(overrides.containsKey(app.polar.R.color.custom_hex_priority_high))
+        // 15 roles de fondo, 5 de acento y una prioridad.
+        assertEquals(21, overrides.size)
+        assertTrue(CustomThemePalette.colorOverrides(CustomThemePalette.DEFAULT_LIGHT).isEmpty())
+    }
+
+    @Test
+    fun slots_readAndWriteEveryChoice() {
+        var theme = CustomThemePalette.DEFAULT_LIGHT
+        CustomThemePalette.Slot.entries.forEachIndexed { index, slot ->
+            theme = theme.with(slot, "#00000$index")
+        }
+        CustomThemePalette.Slot.entries.forEachIndexed { index, slot ->
+            assertEquals("#00000$index", theme[slot])
+        }
+        assertEquals(CustomThemePalette.Slot.PRIORITY_MEDIUM, CustomThemePalette.Slot.of(Priority.MEDIUM))
+    }
+
+    @Test
+    fun themeManager_exposesTheColorOverridesOfTheActiveCustomTheme() {
+        val prefs = FakeSharedPreferences()
+        val context = mockk<Context>(relaxed = true)
+        every { context.getSharedPreferences(any(), any()) } returns prefs
+        val manager = ThemeManager(context)
+        val custom = CustomTheme("snow", "#3A7BD5", "red", "amber", "blue")
+
+        manager.saveCustomTheme(custom)
+        assertTrue(manager.getColorOverrides().isEmpty())
+
+        manager.saveTheme(ThemeManager.THEME_CUSTOM, applyNightMode = false)
+        assertEquals(CustomThemePalette.colorOverrides(custom), manager.getColorOverrides())
+        assertTrue(manager.themeSignature().contains("#3A7BD5"))
     }
 }

@@ -89,7 +89,7 @@ class ThemePickerDialog(
         val label = context.getString(option.labelRes)
 
         item.tvThemeName.text = label
-        paintPreview(item.preview, ThemeManager.previewContext(context, option.key, null), selected)
+        paintPreview(item.preview, ThemePreviewColors.forTheme(context, option.key, null), selected)
         if (selected) item.tvThemeName.setTextColor(resolve(MaterialR.attr.colorOnSurface))
 
         item.root.contentDescription = context.getString(R.string.theme_option_description, label)
@@ -117,7 +117,7 @@ class ThemePickerDialog(
         }
 
         val summary = summary(saved)
-        paintPreview(item.preview, ThemeManager.previewContext(context, ThemeManager.THEME_CUSTOM, saved), selected)
+        paintPreview(item.preview, ThemePreviewColors.forCustomTheme(context, saved), selected)
         item.tvCustomSummary.text = summary
         item.btnCustomEdit.setText(R.string.edit)
         item.btnCustomEdit.contentDescription = context.getString(R.string.theme_custom_edit_description)
@@ -130,8 +130,7 @@ class ThemePickerDialog(
     }
 
     /** Pinta la miniatura con los colores del tema; la seleccion usa los colores del tema activo. */
-    private fun paintPreview(preview: ViewThemePreviewBinding, themed: Context, selected: Boolean) {
-        val colors = ThemePreviewColors.resolve(themed)
+    private fun paintPreview(preview: ViewThemePreviewBinding, colors: ThemePreviewColors, selected: Boolean) {
         val density = context.resources.displayMetrics.density
 
         preview.themePreviewCanvas.setBackgroundColor(colors.background)
@@ -156,8 +155,8 @@ class ThemePickerDialog(
 
     private fun summary(theme: CustomTheme): String = context.getString(
         R.string.theme_custom_summary,
-        context.getString(CustomThemePalette.background(theme.background).labelRes),
-        context.getString(CustomThemePalette.accent(theme.accent).labelRes)
+        CustomThemePalette.label(context, CustomThemePalette.Slot.BACKGROUND, theme.background),
+        CustomThemePalette.label(context, CustomThemePalette.Slot.ACCENT, theme.accent)
     )
 
     private fun resolve(@AttrRes attr: Int): Int = MaterialColors.getColor(context, attr, Color.GRAY)
@@ -180,9 +179,8 @@ class ThemePickerDialog(
         private const val COLUMNS = 3
 
         /** Muestra de color de un tema para la fila de ajustes: su fondo con un anillo del acento. */
-        fun swatch(themed: Context): GradientDrawable {
-            val colors = ThemePreviewColors.resolve(themed)
-            val density = themed.resources.displayMetrics.density
+        fun swatch(context: Context, colors: ThemePreviewColors): GradientDrawable {
+            val density = context.resources.displayMetrics.density
             return GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(colors.background)

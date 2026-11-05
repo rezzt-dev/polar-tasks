@@ -1,6 +1,7 @@
 package app.polar.ui.widget
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -42,4 +43,27 @@ object ColorSwatch {
         val inset = (2 * density).toInt()
         return LayerDrawable(arrayOf(ring, fill)).apply { setLayerInset(1, inset, inset, inset, inset) }
     }
+
+    /**
+     * Muestra para elegir un color a medida: un aro con todos los tonos alrededor de un hueco del
+     * color de fondo, donde va el icono de la pipeta.
+     */
+    fun custom(context: Context, gapColor: Int): Drawable {
+        val density = context.resources.displayMetrics.density
+        val hues = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            gradientType = GradientDrawable.SWEEP_GRADIENT
+            colors = HUES
+        }
+        val gap = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(gapColor)
+        }
+        val inset = (3 * density).toInt()
+        return LayerDrawable(arrayOf(hues, gap)).apply { setLayerInset(1, inset, inset, inset, inset) }
+    }
+
+    private val HUES = intArrayOf(
+        Color.RED, Color.MAGENTA, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED
+    )
 }

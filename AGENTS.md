@@ -177,6 +177,20 @@ contraste WCAG: no los edites a mano. Para añadir una opción, añádela al scr
 Ajustes recrea la app al volver si cambia `ThemeManager.themeSignature()`, que incluye la
 combinación del personalizado.
 
+**Colores a medida** (android 11+): cada hueco de la combinación (fondo, acento y cada prioridad)
+admite también un `#RRGGBB`, elegido en `CustomColorSheet` (selector hsv, código hex, contraste y
+recientes). Se pintan con estilos "portadores" (`Theme.Polar.Custom.Hex.Light/Dark`,
+`ThemeOverlay.Polar.Custom.*.Hex`, generados por el mismo script) que apuntan a los colores
+`custom_hex_*`; `BaseActivity` sustituye su valor antes de crear el tema con
+`CustomColorResources.apply()`, que carga una tabla de recursos en memoria con un
+`ResourcesLoader`. Los tonos derivados (superficies, textos, contornos, texto sobre el acento) los
+calcula `CustomThemeScheme`, que replica las fórmulas del script: si cambias unas, cambia las otras.
+En android 10 o anterior (o si la carga falla) `CustomColorResources.isSupported` es `false`, el
+editor oculta los colores a medida y `CustomThemePalette.sanitize()` los sustituye por los de por
+defecto. Las vistas previas usan `ThemePreviewColors.forTheme()` / `forCustomTheme()`, que calculan
+los colores a medida sin tocar los recursos. No renombres los colores `custom_hex_*` sin actualizar
+`CustomThemePalette.colorOverrides()`.
+
 ### 4.6 Textos de Interfaz (siempre en minúsculas)
 
 Toda la interfaz de Polar se escribe **en minúsculas**, en **todos los idiomas**
@@ -589,7 +603,7 @@ usan un formato narrativo distinto y quedan como historicas, sin reescribir.
 - **Al modificar Room:** Siempre actualiza la versión de la base de datos y considera una migración manual.
 - **Al crear nuevos ViewModels:** Usa `@HiltViewModel`, inyección por constructor, y el patrón `safeLaunch`.
 - **Al crear nuevas Activities:** Extiende `BaseActivity` y anota con `@AndroidEntryPoint`.
-- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados. Los temas predefinidos se registran en `ThemeManager.THEME_OPTIONS`; el personalizado combina estilos generados por `custom_theme_palette.py` desde `CustomThemePalette`, sin colores en tiempo de ejecución (sección 4.5).
+- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados. Los temas predefinidos se registran en `ThemeManager.THEME_OPTIONS`; el personalizado combina estilos generados por `custom_theme_palette.py` desde `CustomThemePalette`; sus colores a medida (`#RRGGBB`, android 11+) solo sustituyen en tiempo de ejecución los colores `custom_hex_*` de los estilos portadores con `CustomColorResources` (sección 4.5).
 - **Colores semánticos dinámicos:** Se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorError`, `colorOnError`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). Todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de UI.
 - **Swipe en listas:** Usa `TaskSwipeHelper` para gestos bidireccionales en RecyclerViews (tareas y listas). Soporta configuración de colores/iconos por dirección y drag opcional. Los íconos de swipe se tinen con `colorOnSuccess` / `colorOnError` para respetar la paleta activa.
 - **View Binding obligatorio:** `HomeTaskAdapter` y `TaskListAdapter` usan View Binding; no usar `findViewById` en nuevos adapters.

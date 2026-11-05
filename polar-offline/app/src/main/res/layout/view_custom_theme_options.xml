@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  opciones del editor de tema personalizado: paletas de fondo (claros y oscuros), acento y un
-  color por prioridad. las incluyen activity_custom_theme.xml en vertical y en horizontal.
+  opciones del editor de tema personalizado: paletas de fondo (claros, oscuros y a medida), acento
+  y un color por prioridad; cada paleta acaba con una muestra para elegir un color a medida. las
+  incluyen activity_custom_theme.xml en vertical y en horizontal.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -64,6 +65,24 @@
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/groupBackgroundDark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="@dimen/custom_theme_swatch_spacing"
+        app:chipSpacingVertical="@dimen/custom_theme_swatch_spacing" />
+
+    <!-- Fondo a medida: se oculta si el dispositivo no admite colores a medida -->
+    <TextView
+        android:id="@+id/tvBackgroundCustom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/custom_theme_background_custom"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/groupBackgroundCustom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -151,4 +170,16 @@
     <include
         android:id="@+id/priorityLow"
         layout="@layout/item_custom_theme_priority" />
+
+    <!-- Solo en android 10 o anterior, donde no hay colores a medida -->
+    <TextView
+        android:id="@+id/tvCustomColorsUnsupported"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/custom_color_unsupported"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </LinearLayout>

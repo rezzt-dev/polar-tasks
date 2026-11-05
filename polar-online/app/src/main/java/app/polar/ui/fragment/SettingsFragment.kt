@@ -10,6 +10,7 @@ import app.polar.R
 import app.polar.databinding.FragmentSettingsBinding
 import app.polar.ui.activity.CustomThemeActivity
 import app.polar.ui.dialog.ThemePickerDialog
+import app.polar.ui.widget.ThemePreviewColors
 import app.polar.ui.activity.AuthActivity
 import app.polar.util.ThemeManager
 import androidx.lifecycle.Lifecycle
@@ -311,7 +312,8 @@ class SettingsFragment : Fragment() {
       else ThemeManager.themeOption(currentTheme).labelRes
     )
     binding.viewThemeSwatch.background = ThemePickerDialog.swatch(
-      ThemeManager.previewContext(requireContext(), currentTheme, customTheme)
+      requireContext(),
+      ThemePreviewColors.forTheme(requireContext(), currentTheme, customTheme)
     )
 
     binding.btnThemeSettings.setOnClickListener {

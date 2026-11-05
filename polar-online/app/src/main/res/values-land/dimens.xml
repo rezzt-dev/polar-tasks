@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- en horizontal el selector de color deja sitio al codigo hex sin desplazar la hoja -->
+  <dimen name="custom_color_picker_height">150dp</dimen>
+</resources>
