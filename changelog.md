@@ -23,6 +23,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 
 #### CAMBIOS
 
+- completar las guías de gestión y el contexto específico del proyecto; conservar las reglas técnicas y verificar las rutas
+
 - reorganizar el repositorio en dos proyectos gradle independientes, `polar-online/` y `polar-offline/`, para mantener las dos versiones de la app en la misma rama sin duplicar trabajo.
 - trabajar con dos ramas ademas de `main`: `testing-branch` para desarrollo y `release-branch` para publicacion.
 - unificar en un unico `.gitignore` en la raiz las reglas de los dos proyectos y anadir `.docs/` para que git no rastree documentacion local del proyecto.
@@ -190,6 +192,8 @@ dates use the yyyy-mm-dd format. the section format is described in `agents.md` 
 ### ENGLISH
 
 #### CHANGED
+
+- complete repository management guides and project-specific context; preserve technical rules and verify paths
 
 - reorganize the repository into two independent gradle projects, `polar-online/` and `polar-offline/`, to keep both versions of the app in the same branch without duplicating work.
 - work with two branches besides `main`: `testing-branch` for development and `release-branch` for publishing.
