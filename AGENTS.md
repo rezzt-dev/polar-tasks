@@ -1,46 +1,114 @@
-# AGENTS.md — Guía para Agentes de Código (Polar)
+# POLAR-TASKS: REPOSITORY GUIDE
 
-> Este archivo está destinado a agentes de IA que interactúen con el proyecto **Polar**.
-> El lector se asume con cero contexto previo sobre la aplicación.
+android task manager maintained as separate online and offline projects. this guide covers the repository; nested agent instructions apply within their own folders.
+
+## PROJECT OVERVIEW
+
+| property | verified value |
+| --- | --- |
+| repository | `rezzt-dev/polar-tasks` |
+| active source | `./` |
+| development base for this change | `version-1.7` |
+| remote default branch | `main` |
+| version source | `polar-offline/app/build.gradle.kts`; `polar-offline/build.gradle.kts`; `polar-online/app/build.gradle.kts`; `polar-online/build.gradle.kts` |
+| continuous integration | no tracked github actions workflows |
+
+## TECHNOLOGY STACK
+
+- android gradle projects: kotlin, xml resources and module configuration declared in the gradle files
+
+## PROJECT STRUCTURE
+
+- `LICENSE`
+- `README.md`
+- `THIRD_PARTY_NOTICES.md`
+- `changelog.md`
+- `polar-offline/`
+- `polar-online/`
+
+management documentation lives in `.docs/manager.md`, `.docs/-github-guides/` and `.docs/repo-audit-and-fix.md`. keep this file and `CLAUDE.md` consistent.
+
+## BUILD, RUN AND TEST COMMANDS
+
+run `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug` separately from `polar-online/` and `polar-offline/`. keep local sdk and service configuration out of git.
+
+## VARIANT COMMAND SCOPE
+
+all legacy `app/`, `res/` and `./gradlew` examples below are relative to one variant root, never the repository root. repeat shared feature checks from both `polar-online/` and `polar-offline/`. keep online authentication, remote permissions and synchronization out of the offline variant. room schemas and migrations must correspond to the variant being changed.
+
+do not describe the whole repository as network-free: check each variant's manifest and dependencies. a version marker in a public release does not override `versionName` or `versionCode` declared in the module. preserve `[online]` and `[offline]` scope in release documentation.
+
+## CODE STYLE AND ARCHITECTURAL DECISIONS
+
+preserve both polar-online/ and polar-offline/; online supabase sync must not leak into offline; preserve room migrations, reminders and [online]/[offline] changelog markers. follow the existing formatter and naming of the changed module. verify manifest versions when dependencies change.
+
+## TESTING STRATEGY
+
+documentation-only changes require `git diff --check`, existing-path checks and a review of the staged file list. run module checks for application changes, with disposable data. report unavailable tooling and failed checks; never claim a check passed without running it.
+
+## SECURITY AND DEPLOYMENT
+
+keep credentials, local configuration, signing material and user data out of commits. do not print secret values while auditing. inspect configuration names and code references instead.
+
+existing legal and community files: `LICENSE`, `THIRD_PARTY_NOTICES.md`. when changing dependencies, permissions, storage or network services, review those files against the implementation. record missing policies as audit work; do not invent licence terms or ownership decisions.
+
+deployment, signing, store publication, migrations against hosted databases and repository settings require their own explicit request. this documentation task prepares management instructions and pull requests.
+
+## COMMON TASKS
+
+1. read the relevant module and its nearest agent instructions
+2. inspect the working tree and choose the smallest change that solves the request
+3. update the affected documentation and changelog with evidence from the diff
+4. run checks appropriate to the changed module and report their actual results
+5. for git operations, follow the manager and the digest below
+
+## EXISTING PROJECT CONVENTIONS
+
+the following project-specific context is retained from the previous guide. paths are relative to the active module when stated. for git operations, the manager and final digest supersede previous workflow examples.
+
+## AGENTS.MD — GUÍA PARA AGENTES DE CÓDIGO (POLAR)
+
+> este archivo está destinado a agentes de ia que interactúen con el proyecto **polar**.
+> el lector se asume con cero contexto previo sobre la aplicación.
 
 ---
 
-## 1. Visión General del Proyecto
+## 1. VISIÓN GENERAL DEL PROYECTO
 
-**Polar** es una aplicación nativa de Android para la gestión personal de tareas. Está diseñada con una interfaz minimalista, libre de distracciones, pero con herramientas de organización potentes: subtareas anidadas, etiquetas con color, vistas de calendario, recordatorios con alarmas exactas, matriz de Eisenhower, estadísticas y un sistema de papelera con borrado suave.
+**polar** es una aplicación nativa de android para la gestión personal de tareas. está diseñada con una interfaz minimalista, libre de distracciones, pero con herramientas de organización potentes: subtareas anidadas, etiquetas con color, vistas de calendario, recordatorios con alarmas exactas, matriz de eisenhower, estadísticas y un sistema de papelera con borrado suave.
 
-- **Idioma principal del código y documentación técnica:** Español (docs técnicos), con código Kotlin y comentarios mixtos (español/inglés).
-- **Arquitectura:** MVVM + Clean Architecture pragmática.
-- **Persistencia:** Offline-first mediante Room Database (SQLite).
-- **Sin conectividad de red:** La app no consume APIs externas; toda la lógica es local.
+- **idioma principal del código y documentación técnica:** español (docs técnicos), con código kotlin y comentarios mixtos (español/inglés).
+- **arquitectura:** mvvm + clean architecture pragmática.
+- **persistencia:** offline-first mediante room database (sqlite).
+- **variantes:** `polar-offline/` conserva la lógica local; `polar-online/` incorpora sincronización con supabase. verifica cada afirmación de privacidad contra su manifest.
 
 ---
 
-## 2. Stack Tecnológico y Dependencias Clave
+## 2. STACK TECNOLÓGICO Y DEPENDENCIAS CLAVE
 
-| Capa | Tecnología | Versión (relevante) |
+| capa | tecnología | versión (relevante) |
 |------|-----------|---------------------|
-| Lenguaje | Kotlin | 2.0.21 |
-| Build System | Gradle (Kotlin DSL) | AGP 8.13.2 |
-| SDK Android | `compileSdk` 36, `minSdk` 24, `targetSdk` 36 |
-| UI Framework | XML Layouts + View Binding + Material Components 1.13.0 |
-| Arquitectura | MVVM, ViewModel, LiveData, StateFlow |
-| Inyección de Dependencias | Hilt (Dagger) | 2.51.1 |
-| Base de Datos | Room | 2.6.1 |
-| Corrutinas | Kotlinx Coroutines Android | 1.7.3 |
-| Programación de Tareas | WorkManager | 2.9.0 |
-| Navegación | FragmentManager manual (Single Activity) |
-| Serialización | Gson | 2.10.1 |
-| Testing Unitario | JUnit 4, MockK, kotlinx-coroutines-test, androidx.arch.core:core-testing |
-| Testing Instrumentado | AndroidX Test (JUnit + Espresso) |
+| lenguaje | kotlin | 2.0.21 |
+| build system | gradle (kotlin dsl) | agp 8.13.2 |
+| sdk android | `compileSdk` 36, `minSdk` 24, `targetSdk` 36 |
+| ui framework | xml layouts + view binding + material components 1.13.0 |
+| arquitectura | mvvm, viewmodel, livedata, stateflow |
+| inyección de dependencias | hilt (dagger) | 2.51.1 |
+| base de datos | room | 2.6.1 |
+| corrutinas | kotlinx coroutines android | 1.7.3 |
+| programación de tareas | workmanager | 2.9.0 |
+| navegación | fragmentmanager manual (single activity) |
+| serialización | gson | 2.10.1 |
+| testing unitario | junit 4, mockk, kotlinx-coroutines-test, androidx.arch.core:core-testing |
+| testing instrumentado | androidx test (junit + espresso) |
 
-> **Nota importante:** El proyecto usa `kapt` (no KSP) para el procesamiento de anotaciones de Room y Hilt.
+> **nota importante:** el proyecto usa `kapt` (no ksp) para el procesamiento de anotaciones de room y hilt.
 
 ---
 
-## 3. Estructura del Código Fuente
+## 3. ESTRUCTURA DEL CÓDIGO FUENTE
 
-Todo el código fuente principal reside en `app/src/main/java/app/polar/`.
+el código reside por separado en `polar-online/app/` y `polar-offline/app/`; las rutas `app/` de los ejemplos se interpretan desde la variante correspondiente.
 
 ```
 app/src/main/java/app/polar/
@@ -93,32 +161,32 @@ app/src/main/java/app/polar/
     └── TaskSwipeHelper.kt          # Swipe bidireccional reutilizable para RecyclerViews
 ```
 
-### Recursos (`app/src/main/res/`)
+### RECURSOS (`app/src/main/res/`)
 
-- `layout/` — ~35 archivos XML de layouts (Activities, Fragments, Items, Dialogs).
-- `menu/` — Menús de Toolbar/ActionBar.
+- `layout/` — ~35 archivos xml de layouts (activities, fragments, items, dialogs).
+- `menu/` — menús de toolbar/actionbar.
 - `drawable/` — ~61 recursos gráficos, vectores y formas.
-- `values/` — Strings, colores, temas (solo color), estilos del sistema de diseño, dimensiones y atributos personalizados.
-- `values-night/` — Tema y colores del modo oscuro.
-- `anim/`, `color/`, `font/` — Animaciones, listas de estados de color y la fuente Inter empaquetada.
-- `xml/` — Configuración de widgets, FileProvider paths, reglas de backup.
+- `values/` — strings, colores, temas (solo color), estilos del sistema de diseño, dimensiones y atributos personalizados.
+- `values-night/` — tema y colores del modo oscuro.
+- `anim/`, `color/`, `font/` — animaciones, listas de estados de color y la fuente inter empaquetada.
+- `xml/` — configuración de widgets, fileprovider paths, reglas de backup.
 
-> **No existe carpeta `navigation/`**: la navegación se maneja manualmente con `FragmentManager` desde `MainActivity` y `DrawerManager`.
+> **no existe carpeta `navigation/`**: la navegación se maneja manualmente con `FragmentManager` desde `MainActivity` y `DrawerManager`.
 
 ---
 
-## 4. Convenciones de Desarrollo
+## 4. CONVENCIONES DE DESARROLLO
 
-### 4.1 Patrones Arquitectónicos
+### 4.1 PATRONES ARQUITECTÓNICOS
 
-- **Separación de capas estricta:** La UI (Fragment/Activity) **nunca** accede directamente a DAOs. Siempre pasa por ViewModel -> Repository -> DAO.
-- **Reactivo:** Los DAOs exponen `Flow<List<T>>` o `LiveData<List<T>>`. El ViewModel transforma estos flujos en `StateFlow` o `LiveData` para la UI.
-- **ViewModels con Hilt:** Usan `@HiltViewModel` e inyección por constructor `@Inject`. Son `AndroidViewModel` cuando necesitan `Application`.
-- **Activities con Hilt:** Toda Activity que requiera inyección debe llevar `@AndroidEntryPoint`.
+- **separación de capas estricta:** la ui (fragment/activity) **nunca** accede directamente a daos. siempre pasa por viewmodel -> repository -> dao.
+- **reactivo:** los daos exponen `Flow<List<T>>` o `LiveData<List<T>>`. el viewmodel transforma estos flujos en `StateFlow` o `LiveData` para la ui.
+- **viewmodels con hilt:** usan `@HiltViewModel` e inyección por constructor `@Inject`. son `AndroidViewModel` cuando necesitan `Application`.
+- **activities con hilt:** toda activity que requiera inyección debe llevar `@AndroidEntryPoint`.
 
-### 4.2 Manejo de Errores en ViewModels
+### 4.2 MANEJO DE ERRORES EN VIEWMODELS
 
-Casi todos los ViewModels implementan un patrón `safeLaunch` para encapsular corrutinas:
+casi todos los viewmodels implementan un patrón `safeLaunch` para encapsular corrutinas:
 
 ```kotlin
 private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
@@ -131,184 +199,184 @@ private fun safeLaunch(block: suspend () -> Unit) = viewModelScope.launch {
 }
 ```
 
-Si creas nuevos ViewModels, **replica este patrón** para consistencia.
+si creas nuevos viewmodels, **replica este patrón** para consistencia.
 
-### 4.3 View Binding (Obligatorio)
+### 4.3 VIEW BINDING (OBLIGATORIO)
 
-Se usa **View Binding** en toda la UI. Está habilitado en `build.gradle.kts` (`viewBinding = true`).
-- Prohibido usar `findViewById`.
-- Los `ViewHolder` de adapters reciben el binding como parámetro.
+se usa **view binding** en toda la ui. está habilitado en `build.gradle.kts` (`viewBinding = true`).
+- prohibido usar `findViewById`.
+- los `ViewHolder` de adapters reciben el binding como parámetro.
 
-### 4.4 BaseActivity
+### 4.4 BASEACTIVITY
 
-Todas las Activities heredan de `BaseActivity`, que gestiona:
-- Aplicación de tema dinámico (multicolor, oscuro, pastel, etc.) antes de `super.onCreate()`.
-- Overlay del sistema de diseño (`ThemeOverlay.Polar.Foundation`, ver 4.7) sobre cualquier tema.
-- Overlay de fuentes personalizadas.
-- Overlay de estilos de checkbox.
-- Configuración de locale (idioma) vía `attachBaseContext()`.
+todas las activities heredan de `BaseActivity`, que gestiona:
+- aplicación de tema dinámico (multicolor, oscuro, pastel, etc.) antes de `super.onCreate()`.
+- overlay del sistema de diseño (`ThemeOverlay.Polar.Foundation`, ver 4.7) sobre cualquier tema.
+- overlay de fuentes personalizadas.
+- overlay de estilos de checkbox.
+- configuración de locale (idioma) vía `attachBaseContext()`.
 
-> Si creas una nueva Activity, extiende `BaseActivity`.
+> si creas una nueva activity, extiende `BaseActivity`.
 
-### 4.5 Temas y Atributos
+### 4.5 TEMAS Y ATRIBUTOS
 
-Los colores **no deben hardcodearse** con valores hex absolutos en layouts. Se usan atributos del tema:
+los colores **no deben hardcodearse** con valores hex absolutos en layouts. se usan atributos del tema:
 ```xml
 android:background="?attr/colorSurface"
 android:textColor="?attr/colorOnSurface"
 ```
 
-El `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idioma.
+el `ThemeManager` soporta cambio en tiempo de ejecución de temas, fuentes e idioma.
 
-Para añadir un tema: define su paleta en `colors.xml`, su estilo `Theme.Polar.*` en `themes.xml`
-y regístralo en `ThemeManager.THEME_OPTIONS` (clave, nombre, estilo y si es oscuro). El selector
+para añadir un tema: define su paleta en `colors.xml`, su estilo `Theme.Polar.*` en `themes.xml`
+y regístralo en `ThemeManager.THEME_OPTIONS` (clave, nombre, estilo y si es oscuro). el selector
 (`ThemePickerDialog`), el modo noche y la barra de estado se derivan de esa lista.
 
-**Tema personalizado** (`ThemeManager.THEME_CUSTOM`): el usuario combina un fondo, un color de
+**tema personalizado** (`ThemeManager.THEME_CUSTOM`): el usuario combina un fondo, un color de
 acento y un color por prioridad en `CustomThemeActivity` (se abre desde el grupo "tu tema" del
-selector). No se generan colores en tiempo de ejecución: cada fondo es un tema completo
+selector). no se generan colores en tiempo de ejecución: cada fondo es un tema completo
 (`Theme.Polar.Custom.*`) y el acento y cada prioridad son overlays con tono claro y oscuro
 (`ThemeOverlay.Polar.Custom.*`) que `BaseActivity` aplica sobre él con
-`ThemeManager.getColorOverlayStyles()`. La combinación se guarda en preferencias como claves
+`ThemeManager.getColorOverlayStyles()`. la combinación se guarda en preferencias como claves
 (`CustomTheme`) y las opciones se registran en `CustomThemePalette`. `colors_custom_theme.xml` y
 `themes_custom.xml` se generan con `.docs/agent-docs/tools/custom_theme_palette.py`, que valida el
-contraste WCAG: no los edites a mano. Para añadir una opción, añádela al script, regístrala en
+contraste wcag: no los edites a mano. para añadir una opción, añádela al script, regístrala en
 `CustomThemePalette` y añade su texto en los cinco idiomas; no renombres las claves existentes.
-Ajustes recrea la app al volver si cambia `ThemeManager.themeSignature()`, que incluye la
+ajustes recrea la app al volver si cambia `ThemeManager.themeSignature()`, que incluye la
 combinación del personalizado.
 
-**Colores a medida** (android 11+): cada hueco de la combinación (fondo, acento y cada prioridad)
+**colores a medida** (android 11+): cada hueco de la combinación (fondo, acento y cada prioridad)
 admite también un `#RRGGBB`, elegido en `CustomColorSheet` (selector hsv, código hex, contraste y
-recientes). Se pintan con estilos "portadores" (`Theme.Polar.Custom.Hex.Light/Dark`,
+recientes). se pintan con estilos "portadores" (`Theme.Polar.Custom.Hex.Light/Dark`,
 `ThemeOverlay.Polar.Custom.*.Hex`, generados por el mismo script) que apuntan a los colores
 `custom_hex_*`; `BaseActivity` sustituye su valor antes de crear el tema con
 `CustomColorResources.apply()`, que carga una tabla de recursos en memoria con un
-`ResourcesLoader`. Los tonos derivados (superficies, textos, contornos, texto sobre el acento) los
+`ResourcesLoader`. los tonos derivados (superficies, textos, contornos, texto sobre el acento) los
 calcula `CustomThemeScheme`, que replica las fórmulas del script: si cambias unas, cambia las otras.
-En android 10 o anterior (o si la carga falla) `CustomColorResources.isSupported` es `false`, el
+en android 10 o anterior (o si la carga falla) `CustomColorResources.isSupported` es `false`, el
 editor oculta los colores a medida y `CustomThemePalette.sanitize()` los sustituye por los de por
-defecto. Las vistas previas usan `ThemePreviewColors.forTheme()` / `forCustomTheme()`, que calculan
-los colores a medida sin tocar los recursos. No renombres los colores `custom_hex_*` sin actualizar
+defecto. las vistas previas usan `ThemePreviewColors.forTheme()` / `forCustomTheme()`, que calculan
+los colores a medida sin tocar los recursos. no renombres los colores `custom_hex_*` sin actualizar
 `CustomThemePalette.colorOverrides()`.
 
-### 4.6 Textos de Interfaz (siempre en minúsculas)
+### 4.6 TEXTOS DE INTERFAZ (SIEMPRE EN MINÚSCULAS)
 
-Toda la interfaz de Polar se escribe **en minúsculas**, en **todos los idiomas**
+toda la interfaz de polar se escribe **en minúsculas**, en **todos los idiomas**
 (incluido alemán, donde los sustantivos normalmente se capitalizan, y nombres
 propios como `polar`, `material` o `eisenhower`).
 
-- Aplica a los recursos de `app/src/main/res/values*/strings.xml`, incluidos los
+- aplica a los recursos de `app/src/main/res/values*/strings.xml`, incluidos los
   bloques `<plurals>`, y a cualquier texto hardcodeado en layouts o código.
-- **No** aplica a datos introducidos por el usuario (títulos de tareas, notas,
+- **no** aplica a datos introducidos por el usuario (títulos de tareas, notas,
   etiquetas, ubicaciones, etc.) ni a los especificadores de formato (`%1$s`,
   `%d`, `\n`).
-- Al añadir una funcionalidad nueva o traducir strings, replica esta convención
+- al añadir una funcionalidad nueva o traducir strings, replica esta convención
   en `values/`, `values-en-rGB/`, `values-en-rUS/`, `values-de/` y `values-fr/`.
-- Minúsculas no significa sin acentos: la ortografía de cada idioma es obligatoria
+- minúsculas no significa sin acentos: la ortografía de cada idioma es obligatoria
   (tildes, `ñ`, `¿` y `¡` en castellano; `ä`, `ö`, `ü`, `ß` en alemán; acentos y
-  espacio antes de `?`, `!` y `:` en francés). El tono es el mismo en todas las
+  espacio antes de `?`, `!` y `:` en francés). el tono es el mismo en todas las
   pantallas: tuteo en castellano, `du` en alemán y `vous` en francés.
-- Las fechas que genera el sistema (`SimpleDateFormat`, `DateFormat`) se pasan a
+- las fechas que genera el sistema (`SimpleDateFormat`, `DateFormat`) se pasan a
   minúsculas con `lowercase(locale)` y se construyen con
   `DateFormat.getBestDateTimePattern()` en lugar de patrones fijos.
-- Las cantidades usan `<plurals>`; en francés se define también `many`.
+- las cantidades usan `<plurals>`; en francés se define también `many`.
 
-### 4.7 Sistema de Diseño
+### 4.7 SISTEMA DE DISEÑO
 
-La interfaz sigue un sistema de diseño único, minimalista y neutro, compartido por
+la interfaz sigue un sistema de diseño único, minimalista y neutro, compartido por
 todos los temas:
 
-- **Fundamentos (`res/values/styles.xml`):** `ThemeOverlay.Polar.Foundation`
+- **fundamentos (`res/values/styles.xml`):** `ThemeOverlay.Polar.Foundation`
   define tipografía (`TextAppearance.Polar.*`), formas (`ShapeAppearance.Polar.*`:
-  10/12/16/24dp), estilos por defecto de los componentes de Material y las
+  10/12/16/24dp), estilos por defecto de los componentes de material y las
   animaciones de ventana. `BaseActivity` lo aplica antes de los overlays de fuente
-  y casilla. Los temas de `themes.xml` solo definen color (todos los roles de
-  Material 3, incluidos `colorOnSurfaceVariant`, contenedores y superficies
+  y casilla. los temas de `themes.xml` solo definen color (todos los roles de
+  material 3, incluidos `colorOnSurfaceVariant`, contenedores y superficies
   inversas para snackbars).
-- **Tipografía:** en layouts usa siempre `?attr/textAppearance*` (nunca
+- **tipografía:** en layouts usa siempre `?attr/textAppearance*` (nunca
   `@style/TextAppearance.Material3.*` ni `textSize`/`fontFamily` sueltos) para
-  respetar la fuente elegida. La fuente por defecto es Inter, empaquetada en
-  `res/font/` (funciona sin red). En vistas dibujadas con `Canvas` usa
+  respetar la fuente elegida. la fuente por defecto es inter, empaquetada en
+  `res/font/` (funciona sin red). en vistas dibujadas con `Canvas` usa
   `ChartTypeface.resolve()`.
-- **Componentes:** usa los estilos `Widget.Polar.*` (botones, chips, tarjetas,
+- **componentes:** usa los estilos `Widget.Polar.*` (botones, chips, tarjetas,
   campos de texto, menús, hojas inferiores) y las piezas de layout `Polar.*`
   (`Polar.DrawerItem`, `Polar.FormRow`, `Polar.EmptyState`, `Polar.DialogActions`,
-  `Polar.InlineInput`...). Los menús emergentes son `androidx.appcompat.widget.PopupMenu`
+  `Polar.InlineInput`...). los menús emergentes son `androidx.appcompat.widget.PopupMenu`
   con `applyPolarStyle()` (iconos y acción destructiva en `colorError`).
-- **Iconos:** pack [Lucide](https://lucide.dev) convertido a vector drawable
-  (viewport 24, trazo 1.75, `android:tint="?attr/colorControlNormal"`). Los
+- **iconos:** pack [lucide](https://lucide.dev) convertido a vector drawable
+  (viewport 24, trazo 1.75, `android:tint="?attr/colorControlNormal"`). los
   nombres `ic_*` se conservan porque los iconos de lista se guardan por nombre en
-  la base de datos; no los renombres. Para añadir uno nuevo usa
+  la base de datos; no los renombres. para añadir uno nuevo usa
   `.docs/agent-docs/tools/lucide2vd.py` (mapeo `nombre -> icono lucide`).
-  Créditos y licencias en `THIRD_PARTY_NOTICES.md`.
-- **Espaciado:** margen lateral de pantalla `@dimen/spacing_screen` (20dp) y escala
-  de 4dp. No uses `paddingHorizontal`/`layout_marginHorizontal` (API 26, ignorados
-  en Android 7): usa `Start`/`End` y `Top`/`Bottom`.
-- **Movimiento:** cambio de sección con fade through (`polar_fade_through_*`,
+  créditos y licencias en `THIRD_PARTY_NOTICES.md`.
+- **espaciado:** margen lateral de pantalla `@dimen/spacing_screen` (20dp) y escala
+  de 4dp. no uses `paddingHorizontal`/`layout_marginHorizontal` (api 26, ignorados
+  en android 7): usa `Start`/`End` y `Top`/`Bottom`.
+- **movimiento:** cambio de sección con fade through (`polar_fade_through_*`,
   desde `MainActivity.showScreen()`), activities con `Animation.Polar.Activity`,
   listas con `@anim/polar_list_layout` y respuesta háptica al completar o al cruzar
   el umbral de un deslizamiento.
-- **Widget:** los RemoteViews no resuelven atributos de tema; usa los colores
+- **widget:** los remoteviews no resuelven atributos de tema; usa los colores
   `@color/widget_*` (con variante en `values-night`).
 
 ---
 
-## 5. Base de Datos (Room)
+## 5. BASE DE DATOS (ROOM)
 
-### Entidades principales
+### ENTIDADES PRINCIPALES
 
-| Entidad | Tabla | Clave |
+| entidad | tabla | clave |
 |---------|-------|-------|
 | `Task` | `tasks` | `id` (auto) |
 | `TaskList` | `task_lists` | `id` (auto) |
-| `Subtask` | `subtasks` | `id` (auto), FK a `tasks.id` |
+| `Subtask` | `subtasks` | `id` (auto), fk a `tasks.id` |
 | `Reminder` | `reminders` | `id` (auto) |
 
-### Características del esquema
+### CARACTERÍSTICAS DEL ESQUEMA
 
-- `Task` tiene una Foreign Key a `TaskList` con `onDelete = CASCADE`.
-- Soft-delete: los campos `isDeleted` en `Task` y `Reminder` marcan elementos en papelera en lugar de borrarlos físicamente.
-- Tags se almacenan como cadena separada por comas en `Task.tags`.
-- Recurrencia: campo `recurrence` con `"NONE"`, uno de los valores fijos (`"DAILY"`, `"WEEKLY"`, `"MONTHLY"`, `"MON_WED"`, `"FIRST_DAY_MONTH"`) o una regla personalizada `RRULE:FREQ=...` (cada n días/semanas/meses/años, días concretos de la semana o del mes, o "n después de completarla" con `X-FROM=COMPLETION`). `RecurrenceRule` (`util/`) la lee y la escribe, y guarda con el valor fijo cualquier regla equivalente; `RecurrenceFormatter` genera su texto de interfaz. No compares `recurrence` con literales: usa `RecurrenceUtils.isRecurring()`. Al añadir una regla nueva no hace falta migración, pero sí actualizar el `CHECK` de `tasks.recurrence` en Supabase (`.docs/agent-docs/supabase-sync/03-esquema-supabase.md`).
-- Prioridad: entero `0=None, 1=Low, 2=Medium, 3=High`.
-- Avisos de tarea: `Task.reminderOffset` son los minutos antes de `dueDate` a los que suena (`0` a la hora, `TaskAlert.OFF` sin aviso) y `Task.snoozedUntil` el aviso pospuesto desde la notificación, que sustituye al normal **sin tocar `dueDate`**. La hora real la calcula `TaskAlert.triggerAt()`; programa siempre con `AlarmManagerHelper.syncTaskAlarm(task)` (y `syncReminderAlarm`) en lugar de llamar a `scheduleTaskAlarm` con `dueDate`.
-- Aviso al llegar: `Reminder.notifyOnArrival` activa, además del aviso a su hora, una alerta de proximidad sobre `latitude`/`longitude` con `radius` en metros (`GeofenceHelper`). En `polar-online/` estos tres campos son locales del dispositivo: no van en los DTO y `EntityMappers` los conserva en cada pull.
+- `Task` tiene una foreign key a `TaskList` con `onDelete = CASCADE`.
+- soft-delete: los campos `isDeleted` en `Task` y `Reminder` marcan elementos en papelera en lugar de borrarlos físicamente.
+- tags se almacenan como cadena separada por comas en `Task.tags`.
+- recurrencia: campo `recurrence` con `"NONE"`, uno de los valores fijos (`"DAILY"`, `"WEEKLY"`, `"MONTHLY"`, `"MON_WED"`, `"FIRST_DAY_MONTH"`) o una regla personalizada `RRULE:FREQ=...` (cada n días/semanas/meses/años, días concretos de la semana o del mes, o "n después de completarla" con `X-FROM=COMPLETION`). `RecurrenceRule` (`util/`) la lee y la escribe, y guarda con el valor fijo cualquier regla equivalente; `RecurrenceFormatter` genera su texto de interfaz. no compares `recurrence` con literales: usa `RecurrenceUtils.isRecurring()`. al añadir una regla nueva no hace falta migración, pero sí actualizar el `CHECK` de `tasks.recurrence` en supabase (`.docs/agent-docs/supabase-sync/03-esquema-supabase.md`).
+- prioridad: entero `0=None, 1=Low, 2=Medium, 3=High`.
+- avisos de tarea: `Task.reminderOffset` son los minutos antes de `dueDate` a los que suena (`0` a la hora, `TaskAlert.OFF` sin aviso) y `Task.snoozedUntil` el aviso pospuesto desde la notificación, que sustituye al normal **sin tocar `dueDate`**. la hora real la calcula `TaskAlert.triggerAt()`; programa siempre con `AlarmManagerHelper.syncTaskAlarm(task)` (y `syncReminderAlarm`) en lugar de llamar a `scheduleTaskAlarm` con `dueDate`.
+- aviso al llegar: `Reminder.notifyOnArrival` activa, además del aviso a su hora, una alerta de proximidad sobre `latitude`/`longitude` con `radius` en metros (`GeofenceHelper`). en `polar-online/` estos tres campos son locales del dispositivo: no van en los dto y `EntityMappers` los conserva en cada pull.
 
-### Migraciones
+### MIGRACIONES
 
-`AppDatabase` define migraciones manuales desde la 6→7 (versión actual: 19 en `polar-offline/`, 18 en `polar-online/`; cada proyecto numera las suyas). La base de datos usa **WAL** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la UI.
+`AppDatabase` define migraciones manuales desde la 6→7 (versión actual: 19 en `polar-offline/`, 18 en `polar-online/`; cada proyecto numera las suyas). la base de datos usa **wal** (`JournalMode.WRITE_AHEAD_LOGGING`) para permitir lecturas concurrentes sin bloquear la ui.
 
-> Si alteras el esquema, **aumenta la versión** y proporciona una `Migration` explícita. No confíes únicamente en `fallbackToDestructiveMigration`.
+> si alteras el esquema, **aumenta la versión** y proporciona una `Migration` explícita. no confíes únicamente en `fallbackToDestructiveMigration`.
 
 ---
 
-## 6. Servicios en Segundo Plano
+## 6. SERVICIOS EN SEGUNDO PLANO
 
-### AlarmManager + BroadcastReceivers (`receiver/`)
+### ALARMMANAGER + BROADCASTRECEIVERS (`receiver/`)
 
-Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`.
+para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`.
 - `AlarmReceiver` — dispara la notificación cuando suena la alarma.
 - `AlarmReceiver` — dispara la notificación cuando suena la alarma, tras comprobar en la base de datos que el elemento sigue pendiente y fuera de la papelera.
 - `BootReceiver` — reconstruye todas las alarmas y avisos por llegada con `AlarmRescheduler` tras reiniciar el dispositivo, al actualizar la app y al conceder el permiso de alarmas exactas.
 - `NotificationActionReceiver` — botón "completar" de las notificaciones de tareas y recordatorios; delega en `AlertActions`, que no hace nada si el elemento ya se completó o se borró.
-- `SnoozeActivity` + `SnoozeSheet` — botón "posponer": activity transparente que muestra la hoja de opciones (15 min, 1 h, 3 h, esta tarde, mañana, a medida) sin abrir la app. La misma hoja se usa desde el menú de cada recordatorio. Las opciones rápidas se calculan en `SnoozeOption`.
-- `GeofenceHelper` (`util/`) — registra el aviso al llegar con `LocationManager.addProximityAlert` (sin Google Play Services); el aviso llega a `AlarmReceiver` como `TYPE_REMINDER_ARRIVAL`.
-- `AlarmRescheduler` (`util/`) — única fuente para reprogramar o cancelar en bloque las alarmas desde la base de datos. Úsalo siempre que los ids dejen de ser válidos (por ejemplo, al restaurar una copia) en lugar de recorrer tablas a mano.
-- Los textos de notificaciones y widget se generan con `ThemeManager.localizedContext()`: el contexto de aplicación no lleva el idioma elegido en ajustes.
+- `SnoozeActivity` + `SnoozeSheet` — botón "posponer": activity transparente que muestra la hoja de opciones (15 min, 1 h, 3 h, esta tarde, mañana, a medida) sin abrir la app. la misma hoja se usa desde el menú de cada recordatorio. las opciones rápidas se calculan en `SnoozeOption`.
+- `GeofenceHelper` (`util/`) — registra el aviso al llegar con `LocationManager.addProximityAlert` (sin google play services); el aviso llega a `AlarmReceiver` como `TYPE_REMINDER_ARRIVAL`.
+- `AlarmRescheduler` (`util/`) — única fuente para reprogramar o cancelar en bloque las alarmas desde la base de datos. úsalo siempre que los ids dejen de ser válidos (por ejemplo, al restaurar una copia) en lugar de recorrer tablas a mano.
+- los textos de notificaciones y widget se generan con `ThemeManager.localizedContext()`: el contexto de aplicación no lleva el idioma elegido en ajustes.
 
-### WorkManager (`worker/`)
+### WORKMANAGER (`worker/`)
 
 - `RecurrenceWorker` — se ejecuta cada hora y al abrir la app para reabrir las tareas recurrentes completadas cuya siguiente ocurrencia ya ha empezado (reglas de fechas en `RecurrenceUtils` y `RecurrenceRule`).
 
-### Widget (`widget/`)
+### WIDGET (`widget/`)
 
-- `TaskWidgetProvider` / `TaskWidgetService` — tareas pendientes de hoy; al tocar una se abre su detalle. `PolarApplication` registra un observador de Room sobre `tasks` que refresca el widget ante cualquier escritura, así que no hace falta avisarle desde cada punto que modifica tareas.
+- `TaskWidgetProvider` / `TaskWidgetService` — tareas pendientes de hoy; al tocar una se abre su detalle. `PolarApplication` registra un observador de room sobre `tasks` que refresca el widget ante cualquier escritura, así que no hace falta avisarle desde cada punto que modifica tareas.
 
 ---
 
-## 7. Comandos de Build y Test
+## 7. COMANDOS DE BUILD Y TEST
 
-### Compilación
+### COMPILACIÓN
 
 ```bash
 # Compilar el proyecto (debug)
@@ -318,7 +386,7 @@ Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXA
 ./gradlew :app:assembleRelease
 ```
 
-### Tests
+### TESTS
 
 ```bash
 # Tests unitarios (JVM)
@@ -328,282 +396,163 @@ Para recordatorios con precisión exacta se usa `AlarmManager` con `SCHEDULE_EXA
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-### Verificación general
+### VERIFICACIÓN GENERAL
 
 ```bash
 # Limpiar y compilar
 ./gradlew clean build
 ```
 
-### Requisitos del entorno
+### REQUISITOS DEL ENTORNO
 
-- Android Studio Flamingo o superior.
-- JDK 17.
-- Android SDK API 36 (compileSdk).
-- Kotlin 2.0+.
-
----
-
-## 8. Estrategia de Testing
-
-### Tests Unitarios (`app/src/test/`)
-
-La suite de tests unitarios es pequeña pero representativa:
-
-- `TaskViewModelTest` — Verifica que el ViewModel delega correctamente al UseCase y al Repository, y que la programación/cancelación de alarmas ocurre en los estados esperados.
-- `TaskRepositoryTest` — Verifica que el Repository expone flujos de DAO y traduce operaciones CRUD.
-- `SmartParserTest` — Tests del parser NLP para extracción de fechas/tiempos de texto natural.
-- `MainDispatcherRule` — Regla de JUnit para reemplazar el dispatcher principal en tests de corrutinas.
-
-**Herramientas:** MockK para mocks, `InstantTaskExecutorRule` para LiveData, `runTest` para corrutinas.
-
-### Tests Instrumentados (`app/src/androidTest/`)
-
-- `ExampleInstrumentedTest` — Test básico de contexto de la app.
-
-### Convenciones para nuevos tests
-
-- Usa `runTest` para funciones suspendidas.
-- Usa `MockK` (no Mockito) para consistencia con el proyecto existente.
-- Usa `MainDispatcherRule` en tests de ViewModels que usen corrutinas.
-- Aísla el ViewModel mockeando Repository y UseCases.
+- android studio flamingo o superior.
+- jdk 17.
+- android sdk api 36 (compilesdk).
+- kotlin 2.0+.
 
 ---
 
-## 9. Consideraciones de Seguridad
+## 8. ESTRATEGIA DE TESTING
 
-- **Sin permisos de red:** La app no declara `INTERNET`. Es completamente offline.
-- **Almacenamiento externo limitado:** Solo lectura de imágenes (`READ_MEDIA_IMAGES`, `READ_EXTERNAL_STORAGE` hasta API 32). Usa `FileProvider` para compartir archivos de backup de forma segura.
-- **Ubicación (opcional):** `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` y `ACCESS_BACKGROUND_LOCATION` solo se piden al activar el aviso al llegar de un recordatorio (`ReminderDialog` explica antes el acceso "todo el tiempo"). La ubicación no sale del dispositivo. No pidas estos permisos desde ningún otro punto.
-- **Alarmas exactas:** Requiere `SCHEDULE_EXACT_ALARM` y `USE_EXACT_ALARM`. En Android 12+ (API 31), el sistema puede restringir el uso; la app debe manejar la posibilidad de que el permiso sea revocado por el usuario.
-- **Backup:** Habilitado (`android:allowBackup="true"`) con reglas de extracción declaradas en `data_extraction_rules.xml` y `backup_rules.xml`.
-- **No hay cifrado de base de datos:** Room usa SQLite estándar. No se implementa SQLCipher ni cifrado a nivel de archivo.
+### TESTS UNITARIOS (`app/src/test/`)
 
----
+la suite de tests unitarios es pequeña pero representativa:
 
-## 10. Flujo de Contribución
+- `TaskViewModelTest` — verifica que el viewmodel delega correctamente al usecase y al repository, y que la programación/cancelación de alarmas ocurre en los estados esperados.
+- `TaskRepositoryTest` — verifica que el repository expone flujos de dao y traduce operaciones crud.
+- `SmartParserTest` — tests del parser nlp para extracción de fechas/tiempos de texto natural.
+- `MainDispatcherRule` — regla de junit para reemplazar el dispatcher principal en tests de corrutinas.
 
-1. Fork del repositorio.
-2. Rama feature: `git checkout -b feature/nombre-descriptivo` o `fix/area-del-bug`.
-3. Commits siguiendo **obligatoriamente** las reglas de "Redacción de commits" (ver abajo; réplica de `.docs/commit-guidelines.md`).
-4. Asegurar que el código compila y los tests unitarios pasan.
-5. Pull Request con capturas de pantalla si hay cambios visuales.
+**herramientas:** mockk para mocks, `InstantTaskExecutorRule` para livedata, `runTest` para corrutinas.
 
-### Redacción de commits (título y descripción)
+### TESTS INSTRUMENTADOS (`app/src/androidTest/`)
 
-<!--
-  Este bloque replica literalmente el contenido de `.docs/commit-guidelines.md`
-  (que es local y no se versiona). Existe para que todos los commits del
-  repositorio salgan con el mismo formato: más limpios y profesionales. Un
-  historial homogéneo es más cómodo de leer para usuarios y desarrolladores, y
-  transmite la información de los cambios de la mejor forma posible (prefijo
-  claro, resumen en imperativo y cuerpo en lista). No improvises el formato:
-  aplica siempre estas reglas. Si editas estas reglas, replica el cambio en
-  `CLAUDE.md` y en `.docs/commit-guidelines.md`.
--->
+- `ExampleInstrumentedTest` — test básico de contexto de la app.
 
-> instrucciones para cualquier agente de ia (o persona) que redacte el titulo
-> y la descripcion de un commit de git en este repositorio. se aplica siempre
-> que se pida algo equivalente a:
->
-> *"sacame el titulo y la descripcion para el commit con los cambios
-> realizados desde el ultimo commit. fijate en los anteriores commits para
-> que tengan el mismo formato."*
->
-> y, de forma general, **cada vez que se vaya a crear un commit en este
-> repositorio**, se haya pedido explicitamente o no.
+### CONVENCIONES PARA NUEVOS TESTS
 
-#### Formato fijo del titulo
-
-```
-<prefijo> | <resumen corto en imperativo>
-```
-
-el separador es siempre espacio, barra vertical, espacio: ` | `. el
-`<prefijo>` es siempre una de estas cinco palabras, en minusculas, y nunca
-se combinan ni se inventan otras nuevas:
-
-| prefijo | cuando usarlo |
-|---|---|
-| **update** | trabajo normal hacia adelante: se añade o mejora una funcionalidad, contenido o documento existente. es el prefijo por defecto. |
-| **fix** | se corrige un error o comportamiento incorrecto detectado durante el desarrollo, sin urgencia de publicacion inmediata. |
-| **hotfix** | se corrige algo urgente que afecta a una version ya publicada o a un bloqueo critico. debe usarse solo cuando la correccion es realmente urgente. |
-| **changes** | cambios estructurales o no funcionales: reorganizar carpetas, renombrar ficheros, tocar configuracion o tooling, dependencias. no anade funcionalidad ni corrige un bug. |
-| **changelog** | el unico proposito del commit es editar `changelog.md` (por ejemplo, al cerrar una version). |
-
-ejemplos de titulos correctos:
-
-```
-update | añadir vista previa de mapeo de columnas al asistente de importación csv
-fix | detección de duplicados fallando en filas con importes negativos
-hotfix | fallo al iniciar cuando falta el archivo de perfil de importación
-changes | reorganizar la documentación en la subcarpeta project-context
-changelog | cerrar la sección de changelog para la versión mvp fase 0
-```
-
-#### Formato de la descripcion (cuerpo)
-
-- el cuerpo es siempre **una lista de markdown no numerada**: cada item empieza
-  por `-`. nunca se usan listas numeradas ni parrafos sueltos.
-- cada item es un bloque logico en imperativo, escrito como **una sola linea
-  continua**, sin saltos de linea internos: no son esteticos ni utiles, deja
-  que el cliente de git lo ajuste. no se dejan lineas en blanco entre items.
-- usa markdown dentro de cada item: nombres de ficheros, rutas, comandos e
-  identificadores siempre entre backticks.
-- explica el que y el por que, no el detalle linea a linea.
-- cierra con una linea en blanco y la linea de atribucion que corresponda al
-  entorno.
-
-#### Como presentar el resultado
-
-al responder con el titulo y la descripcion hay que usar **bloques de codigo
-separados**: uno para el titulo del commit y otro para el cuerpo del commit (mas
-otro para el fragmento del changelog). nunca se juntan el titulo y el cuerpo en
-el mismo bloque.
-
-### Formato de las secciones de `changelog.md`
-
-<!--
-  Este bloque define como se escriben las entradas de `changelog.md`. El
-  objetivo es un registro de cambios homogeneo y bilingue (castellano e
-  ingles) que la mayoria de personas pueda leer, y que quede limpio y
-  profesional. Si editas estas reglas, replica el cambio en `CLAUDE.md`.
--->
-
-`changelog.md` (en la raiz del repositorio) registra los cambios del proyecto
-de aqui en adelante. reglas de escritura:
-
-- **todo el contenido en minusculas y sin acentos.** los titulos (encabezados
-  markdown `#`, `##`, `###`, `####`) van **en mayusculas y sin acentos**.
-- **bilingue:** cada version contiene el mismo contenido en castellano y en
-  ingles, con las mismas entradas en el mismo orden (traduccion 1:1).
-- cada item es **una sola linea** que empieza por `-`, redactada en
-  imperativo. usa backticks para nombres de ficheros, rutas, comandos e
-  identificadores.
-- la version mas reciente va **arriba** del fichero; debajo de la cabecera.
-- las fechas usan el formato `aaaa-mm-dd`.
-
-estructura de cada version:
-
-```
-## SIN PUBLICAR / UNRELEASED        (mientras la version no se ha publicado)
-## [x.y.z] - aaaa-mm-dd             (al cerrar la version)
-
-### CASTELLANO
-
-#### <categoria>
-- <cambio en una linea>
-
-### ENGLISH
-
-#### <category>
-- <same change, one line>
-```
-
-categorias permitidas (lista cerrada; se omite la que no tenga items):
-
-| castellano | english | cuando |
-|---|---|---|
-| **NUEVO** | **ADDED** | funcionalidad, pantalla o contenido nuevo. |
-| **CAMBIOS** | **CHANGED** | cambios de comportamiento, refactor, reorganizacion, tooling. |
-| **CORREGIDO** | **FIXED** | correccion de un bug o comportamiento incorrecto. |
-| **ELIMINADO** | **REMOVED** | funcionalidad, opcion o fichero que se quita. |
-| **SEGURIDAD** | **SECURITY** | cambios relacionados con seguridad o permisos. |
-
-flujo:
-
-- mientras se trabaja, las entradas nuevas se anaden a la seccion
-  `## SIN PUBLICAR / UNRELEASED`.
-- al cerrar una version se renombra esa seccion a `## [x.y.z] - aaaa-mm-dd` y
-  se crea una nueva seccion `## SIN PUBLICAR / UNRELEASED` vacia encima.
-- el commit que solo toca `changelog.md` usa el prefijo `changelog` (ver
-  arriba).
-
-### Pull requests, merges y releases
-
-<!--
-  Este bloque replica literalmente el contenido de
-  `.docs/pr-merge-release-guidelines.md` y de la sección homónima de
-  `CLAUDE.md`. Existe para que las pull requests, los commits de merge y las
-  releases de github lean como una extensión directa de `changelog.md` en
-  vez de tener cada una su propio formato. Si editas estas reglas, replica el
-  cambio en `CLAUDE.md` y en `.docs/pr-merge-release-guidelines.md`.
--->
-
-pull requests, merges y releases **no inventan su propio formato**: reusan
-literalmente el contenido y las reglas de estilo de `changelog.md` — minusculas
-y sin acentos, las mismas cinco categorias en el mismo orden (nuevo, cambios,
-corregido, eliminado, seguridad / added, changed, fixed, removed, security,
-omitiendo la que no tenga items), una linea por item en imperativo con
-backticks para nombres de ficheros, rutas, comandos e identificadores, y
-fechas en formato `aaaa-mm-dd`. las marcas `[online]` / `[offline]` de
-`changelog.md` se conservan tal cual. la fuente de verdad es siempre
-`changelog.md`: el contenido de pr, merge y release se extrae de ahi, nunca
-se redacta desde cero ni en paralelo.
-
-#### pull requests
-
-- **pr de trabajo normal** (`feature/...` o `fix/...` contra
-  `testing-branch`): mismo titulo que un commit,
-  `<prefijo> | <resumen corto en imperativo>` (ver "redaccion de commits"
-  arriba).
-- **pr de publicacion de version** (`testing-branch` → `release-branch` /
-  `main`, cierra una version): `release version <x.y.z> - <resumen corto en
-  imperativo>`.
-- **descripcion** (igual para las dos): el bloque `### CASTELLANO` +
-  `### ENGLISH` de la seccion correspondiente de `changelog.md`, pegado tal
-  cual con sus encabezados `####` de categoria. si la pr solo aporta parte de
-  `## SIN PUBLICAR / UNRELEASED`, se incluyen solo los items que introduce.
-  no se anaden parrafos sueltos ni resumenes fuera de la lista.
-
-#### commit de merge
-
-github genera el commit de merge a partir del titulo y la descripcion de la
-pr, asi que una pr correcta ya produce un merge correcto. usa siempre
-**"create a merge commit"** (nunca squash ni rebase), para conservar el
-historial de commits individuales junto al resumen de la pr.
-
-#### releases de github
-
-las releases son **en ingles unicamente** (no bilingues):
-
-- **titulo:** `v<x.y.z> — <resumen corto en ingles, minusculas, sin acentos>`
-  (ejemplo: `v1.7 — 100% offline, reminders redesign & settings categories`).
-- **cuerpo:** el bloque `### ENGLISH` de la version cerrada en
-  `changelog.md`, con sus categorias `#### ADDED` / `#### CHANGED` /
-  `#### FIXED` / `#### REMOVED` / `#### SECURITY` tal cual, omitiendo la que
-  no tenga items. no se reescribe en parrafos narrativos.
-- **tag:** siempre `v<x.y.z>`, sin sufijos adicionales.
-
-las releases anteriores a esta regla (`.docs/releases-docs/release-1.7/`)
-usan un formato narrativo distinto y quedan como historicas, sin reescribir.
-
-### Estilo de Código
-
-- `kotlin.code.style=official` (configurado en `gradle.properties`).
-- Métodos modulares y aislados.
-- No bloquear el `MainThread` en operaciones de datos; usar `Dispatchers.IO` o `Dispatchers.Default`.
-- Mantener la separación de capas: UI no conoce DAOs.
+- usa `runTest` para funciones suspendidas.
+- usa `MockK` (no mockito) para consistencia con el proyecto existente.
+- usa `MainDispatcherRule` en tests de viewmodels que usen corrutinas.
+- aísla el viewmodel mockeando repository y usecases.
 
 ---
 
-## 11. Notas para Agentes de IA
+## 9. CONSIDERACIONES DE SEGURIDAD
 
-- **Idioma preferido para explicaciones técnicas:** Español (coincide con la documentación técnica del proyecto).
-- **Al redactar cualquier commit:** aplica las reglas de la sección "Redacción de commits" (10) antes de proponer título o descripción. <!-- formato centralizado para que el historial quede limpio y profesional, más cómodo de leer para usuarios y desarrolladores. -->
-- **Al registrar cambios en `changelog.md`:** sigue el formato de la sección "Formato de las secciones de `changelog.md`" (10): minúsculas sin acentos, títulos en mayúsculas sin acentos, contenido bilingüe (castellano e inglés).
-- **Al modificar `AGENTS.md`:** replica el cambio equivalente en `CLAUDE.md` (y viceversa) para que ambos ficheros no diverjan.
-- **Textos de interfaz en minúsculas:** todos los strings de UI (recursos
+- **sin permisos de red:** la app no declara `INTERNET`. es completamente offline.
+- **almacenamiento externo limitado:** solo lectura de imágenes (`READ_MEDIA_IMAGES`, `READ_EXTERNAL_STORAGE` hasta api 32). usa `FileProvider` para compartir archivos de backup de forma segura.
+- **ubicación (opcional):** `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` y `ACCESS_BACKGROUND_LOCATION` solo se piden al activar el aviso al llegar de un recordatorio (`ReminderDialog` explica antes el acceso "todo el tiempo"). la ubicación no sale del dispositivo. no pidas estos permisos desde ningún otro punto.
+- **alarmas exactas:** requiere `SCHEDULE_EXACT_ALARM` y `USE_EXACT_ALARM`. en android 12+ (api 31), el sistema puede restringir el uso; la app debe manejar la posibilidad de que el permiso sea revocado por el usuario.
+- **backup:** habilitado (`android:allowBackup="true"`) con reglas de extracción declaradas en `data_extraction_rules.xml` y `backup_rules.xml`.
+- **no hay cifrado de base de datos:** room usa sqlite estándar. no se implementa sqlcipher ni cifrado a nivel de archivo.
+
+---
+
+## 11. NOTAS PARA AGENTES DE IA
+
+- **idioma preferido para explicaciones técnicas:** español (coincide con la documentación técnica del proyecto).
+- **al redactar cualquier commit:** aplica las reglas de la sección "redacción de commits" (10) antes de proponer título o descripción.
+- **al registrar cambios en `changelog.md`:** sigue el formato de la sección "formato de las secciones de `changelog.md`" (10): minúsculas sin acentos, títulos en mayúsculas sin acentos, contenido bilingüe (castellano e inglés).
+- **al modificar `AGENTS.md`:** replica el cambio equivalente en `CLAUDE.md` (y viceversa) para que ambos ficheros no diverjan.
+- **textos de interfaz en minúsculas:** todos los strings de ui (recursos
   `strings.xml` en cualquier `values-*`, `plurals` y textos hardcodeados) van en
-  minúsculas y en todos los idiomas. No aplica a datos del usuario ni a
-  especificadores de formato. Ver sección 4.6.
-- **No asumas Compose:** La UI es 100% XML + View Binding.
-- **No asumas Navigation Component:** La navegación es manual con `FragmentManager`.
-- **No asumes KSP:** Usa `kapt` para procesadores de anotaciones.
-- **Al modificar Room:** Siempre actualiza la versión de la base de datos y considera una migración manual.
-- **Al crear nuevos ViewModels:** Usa `@HiltViewModel`, inyección por constructor, y el patrón `safeLaunch`.
-- **Al crear nuevas Activities:** Extiende `BaseActivity` y anota con `@AndroidEntryPoint`.
-- **Al modificar temas:** Usa atributos de Material Theme (`?attr/...`) en lugar de colores hardcodeados. Los temas predefinidos se registran en `ThemeManager.THEME_OPTIONS`; el personalizado combina estilos generados por `custom_theme_palette.py` desde `CustomThemePalette`; sus colores a medida (`#RRGGBB`, android 11+) solo sustituyen en tiempo de ejecución los colores `custom_hex_*` de los estilos portadores con `CustomColorResources` (sección 4.5).
-- **Colores semánticos dinámicos:** Se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorError`, `colorOnError`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). Todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de UI.
-- **Swipe en listas:** Usa `TaskSwipeHelper` para gestos bidireccionales en RecyclerViews (tareas y listas). Soporta configuración de colores/iconos por dirección y drag opcional. Los íconos de swipe se tinen con `colorOnSuccess` / `colorOnError` para respetar la paleta activa.
-- **View Binding obligatorio:** `HomeTaskAdapter` y `TaskListAdapter` usan View Binding; no usar `findViewById` en nuevos adapters.
+  minúsculas y en todos los idiomas. no aplica a datos del usuario ni a
+  especificadores de formato. ver sección 4.6.
+- **no asumas compose:** la ui es 100% xml + view binding.
+- **no asumas navigation component:** la navegación es manual con `FragmentManager`.
+- **no asumes ksp:** usa `kapt` para procesadores de anotaciones.
+- **al modificar room:** siempre actualiza la versión de la base de datos y considera una migración manual.
+- **al crear nuevos viewmodels:** usa `@HiltViewModel`, inyección por constructor, y el patrón `safeLaunch`.
+- **al crear nuevas activities:** extiende `BaseActivity` y anota con `@AndroidEntryPoint`.
+- **al modificar temas:** usa atributos de material theme (`?attr/...`) en lugar de colores hardcodeados. los temas predefinidos se registran en `ThemeManager.THEME_OPTIONS`; el personalizado combina estilos generados por `custom_theme_palette.py` desde `CustomThemePalette`; sus colores a medida (`#RRGGBB`, android 11+) solo sustituyen en tiempo de ejecución los colores `custom_hex_*` de los estilos portadores con `CustomColorResources` (sección 4.5).
+- **colores semánticos dinámicos:** se han añadido atributos de tema para estados y prioridades (`colorSuccess`, `colorOnSuccess`, `colorError`, `colorOnError`, `colorPriorityHigh`, `colorPriorityMedium`, `colorPriorityLow`, `colorDateOverdue`). todos los adapters y el detalle de tarea los resuelven en `init{}`; no debe usarse `Color.parseColor` con hex literals en código de ui.
+- **swipe en listas:** usa `TaskSwipeHelper` para gestos bidireccionales en recyclerviews (tareas y listas). soporta configuración de colores/iconos por dirección y drag opcional. los íconos de swipe se tinen con `colorOnSuccess` / `colorOnError` para respetar la paleta activa.
+- **view binding obligatorio:** `HomeTaskAdapter` y `TaskListAdapter` usan view binding; no usar `findViewById` en nuevos adapters.
+
+## ADDITIONAL ENTRY-POINT CONVENTIONS
+
+## CLAUDE.md — Guía para Claude Code (Polar)
+
+> Este archivo orienta a Claude Code (y a cualquier agente de IA) al trabajar
+> sobre el proyecto **Polar**. El contexto completo del proyecto (stack,
+> arquitectura, estructura de código, base de datos, testing, seguridad) está
+> en [`AGENTS.md`](AGENTS.md): **léelo siempre antes de tocar código**.
+>
+> `CLAUDE.md` y `AGENTS.md` deben mantenerse sincronizados: si cambias uno,
+> replica el cambio equivalente en el otro.
+
+---
+
+## Notas rápidas
+
+- **Idioma para explicaciones técnicas:** Español.
+- **Interfaz siempre en minúsculas:** todos los textos de UI de la aplicación
+  van **en minúsculas y en todos los idiomas** (incluido alemán, y nombres
+  propios como `polar`, `material` o `eisenhower`). Aplica a los recursos de
+  `res/values*/strings.xml` (incluidos `plurals`) y a cualquier texto
+  hardcodeado en layouts o código. **No** aplica a datos introducidos por el
+  usuario (títulos de tareas, notas, etiquetas, etc.) ni a los especificadores
+  de formato (`%1$s`, `%d`). Al añadir una funcionalidad o traducir strings,
+  replica esta convención en todos los `values-*`.
+- **Ortografía:** minúsculas no significa sin acentos: tildes, `ñ`, `¿`/`¡`,
+  umlauts y acentos franceses son obligatorios. Tono: tuteo, `du` y `vous`.
+  Las fechas del sistema se generan con `DateFormat.getBestDateTimePattern()` y
+  se pasan a `lowercase(locale)`.
+- **Sistema de diseño:** tipografía con `?attr/textAppearance*`, componentes
+  `Widget.Polar.*` y piezas `Polar.*`, iconos Lucide (`ic_*`, sin renombrar),
+  fuente Inter empaquetada y nada de `paddingHorizontal`/`marginHorizontal`
+  (API 26). Detalle en la sección 4.7 de `AGENTS.md`.
+- **UI:** 100% XML + View Binding (no Compose, no Navigation Component).
+- **Procesador de anotaciones:** `kapt` (no KSP).
+- **Room:** al alterar el esquema, sube la versión y añade `Migration` manual.
+- **ViewModels:** `@HiltViewModel`, inyección por constructor y patrón
+  `safeLaunch`.
+- **Activities:** extienden `BaseActivity` y se anotan con `@AndroidEntryPoint`.
+- **Colores:** usa atributos de tema (`?attr/...`), nunca hex hardcodeados.
+- **Temas:** los predefinidos se registran en `ThemeManager.THEME_OPTIONS`. El personalizado
+  (`THEME_CUSTOM`, editor `CustomThemeActivity`) combina un tema de fondo y overlays de acento y
+  prioridades en tono claro y oscuro; sus opciones viven en `CustomThemePalette` y su XML
+  (`colors_custom_theme.xml`, `themes_custom.xml`) se genera con
+  `.docs/agent-docs/tools/custom_theme_palette.py`, nunca a mano. Cada hueco admite además un color
+  a medida `#RRGGBB` (`CustomColorSheet`, android 11+): se pinta con los estilos portadores `*.Hex`
+  cuyos colores `custom_hex_*` sustituye `CustomColorResources` en `BaseActivity`, con los tonos de
+  `CustomThemeScheme` (replica las fórmulas del script). Detalle en la sección 4.5 de `AGENTS.md`.
+- **Alarmas:** se programan desde ViewModels/receivers con `AlarmManagerHelper`, nunca desde la UI;
+  para reconstruirlas o cancelarlas en bloque usa `AlarmRescheduler`. La hora del aviso de una
+  tarea la decide `TaskAlert` (antelación `reminderOffset`, aviso pospuesto `snoozedUntil`): usa
+  `syncTaskAlarm(task)` y nunca reescribas `dueDate` para posponer. El aviso al llegar de un
+  recordatorio va por `GeofenceHelper` y es el único uso de los permisos de ubicación. Los textos
+  generados fuera de una activity (notificaciones, widget) usan `ThemeManager.localizedContext()`.
+- **Recurrencia:** `Task.recurrence` guarda un valor fijo (`DAILY`, `MON_WED`...) o una regla
+  `RRULE:...`; léela y escríbela con `RecurrenceRule`, muéstrala con `RecurrenceFormatter` y no la
+  compares con literales (`RecurrenceUtils.isRecurring()`). Detalle en la sección 5 de `AGENTS.md`.
+- **Commits:** aplica la sección "Redacción de commits" antes de proponer título o descripción.
+- **`changelog.md`:** registra los cambios según la sección "Formato de las secciones de `changelog.md`".
+- **Pull requests, merges y releases:** aplica la sección "Pull requests, merges y releases" antes de redactar cualquiera de los tres.
+
+El resto de convenciones y detalle está en [`AGENTS.md`](AGENTS.md).
+
+## COMMIT, PR, MERGE & RELEASE GUIDELINES
+
+read `.docs/manager.md` first, then the selected guide in `.docs/-github-guides/`. these files are versioned; this digest also works without opening them.
+
+| request | guide |
+| --- | --- |
+| commit title, body and changelog | `commit-guide.md`, `changelog-guide.md` |
+| pull request or merge | `pr-merge-guide.md`, `branching-guide.md` |
+| version and release | `release-guide.md`, `changelog-guide.md` |
+| permissions and sensitive data | `agent-rules.md` |
+
+- inspect `git status`, both diffs and recent history before describing changes
+- use `<prefix> | <imperative summary>` with `update`, `fix`, `hotfix`, `changes` or `changelog`; keep titles within 72 characters
+- write commit bodies as 2 to 6 markdown bullets, one logical change per line, with literal paths in backticks
+- never add authorship footers, automated attribution, signatures or generation notices; preserve the configured git identity
+- update `changelog.md` under `## SIN PUBLICAR / UNRELEASED` in matching `### CASTELLANO` and `### ENGLISH` sections
+- use the existing changelog category vocabulary and preserve language parity; describe only changes in the actual diff
+- summarize pull requests in 1 to 3 bullets per category and language, at most 110 characters per bullet
+- documentation and repository-management work targets `version-1.7`; the remote default is `main`; do not silently promote development work to the default branch
+- the authorization for a requested action remains valid throughout that task; creating a pull request includes pushing its branch, but does not authorize merging or publishing
+- use merge commits when a merge is requested; never force-push, rewrite published history or remove branches without an explicit instruction
+- releases use the approved version and an immutable tag on the verified release commit, with english notes from the closed changelog; do not create a release for documentation work
+- deliver requested titles, bodies and changelog fragments in separate code blocks; report executed actions with their commit hash or pull request link
