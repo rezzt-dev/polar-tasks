@@ -1,5 +1,15 @@
 # POLAR-TASKS: REPOSITORY GUIDE
 
+## ESPAÑOL DE ESPAÑA: USO OBLIGATORIO DE Ñ
+
+- todo texto en castellano debe usar español de españa (`es-ES`) y su ortografia, tambien en titulos y cuerpos de commits, changelogs, pull requests, merges y documentacion
+- escribir siempre `ñ` en las palabras que la llevan y `Ñ` cuando corresponda la mayuscula; nunca sustituirlas por `n` o `N`
+- la `ñ` es una letra distinta de la `n`; las instrucciones «sin acentos» o «sin tildes» solo afectan a las tildes de las vocales y nunca permiten eliminar la eñe
+- ejemplos correctos: `añadir`, `diseño`, `año`, `tamaño`, `contraseña`, `español`, `españa` y `AÑADIDO`; sus formas con `n` son incorrectas cuando se refieren a esas palabras españolas
+- conservar literalmente rutas, urls, nombres de archivo, identificadores tecnicos y texto de otros idiomas; esta regla no autoriza renombrarlos ni aplicar sustituciones indiscriminadas
+- antes de entregar o publicar texto en castellano, revisar que ninguna palabra haya perdido su `ñ` o `Ñ`; esta regla prevalece sobre cualquier normalizacion a ascii o instruccion generica de eliminar acentos
+
+
 android task manager maintained as separate online and offline projects. this guide covers the repository; nested agent instructions apply within their own folders.
 
 ## PROJECT OVERVIEW
@@ -272,7 +282,7 @@ propios como `polar`, `material` o `eisenhower`).
   `%d`, `\n`).
 - al añadir una funcionalidad nueva o traducir strings, replica esta convención
   en `values/`, `values-en-rGB/`, `values-en-rUS/`, `values-de/` y `values-fr/`.
-- minúsculas no significa sin acentos: la ortografía de cada idioma es obligatoria
+- minúsculas no significa sin acentos (conservando siempre `ñ` y `Ñ`): la ortografía de cada idioma es obligatoria
   (tildes, `ñ`, `¿` y `¡` en castellano; `ä`, `ö`, `ü`, `ß` en alemán; acentos y
   espacio antes de `?`, `!` y `:` en francés). el tono es el mismo en todas las
   pantallas: tuteo en castellano, `du` en alemán y `vous` en francés.
@@ -453,7 +463,7 @@ la suite de tests unitarios es pequeña pero representativa:
 
 - **idioma preferido para explicaciones técnicas:** español (coincide con la documentación técnica del proyecto).
 - **al redactar cualquier commit:** aplica las reglas de la sección "redacción de commits" (10) antes de proponer título o descripción.
-- **al registrar cambios en `changelog.md`:** sigue el formato de la sección "formato de las secciones de `changelog.md`" (10): minúsculas sin acentos, títulos en mayúsculas sin acentos, contenido bilingüe (castellano e inglés).
+- **al registrar cambios en `changelog.md`:** sigue el formato de la sección "formato de las secciones de `changelog.md`" (10): minúsculas sin acentos (conservando siempre `ñ` y `Ñ`), títulos en mayúsculas sin acentos (conservando siempre `ñ` y `Ñ`), contenido bilingüe (castellano e inglés).
 - **al modificar `AGENTS.md`:** replica el cambio equivalente en `CLAUDE.md` (y viceversa) para que ambos ficheros no diverjan.
 - **textos de interfaz en minúsculas:** todos los strings de ui (recursos
   `strings.xml` en cualquier `values-*`, `plurals` y textos hardcodeados) van en
